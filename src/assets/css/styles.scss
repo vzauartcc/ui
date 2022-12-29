@@ -3,6 +3,10 @@
 
 $primary-color: #595959;
 $primary-color-light: #595959;
+$flatpickr: #89cff0;
+.flatpickr-month {
+    color: red;
+}
 
 $secondary-color-dark: #00c800;
 $secondary-color: #00c800;
@@ -67,11 +71,11 @@ body {
 			background-color: $accent-color;
 		}
 	}
-	
+
 	&.toast_warning {
 		background-color: $secondary-color;
 	}
-	
+
 	&.toast_error {
 		background-color: #e53935;
 
@@ -79,7 +83,7 @@ body {
 			background-color: #d32f2f;
 		}
 	}
-	
+
 	&.toast_info {
 		background-color: $primary-color-light;
 
@@ -111,20 +115,20 @@ table {
 		td, th {
 			padding: .75em 1em;
 		}
-	} 
+	}
 	&.medium {
 		tr, thead {
 			td, th {
 				padding: .5em 1em;
 			}
-		} 
+		}
 	}
 	&.compact {
 		tr {
 			td, th {
 				padding: .25em 1em;
 			}
-		} 
+		}
 	}
 	&.hover tr:hover {
 		background-color: $gray-mild;
