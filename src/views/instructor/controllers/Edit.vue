@@ -133,6 +133,7 @@ export default {
 					twr: false,
 					gnd: false,
 					del: false,
+					zaus: false,
 					ordapps: false,
 					ordtwrs: false,
 					ordgnds: false,
