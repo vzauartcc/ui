@@ -3,10 +3,6 @@
 
 $primary-color: #595959;
 $primary-color-light: #595959;
-$flatpickr: #89cff0;
-.flatpickr-month {
-    color: red;
-}
 
 $secondary-color-dark: #00c800;
 $secondary-color: #00c800;
@@ -178,7 +174,9 @@ select:not(.materialize-select):not(.browser-default) {
 	width: 66%;
 	max-width: 700px;
 }
-
+.flatpickr-monthDropdown-months {
+    opacity: 1;
+}
 .table_wrapper {
 	overflow: auto;
 }
