@@ -147,7 +147,16 @@ export default {
 					orddel: false,
 					app: false,
 					twr: false,
-					gnd: false
+					gnd: false,
+					zaus: false,
+					ordapps: false,
+					ordtwrs: false,
+					ordgnds: false,
+					orddels: false,
+					apps: false,
+					twrs: false,
+					gnds: false,
+					dels: false,
 				},
 				roles: {
 					atm: false,
