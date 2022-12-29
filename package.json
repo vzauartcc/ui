@@ -1,0 +1,43 @@
+{
+  "name": "ui",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Albuquerque ARTCC",
+  "contributors": [
+    "Alexandra Robison",
+    "Daan Janssen"
+  ],
+  "license": "CC-BY-NC-SA-4.0",
+  "scripts": {
+    "dev": "vite --open --port 8080",
+    "serve": "vite preview --open",
+    "build": "vite build",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@materializecss/materialize": "^1.1.0-alpha",
+    "@sentry/browser": "^6.15.0",
+    "@sentry/integrations": "^6.15.0",
+    "@sentry/tracing": "^6.15.0",
+    "@toast-ui/editor": "^3.1.1",
+    "@toast-ui/editor-plugin-table-merged-cell": "^3.0.1",
+    "axios": "^0.24.0",
+    "chart.js": "^3.6.0",
+    "core-js": "^3.19.1",
+    "dayjs": "^1.11.7",
+    "flatpickr": "^4.6.9",
+    "luxon": "^2.1.1",
+    "metar-parser": "^1.0.0",
+    "vue": "^3.2.22",
+    "vue-router": "^4.0.12",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.10.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^8.3.0",
+    "eslint-plugin-vue": "^8.1.1",
+    "sass": "^1.43.5",
+    "vite": "^2.6.14"
+  }
+}
