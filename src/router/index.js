@@ -14,6 +14,10 @@ const routes = [
 				path: '',
 				component: () => import('../views/page/Home.vue')
 			},
+            {
+                path: '/privacy-policy',
+                component: () => import('../views/partial/PrivacyPolicy.vue')
+            },
 			{
 				path: '/login',
 				beforeEnter() {
@@ -264,10 +268,10 @@ const routes = [
 			}
 		]
 	},
-	{
-		path: '/ids',
-		component: () => import('../views/page/Ids.vue')
-	},
+//	{
+//		path: '/ids',
+//		component: () => import('../views/page/Ids.vue')
+//	},
 	{
 		path: '/:catchAll(.*)', component: Master, children: [
 			{
