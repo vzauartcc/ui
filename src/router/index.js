@@ -14,6 +14,10 @@ const routes = [
 				path: '',
 				component: () => import('../views/page/Home.vue')
 			},
+            {
+                path: '/privacy-policy',
+                component: () => import('../views/partial/PrivacyPolicy.vue')
+            },
 			{
 				path: '/login',
 				beforeEnter() {
@@ -282,7 +286,7 @@ const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes,
 });
-  
+
 router.beforeEach(async (to, from, next) => {
 	const tooltips = document.querySelectorAll(".tooltipped");
 	tooltips.forEach((tip) => {
@@ -321,5 +325,5 @@ if (to.meta.loggedIn) {
 	  next();
 	}
 });
-  
+
   export default router;
