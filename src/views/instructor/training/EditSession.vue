@@ -179,7 +179,23 @@ export default {
 		},
 		async submitForm() {
 			try {
-			/*	await vatusaApiAuth.post(`/user/${this.session.student.cid}/training/record/`, {
+				// In theory, we get here when the user presses 'Push to Vatsim and Lock'
+				
+				// Calculate the hours string for the session length
+				const delta = Math.abs(new Date(this.session.endTime) - new Date(this.session.startTime)) / 1000;
+				const hours = Math.floor(delta / 3600);
+				const minutes = Math.floor(delta / 60) % 60;
+				this.duration = `${('00' + hours).slice(-2)}:${('00' + minutes).slice(-2)}`;
+				// Force Save the data to the local database
+				await this.saveForm();
+				// Hit the local database to Finalize the record
+				const {data} = await zabApi.put(`/training/session/submit/${this.$route.params.id}`, this.session);
+				if(data.ret_det.code === 200) {
+					// Put a little message on screen saying success
+					this.toastSuccess('Session notes finalized');
+									
+					// Send the training notes to vatsim
+				/*	await vatusaApiAuth.post(`/user/${this.session.student.cid}/training/record/`, {
 					"instructor_id": this.session.instructor.cid,
                 	"session_date": dayjs(this.session.startTime).format("YYYY-MM-DD HH:mm"),
 					"position": this.session.position,
@@ -193,9 +209,6 @@ export default {
                     "solo_granted": false
 			
 				});*/
-				const {data} = await zabApi.put(`/training/session/submit/${this.$route.params.id}`, this.session);
-				if(data.ret_det.code === 200) {
-					this.toastSuccess('Session notes finalized');
 					this.$router.push('/ins/training/sessions');
 				} else {
 					this.toastError(data.ret_det.message);
