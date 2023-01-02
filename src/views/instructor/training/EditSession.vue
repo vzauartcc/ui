@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import {zabApi, vatusaApiAuth, vatusaApi} from '@/helpers/axios.js';
+import {zabApi, vatusaApi, vatusaApiAuth} from '@/helpers/axios.js';
 import dayjs from 'dayjs'
 
 export default {
@@ -190,8 +190,8 @@ export default {
 			     	"ots_status": this.session.ots,
 				    "location": this.session.location,
                     "is_cbt": false,
-                     "solo_granted": false
-
+                    "solo_granted": false
+			
 				});
 				const {data} = await zabApi.put(`/training/session/submit/${this.$route.params.id}`, this.session);
 				if(data.ret_det.code === 200) {
