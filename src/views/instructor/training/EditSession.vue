@@ -123,7 +123,7 @@
 <script>
 import {zabApi, vatusaApiAuth} from '@/helpers/axios.js';
 import dayjs from 'dayjs'
-
+import {vatusaApi} from "../../../helpers/axios";
 export default {
 	name: 'EditSessionNotes',
 	title: 'Enter Session Notes',
