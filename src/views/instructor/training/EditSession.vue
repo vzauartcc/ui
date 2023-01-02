@@ -179,7 +179,7 @@ export default {
 		},
 		async submitForm() {
 			try {
-				await vatusaApiAuth.post(`/user/${this.session.student.cid}/training/record/`, {
+				await vatusaApi.post(`/user/${this.session.student.cid}/training/record/`, {
 					"instructor_id": this.session.instructor.cid,
                 	"session_date": dayjs(this.session.startTime).format("YYYY-MM-DD HH:mm"),
 					"position": this.session.position,
@@ -191,7 +191,7 @@ export default {
 				    "location": this.session.location,
                     "is_cbt": false,
                      "solo_granted": false
-			
+
 				});
 				const {data} = await zabApi.put(`/training/session/submit/${this.$route.params.id}`, this.session);
 				if(data.ret_det.code === 200) {
