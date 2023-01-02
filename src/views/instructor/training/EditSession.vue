@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import {zabApi, vatusaApiAuth} from '@/helpers/axios.js';
+import {zabApi, vatusaApiAuth, vatusaApi} from '@/helpers/axios.js';
 import dayjs from 'dayjs'
 
 export default {
