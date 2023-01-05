@@ -106,7 +106,7 @@ export default {
 		async getDiscordStatus() {
 			const { data: discordData } = await zabApi.get('/user/discord');
 			this.discordConnected = discordData.data;
-      console.log(discordData.data)
+
 		},
 		async getControllingSessions() {
 			const { data: sessionData } = await zabApi.get('/user/sessions');
