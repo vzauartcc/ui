@@ -18,11 +18,30 @@
 					External Integrations
 				</span>
 				<div class="discord_connect">
-					<button class="btn waves-effect waves-light">
-					<a href="https://vats.im/zau" target="_blank" rel="noreferrer noopener">
-					 	<img src="@/assets/images/discord.svg" alt="" draggable="false" class="discord_logo" height="24">
-						Join Discord</a>
-					</button>
+
+          <template v-if="discordConnected === false">
+            <a href="https://www.zauartcc.org/login/discord" target="_blank" rel="noreferrer noopener">
+              <button class="btn waves-effect waves-light" type="submit" name="action">
+                Link Discord
+                <i class="material-icons right">discord</i>
+              </button>
+            </a>
+          </template>
+          <template v-else>
+            <a href="https://vats.im/zau" target="_blank" rel="noreferrer noopener">
+              <button class="btn waves-effect waves-light" type="submit" name="action" style="background-color: #a55eea">
+                Join Discord
+                <i class="material-icons right">discord</i>
+              </button>
+            </a>
+            <span style="margin-left: 10px;"></span>
+            <a target="_blank" rel="noreferrer noopener">
+              <button class="btn waves-effect waves-light" type="submit" name="action" @click="unlinkDiscord()" style="background-color: #E4002B">
+                Unlink Discord
+                <i class="material-icons right">discord</i>
+              </button>
+            </a>
+          </template>
 				</div>
 			</div>
 		</div>
@@ -87,6 +106,7 @@ export default {
 		async getDiscordStatus() {
 			const { data: discordData } = await zabApi.get('/user/discord');
 			this.discordConnected = discordData.data;
+
 		},
 		async getControllingSessions() {
 			const { data: sessionData } = await zabApi.get('/user/sessions');
