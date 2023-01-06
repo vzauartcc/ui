@@ -6,7 +6,6 @@ import FlatPickr from 'vue-flatpickr-component';
 
 import M from '@materializecss/materialize'; // Temporary fix until I figure out why I can't import a (custom) minified file directly
 import '@materializecss/materialize/sass/materialize.scss';
-import FlatPickr from 'vue-flatpickr-component'
 
 import dates from './helpers/dates.js';
 import toasts from './helpers/toasts.js';
