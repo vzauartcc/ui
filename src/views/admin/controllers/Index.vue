@@ -41,7 +41,10 @@
 							<td class="options">
 								<router-link data-position="top" data-tooltip="Edit Controller" class="tooltipped" :to="`/admin/controllers/${controller.cid}`"><i class="material-icons">edit</i></router-link>
 								<a :href="`#modal_delete_${controller.cid}`" data-position="top" data-tooltip="Remove Controller" class="tooltipped modal-trigger"><i class="material-icons red-text text-darken-2">delete</i></a>
+
 							</td>
+
+
 							<div :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
 								<div class="modal-content">
 									<h4>Remove Controller?</h4>
@@ -62,9 +65,21 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+
+import { mapState } from 'vuex';
+import {vatusaApiAuth, zabApi} from '@/helpers/axios.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import {ref} from "vue";
+const endDate = document.getElementById('end_date');
+
 
 export default {
+	computed: {
+		...mapState('user', [
+			'user'
+		])
+	},
 	name: 'Controllers',
 	title: 'Controllers',
 	data() {
@@ -85,6 +100,14 @@ export default {
 		});
 	},
 	methods: {
+		requiresAuth(roles) {
+			const havePermissions = roles.some(r => this.user.data.roleCodes.includes(r));
+			if(havePermissions) {
+				return true;
+			} else {
+				return false;
+			}
+	},
 		async getControllers() {
 			const {data} = await zabApi.get('/controller');
 			this.controllers = data.data.home.concat(data.data.visiting);
