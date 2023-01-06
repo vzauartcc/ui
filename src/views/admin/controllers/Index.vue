@@ -46,6 +46,7 @@
                   <a :href="`#modal_promote_${controller.cid}`" data-position="top" data-tooltip="Promote Controller" class="tooltipped modal-trigger"><i class="material-icons green-text text-darken-2">arrow_upward</i></a>
                 </template>
               </td>
+
 							<div :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
 								<div class="modal-content">
 									<h4>Remove Controller?</h4>
@@ -104,6 +105,8 @@
 </template>
 
 <script>
+
+import { mapState } from 'vuex';
 import {vatusaApiAuth, zabApi} from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -111,6 +114,11 @@ import {ref} from "vue";
 const endDate = document.getElementById('end_date');
 
 export default {
+	computed: {
+		...mapState('user', [
+			'user'
+		])
+	},
 	name: 'Controllers',
 	title: 'Controllers',
 	data() {
@@ -152,6 +160,14 @@ export default {
 
 	},
 	methods: {
+		requiresAuth(roles) {
+			const havePermissions = roles.some(r => this.user.data.roleCodes.includes(r));
+			if(havePermissions) {
+				return true;
+			} else {
+				return false;
+			}
+	},
 		async getControllers() {
 			const {data} = await zabApi.get('/controller');
 			this.controllers = data.data.home.concat(data.data.visiting);

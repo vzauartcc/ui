@@ -31,7 +31,8 @@
     "vue": "^3.2.22",
     "vue-flatpickr-component": "^11.0.1",
     "vue-router": "^4.0.12",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+      "vue-flatpicker-component": "^11.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.10.0",
