@@ -14,12 +14,12 @@
 						You will need to control one hour by <b>{{calcControlDate}}</b> to prevent removal from the roster.
 					</span>
 				</div>
-				<span class="section_title">
+<!--			<span class="section_title">
 					External Integrations
 				</span>
 				<div class="discord_connect">
 
-<!--     <template v-if="discordConnected === false">
+     <template v-if="discordConnected === false">
         <a href="https://www.zauartcc.org/login/discord" target="_blank" rel="noreferrer noopener">
         <button class="btn waves-effect waves-light" type="submit" name="action">
                 Link Discord
@@ -41,12 +41,12 @@
                 <i class="material-icons right">discord</i>
               </button>
             </a>
-          </template>-->
-				</div>
+          </template>
+				</div>-->
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="card">
 		<div class="card-content">
 			<span class="card-title">Recent Connections</span>
