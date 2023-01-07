@@ -41,12 +41,12 @@
                 <i class="material-icons right">discord</i>
               </button>
             </a>
-          </template>
+          </template>-->
 				</div>
 			</div>
 		</div>
 	</div>
--->
+	
 	<div class="card">
 		<div class="card-content">
 			<span class="card-title">Recent Connections</span>
