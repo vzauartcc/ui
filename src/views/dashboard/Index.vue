@@ -14,7 +14,7 @@
 						You will need to control one hour by <b>{{calcControlDate}}</b> to prevent removal from the roster.
 					</span>
 				</div>
-				<span class="section_title">
+				
 			<span class="section_title">
 					External Integrations
 				</span>
