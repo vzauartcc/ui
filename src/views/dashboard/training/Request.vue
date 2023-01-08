@@ -130,21 +130,24 @@ export default {
 		filteredMilestones() {
 			const certs = this.user.data.certCodes;
 			const rating = this.user.data.rating;
-
-			if(this.milestones !== null) {
+			if(this.milestones) {
 				const minorPrerequisites = ["obs", "gnd", "twr", "app"];
 				const majorPrerequisites = ["obs", "gnd", "ordgnd", "ordtwr", "ordapp"];
-
 				let milestonesShowed = this.milestones.filter((milestone) => {
-					//simplified this logic per TA request to offer only these options to all trainees, regardless of cert held
-					if(this.user.data.vis) {
-							return milestone.code === "TRN" || milestone.code === "PVR";
-					} else {
-							//simplified this logic per TA request to offer only these options to all trainees, regardless of cert held
-							return milestone.code === "TRN" || milestone.code === "OTS" || milestone.code === "PVR";
+					if(this.user.data.vis) return (milestone.certCode.substring(0, 3) === "vis" && milestone.rating <= rating) || milestone.code === "GT1";
+					else {
+						return (  // This is still slightly hard to understand.  It returns the milestones that haven't been completed yet for the rating, or the C90 equivalent (if no major cert has been attained yet) and next rating's milestones, or center milestones if all other certs have been attained.
+							!certs.includes(milestone.certCode) &&
+							(
+								milestone.code === "GT1" ||
+								(milestone.certCode.substring(0, 3) === "ord" && certs.includes(milestone.certCode.slice(-3)) && certs.includes(majorPrerequisites[milestone.rating - 1])) || 
+								(milestone.certCode.substring(0, 3) !== "ord" && (certs.includes(minorPrerequisites[milestone.rating - 1]) || (milestone.rating === "1" && certs.length === 0)) && milestone.certCode !== "zau") ||
+								(milestone.certCode === "zau" && certs.includes("ordapp"))
+							) && 
+							milestone.certCode.substring(0, 3) !== "vis"
+						);
 					}
 				});
-
 				return milestonesShowed;
 			}
 		},
