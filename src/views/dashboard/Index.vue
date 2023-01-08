@@ -15,6 +15,7 @@
 					</span>
 				</div>
 				<span class="section_title">
+			<span class="section_title">
 					External Integrations
 				</span>
 				<div class="discord_connect">
