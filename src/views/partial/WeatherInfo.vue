@@ -293,15 +293,15 @@ export default {
       let Conditions;
 
       // Check for LIFR conditions
-      if (visibility < 1 || clouds.some(cloud => cloud.altitude < 200) || verticalVisibility < 200) {
+      if (visibility < 1 || clouds.some(cloud => cloud.altitude < 500) || verticalVisibility < 500) {
         Conditions = `<i class="material-icons weather_icon">wb_cloudy</i>LIFR`;
       }
       // Check for IFR conditions
-      else if (visibility >= 1 && visibility <= 3 || clouds.some(cloud => cloud.altitude >= 200 && cloud.altitude <= 1000) || (verticalVisibility >= 200 && verticalVisibility <= 1000)) {
+      else if (visibility >= 1 && visibility < 3 || clouds.some(cloud => cloud.altitude >= 500 && cloud.altitude < 1000) || (verticalVisibility >= 500 && verticalVisibility < 1000)) {
         Conditions = `<i class="material-icons weather_icon">wb_cloudy</i>IFR`;
       }
       // Check for MVFR conditions
-      else if (visibility > 3 && visibility <= 5 || clouds.some(cloud => cloud.altitude > 1000 && cloud.altitude <= 3000) || (verticalVisibility > 1000 && verticalVisibility <= 3000)) {
+      else if (visibility >= 3 && visibility <= 5 || clouds.some(cloud => cloud.altitude >= 1000 && cloud.altitude <= 3000) || (verticalVisibility >= 1000 && verticalVisibility <= 3000)) {
         Conditions = `<i class="material-icons weather_icon">wb_cloudy</i>MVFR`;
       }
       // Otherwise, assume VFR conditions
