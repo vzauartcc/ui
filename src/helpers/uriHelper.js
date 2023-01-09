@@ -11,7 +11,7 @@ export const vatsimAuthRedirectUrl = `${getAuthEndpoint()}/oauth/authorize?clien
   
     if (window.location.origin.includes("staging")) {
       return betaClientId;
-    } else if (window.location.origin.includes("www.zauartcc.org")) {
+    } else if (window.location.origin.includes("zauartcc.org")) {
       return prodClientId;
     } else {
       return devClientId;
