@@ -105,3 +105,4 @@ dist
 src/views/.DS_Store
 src/views/.DS_Store
 .idea/ui.iml
+.idea/modules.xml

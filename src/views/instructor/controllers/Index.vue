@@ -42,7 +42,7 @@
 								<router-link data-position="top" data-tooltip="View Training Sessions" class="tooltipped" :to="`/ins/training/sessions/${controller.cid}`"><i class="material-icons">assignment</i></router-link>
 								<router-link data-position="top" data-tooltip="Edit Controller" class="tooltipped" :to="`/ins/controllers/${controller.cid}`"><i class="material-icons">edit</i></router-link>
                                   <template v-if="requiresAuth(['atm', 'datm', 'ta', 'ins', 'wm'])">
-                                <template v-if="controller.ratingShort !== 'C3' && controller.ratingShort !== 'SUP' && controller.ratingShort !== 'ADM' && controller.ratingShort !== 'I1' && controller.ratingShort !== 'I3' && controller.ratingShort !== 'C1'">
+                                <template v-if="controller.ratingShort !== 'C3' && controller.ratingShort !== 'SUP' && controller.ratingShort !== 'ADM' && controller.ratingShort !== 'I1' && controller.ratingShort !== 'I3' && controller.ratingShort !== 'C1'  && controller.vis === false">
                              <a :href="`#modal_promote_${controller.cid}`" data-position="top" data-tooltip="Promote Controller" class="tooltipped modal-trigger"><i class="material-icons green-text text-darken-2">arrow_upward</i></a>
                             </template>
                         </template>
