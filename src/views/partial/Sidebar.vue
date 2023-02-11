@@ -141,7 +141,7 @@ export default {
       updateTime: "",
       atcOnline: null,
       ratings: null,
-      airports: ["KORD","KCHI","KSBN","KRFD","KPIA","KMSN","KMKG","KMLI","KMKE","KGRR","KFWA","KCMI","KCID","KAZO","KALO","KEKM","KMDW","KLAF","KBTL","KOSH","KUGN","KENW","KPWK"],
+      airports: ["KORD","KCHI","KSBN","KRFD","KPIA","KMSN","KMKG","KMLI","KMKE","KGRR","KFWA","KCMI","KCID","KAZO","KALO","KEKM","KMDW","KLAF","KBTL","KOSH","KUGN","KENW","KPWK","KLOT"],
       top: null,
       positions: [],
       currentDate: new Date()
