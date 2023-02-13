@@ -47,7 +47,7 @@
             </ul>
           </li>
           <li>
-            <router-link to="/feedback">FEEDBACK</router-link>
+            <router-link to="/feedback">FEEDBACKTEST</router-link>
           </li>
         </ul>
         <router-link to="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></router-link>
