@@ -38,7 +38,7 @@
                                 <h4>Cancel Training Session?</h4>
                                 <p>This will remove the training session.  <br>
 								<br>If you are cancelling a scheduled session within 24 hours, please advise the instructor or ta@zauartcc.net via email also.<br><br>
-								Are you sure you wish to cancel this session?</p>
+								Are you sure you wish to cancel?</p>
                             </div>
                             <div class="modal-footer">
                                 <a href="#!" @click="deleteSession(session._id)" class="btn waves-effect">Delete</a>
