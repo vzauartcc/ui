@@ -12,7 +12,7 @@
 
 		<p class="no_sessions" v-else-if="upcomingSessions && upcomingSessions.length === 0">You have no upcoming training sessions.</p>
 
-		<div class="session_wrapper">
+		<div class="session_wrapper" v-else>
 			<table class="session_list striped">
 				<thead class="session_list_head">
 					<tr>
