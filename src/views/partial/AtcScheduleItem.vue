@@ -48,7 +48,7 @@ export default {
   },
   created() {
     this.localDate = this.currentDate;
-    console.log(this.localDate);
+    //console.log(this.localDate);
     this.fetchSessions();
     
   },
@@ -102,7 +102,7 @@ export default {
           return session.startTime.toLocaleDateString() === currentDate.toLocaleDateString();
         });
 
-      console.log('this.sessions:', this.sessions);
+      //console.log('this.sessions:', this.sessions);
       } catch (error) {
         console.error(error);
       }
@@ -132,7 +132,7 @@ export default {
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
       return months[month]
     },
-    
+
     formatHours(hours) {
       return hours.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
     },
