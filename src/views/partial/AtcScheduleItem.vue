@@ -14,8 +14,8 @@
         <div class="card-body">
           <p>{{ session.submitter.fname }} {{ session.submitter.lname }}</p>
        <div class="card-time">
-        <p>{{ formatStartTime(session.startTime, this.localDate) }}-{{ formatEndTime(session.endTime, this.localDate) }}</p>
-          <p>{{ formatStartTimeZ(session.startTimeZ) }}-{{ formatEndTimeZ(session.endTimeZ, session.startTimeZ) }}</p>
+        <p>{{ formatStartTime(session.startTime, this.localDate) }} - {{ formatEndTime(session.endTime, this.localDate) }}</p>
+          <p>{{ formatStartTimeZ(session.startTimeZ) }} - {{ formatEndTimeZ(session.endTimeZ, session.startTimeZ) }}</p>
        </div>
         </div>
       </div>
@@ -42,9 +42,6 @@ export default {
       timezone: 'America/Chicago',
       currentTime: null,
     };
-  },
-  mounted() {
-    this.currentTime = moment().tz(this.timezone).format('h:mm:ss a');
   },
   created() {
     this.localDate = this.currentDate;
@@ -127,26 +124,12 @@ export default {
 
       return (endTimeDate.getMonth() !== localDateDate.getMonth() || endTimeDate.getDate() !== localDateDate.getDate()) ? `${dateString} ${timeString}` : timeString;
     },
-    
-    getShortMonth(month) {
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-      return months[month]
-    },
-
-    formatHours(hours) {
-      return hours.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
-    },
-
-    formatMinutes(minutes) {
-      // Add leading zero if less than 10
-      return minutes < 10 ? `0${minutes}` : minutes
-    },
 
     formatStartTimeZ(startTimeZ) {
       const date = new Date(startTimeZ)
       const month = date.getUTCMonth()
       const day = date.getUTCDate()
-      const hours = date.getUTCHours()
+      let hours = date.getUTCHours()
       const minutes = date.getUTCMinutes()
 
       // Check if time is 24:00
@@ -167,7 +150,7 @@ export default {
       const date = new Date(endTimeZ);
       const month = date.getUTCMonth();
       const day = date.getUTCDate();
-      const hours = date.getUTCHours();
+      let hours = date.getUTCHours();
       const minutes = date.getUTCMinutes();
 
       const start = new Date(startTimeZ);
@@ -180,6 +163,20 @@ export default {
         return `${this.formatHours(hours)}:${this.formatMinutes(minutes)}Z`;
       }
 
+    },
+
+    getShortMonth(month) {
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      return months[month]
+    },
+
+    formatHours(hours) {
+      return hours.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
+    },
+
+    formatMinutes(minutes) {
+      // Add leading zero if less than 10
+      return minutes < 10 ? `0${minutes}` : minutes
     }
   },
   watch: {
