@@ -19,10 +19,6 @@ const routes = [
                 component: () => import('../views/partial/PrivacyPolicy.vue')
             },
 			{
-                path: '/atcscheduleitem',
-                component: () => import('../views/partial/AtcScheduleItem.vue')
-            },
-			{
 				path: '/login',
 				beforeEnter() {
 					location.href = uriHelper.vatsimAuthRedirectUrl;
