@@ -5,7 +5,7 @@
 				<div class="card-title col s8"><span class="card-title">Controller Schedule</span></div>
                 <div class="col s4"><router-link to="/dash/scheduling/new"><span class="btn new_event_button left schedule-button">Schedule</span></router-link><span class="btn new_event_button right" @click.native="nextDate">Next</span><span class="btn new_event_button right" @click.native="prevDate">Prev</span></div>
 			</div>
-            <p class="date">Current Selected Date {{ currentDate }} </p>
+            <p class="date" v-if="sessions && sessions.length !== 0">Current Selected Date {{ new Date(currentDate).toLocaleString('en-US', { timeZone: 'America/Chicago', month: 'numeric', day: 'numeric', year: 'numeric' }) }} </p>
 		</div>
 		<div v-if="sessions === null">
             <div class="card-content loading">s
@@ -15,7 +15,7 @@
         <div v-else>
             <div class="card-content">
                 <p class="no_schedule" v-if="sessions && sessions.length === 0">
-                    There is no ATC availability scheduled for {{currentDate}}.
+                    There is no ATC availability scheduled for {{ new Date(currentDate).toLocaleString('en-US', { timeZone: 'America/Chicago', month: 'numeric', day: 'numeric', year: 'numeric' }) }}.
                 </p>
             </div>
             <div class="table_wrapper" v-if="sessions && sessions.length !== 0">
@@ -32,8 +32,8 @@
 				    <tbody class="position_list_row" v-if="sessions">
 					    <tr v-for="session in sortedSessions" :key="session._id">
 						    <td>{{ session.submitter.fname }} {{ session.submitter.lname }}</td> 
-						    <td>{{dtLong(session.startTime)}}</td>
-						    <td>{{dtLong(session.endTime)}}</td>
+						    <td>{{session.startTime.toLocaleString('en-US', {timeZone: 'America/Chicago', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'})}}</td>
+						    <td>{{session.endTime.toLocaleString('en-US', {timeZone: 'America/Chicago', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'})}}</td>
 						    <td>{{ session.facility }}_{{ session.position.id }}</td>
                             <td class="options">
                                 <template v-if="this.user.data.cid === session.submitter.cid || this.user.data.isMgt === true">
@@ -93,29 +93,52 @@ export default {
     computed: {
         ...mapState('user', ['user']),
         sortedSessions() {
-            return this.sessions.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+            return this.sessions.sort((a, b) => {
+            const startTimeDiff = new Date(a.startTime) - new Date(b.startTime);
+            if (startTimeDiff !== 0) {
+                return startTimeDiff;
+            }
+            // if start times are the same, sort by end time
+            return new Date(a.endTime) - new Date(b.endTime);
+            });
         }
     },
     methods: {
         prevDate() {
-            this.currentDate = new Date(new Date(this.currentDate).setDate(new Date(this.currentDate).getDate() - 1)).toISOString().substring(0, 10);
+            const chicagoDate = new Date(this.currentDate).toLocaleString('en-US', { timeZone: 'America/Chicago' });
+            this.currentDate = new Date(new Date(chicagoDate).setDate(new Date(chicagoDate).getDate() - 1)).toISOString().substring(0, 10);
             this.getSessions();
         },
         nextDate() {
-            this.currentDate = new Date(new Date(this.currentDate).setDate(new Date(this.currentDate).getDate() + 1)).toISOString().substring(0, 10);
+            const chicagoDate = new Date(this.currentDate).toLocaleString('en-US', { timeZone: 'America/Chicago' });
+            this.currentDate = new Date(new Date(chicagoDate).setDate(new Date(chicagoDate).getDate() + 1)).toISOString().substring(0, 10);
             this.getSessions();
         },
         async getSessions() {
-          try {
-            const { data } = await zabApi.get('/scheduling/sessions', {
-              params: {
-                startTime: this.currentDate
-              },
-            });
-            //console.log(data);
-            //console.log(data.data);
-            this.sessions = data;
-            //console.log(this.sessions);
+            try {
+                // Convert the current date to Chicago time
+                const chicagoTime = new Date(new Date(this.currentDate + 'T00:00:00').toLocaleString("en-US", {timeZone: "America/Chicago"}));
+
+                // Get the day before the current day
+                const yesterday = new Date(chicagoTime.getTime());
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayString = yesterday.toISOString().slice(0, 10);
+                // Get data from Database
+                const { data } = await zabApi.get('/scheduling/sessions', {
+                  params: {
+                    startTime: yesterdayString,
+                  },
+                });
+                const currentDate = new Date(new Date(this.currentDate).toLocaleString("en-US", {timeZone: "America/Chicago"}));
+                this.sessions = data
+                .map(session => ({
+                    ...session,
+                    startTime: new Date(new Date(session.startTime).toLocaleString("en-US", {timeZone: "America/Chicago"})),
+                    endTime: new Date(new Date(session.endTime).toLocaleString("en-US", {timeZone: "America/Chicago"}))
+                }))
+                .filter(session => {
+                    return session.startTime.toLocaleDateString() === currentDate.toLocaleDateString();
+                });
             } catch (error) {
               console.error(error);
             }

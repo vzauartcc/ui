@@ -60,7 +60,9 @@
         </div>
       </div>
     </div>
-    <AtcScheduleItem :currentDate="currentDate"></AtcScheduleItem>
+    <div class="scroll" style="max-height: 450px; overflow: auto;">
+      <AtcScheduleItem :currentDate="currentDate"></AtcScheduleItem>
+    </div>
   </div>
 </div>
 <div class="card" v-if="user.isLoggedIn">

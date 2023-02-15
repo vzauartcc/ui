@@ -12,17 +12,16 @@
 					<form class="row row_no_margin" @submit.prevent=submitRequest>
 						<div class="input-field col s12">
 							<input id="start_date" type="text" ref="start_date" required>
-							<label for="start_date">Start Time (Zulu)<span class="red-text">*</span></label>
+							<label for="start_date">Start Time (<span class="timezone"></span>)<span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s12">
 							<input id="end_date" type="text" ref="end_date" required>
-							<label for="end_date">End Time (Zulu)<span class="red-text">*</span></label>
+							<label for="end_date">End Time (<span class="timezone"></span>)<span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s6">
-							<select v-model="selectedOption" class="materialize-select" @change="updateSelectedFacility" id="select-facility">
+							<select v-model="selectedOption" class="materialize-select" @change="updateSelectedFacility" id="select-facility" size="6">
 								<option value="" disabled selected>Select a Facility</option>
 								<option v-for="position in positions" :key="position.code" :value="position.code">{{position.name}}</option>
-
 							</select>
 							<label>Facility <span class="red-text">*</span></label>
 						</div>
@@ -70,40 +69,51 @@ export default {
 	created(){
 		this.getPositions();
 		this.selectedOption = '';
-		
 	},
 	async mounted() {
 		await this.getPositions();
 		const today = new Date(new Date().toUTCString());
-
+		let now = new Date();
+		let next15 = new Date(Math.ceil(now.getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000));
+		
 		M.FormSelect.init(document.querySelectorAll('select'));
 
 		this.request.submitter = this.user.data._id;
 
 		flatpickr(this.$refs.start_date, {
-			enableTime: true,
-			time_24hr: true,
-			minDate: today,
-			maxDate: new Date().fp_incr(14), // 14 days from now
-			disableMobile: true,
-			minuteIncrement: 15,
-			dateFormat: 'Y-m-dTH:i:00.000\\Z',
-			altFormat: 'Y-m-d H:i',
-			altInput: true,
-            opacity: 100,
+  			enableTime: true,
+  			time_24hr: false,
+  			minDate: next15,
+  			maxDate: new Date().fp_incr(14), // 14 days from now
+  			disableMobile: true,
+  			minuteIncrement: 15,
+			dateFormat: 'Y-m-dTH:i:00',
+  			altInput: true,
+  			opacity: 100,
+  			timezone: 'America/Chicago'
 		});
 
 		flatpickr(this.$refs.end_date, {
-			enableTime: true,
-			time_24hr: true,
-			minDate: today,
-			maxDate: new Date().fp_incr(14), // 14 days from now
-			disableMobile: true,
-			minuteIncrement: 15,
-			dateFormat: 'Y-m-dTH:i:00.000\\Z',
-			altFormat: 'Y-m-d H:i',
-			altInput: true,
+  			enableTime: true,
+  			time_24hr: false,
+  			minDate: next15,
+  			maxDate: new Date().fp_incr(14), // 14 days from now
+  			disableMobile: true,
+  			minuteIncrement: 15,
+			dateFormat: 'Y-m-dTH:i:00',
+  			altInput: true,
+  			opacity: 100,
+  			timezone: 'America/Chicago'
 		});
+		function updateTimezoneDisplay() {
+    		let timezoneSpans = document.getElementsByClassName("timezone");
+    		for (let i = 0; i < timezoneSpans.length; i++) {
+      			let date = new Date();
+				let offset = -date.getTimezoneOffset() / 60;
+      			timezoneSpans[i].innerHTML = offset === -6 ? "CST" : "CDT";
+    		}
+  		};
+		updateTimezoneDisplay();
 	},
 	methods: {
 		async submitRequest() {
@@ -170,14 +180,6 @@ export default {
 	.col {
 		margin-bottom: 1em;
 	}
-}
-#select-options-51dcadc5-c16d-5db5-cd86-0abf82b17f1b{
-  height: 200px;
-  overflow-y: scroll;
-}
-#select-facility .select-dropdown {
- max-height: 600px !important;
- overflow-y: scroll;
 }
 
 .submit_request {
