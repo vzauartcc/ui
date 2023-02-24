@@ -6,7 +6,7 @@
 				<Spinner />
 			</div>
 			<div class="row row_no_margin" v-else>
-				<form method="post" @submit.prevent=updateDocument>
+				<form ref="editForm" method="post" enctype="multipart/form-data" @submit.prevent=updateDocument>
 					<div class="input-field col s12 m6">
 						<input id="name" type="text" v-model="form.name" required>
 						<label for="name">Name</label>
@@ -65,6 +65,7 @@ import Editor from '@toast-ui/editor';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
 import {zabApi} from '@/helpers/axios.js';
+import {mapState} from 'vuex';
 
 export default {
 	title: 'Edit Document',
@@ -108,15 +109,35 @@ export default {
 			this.loading = false;
 		},
 		async updateDocument() {
-			this.form.content = this.editor.getMarkdown();
-			const {data: addData} = await zabApi.put(`/file/documents/${this.form.slug}`, this.form);
+  			this.form.content = this.editor.getMarkdown();
+  			const formData = new FormData();
+  			formData.append('name', this.form.name);
+  			formData.append('category', this.form.category);
+  			formData.append('description', this.form.description);
+  			formData.append('author', this.user.data._id);
+  			formData.append('type', this.form.type);
+  			formData.append('content', this.form.content);
 
-			if(addData.ret_det.code === 200) {
-				this.toastSuccess('Document updated');
-			} else {
-				this.toastError(addData.ret_det.message);
-			}
+			if (this.form.type === 'file') {
+    			formData.append('download', this.$refs.download.files[0]);
+  			}
+
+  			const { data } = await zabApi.put(`/file/documents/${this.form.slug}`, formData, {
+    			headers: { 'Content-Type': 'multipart/form-data' },
+  			});
+
+  			if (data.ret_det.code === 200) {
+  			  this.toastSuccess('Document updated');
+			  this.$router.go(-1); // go back to the previous page
+  			} else {
+  			  this.toastError(data.ret_det.message);
+  			}
 		}
+	},
+	computed: {
+		...mapState('user', [
+			'user'
+		]),
 	}
 };
 </script>
