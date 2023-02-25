@@ -38,6 +38,7 @@ export default {
 	async mounted() {
 		await this.getDownloads();
 		M.Tabs.init(document.querySelectorAll('.tabs'));
+		console.log('parent:', this.spaceName);
 	},
 	methods: {
 		async getDownloads() {

@@ -113,7 +113,6 @@ export default {
 	},
 	async mounted() {
 		await this.getController();
-
 		this.setTitle(`${this.controller.fname} ${this.controller.lname} | Controller Profile`);
 	},
 	methods: {

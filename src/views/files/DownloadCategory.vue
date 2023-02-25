@@ -13,6 +13,9 @@
 <script>
 export default {
   props: ['cat', 'files', 'spaceName'],
+  created() {
+    console.log('spaceName:', this.spaceName);
+  }
 };
 </script>
 
