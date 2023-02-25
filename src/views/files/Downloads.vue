@@ -29,7 +29,7 @@ export default {
 	data() {
 		return {
 			downloads: null,
-			spaceName: process.env.VITE_SPACE
+			spaceName: import.meta.env.VITE_SPACE
 		};
 	},
 	components: {
