@@ -89,6 +89,7 @@ export default {
 
 				if(data.ret_det.code === 200) {
 					this.toastSuccess('Download updated');
+					this.$router.go(-1); // go back to the previous page
 				} else {
 					this.toastError(data.ret_det.message);
 				}
