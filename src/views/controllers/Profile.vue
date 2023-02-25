@@ -108,7 +108,7 @@ export default {
 			controller: null,
 			stats: null,
 			loading: true,
-			spaceName: process.env.SPACE
+			spaceName: import.meta.env.VITE_SPACE
 		};
 	},
 	async mounted() {
