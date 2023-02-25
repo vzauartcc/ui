@@ -11,7 +11,7 @@
 					<div class="row">
 						<div class="col s5 m4 l3">
 							<div class="controller_image">
-								<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/avatars/${controller.avatar || `${controller.cid}-default.png`}`" alt="" height="170" width="170">
+								<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/${process.env.SPACE}/avatars/${controller.avatar || `${controller.cid}-default.png`}`" alt="" height="170" width="170">
 							</div>
 						</div>
 						<div class="col s7 m8 l9">

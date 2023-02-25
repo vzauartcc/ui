@@ -4,7 +4,7 @@
 			<Spinner />
 		</div>
 		<div class="event" v-else>
-			<img :src="`${event.bannerUrl.match(/^http/) ? event.bannerUrl : `https://zauartcc.sfo3.digitaloceanspaces.com/events/${event.bannerUrl}`}`" class="event_banner" draggable="false" alt="" />
+			<img :src="`${event.bannerUrl.match(/^http/) ? event.bannerUrl : `https://zauartcc.sfo3.digitaloceanspaces.com/${process.env.SPACE}/events/${event.bannerUrl}`}`" class="event_banner" draggable="false" alt="" />
 			<div class="card-content">
 				<div class="row">
 					<div class="col s12">
