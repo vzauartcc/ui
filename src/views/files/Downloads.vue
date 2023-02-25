@@ -13,7 +13,7 @@
 				<Spinner />
 			</div>
 			<div class="tabs_content" v-else>
-				<DownloadCategory v-for="(files, cat) in downloads" :key="cat" :cat="cat" :files="files" :spaceName="spaceName" />
+				<DownloadCategory v-for="(files, cat) in downloads" :key="cat" :cat="cat" :files="files" :spaceName="this.spaceName" />
 			</div>
 		</div>
 	</div>
@@ -29,12 +29,15 @@ export default {
 	data() {
 		return {
 			downloads: null,
-			spaceName: import.meta.env.VITE_SPACE
+			spaceName: ''
 		};
 	},
 	components: {
 		DownloadCategory
 	},
+	async created() {
+    	this.spaceName = process.env.VITE_SPACE;
+  	},
 	async mounted() {
 		await this.getDownloads();
 		M.Tabs.init(document.querySelectorAll('.tabs'));
