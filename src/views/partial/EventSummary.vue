@@ -10,7 +10,7 @@
 	</div>
 	<div v-if="events && events.length">
 		<div class="card event_card" v-for="event in events" :key="event.id">
-			<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/${process.env.SPACE}/events/${event.bannerUrl}`" class="event_banner" draggable="false" alt="" />
+			<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/${spaceName}/events/${event.bannerUrl}`" class="event_banner" draggable="false" alt="" />
 			<div class="card-content">
 				<div class="row">
 					<div class="col s12 l8">
@@ -35,7 +35,8 @@ export default {
 	name: 'Events',
 	data() {
 		return {
-			events: null
+			events: null,
+			spaceName: process.env.SPACE
 		};
 	},
 	async mounted() {
