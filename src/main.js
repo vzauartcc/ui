@@ -3,9 +3,6 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import FlatPickr from 'vue-flatpickr-component';
-import dotenv from 'dotenv';
-
-dotenv.config(); // Load environment variables from .env file
 
 import M from '@materializecss/materialize'; // Temporary fix until I figure out why I can't import a (custom) minified file directly
 import '@materializecss/materialize/sass/materialize.scss';

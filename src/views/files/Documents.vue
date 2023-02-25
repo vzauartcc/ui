@@ -32,7 +32,7 @@ export default {
 	data() {
 		return {
 			documents: null,
-			spaceName: process.env.SPACE
+			spaceName: import.meta.env.VITE_SPACE
 		};
 	},
 	components: {
