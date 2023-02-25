@@ -83,7 +83,7 @@ export default {
 	title: 'Dashboard',
 	data() {
 		return {
-			approvedAirports: ['MIA', 'FLL', 'OPF', 'FXE', 'TMB', 'TPA', 'SRQ', 'PIE', 'SPG', 'BKV', 'LAL', 'PMP', 'BCT', 'HST', 'MCF', 'PBI', 'SUA', 'FPR', 'VRB', 'RSW', 'APF', 'PGD', 'FMY', 'EYW', 'NQX'],
+			approvedAirports: ["ORD","MDW","SBN","MKE","GRR","AZO","BTL","EKM","ENW","RAC","PWK","ARR","DPA","CID","UGN","MSN","JVL","GYY","MLI","OSH","UES","VOK","MKG","ALO","DBQ","DEC","FWA","GUS","CMI","LAF","MWC","RFD","LOT"],
 			token: '',
 			discordConnected: false,
 			controllingSessions: null,
