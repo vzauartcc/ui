@@ -13,7 +13,7 @@
 				<Spinner />
 			</div>
 			<div class="tabs_content" v-else>
-				<DownloadCategory v-for="(files, cat) in downloads" :key="cat" :cat="cat" :files="files" />
+				<DownloadCategory v-for="(files, cat) in downloads" :key="cat" :cat="cat" :files="files" :spaceName="spaceName" />
 			</div>
 		</div>
 	</div>
@@ -28,7 +28,8 @@ export default {
 	title: 'Downloads',
 	data() {
 		return {
-			downloads: null
+			downloads: null,
+			spaceName: process.env.SPACE
 		};
 	},
 	components: {

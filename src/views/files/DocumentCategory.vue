@@ -13,12 +13,7 @@
 
 <script>
 export default {
-  props: ['cat', 'docs'],
-  data() {
-    return {
-      spaceName: process.env.SPACE
-    };
-  }
+  props: ['cat', 'docs', 'spaceName'],
 };
 </script>
 

@@ -16,7 +16,7 @@
 				<Spinner />
 			</div>
 			<div class="tabs_content" v-else>
-				<DocumentCategory v-for="(docs, cat) in documents" :key="cat" :cat="cat" :docs="docs" />
+				<DocumentCategory v-for="(docs, cat) in documents" :key="cat" :cat="cat" :docs="docs" :spaceName="spaceName" />
 			</div>
 		</div>
 	</div>
@@ -31,7 +31,8 @@ export default {
 	title: 'Documents',
 	data() {
 		return {
-			documents: null
+			documents: null,
+			spaceName: process.env.SPACE
 		};
 	},
 	components: {
