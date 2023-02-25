@@ -14,7 +14,7 @@
 <Spinner />
 </div>
 <div class="tabs_content" v-else>
-<DownloadCategory v-for="(files, cat) in downloads" :key="cat" :cat="cat" :files="files" :spaceName="spaceName" />
+<DownloadCategory v-for="(files, cat) in downloads" :key="cat" :cat="cat" :files="files" :spaceName="this.spaceName" />
 </div>
 </div>
 </div>

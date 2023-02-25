@@ -16,7 +16,7 @@
 				<Spinner />
 			</div>
 			<div class="tabs_content" v-else>
-				<DocumentCategory v-for="(docs, cat) in documents" :key="cat" :cat="cat" :docs="docs" :spaceName="spaceName" />
+				<DocumentCategory v-for="(docs, cat) in documents" :key="cat" :cat="cat" :docs="docs" :spaceName="this.spaceName" />
 			</div>
 		</div>
 	</div>
@@ -41,6 +41,7 @@ export default {
 	async mounted() {
 		await this.getDocuments();
 		M.Tabs.init(document.querySelectorAll('.tabs'), {});
+		console.log(this.spaceName);
 	},
 	methods: {
 		async getDocuments() {
