@@ -30,7 +30,7 @@ title: 'Downloads',
 data() {
 return {
 downloads: null,
-spaceName: import.meta.env.VITE_SPACE
+spaceName: process.env.VITE_SPACE
 };
 },
 components: {

@@ -11,7 +11,7 @@
 					<div class="row">
 						<div class="col s5 m4 l3">
 							<div class="controller_image">
-								<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/${spaceName}/avatars/${controller.avatar || `${controller.cid}-default.png`}`" alt="" height="170" width="170">
+								<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/${this.spaceName}/avatars/${controller.avatar || `${controller.cid}-default.png`}`" alt="" height="170" width="170">
 							</div>
 						</div>
 						<div class="col s7 m8 l9">
@@ -108,7 +108,7 @@ export default {
 			controller: null,
 			stats: null,
 			loading: true,
-			spaceName: import.meta.env.VITE_SPACE
+			spaceName: process.env.VITE_SPACE
 		};
 	},
 	async mounted() {
