@@ -54,11 +54,13 @@
 		</table>
 	</div>
 	<Past />
+	<StaffingRequest />
 </template>
 
 <script>
 import { zabApi } from '@/helpers/axios.js';
 import Past from './Past.vue';
+import StaffingRequest from './StaffingRequest.vue';
 
 export default {
 	name: 'Events',
@@ -66,11 +68,13 @@ export default {
 	data() {
 		return {
 			events: null,
-			historicEvents: null
+			historicEvents: null,
+			staffingRequests: null
 		};
 	},
 	components: {
-		Past
+		Past,
+		StaffingRequest
 	},
 	async mounted() {
 		await this.getUpcomingEvents();

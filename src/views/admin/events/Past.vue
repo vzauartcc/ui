@@ -75,6 +75,13 @@ export default {
 	async mounted() {
 		await this.getHistoricEvents();
 		this.amountOfPages = Math.ceil(this.eventAmount / this.limit);
+
+		M.Modal.init(document.querySelectorAll('.modal'), {
+			preventScrolling: false
+		});
+		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+			margin: 0
+		});
 	},
 	methods: {
 		async getHistoricEvents() {
