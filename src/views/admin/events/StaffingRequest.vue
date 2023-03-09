@@ -35,9 +35,9 @@
 							{{request.pilots}}
 						</td>
 						<td class="options">
-							<!--<router-link data-position="top" data-tooltip="Edit Event" class="tooltipped" :to="`/admin/events/edit/${event.url}`">
+							<router-link data-position="top" data-tooltip="Edit Request" class="tooltipped" :to="`/admin/events/editRequest/${request._id}`">
 								<i class="material-icons">edit</i>
-							</router-link>-->
+							</router-link>
 							<a :href="`#modal_request_${request._id}`" data-position="top" data-tooltip="Delete Staffing Request" class="tooltipped modal-trigger">
 								<i class="material-icons red-text text-darken-2">delete</i>
 							</a>

@@ -183,6 +183,10 @@ const routes = [
 				component: () => import('../views/admin/events/Assign.vue')
 			},
 			{
+				path: 'events/editRequest/:slug',
+				component: () => import('../views/admin/events/EditStaffingRequest.vue')
+			},
+			{
 				path: 'news',
 				component: () => import('../views/admin/news/Index.vue')
 			},
