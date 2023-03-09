@@ -6,7 +6,7 @@
 				<Spinner />
 			</div>
 			<div class="row row_no_margin" v-else>
-				<form enctype="multipart/form-data" @submit.prevent="submitForm">
+				<form enctype="form-data" @submit.prevent="submitForm">
 					<div class="input-field col s12 m6">
 						<input id="name" type="text" v-model="request.vaName" required>
 						<label for="name" class="active">VA Name</label>
@@ -103,29 +103,31 @@ export default {
     	},
 		async submitForm() {
 			try {
-				const formData = new FormData();
-				formData.append('name', this.form.name);
-				formData.append('startTime', `${this.$refs.start_date.value}`);
-				formData.append('endTime', `${this.$refs.end_date.value}`);
-				formData.append('description', this.form.description);
-				formData.append('positions', JSON.stringify(this.form.positions));
-				formData.append('banner', this.$refs.banner.files[0]);
+				const requestBody = {
+					name: this.request.name,
+					date: this.$refs.date.value,
+					description: this.request.description,
+					pilots: this.request.pilots,
+					email: this.request.email,
+					route: this.request.route,
+					accepted: this.request.accepted,
+					vaName: this.request.vaName,
+				};
 
-				const {data} = await zabApi.put(`/event/${this.$route.params.slug}`, formData, {
-					headers: { 
-						'Content-Type': 'multipart/form-data'
-					}
-				});
+				const { data } = await zabApi.put(`/event/staffingRequest/${this.$route.params.slug}`, requestBody);
 
-				if(data.ret_det.code === 200) {
+				if (data.ret_det.code === 200) {
 					this.toastSuccess('Staffing request updated');
+					setTimeout(() => {
+      					window.location.href = '/admin/events'; // change "/success" to the desired URL
+    				}, 1000); // set the delay time in milliseconds
 				} else {
 					this.toastError(data.ret_det.message);
 				}
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
-		}		
+		}
 	},
 };
 </script>

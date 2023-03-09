@@ -86,6 +86,10 @@ const routes = [
 				path: '/briefing',
 				component: () => import('../views/page/PilotBrief.vue')
 			},
+			{
+				path: '/staffingrequest',
+				component: () => import('../views/page/StaffingRequest.vue')
+			},
 		]
 	},
 	{

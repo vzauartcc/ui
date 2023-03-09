@@ -74,10 +74,12 @@
 			</table>
 		</div>
 	</div>
+	<StaffingRequest />
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
 import { zabApi } from '@/helpers/axios.js';
+import StaffingRequest from './StaffingRequest.vue';
 export default {
 	name: 'UserDash',
 	title: 'Dashboard',
@@ -88,6 +90,9 @@ export default {
 			discordConnected: false,
 			controllingSessions: null,
 		};
+	},
+	components: {
+		StaffingRequest
 	},
 	async mounted() {
 		this.token = this.user.data.idsToken || 'None Set';
