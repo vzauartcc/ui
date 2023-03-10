@@ -48,7 +48,7 @@
 					</div>
 					<div class="input-field col s12">
 						<input id="description" class="materialize-textarea" v-model="request.description" required>
-						<label for="description" class="active">Description</label>
+						<label for="description" class="active">Additional Information</label>
 					</div>
 					<div class="input-field col s12">
 						<input type="submit" class="btn waves-effect waves-light right" value="Send" />

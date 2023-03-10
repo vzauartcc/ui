@@ -12,7 +12,7 @@
 				<thead class="request_list_head">
 					<tr>
 						<th>VA Name</th>
-						<th>Requestor</th>
+						<th>Requester</th>
 						<th>Date</th>
 						<th># of Pilots</th>
 						<th class="options">Options</th>
@@ -21,7 +21,7 @@
 				<tbody class="request_list_row" v-if="requests">
 					<tr v-for="request in requests" :key="request._id">
 						<td class="name">
-							<router-link :to="`/events/${request._id}`">
+							<router-link :to="`/dash/staffingrequest/${request._id}`">
 								{{request.vaName}}
 							</router-link><br />
 						</td>
@@ -35,6 +35,8 @@
 							{{request.pilots}}
 						</td>
 						<td class="options">
+							<i class="material-icons green-text" v-if="request.accepted">check</i>
+							<i class="material-icons red-text text-darken-1" v-else>close</i>
 							<router-link data-position="top" data-tooltip="Edit Request" class="tooltipped" :to="`/admin/events/editRequest/${request._id}`">
 								<i class="material-icons">edit</i>
 							</router-link>
@@ -46,7 +48,7 @@
 					<div v-for="request in requests" :key="request._id">
     					<div :id="`modal_request_${request._id}`" class="modal modal_delete">
         					<div class="modal-content">
-            					<h4>Delete Event?</h4>
+            					<h4>Delete Staffing Request?</h4>
             					<p>This will delete the staffing request and there is no way to get it back. If you are unsure, click cancel.</p>
         					</div>
         					<div class="modal-footer">

@@ -14,13 +14,12 @@
 						<th>VA Name</th>
 						<th>Date (ZAU Local Time)</th>
 						<th># of Pilots</th>
-						<th>Route</th>
 					</tr>
 				</thead>
 				<tbody class="request_list_row" v-if="requests">
 					<tr v-for="request in requests" :key="request._id">
 						<td class="name">
-							<router-link :to="`/events/${request._id}`">
+							<router-link :to="`/dash/staffingrequest/${request._id}`">
 								{{request.vaName}}
 							</router-link><br />
 						</td>
@@ -29,9 +28,6 @@
 						</td>
 						<td class="#_of_pilots">
 							{{request.pilots}}
-						</td>
-						<td class="route">
-							{{request.route}}
 						</td>
 					</tr>
 				</tbody>

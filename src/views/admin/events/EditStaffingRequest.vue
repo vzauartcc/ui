@@ -13,7 +13,7 @@
 					</div>
 					<div class="input-field col s12 m6">
 						<input id="name" type="text" v-model="request.name" required disabled>
-						<label for="name" class="active">Requestor Name</label>
+						<label for="name" class="active">Requester Name</label>
 					</div>
 					<div class="input-field col s12 m6">
 						<input id="email" class="materialize-textarea" v-model="request.email" required disabled>
