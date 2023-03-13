@@ -46,7 +46,7 @@
   						</label>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="Update" />
+						<input type="submit" class="btn waves-effect waves-light right" value="Update" :disabled="isButtonDisabled" @click.prevent="submitForm" />
 					</div>
 				</form>
 			</div>
@@ -63,8 +63,11 @@ import { DateTime } from 'luxon';
 export default {
 	data() {
 		return {
-			request: null,
+			request: {
+				accepted: false,
+			},
 			chicagoTimezone: 'America/Chicago',
+			isButtonDisabled: false,
 		};
 	},
 	async mounted() {
@@ -75,60 +78,73 @@ export default {
 
 	},
 	methods: {
-		async getStaffingRequest() {
-			const { data } = await zabApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
-			this.request = data.staffingRequest;
-			console.log(this.request);
+  		async getStaffingRequest() {
+    		try {
+      			const { data } = await zabApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
+      			this.request = data.staffingRequest;
+      
+      			if (this.request.accepted) {
+        			this.isButtonDisabled = true;
+      			} else {
+        			this.isButtonDisabled = false;
+      			}
 
-			this.$nextTick(() => {
-				// Okay, so working with timezones with JS is hard. This is really gross and I hate it, but it works so 🤷‍♀️
-				const startTime =  DateTime.fromISO(this.request.date);
-				
-				flatpickr(this.$refs.date, {
-					enableTime: true,
-					time_24hr: true,
-					defaultDate: startTime.plus({minutes: -startTime.offset}).toISO(),
-					disableMobile: true,
-					minuteIncrement: 15,
-					dateFormat: 'Y-m-dTH:i:00.000\\Z',
-					altFormat: 'm/d/Y H:i',
-					altInput: true,
-				});
-			});
-		},
-		updateDateLocal(event) {
-      		const selectedDate = new Date(event.target.value);
-      		const chicagoDate = selectedDate.toLocaleString('en-US', { timeZone: this.chicagoTimezone });
-      		this.request.date = chicagoDate;
-    	},
-		async submitForm() {
-			try {
-				const requestBody = {
-					name: this.request.name,
-					date: this.$refs.date.value,
-					description: this.request.description,
-					pilots: this.request.pilots,
-					email: this.request.email,
-					route: this.request.route,
-					accepted: this.request.accepted,
-					vaName: this.request.vaName,
-				};
+      			this.$nextTick(() => {
+        			// Okay, so working with timezones with JS is hard. This is really gross and I hate it, but it works so 🤷‍♀️
+        			const startTime = DateTime.fromISO(this.request.date);
+          
+        			flatpickr(this.$refs.date, {
+          				enableTime: true,
+          				time_24hr: true,
+          				defaultDate: startTime.plus({minutes: -startTime.offset}).toISO(),
+          				disableMobile: true,
+          				minuteIncrement: 15,
+          				dateFormat: 'Y-m-dTH:i:00.000\\Z',
+          				altFormat: 'm/d/Y H:i',
+          				altInput: true,
+        			});
+      			});
+    		} catch (error) {
+      			console.log(e);
+    		}
+  		},
+  		updateDateLocal(event) {
+    		const selectedDate = new Date(event.target.value);
+    		const chicagoDate = selectedDate.toLocaleString('en-US', { timeZone: this.chicagoTimezone });
+    		this.request.date = chicagoDate;
+  		},
+  		async submitForm() {
+    		try {
+      			const requestBody = {
+        			name: this.request.name,
+        			date: this.$refs.date.value,
+        			description: this.request.description,
+        			pilots: this.request.pilots,
+        			email: this.request.email,
+        			route: this.request.route,
+        			accepted: this.request.accepted,
+        			vaName: this.request.vaName,
+      			};
 
-				const { data } = await zabApi.put(`/event/staffingRequest/${this.$route.params.slug}`, requestBody);
+      			const { data } = await zabApi.put(`/event/staffingRequest/${this.$route.params.slug}`, requestBody);
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Staffing request updated');
-					setTimeout(() => {
-      					window.location.href = '/admin/events'; // change "/success" to the desired URL
-    				}, 1000); // set the delay time in milliseconds
-				} else {
-					this.toastError(data.ret_det.message);
-				}
-			} catch (e) {
-				console.log(e);
-			}
-		}
-	},
+      			if (data.ret_det.code === 200) {
+        		this.toastSuccess('Staffing request updated');
+        		setTimeout(() => {
+          			window.location.href = '/admin/events'; // change "/success" to the desired URL
+        		}, 1000); // set the delay time in milliseconds
+      			} else {
+        			this.toastError(data.ret_det.message);
+      			}
+
+      			if (this.request.accepted) {
+        		this.isButtonDisabled = true;
+      			}
+    		} catch (e) {
+      			console.log(e);
+    		}
+  		}
+	},	
 };
 </script>
 

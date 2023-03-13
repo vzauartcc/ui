@@ -52,7 +52,7 @@
             					<p>This will delete the staffing request and there is no way to get it back. If you are unsure, click cancel.</p>
         					</div>
         					<div class="modal-footer">
-           						<a href="#!" class="waves-effect btn" @click="deleteStaffingRequest(i)">Delete</a>
+           						<a href="#!" class="waves-effect btn" @click="deleteStaffingRequest(request._id)">Delete</a>
             					<a href="#!" class="modal-close waves-effect btn-flat">Cancel</a>
         					</div>
     					</div>
@@ -108,17 +108,21 @@ export default {
 			this.requestAmount = data.data.amount;
 		},
 		async deleteStaffingRequest(_id) {
-			try {
-				const {data} = await zabApi.delete(`/event/staffingRequest/${_id}`);
-				if(data.ret_det.code === 200) {
-					this.toastSuccess('Staffing Request deleted');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
-			} catch(e) {
-				console.log(e);
-			}
-		},
+  try {
+    console.log(_id);
+    const { data } = await zabApi.delete(`/event/staffingRequest/${_id}`);
+    if (data.ret_det.code === 200) {
+      this.toastSuccess('Staffing Request deleted');
+      const modalInstance = M.Modal.getInstance(document.querySelector('.modal'));
+      modalInstance.close();
+      await this.getStaffingRequests();
+    } else {
+      this.toastError(data.ret_det.message);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+},
 		dtLong(dateString) {
 			const date = new Date(dateString);
   			const options = { 
