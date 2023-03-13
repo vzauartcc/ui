@@ -75,6 +75,13 @@ export default {
 	async mounted() {
 		await this.getHistoricEvents();
 		this.amountOfPages = Math.ceil(this.eventAmount / this.limit);
+
+		M.Modal.init(document.querySelectorAll('.modal'), {
+			preventScrolling: false
+		});
+		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+			margin: 0
+		});
 	},
 	methods: {
 		async getHistoricEvents() {
@@ -92,6 +99,9 @@ export default {
 				const {data} = await zabApi.delete(`/event/${slug}`);
 				if(data.ret_det.code === 200) {
 					this.toastSuccess('Event deleted');
+					const modalInstance = M.Modal.getInstance(document.querySelector('.modal'));
+      				modalInstance.close();
+					await this.getHistoricEvents();
 				} else {
 					this.toastError(data.ret_det.message);
 				}

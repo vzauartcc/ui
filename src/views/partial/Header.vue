@@ -36,18 +36,17 @@
             <router-link to="/news">NEWS</router-link>
           </li>
           <li class="has_dropdown" data-state="hide">
-  <a class="dropdown-left" href="#!" data-target="links-dropdown">LINKS</a>
-  <ul id="links-dropdown" class="dropdown-content">
-    <li><a href="https://map.vatsim.net/">VATSIM Map</a></li>
-    <li><a href="https://skyvector.com/">SkyVector</a></li>
-    <li><a href="https://flightaware.com/statistics/ifr-route/">FlightAware</a></li>
-    <li><a href="https://datis.clowd.io/">DATIS</a></li>
-    <li><a href="https://www.vatsim.net/">VATSIM Home</a></li>
-    <li><a href="https://www.vatusa.net/">VATUSA Home</a></li>
-    <li><a href="https://www.airnav.com/">AirNav</a></li>
-  </ul>
-</li>
-
+            <a class="dropdown-left" href="#!" data-target="links-dropdown">LINKS</a>
+            <ul id="links-dropdown" class="dropdown-content">
+              <li><a href="https://map.vatsim.net/">VATSIM Map</a></li>
+              <li><a href="https://skyvector.com/">SkyVector</a></li>
+              <li><a href="https://flightaware.com/statistics/ifr-route/">FlightAware</a></li>
+              <li><a href="https://datis.clowd.io/">DATIS</a></li>
+              <li><a href="https://www.vatsim.net/">VATSIM Home</a></li>
+              <li><a href="https://www.vatusa.net/">VATUSA Home</a></li>
+              <li><a href="https://www.airnav.com/">AirNav</a></li>
+            </ul>
+          </li>
           <li class="has_dropdown" data-state="hide">
             <a class="dropdown-left" href="#!" data-target="files-dropdown">FILES</a>
             <ul id="files-dropdown" class="dropdown-content">
@@ -61,6 +60,9 @@
           </li>
           <li>
             <router-link to="/feedback">FEEDBACK</router-link>
+          </li>
+          <li>
+            <router-link to="/staffingRequest">REQUEST STAFFING</router-link>
           </li>
         </ul>
         <router-link to="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></router-link>
@@ -132,6 +134,9 @@
       </li> -->
       <li>
         <router-link class="sidenav-close" to="/feedback">FEEDBACK</router-link>
+      </li>
+      <li>
+        <router-link class="sidenav-close" to="/staffingRequest">REQUEST STAFFING</router-link>
       </li>
     </ul>
   </header>

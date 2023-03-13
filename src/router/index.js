@@ -86,6 +86,10 @@ const routes = [
 				path: '/briefing',
 				component: () => import('../views/page/PilotBrief.vue')
 			},
+			{
+				path: '/staffingrequest',
+				component: () => import('../views/page/StaffingRequest.vue')
+			},
 		]
 	},
 	{
@@ -183,6 +187,10 @@ const routes = [
 				component: () => import('../views/admin/events/Assign.vue')
 			},
 			{
+				path: 'events/editRequest/:slug',
+				component: () => import('../views/admin/events/EditStaffingRequest.vue')
+			},
+			{
 				path: 'news',
 				component: () => import('../views/admin/news/Index.vue')
 			},
@@ -265,7 +273,11 @@ const routes = [
 			{
 				path: 'training/session/:id',
 				component: () => import('../views/dashboard/training/ViewSession.vue')
-			}
+			},
+			{
+				path: 'staffingrequest/:slug',
+				component: () => import('../views/dashboard/ViewStaffingRequest.vue')
+			},
 		]
 	},
 //	{
