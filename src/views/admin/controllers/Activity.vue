@@ -2,9 +2,15 @@
 	<div class="card">
 		<div class="card-content">
 			<span class="card-title">Controller Activity Report</span>
-			<p>Showing controller activity in <strong>{{chkDate2.toLocaleString('en-US', { month: 'long' })}}, {{chkDate2.getFullYear()}}</strong></p>
-			<button v-on:click="previousMonth()">Previous Month</button>
-			<button v-on:click="nextMonth()">Next Month</button>
+			<div class="card-title2" style="display: flex; align-items: center; justify-content: space-between;">
+  				<div>
+    				<p>Showing controller activity in <strong>{{chkDate2.toLocaleString('en-US', { month: 'long' })}}, {{chkDate2.getFullYear()}}</strong></p>
+  				</div>
+  				<div>
+    				<a class="waves-effect waves-light btn" v-on:click="previousMonth()">Previous</a>
+    				<a class="waves-effect waves-light btn" v-on:click="nextMonth()">Next</a>
+  				</div>
+			</div>
 		</div>
 		<div class="table_wrapper">
 			<table class="medium striped" v-if="report">
