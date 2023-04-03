@@ -80,7 +80,6 @@ export default {
   			this.requests = data.data.requests.filter(
     			(request) => request.accepted && new Date(request.date) > now
   			);
-  			console.log(this.requests);
   			this.requestAmount = this.requests.length;
 		},
 		async deleteStaffingRequest(_id) {
