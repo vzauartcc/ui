@@ -10,7 +10,10 @@
 					<span>
 						You have controlled for <b>{{hoursCalc}}</b> in the past 30 days.
 					</span>
-					<span v-if="user.data.rating !== 1">
+					<span v-if="user.data.rating !== 1 && isActive">
+						You are <b>Exempt</b> from hourly activity requirements at this time.
+					</span>
+					<span v-if="user.data.rating !== 1 && isActive !== true">
 						You will need to control one hour by <b>{{calcControlDate}}</b> to prevent removal from the roster.
 					</span>
 				</div>
@@ -167,27 +170,47 @@ export default {
 			return this.sec2hms(seconds);
 		},
 		calcControlDate() {
-			let date = new Date(this.user.data.joinDate ?? Date.now());
+            let date = new Date(this.user.data.joinDate ?? Date.now());
+            let seconds = 0;
 
-			if(this.controllingSessions.length > 0 ) {
-				let seconds = 0;
-				for (const session of this.controllingSessions) {
-					if(seconds < 10800 && this.approvedAirports.includes(session.position.slice(0, 3))) {
-						const newSeconds = (new Date(session.timeEnd) - new Date(session.timeStart)) / 1000;
-						seconds += newSeconds;
-						date = new Date(session.timeEnd);
-					}
+            if (this.controllingSessions.length > 0) {
+                for (const session of this.controllingSessions) {
+                if (seconds < 3600 && this.approvedAirports.includes(session.position.slice(0, 3))) {
+                    const newSeconds = (new Date(session.timeEnd) - new Date(session.timeStart)) / 1000;
+                    seconds += newSeconds;
+                    date = new Date(session.timeEnd);
+                }
+                if (seconds >= 3600) {
+                    break;
+                }
+                }
+            }
 
-					if(seconds >= 10800) {
-						break;
-					}
-				}
-			}
+            const endOfThisMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+            const endOfNextMonth = new Date(date.getFullYear(), date.getMonth() + 2, 0, 23, 59, 59, 999);
 
-			date.setUTCDate(date.getUTCDate() + 31);
-			return this.formatDate(date);
-		}
-	}
+            if (seconds >= 3600) {
+                return this.formatDate(endOfNextMonth);
+            } else {
+                return this.formatDate(endOfThisMonth);
+            }
+        },
+  		isActive() {
+    		const today = new Date();
+    		let isActive = false;
+
+    		for (const absence of this.user.data.absence) {
+      			const expirationDate = new Date(absence.expirationDate);
+      			const isDeleted = absence.deleted !== false;
+      
+      		if (!isDeleted && expirationDate >= today) {
+        		isActive = true;
+        		break;
+      		}
+    	}
+		return isActive;
+  		}
+    }
 };
 </script>
 

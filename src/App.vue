@@ -3,7 +3,7 @@
   <div v-else id="loading">
     <div id="loading_box" class="z-depth-3">
       <img
-        src="https://cdn.discordapp.com/icons/485491681903247361/0e86eeb88b3e7018f47f4555d95dc9c7.webp?size=128"
+        src="../src/assets/images/Discord_Logo_Two.png"
         alt=""
       />
       <h3>Please Wait...</h3>
