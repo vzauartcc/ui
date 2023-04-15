@@ -113,7 +113,7 @@ export default {
 			}
 		},
 		async getDiscordStatus() {
-			const { data: discordData } = await zabApi.get('/discord/discord');
+			const { data: discordData } = await zabApi.get('/discord/user');
 			this.discordConnected = discordData.data;
 
 		},
@@ -133,7 +133,7 @@ export default {
 			this.$router.push('/login/discord');
 		},
 		async unlinkDiscord() {
-			const { data: unlinkData } = await zabApi.delete('/discord/discord');
+			const { data: unlinkData } = await zabApi.delete('/discord/user');
 			if(unlinkData.ret_det.code === 200) {
 				this.toastSuccess('Discord unlinked.');
 				await this.getDiscordStatus();
