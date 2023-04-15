@@ -4,7 +4,7 @@ export const vatsimAuthRedirectUrl = `${getAuthEndpoint()}/oauth/authorize?clien
 
 export const discordRedirectUrl = `https://discord.com/api/oauth2/authorize?client_id=1060336105267929088&redirect_uri=https%3A%2F%2Fzauartcc.org%2Fconnect%2Fdiscord&response_type=code&scope=identify%20guilds%20guilds.join`;
 
-  function getClientId() {
+function getClientId() {
     const betaClientId = 1182;
     const prodClientId = 1144;
     const devClientId = 466;
