@@ -17,13 +17,13 @@
 						You will need to control one hour by <b>{{calcControlDate}}</b> to prevent removal from the roster.
 					</span>
 				</div>
-<!--			<span class="section_title">
+			<span class="section_title">
 					External Integrations
 				</span>
 				<div class="discord_connect">
 
      <template v-if="discordConnected === false">
-        <a href="https://www.zauartcc.org/login/discord" target="_blank" rel="noreferrer noopener">
+        <a href="https://zauartcc.org/login/discord" target="_blank" rel="noreferrer noopener">
         <button class="btn waves-effect waves-light" type="submit" name="action">
                 Link Discord
                 <i class="material-icons right">discord</i>
@@ -45,7 +45,7 @@
               </button>
             </a>
           </template>
-				</div>-->
+				</div>
 			</div>
 		</div>
 	</div>
@@ -113,7 +113,7 @@ export default {
 			}
 		},
 		async getDiscordStatus() {
-			const { data: discordData } = await zabApi.get('/user/discord');
+			const { data: discordData } = await zabApi.get('/discord/user');
 			this.discordConnected = discordData.data;
 
 		},
@@ -133,7 +133,7 @@ export default {
 			this.$router.push('/login/discord');
 		},
 		async unlinkDiscord() {
-			const { data: unlinkData } = await zabApi.delete('/user/discord');
+			const { data: unlinkData } = await zabApi.delete('/discord/user');
 			if(unlinkData.ret_det.code === 200) {
 				this.toastSuccess('Discord unlinked.');
 				await this.getDiscordStatus();
@@ -202,7 +202,7 @@ export default {
     		for (const absence of this.user.data.absence) {
       			const expirationDate = new Date(absence.expirationDate);
       			const isDeleted = absence.deleted !== false;
-      
+
       		if (!isDeleted && expirationDate >= today) {
         		isActive = true;
         		break;
