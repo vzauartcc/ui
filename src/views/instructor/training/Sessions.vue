@@ -33,6 +33,7 @@
 							<router-link :to="`/ins/training/session/edit/${session._id}`" data-position="top" data-tooltip="Enter Notes" class="tooltipped">
 								<i class="material-icons">edit</i>
 							</router-link>
+							<a :href="`#modal_delete_${session._id}`" data-position="top" data-tooltip="Cancel Session" class="tooltipped modal-trigger"><i class="material-icons red-text text-darken-2">delete</i></a>
 						</td>
 						<div :id="`modal_session_${i}`" class="modal modal_session">
 							<div class="modal-content">
@@ -61,6 +62,16 @@
 							<div class="modal-footer">
 								<a href="#!" class="waves-effect btn-flat modal-close">Close</a>
 							</div>
+						</div>
+						<div :id="`modal_delete_${session._id}`" class="modal modal_session">
+								<div class="modal-content">
+									<h4>Cancel Session?</h4>
+									<p>This will cancel your presently assigned training session.</p>
+								</div>
+								<div class="modal-footer">
+									<a href="#!" @click="removeSession(session._id)" class="btn waves-effect">Remove</a>
+									<a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
+								</div>
 						</div>
 					</tr>
 				</tbody>
@@ -108,6 +119,31 @@ export default {
 			const d = new Date(value);
 			return d.toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'UTC', hour12: false});
 		},
+		async removeSession(_id) {
+            try {
+                //console.log(this.sessions);
+                this.toastInfo('Cancelling session...');
+                let sessionToRemove = this.sessions.find(session => session._id === _id);
+                //console.log(sessionToRemove)
+                if (!sessionToRemove) {
+                    console.error('Session not found');
+                    this.toastError('Session not found');
+                    return;
+                }
+                // Make a delete request to the API
+                const { data } = await zabApi.delete(`/training/session/delete/${sessionToRemove._id}`, {
+                    data: {
+                        reason: this.reason
+                    }
+                });
+                //console.log('Session removed successfully');
+                this.toastSuccess('Session cancelled successfully');
+                this.getSessions();
+            } catch (error) {
+                console.error(error);
+                this.toastError('Error removing session');
+            }
+        },
 	}
 };
 </script>
