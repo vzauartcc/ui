@@ -41,7 +41,7 @@
 								Are you sure you wish to cancel?</p>
                             </div>
                             <div class="modal-footer">
-                                <a href="#!" @click="deleteSession(session._id)" class="btn waves-effect">Delete</a>
+                                <a href="#!" @click="deleteSession(session._id)" class="btn waves-effect modal-close">Delete</a>
                                 <a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
                             </div>
                         </div>
@@ -85,19 +85,19 @@ export default {
 			this.upcomingSessions = data.data;
 		},
 
-		async deleteSession(id)
-		{
-			console.log(id);
-			const {data} = await zabApi.delete(`/training/request/${id}`);
+		async deleteSession(id) {
+			try {
+				const { data } = await zabApi.delete(`/training/request/${id}`);
 
-			this.$nextTick(() => {
-                        M.Modal.getInstance(document.querySelector('.modal_delete')).close();
-
-			this.upcomingSessions = [];
-			this.getUpcomingSessions();
-
-			document.location.reload();
-			});
+				if(data.ret_det.code === 200) {
+					this.toastSuccess('Training request deleted');
+					await this.getUpcomingSessions();
+				} else {
+					this.toastError(data.ret_det.message);
+				}
+			} catch(e) {
+				console.log(e);
+			}
 		}
 	}
 
