@@ -128,11 +128,10 @@ export default {
     },
     async submitForm(url) {
       try {
-        const eventData = await axios.get(`https://api.zauartcc.org/event/northern-crossings-32619`);
+        const eventData = await zabApi.get(`/event/${url}`);
         console.log(eventData.data.data.name);
 
         const positions = eventData.data.data.positions;
-        console.log(positions);
         const positionFields = await Promise.all(positions.map(async position => {
           if (typeof position.takenBy === 'undefined' || position.takenBy === null) {
             return {
@@ -142,7 +141,7 @@ export default {
             };
           } else {
             try {
-              const res = await axios.get('https://api.zauartcc.org/controller/' + position.takenBy);
+              const res = await zabApi.get('/controller/' + position.takenBy);
               const name = res.data.data.fname + ' ' + res.data.data.lname;
               return {
                 name: position.pos,
@@ -170,16 +169,49 @@ export default {
             }
           ]
         };
+        if(eventData.data.data.discordId === undefined) {
+          fetch(process.env.DISCORD_WEBHOOK + '?wait=true', {
+            method: "POST",
+            headers: {
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify(params)
+          })
+              .then(res => res.json())
+              .then(data => {
 
-        fetch(process.env.DISCORD_WEBHOOK, {
-          method: "POST",
-          headers: {
-            'Content-type': 'application/json'
-          },
-          body: JSON.stringify(params)
-        }).then(res => {
-          console.log(res);
-        });
+
+                const updateData = {
+                  url: eventData.data.data.url,
+                  messageId: data.id
+                };
+
+                zabApi.post('/event/updateEvent', updateData)
+                    .then(response => {
+                    })
+                    .catch(error => {
+                      console.log(error);
+                    });
+
+              })
+              .catch(error => {
+                console.log(error);
+              });
+        }else{
+          fetch(process.env.DISCORD_WEBHOOK + `/messages/${eventData.data.data.discordId}`, {
+            method: "PATCH",
+            headers: {
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify(params)
+          })
+              .then(res => res.json())
+              .then(data => {
+                console.log(data); // Access the resolved value (id) here
+              })
+        }
+
+
 
         if (data.ret_det.code === 200) {
           this.toastSuccess('Modal sent');
