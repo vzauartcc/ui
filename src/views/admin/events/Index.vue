@@ -252,45 +252,6 @@ table tbody {
 	min-width: 400px;
 	width: 30%;
 }
-.select-wrapper {
-  position: relative;
-  display: inline-block;
-}
 
-.select-wrapper select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: transparent;
-  padding-right: 20px;
-  cursor: pointer;
-}
-
-.select-wrapper .caret {
-  position: absolute;
-  top: 50%;
-  right: 6px;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.select-wrapper:after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 6px 6px 0 6px;
-  border-color: #9e9e9e transparent transparent transparent;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.select-wrapper.open:after {
-  border-width: 0 6px 6px 6px;
-  border-color: transparent transparent #9e9e9e transparent;
-}
 
 </style>
