@@ -131,11 +131,13 @@ export default {
         const {data} = await zabApi.post('/event/sendEvent', { url })
         
 
-
-        if (data.ret_det.code === 200) {
-          this.toastSuccess('Discord Notification Sent');
-        } else {
-          this.toastError(data.ret_det.message);
+        if (data.status === 200) {
+          this.toastSuccess('Discord Embed Sent');
+        }else if (data.status === 201) {
+          this.toastSuccess('Discord Embed Updated');
+        }
+        else {
+          this.toastError(data.message);
         }
       } catch (e) {
         console.log(e);
