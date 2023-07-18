@@ -38,7 +38,7 @@
             <a :href="`#modal_delete_${i}`" data-position="top" data-tooltip="Delete Event" class="tooltipped modal-trigger">
               <i class="material-icons red-text text-darken-2">delete</i>
             </a>
-            <a :href="`#modal_send_${i}`" data-position="top" data-tooltip="Send Modal" class="tooltipped modal-trigger">
+            <a :href="`#modal_send_${i}`" data-position="top" data-tooltip="Send Discord Notification" class="tooltipped modal-trigger">
               <i class="material-icons green-text text-darken-2">arrow_upward</i>
             </a>
           </td>
@@ -128,12 +128,12 @@ export default {
     },
     async submitForm(url) {
       try {
-        await zabApi.post('/event/sendEvent', { url })
-
+        const {data} = await zabApi.post('/event/sendEvent', { url })
+        
 
 
         if (data.ret_det.code === 200) {
-          this.toastSuccess('Modal sent');
+          this.toastSuccess('Discord Notification Sent');
         } else {
           this.toastError(data.ret_det.message);
         }
