@@ -77,7 +77,6 @@
 import { zabApi } from '@/helpers/axios.js';
 import Past from './Past.vue';
 import StaffingRequest from './StaffingRequest.vue';
-import axios from "axios";
 
 export default {
   name: 'Events',
