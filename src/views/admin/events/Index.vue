@@ -129,11 +129,9 @@ export default {
     async submitForm(url) {
       try {
         const {data} = await zabApi.post('/event/sendEvent', { url })
-        
-
         if (data.status === 200) {
           this.toastSuccess('Discord Embed Sent');
-        }else if (data.status === 201) {
+        } else if (data.status === 201) {
           this.toastSuccess('Discord Embed Updated');
         }
         else {
@@ -141,6 +139,7 @@ export default {
         }
       } catch (e) {
         console.log(e);
+        this.toastError(e);
       }
     }
 
