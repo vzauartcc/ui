@@ -28,17 +28,33 @@
 					<td class="date">
 						{{dtLong(event.eventStart)}}
 					</td>
-					<td class="options">
-						<router-link data-position="top" data-tooltip="Edit Event" class="tooltipped" :to="`/admin/events/edit/${event.url}`">
-							<i class="material-icons">edit</i>
-						</router-link>
-						<router-link data-position="top" data-tooltip="Assign Positions" class="tooltipped" :to="`/admin/events/assign/${event.url}`">
-							<i class="material-icons">group</i>
-						</router-link>
-						<a :href="`#modal_delete_${i}`" data-position="top" data-tooltip="Delete Event" class="tooltipped modal-trigger">
-							<i class="material-icons red-text text-darken-2">delete</i>
-						</a>
-					</td>
+          <td class="options">
+            <router-link data-position="top" data-tooltip="Edit Event" class="tooltipped" :to="`/admin/events/edit/${event.url}`">
+              <i class="material-icons">edit</i>
+            </router-link>
+            <router-link data-position="top" data-tooltip="Assign Positions" class="tooltipped" :to="`/admin/events/assign/${event.url}`">
+              <i class="material-icons">group</i>
+            </router-link>
+            <a :href="`#modal_delete_${i}`" data-position="top" data-tooltip="Delete Event" class="tooltipped modal-trigger">
+              <i class="material-icons red-text text-darken-2">delete</i>
+            </a>
+            <a :href="`#modal_send_${i}`" data-position="top" data-tooltip="Send Discord Notification" class="tooltipped modal-trigger">
+              <i class="material-icons green-text text-darken-2">arrow_upward</i>
+            </a>
+          </td>
+          <div :id="`modal_send_${i}`" class="modal modal_send">
+            <div class="modal-content">
+              <h4>Send {{ event.name }} to the events channel.</h4>
+              <div class="row">
+                <div class="col s6">
+                  <a href="#!" class="modal-close waves-effect waves-light btn" @click="submitForm(event.url)">Submit</a>
+                </div>
+                <div class="col s6">
+                  <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancel</a>
+                </div>
+              </div>
+            </div>
+          </div>
 					<div :id="`modal_delete_${i}`" class="modal modal_delete">
 						<div class="modal-content">
 							<h4>Delete Event?</h4>
@@ -49,7 +65,7 @@
 							<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancel</a>
 						</div>
 					</div>
-				</tr>
+        </tr>
 			</tbody>
 		</table>
 	</div>
@@ -63,46 +79,70 @@ import Past from './Past.vue';
 import StaffingRequest from './StaffingRequest.vue';
 
 export default {
-	name: 'Events',
-	title: 'Events',
-	data() {
-		return {
-			events: null,
-			historicEvents: null,
-			staffingRequests: null
-		};
-	},
-	components: {
-		Past,
-		StaffingRequest
-	},
-	async mounted() {
-		await this.getUpcomingEvents();
-		M.Modal.init(document.querySelectorAll('.modal'), {
-			preventScrolling: false
-		});
-		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-			margin: 0
-		});
-	},
-	methods: {
-		async getUpcomingEvents() {
-			const {data} = await zabApi.get('/event');
-			this.events = data.data;
-		},
-		async deleteEvent(slug) {
-			try {
-				const {data} = await zabApi.delete(`/event/${slug}`);
-				if(data.ret_det.code === 200) {
-					this.toastSuccess('Event deleted');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
-			} catch(e) {
-				console.log(e);
-			}
-		}
-	}
+  name: 'Events',
+  title: 'Events',
+  data() {
+    return {
+      events: null,
+      historicEvents: null,
+      staffingRequests: null,
+
+
+
+    };
+  },
+  components: {
+    Past,
+    StaffingRequest
+  },
+  async mounted() {
+    await this.getUpcomingEvents();
+    M.Modal.init(document.querySelectorAll('.modal'), {
+      preventScrolling: false
+    });
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+      margin: 0
+    });
+  },
+  methods: {
+    async getUpcomingEvents() {
+      const {data} = await zabApi.get('/event');
+      this.events = data.data;
+    },
+    async deleteEvent(slug) {
+      try {
+        const {data} = await zabApi.delete(`/event/${slug}`);
+        if (data.ret_det.code === 200) {
+          this.toastSuccess('Event deleted');
+        } else {
+          this.toastError(data.ret_det.message);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async updateDropdown() {
+      const selectWrapper = document.querySelector('.select-wrapper');
+      selectWrapper.classList.toggle('open', !!this.selectedOption);
+    },
+    async submitForm(url) {
+      try {
+        const {data} = await zabApi.post('/event/sendEvent', { url })
+        if (data.status === 200) {
+          this.toastSuccess('Discord Embed Sent');
+        } else if (data.status === 201) {
+          this.toastSuccess('Discord Embed Updated');
+        }
+        else {
+          this.toastError(data.message);
+        }
+      } catch (e) {
+        console.log(e);
+        this.toastError(e);
+      }
+    }
+
+  },
 };
 </script>
 
@@ -131,4 +171,6 @@ table tbody {
 	min-width: 400px;
 	width: 30%;
 }
+
+
 </style>
