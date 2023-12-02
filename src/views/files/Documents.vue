@@ -10,6 +10,7 @@
 					<li class="tab col s6 l3"><a href="#loa">LOAs</a></li>
 					<li class="tab col s7 l3"><a href="#policy">Policies</a></li>
 					<li class="tab col s6 l3"><a href="#misc">References</a></li>
+					<li class="tab col s6 l3"><a href="#training">Training</a></li>
 				</ul>
 			</div>
 			<div class="loading_container loading_files" v-if="documents === null">
@@ -49,6 +50,7 @@ export default {
 				sop: fileData.data.filter(doc => doc.category === 'sop'),
 				policy: fileData.data.filter(doc => doc.category === 'policy'),
 				misc: fileData.data.filter(doc => doc.category === 'misc'),
+        training: fileData.data.filter(doc => doc.category === 'training'),
 			};
 		},
 	},
@@ -63,6 +65,9 @@ export default {
 
 .tabs {
 	overflow-x: auto;
+  background-size: auto;
+  display: flex;
+  width: 100%;
 
 	&::-webkit-scrollbar {
 		height: 3px;
