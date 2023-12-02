@@ -45,6 +45,7 @@
               <li><a href="https://www.vatsim.net/">VATSIM Home</a></li>
               <li><a href="https://www.vatusa.net/">VATUSA Home</a></li>
               <li><a href="https://www.airnav.com/">AirNav</a></li>
+              <li><a href="https://www.virtualnas.net/">vNAS</a></li>
             </ul>
           </li>
           <li class="has_dropdown" data-state="hide">

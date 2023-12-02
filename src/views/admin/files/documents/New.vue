@@ -15,6 +15,7 @@
 							<option value="loa">LOA</option>
 							<option value="policy">Policies</option>
 							<option value="misc">Miscellaneous</option>
+              <option value="training">Training</option>
 						</select>
 						<label>Category</label>
 					</div>
