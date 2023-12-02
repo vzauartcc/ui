@@ -38,6 +38,7 @@
           <li class="has_dropdown" data-state="hide">
             <a class="dropdown-left" href="#!" data-target="links-dropdown">LINKS</a>
             <ul id="links-dropdown" class="dropdown-content">
+              <li><a href="https://charts.zauartcc.org">ZAU Charts</a></li>
               <li><a href="https://map.vatsim.net/">VATSIM Map</a></li>
               <li><a href="https://skyvector.com/">SkyVector</a></li>
               <li><a href="https://flightaware.com/statistics/ifr-route/">FlightAware</a></li>
