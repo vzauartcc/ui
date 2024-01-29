@@ -10,7 +10,7 @@
 				<div class="secondary-content"><i class="material-icons">edit</i></div>
 			</router-link>
 			<router-link to="/dash/training" class="collection-item">
-				Training Sessions
+				Training Dashboard
 				<div class="secondary-content"><i class="material-icons">insert_invitation</i></div>
 			</router-link>
 			<router-link to="/dash/feedback" class="collection-item">
