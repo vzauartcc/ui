@@ -1,11 +1,25 @@
 <template>
 	<div class="card">
 		<div class="card-content">
-			<div class="row row_no_margin">
-				<div class="card-title col s8"><span class="card-title">Training Requests</span></div>
-				<div class="col s4"><router-link to="/dash/training/new"><span class="btn new_event_button right">Request</span></router-link></div>
-			</div>
+  			<div class="row row_no_margin">
+    			<div class="card-title col s12"><span class="card-title">Training Dashboard</span></div>
+    			<div class="card-title col s8"><span class="card-title">Timothy Barker - NN</span></div>
+    			<div class="col s4"><span class="card-title">C1 - Controller</span></div>
+    			<div class="col s2"><router-link to="/dash/training/new"><span class="btn new_event_button right">Request</span></router-link></div>
+  			</div>
 		</div>
+		<!-- This is a test here -->
+		<!--<div class="col s12 m8 l9">
+			<div class="controller_certs">
+				<span v-for="role in controller.roles" :class="`cert cert_${role.class}`" :key="role.id" :data-tooltip="role.name" data-position="top">
+					{{role.name}}
+				</span>
+				<div v-if="controller.certifications.length" class="title">Certifications</div>
+					<span v-for="cert in reduceControllerCerts(controller.certifications)" :class="`cert cert_${cert.class}`" :key="cert.id">
+						{{cert.name}}
+					</span>
+				</div>
+			</div>-->
 		<div class="loading_container" v-if="!upcomingSessions">
 			<Spinner />
 		</div>
