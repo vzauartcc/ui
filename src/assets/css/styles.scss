@@ -103,6 +103,7 @@ body {
 table {
 	thead {
 		border-bottom: 1px solid #666;
+		white-space: nowrap;
 		td, th {
 			padding: .75em 1em;
 		}
