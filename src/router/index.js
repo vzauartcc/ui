@@ -271,6 +271,10 @@ const routes = [
 				component: () => import('../views/dashboard/training/Request.vue')
 			},
 			{
+				path: 'training/progress',
+				component: () => import('../views/dashboard/training/Progress.vue')
+			},
+			{
 				path: 'training/session/:id',
 				component: () => import('../views/dashboard/training/ViewSession.vue')
 			},

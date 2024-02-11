@@ -5,7 +5,17 @@
     			<div class="card-title col s12"><span class="card-title">Training Dashboard</span></div>
     			<div class="card-title col s8"><span class="card-title">Timothy Barker - NN</span></div>
     			<div class="col s4"><span class="card-title">C1 - Controller</span></div>
-    			<div class="col s2"><router-link to="/dash/training/new"><span class="btn new_event_button right">Request</span></router-link></div>
+				<div class="col s2">
+    				<!-- Training in Progress Button -->
+    				<router-link v-if="hasModulesInProgress" to="/dash/training/progress">
+      				<span class="btn new_event_button right">Training in Progress</span>
+    				</router-link>
+
+    				<!-- Request Training Button -->
+    				<router-link v-else to="/dash/training/new">
+      					<span class="btn new_event_button right">Request</span>
+    				</router-link>
+  				</div>
   			</div>
 		</div>
 		<!-- This is a test here -->
@@ -76,7 +86,8 @@ export default {
 	title: 'Training',
 	data() {
 		return {
-			upcomingSessions: null
+			upcomingSessions: null,
+			modulesInProgress: [],
 		};
 	},
 	components: {
@@ -87,13 +98,30 @@ export default {
 
 		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
    			margin: 0
-			}) ;
+		}) ;
 		M.Modal.init(document.querySelectorAll('.modal'), {
-		preventScrolling: false
-			}) ;
-		},
+			preventScrolling: false
+		}) ;
+	},
+	created() {
+		// Ideally, fetch the user's training progress here to update modulesInProgress
+		this.fetchTrainingProgress();
+	},
 
 	methods: {
+		async fetchTrainingProgress() {
+			// Fetch the user's training progress from the backend and update modulesInProgress
+      		// This is a placeholder - replace with your actual API call
+			  const cid = this.$store.state.user.user.data.cid;
+      		try {
+        		const { data } = await zabApi.get(`/training/modules/${cid}`);
+        		this.modulesInProgress = data.populatedProgress.modulesInProgress;
+				console.log(this.modulesInProgress)
+      		} catch (error) {
+        		console.error("Error fetching training progress:", error);
+      		}
+		},
+
 		async getUpcomingSessions() {
 			const {data} = await zabApi.get(`/training/request/upcoming`);
 			this.upcomingSessions = data.data;
@@ -113,7 +141,14 @@ export default {
 				console.log(e);
 			}
 		}
-	}
+	},
+	computed: {
+  		// Determines if there are modules in progress
+  		hasModulesInProgress() {
+    		// Check if modulesInProgress is truthy and is an array before accessing its length
+    		return Array.isArray(this.modulesInProgress) && this.modulesInProgress.length > 0;
+  		},
+	},
 
 };
 </script>
