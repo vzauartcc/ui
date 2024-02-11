@@ -16,6 +16,17 @@
       					<span class="btn new_event_button right">Request</span>
     				</router-link>
   				</div>
+				<div class="col s2">
+    				<!-- Training in Progress Button -->
+    				<router-link v-if="hasModulesInProgress" to="/dash/training/progress">
+      				<span class="btn new_event_button right">Training in Progress</span>
+    				</router-link>
+
+    				<!-- Request Training Button -->
+    				<router-link v-else to="/dash/training/new">
+      					<span class="btn new_event_button right">Request</span>
+    				</router-link>
+  				</div>
   			</div>
 		</div>
 		<!-- This is a test here -->
@@ -88,6 +99,8 @@ export default {
 		return {
 			upcomingSessions: null,
 			modulesInProgress: [],
+			upcomingSessions: null,
+			modulesInProgress: [],
 		};
 	},
 	components: {
@@ -99,7 +112,15 @@ export default {
 		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
    			margin: 0
 		}) ;
+		}) ;
 		M.Modal.init(document.querySelectorAll('.modal'), {
+			preventScrolling: false
+		}) ;
+	},
+	created() {
+		// Ideally, fetch the user's training progress here to update modulesInProgress
+		this.fetchTrainingProgress();
+	},
 			preventScrolling: false
 		}) ;
 	},
@@ -116,6 +137,7 @@ export default {
       		try {
         		const { data } = await zabApi.get(`/training/modules/${cid}`);
         		this.modulesInProgress = data.populatedProgress.modulesInProgress;
+				console.log(this.modulesInProgress)
       		} catch (error) {
         		console.error("Error fetching training progress:", error);
       		}
@@ -140,6 +162,14 @@ export default {
 				console.log(e);
 			}
 		}
+	},
+	computed: {
+  		// Determines if there are modules in progress
+  		hasModulesInProgress() {
+    		// Check if modulesInProgress is truthy and is an array before accessing its length
+    		return Array.isArray(this.modulesInProgress) && this.modulesInProgress.length > 0;
+  		},
+	},
 	},
 	computed: {
   		// Determines if there are modules in progress
