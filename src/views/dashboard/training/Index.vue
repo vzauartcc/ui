@@ -116,7 +116,6 @@ export default {
       		try {
         		const { data } = await zabApi.get(`/training/modules/${cid}`);
         		this.modulesInProgress = data.populatedProgress.modulesInProgress;
-				console.log(this.modulesInProgress)
       		} catch (error) {
         		console.error("Error fetching training progress:", error);
       		}
