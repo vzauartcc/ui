@@ -9,6 +9,14 @@
 				Controllers
 				<div class="secondary-content"><i class="material-icons">people</i></div>
 			</router-link>
+			<router-link to="/ins/exams" class="collection-item" v-if="hasRole(['atm', 'datm', 'ins'])">
+        		Exam Center
+        		<div class="secondary-content"><i class="material-icons">checklist</i></div>
+        	</router-link>
+			<router-link to="/ins/files/downloads" class="collection-item">
+        		Instructor Downloads
+        		<div class="secondary-content"><i class="material-icons">download</i></div>
+        	</router-link>
 			<router-link to="/ins/solo" class="collection-item">
 				Solo Certifications
 				<div class="secondary-content"><i class="material-icons">streetview</i></div>
@@ -21,17 +29,29 @@
 				Training Sessions
 				<div class="secondary-content"><i class="material-icons">event_note</i></div>
 			</router-link>
-        <router-link to="/ins/files/downloads" class="collection-item">
-        Instructor Downloads
-        <div class="secondary-content"><i class="material-icons">download</i></div>
-        </router-link>
 		</div>
 	</div>
 </template>
 
 <script>
-export default {
+import { mapGetters } from 'vuex';
 
+export default {
+	computed: {
+    	// Use mapGetters to use the getter in the component
+    	...mapGetters({
+      		userData: 'user/getUserData' // Assuming 'user' is the namespace of your user module
+    	})
+  	},
+    methods: {
+        hasRole(roles) {
+      		// Ensure the user data and roleCodes are defined before checking
+      		if (this.userData && this.userData.roleCodes) {
+        		return roles.some(role => this.userData.roleCodes.includes(role));
+      		}
+      		return false;
+    	}
+    },
 };
 </script>
 
