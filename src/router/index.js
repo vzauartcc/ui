@@ -119,6 +119,18 @@ const routes = [
 				component: () => import('../views/instructor/controllers/Edit.vue')
 			},
 			{
+				path: 'exams',
+				component: () => import('../views/instructor/exams/Index.vue')
+			},
+			{
+				path: 'exams/:examId',
+				component: () => import('../views/instructor/exams/Edit.vue')
+			},
+			{
+				path: 'exams/new',
+				component: () => import('../views/instructor/exams/New.vue')
+			},
+			{
 				path: 'solo',
 				component: () => import('../views/instructor/solocerts/Index.vue')
 			},
