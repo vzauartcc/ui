@@ -157,7 +157,6 @@ export default {
     };
   },
   async mounted() {
-    console.log(this.$refs);
     this.initializeModal();
     await this.fetchExamDetails();
     if (this.questions && this.questions.length > 0) {
@@ -255,13 +254,13 @@ export default {
   	  this.resetForm();
 	},
 
-    editQuestion(index) {
+  editQuestion(index) {
       // Set the form to reflect the question's data
       this.newQuestion = JSON.parse(JSON.stringify(this.questions[index]));
       this.isTrueFalse = this.newQuestion.isTrueFalse
       this.correctOptionIndex = this.newQuestion.options.findIndex(option => option.isCorrect);
       this.editingQuestionIndex = index; // Track that we're editing an existing question
-    },
+  },
 
     resetForm() {
       // Reset the form to default values

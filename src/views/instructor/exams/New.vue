@@ -33,8 +33,6 @@
 				<div class="input-field inline">
 				  <input type="text" :id="'option' + index" v-model="newQuestion.options[index].text">
 				  <label :for="'option' + index" :class="{ 'active': newQuestion.options[index].text }">Option {{ index + 1 }}</label>
-				</div>
-			  </div>
 			</div>
 			<div v-else>
 			  <div class="col s1">
