@@ -64,8 +64,8 @@
         <p>Are you sure you want to remove this exam?</p>
       </div>
       <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat" @click="cancelDelete">Cancel</a>
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat" @click="confirmDelete">Confirm</a>
+        <a href="javascript:void(0);" class="modal-close waves-effect waves-red btn-flat" @click="cancelDelete">Cancel</a>
+        <a href="javascript:void(0);" class="modal-close waves-effect waves-green btn-flat" @click="confirmDelete">Confirm</a>
       </div>
     </div>
   </div>
@@ -100,9 +100,7 @@ export default {
       async fetchExams() {
         try {
             const { data } = await zabApi.get('/exam/exams');
-            console.log(data.data);
             this.exams = data.data;
-            this.initModal();
         } catch(e) {
           console.error("There was an error fetching the exams: ", e);
         };

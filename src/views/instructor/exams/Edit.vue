@@ -10,7 +10,7 @@
             	<label>
               		Multiple Choice
               		<input type="checkbox" v-model="isTrueFalse">
-              		<span class="lever"></span>
+              		<span class="lever" :class="{ 'active': newQuestion.isTrueFalse }"></span>
               		True/False
             	</label>
           	</div>
@@ -119,14 +119,14 @@
     </div>
   </div>
   <!-- Materialize Modal for Confirmation -->
-  <div id="removeQuestionModal" class="modal">
+  <div ref="removeQuestionModal" id="removeQuestionModal" class="modal">
     <div class="modal-content">
       <h4>Confirm Removal</h4>
       <p>Are you sure you want to remove this question?</p>
     </div>
     <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-red btn-flat" @click="cancelRemove()">Cancel</a>
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat" @click="confirmRemove()">Confirm</a>
+      <a href="javascript:void(0);" class="modal-close waves-effect waves-red btn-flat" @click="cancelRemove()">Cancel</a>
+      <a href="javascript:void(0);" class="modal-close waves-effect waves-green btn-flat" @click="confirmRemove()">Confirm</a>
     </div>
   </div>
 </div>
@@ -152,14 +152,26 @@ export default {
       correctOptionIndex: null,
       questionSubsetSize: "",
       questionToRemoveIndex: null, // Store the index of the question to remove
+      editingQuestionIndex: null,
+      modalInstance: null,
     };
   },
   async mounted() {
+    this.initializeModal();
     await this.fetchExamDetails();
     if (this.questions && this.questions.length > 0) {
       this.editQuestion(0); // Pass index of the first question
     };
-    M.Modal.init(this.$refs.removeQuestionModal);
+  },
+  watch: {
+    // Assuming `questions.length` dictates modal availability
+    'questions.length'(newLength) {
+      this.$nextTick(() => {
+        if (newLength > 0 && !this.modalInstance) {
+          this.initializeModal();
+        }
+      });
+    },
   },
   methods: {
     async fetchExamDetails() {
@@ -242,38 +254,19 @@ export default {
   	  this.resetForm();
 	},
 
-    editQuestion(index) {
+  editQuestion(index) {
       // Set the form to reflect the question's data
       this.newQuestion = JSON.parse(JSON.stringify(this.questions[index]));
+      this.isTrueFalse = this.newQuestion.isTrueFalse
       this.correctOptionIndex = this.newQuestion.options.findIndex(option => option.isCorrect);
       this.editingQuestionIndex = index; // Track that we're editing an existing question
-    },
+  },
 
     resetForm() {
       // Reset the form to default values
       this.newQuestion = { text: '', options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }] };
       this.correctOptionIndex = null;
       this.editingQuestionIndex = null; // No longer editing
-    },
-
-    removeQuestion(index) {
-      // Store index and open modal
-      this.questionToRemoveIndex = index;
-      const instance = M.Modal.getInstance(document.getElementById('removeQuestionModal'));
-      instance.open();
-    },
-
-    confirmRemove() {
-      // Use the stored index to remove the question
-      if (this.questionToRemoveIndex !== null) {
-        this.questions.splice(this.questionToRemoveIndex, 1);
-        this.questionToRemoveIndex = null; // Reset the index
-      }
-    },
-
-    cancelRemove() {
-      // Reset the index if the user cancels
-      this.questionToRemoveIndex = null;
     },
 
 	async submitExam() {
@@ -326,6 +319,51 @@ export default {
     		this.toastError(error.message || 'Failed to submit the exam.');
   		}
 	},
+
+    //Modal Functions.
+    initializeModal() {
+      this.$nextTick(() => {
+        const modalElem = this.$refs.removeQuestionModal;
+        if(modalElem) {
+          M.Modal.init(modalElem);
+          this.modalInstance = true;
+        }
+      });
+    },
+
+    removeQuestion(index) {
+      if (!this.modalInstance) {
+        this.initializeModal(); // Ensure modal is initialized
+      }
+      this.questionToRemoveIndex = index;
+      this.$nextTick(() => {
+        const instance = M.Modal.getInstance(this.$refs.removeQuestionModal);
+        if (instance) {
+          instance.open();
+        } else {
+          console.error("Modal instance is not available.");
+        }
+      });
+    },
+
+    confirmRemove() {
+  	  // Use the stored index to remove the question
+  	  if (this.questionToRemoveIndex !== null) {
+       	if (this.editingQuestionIndex === this.questionToRemoveIndex) {
+      	  // The question being edited is the one being deleted, reset the form
+      	  this.resetForm();
+      	  // Additionally, reset editingQuestionIndex to indicate no question is currently being edited
+      	  this.editingQuestionIndex = null;
+    	}
+      	this.questions.splice(this.questionToRemoveIndex, 1);
+      	this.questionToRemoveIndex = null; // Reset the index
+  	  }
+	},
+
+    cancelRemove() {
+      // Reset or clean up data
+      this.currentQuestionIndex = null;
+    },
   },
 };
 </script>
