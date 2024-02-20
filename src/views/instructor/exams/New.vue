@@ -114,8 +114,8 @@
         <label for="exam-description" :class="{ 'active': examDescription }">Description</label>
       </div>
 	  <div class="input-field col s8 m3">
-        <input id="exam-duration" type="number" v-model="questionSubsetSize">
-        <label for="exam-duration" :class="{ 'active': questionSubsetSize }">Questions Per Test</label>
+        <input id="exam-questionSubset" type="number" v-model="questionSubsetSize">
+        <label for="exam-questionSubset" :class="{ 'active': questionSubsetSize }">Questions Per Test</label>
       </div>
     </div>
   </div>
@@ -139,25 +139,25 @@ import { zabApi } from '@/helpers/axios.js';
 export default {
   data() {
     return {
-	  examName: "",
-	  examDescription: "",
-	  examDuration: "240",
+	    examName: "",
+	    examDescription: "",
+	    examDuration: "240",
       newQuestion: {
         text: '',
         options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }],
-		isTrueFalse: false,
+	  	  isTrueFalse: false,
       },
-	  isTrueFalse: false, // false for Multiple Choice, true for True/False
+	    isTrueFalse: false, // false for Multiple Choice, true for True/False
       correctOptionIndex: null,
       questions: [],
       editingQuestionIndex: null,
-	  questionSubsetSize: "",
-	  questionToRemoveIndex: null,
-	  modalInitialized: false,
+	    questionSubsetSize: "",
+	    questionToRemoveIndex: null,
+	    modalInitialized: false,
     };
   },
   mounted() {
-	this.initializeModal();
+	  this.initializeModal();
   },
   watch: {
     // Assuming `questions.length` dictates modal availability
@@ -170,69 +170,75 @@ export default {
     },
   },
   methods: {
-	addQuestion() {
+	  addQuestion() {
       // Check if the question text is empty
       if (!this.newQuestion.text.trim()) {
-    	this.toastError('Please fill in the question.');
-    	return;
-  	  }
-
-	  // Reset options for newQuestion if the question type is changed
-      if (this.newQuestion.isTrueFalse !== this.isTrueFalse) {
-        this.newQuestion.options = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }];
+        this.toastError('Please fill in the question.');
+        return;
       }
 
-	  // Set the question type based on the toggle
-  	  this.newQuestion.isTrueFalse = this.isTrueFalse;
+      // Set the question type based on the toggle
+      this.newQuestion.isTrueFalse = this.isTrueFalse;
 
-  	  // True/False Question Validation
-	  if (this.isTrueFalse) {
-  		if (this.correctOptionIndex === null) {
-    	  this.toastError('Please select a correct option.');
-    	  return;
-  		}
-  		// Set the True/False options and mark the correct one
-  		this.newQuestion.options = [
-    	  { text: 'True', isCorrect: this.correctOptionIndex == 0 },
-    	  { text: 'False', isCorrect: this.correctOptionIndex == 1 }
-  		];
-	  } else {
-      	// Multiple-Choice Question Validation
-      	if (this.newQuestion.options.some(option => !option.text.trim())) {
-      	  this.toastError('Please fill in all options.');
-      	  return;
-      	}
+      // True/False Question Validation
+      if (this.isTrueFalse) {
         if (this.correctOptionIndex === null) {
-      	  this.toastError('Please select a correct option.');
-      	  return;
-      	}
-  	  }
+          this.toastError('Please select a correct option.');
+          return;
+        }
+        // Set the True/False options and mark the correct one
+        this.newQuestion.options = [
+          { text: 'True', isCorrect: this.correctOptionIndex === 0 },
+          { text: 'False', isCorrect: this.correctOptionIndex === 1 }
+        ];
+      } else {
+        // Multiple-Choice Question Validation
+        if (this.newQuestion.options.some(option => !option.text.trim())) {
+          this.toastError('Please fill in all options.');
+          return;
+        }
+        if (this.correctOptionIndex === null) {
+          this.toastError('Please select a correct option.');
+          return;
+        }
+      }
 
-  	  // Mark the correct option for multiple-choice questions
-  	  if (!this.isTrueFalse) {
-    	this.newQuestion.options.forEach((option, index) => {
-      	  option.isCorrect = (index === parseInt(this.correctOptionIndex));
-    	});
-  	  } else {
-    	// For true/false, automatically set isCorrect based on the option text
-    	this.newQuestion.options.forEach(option => {
-      	  option.isCorrect = option.text.trim().toLowerCase() === 'true';
-    	});
-  	  }
+      // Update the correct option index if editing a true/false question
+      if (this.isTrueFalse && this.editingQuestionIndex !== null) {
+        // Find the selected option and update isCorrect accordingly
+        this.newQuestion.options.forEach((option, index) => {
+          option.isCorrect = (index === parseInt(this.correctOptionIndex));
+        });
+      }
 
-  	  // Add or update the question
-  	  if (this.editingQuestionIndex !== null) {
-    	this.questions.splice(this.editingQuestionIndex, 1, this.newQuestion);
-    	this.editingQuestionIndex = null;
-  	  } else {
-    	this.questions.push(this.newQuestion);
-  	  }
+      // Mark the correct option for multiple-choice questions
+      if (!this.isTrueFalse) {
+        this.newQuestion.options.forEach((option, index) => {
+          option.isCorrect = (index === parseInt(this.correctOptionIndex));
+        });
+      } else {
+        // For true/false, automatically set isCorrect based on the option text
+        this.newQuestion.options.forEach((option, index) => {
+          option.isCorrect = (index === parseInt(this.correctOptionIndex));
+        });
+      }
 
-  	  // Reset form for next question
-  	  this.resetForm();
-	},
+      if (this.editingQuestionIndex !== null) {
+        // Directly assign the updated question to the specific index in the array
+        // This will maintain reactivity in Vue 3
+        this.questions[this.editingQuestionIndex] = { ...this.newQuestion };
+        // Ensure to trigger reactivity for arrays explicitly if needed
+        this.questions = [...this.questions];
+      } else {
+        // Add a new question to the array
+        this.questions.push(this.newQuestion);
+      }
 
-	getOptionText(index) {
+      // Reset form for next question
+      this.resetForm();
+    },
+
+	  getOptionText(index) {
       // Ensure that newQuestion.options[index] exists before accessing its text property
       if (this.newQuestion.options[index]) {
       	return this.newQuestion.options[index].text;
@@ -244,14 +250,15 @@ export default {
     resetForm() {
       this.newQuestion = { text: '', options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }] };
       this.correctOptionIndex = null;
+	    this.editingQuestionIndex = null; // No longer editing
     },
 
     editQuestion(index) {
-        this.editingQuestionIndex = index; // Track the index of the question being edited
-        const questionToEdit = this.questions[index];
-        this.newQuestion = JSON.parse(JSON.stringify(questionToEdit)); // Deep clone the question to avoid direct mutation
-        this.isTrueFalse = this.newQuestion.isTrueFalse
-		this.correctOptionIndex = questionToEdit.options.findIndex(option => option.isCorrect);
+      this.editingQuestionIndex = index; // Track the index of the question being edited
+      const questionToEdit = this.questions[index];
+      this.newQuestion = JSON.parse(JSON.stringify(questionToEdit)); // Deep clone the question to avoid direct mutation
+      this.isTrueFalse = this.newQuestion.isTrueFalse
+		  this.correctOptionIndex = questionToEdit.options.findIndex(option => option.isCorrect);
     },
 
     initializeModal() {
@@ -279,7 +286,7 @@ export default {
       });
     },
 
-	confirmRemove() {
+	  confirmRemove() {
   	  // Use the stored index to remove the question
   	  if (this.questionToRemoveIndex !== null) {
        	if (this.editingQuestionIndex === this.questionToRemoveIndex) {
@@ -287,22 +294,22 @@ export default {
       	  this.resetForm();
       	  // Additionally, reset editingQuestionIndex to indicate no question is currently being edited
       	  this.editingQuestionIndex = null;
-    	}
+    	  }
       	this.questions.splice(this.questionToRemoveIndex, 1);
       	this.questionToRemoveIndex = null; // Reset the index
   	  }
-	},
+	  },
 
     cancelRemove() {
       // Reset the index if the user cancels
       this.questionToRemoveIndex = null;
     },
 
-	async submitExam() {
+	  async submitExam() {
   		// Check for an empty exam name
   		if (!this.examName.trim()) {
     		this.toastError('Please provide an exam name.');
-    	return;
+    	  return;
   		}
 
   		// Check if there are no questions added
@@ -311,19 +318,19 @@ export default {
     		return;
   		}
 
-		if (!this.examDuration || isNaN(this.examDuration) || this.examDuration <= 0 || this.examDuration >= 600 || !Number.isInteger(Number(this.examDuration))) {
-        	this.toastError('Please enter a valid exam duration (Whole Minutes).');
-        	return; // Stop the submission process if validation fails
-      	}
+		  if (!this.examDuration || isNaN(this.examDuration) || this.examDuration <= 0 || this.examDuration >= 601 || !Number.isInteger(Number(this.examDuration))) {
+      	this.toastError('Please enter a valid exam duration between 0 and 600 (Whole Minutes).');
+        return; // Stop the submission process if validation fails
+      }
 
-		// First, ensure questionSubsetSize is parsed as a number, if it's numeric
-		if (!this.questionSubsetSize || isNaN(this.questionSubsetSize) || this.questionSubsetSize <= 0 || !Number.isInteger(Number(this.questionSubsetSize))) {
-			this.toastError('Please enter a valid number of questions per test.');
+		  // First, ensure questionSubsetSize is parsed as a number, if it's numeric
+		  if (!this.questionSubsetSize || isNaN(this.questionSubsetSize) || this.questionSubsetSize <= 0 || !Number.isInteger(Number(this.questionSubsetSize))) {
+			  this.toastError('Please enter a valid number of questions per test.');
     		return; // Stop the submission process if validation fails
   		}
 
-		// Validate if questionSubsetSize exceeds the number of questions in the array
-		if (this.questionSubsetSize > this.questions.length) {
+		  // Validate if questionSubsetSize exceeds the number of questions in the array
+		  if (this.questionSubsetSize > this.questions.length) {
     		this.toastError(`The number of questions per test cannot exceed the total number of questions (${this.questions.length}).`);
     		return; // Stop the submission process if validation fails
   		}
@@ -333,8 +340,8 @@ export default {
   			title: this.examName,
   			description: this.examDescription,
     		questions: this.questions,
-			questionSubsetSize: this.questionSubsetSize,
-			timeLimit: parseInt(this.examDuration),
+			  questionSubsetSize: this.questionSubsetSize,
+			  timeLimit: parseInt(this.examDuration),
   		};
 
   		try {
@@ -348,7 +355,7 @@ export default {
     		// Handle API errors (e.g., show an error message)
     		this.toastError(error.message || 'Failed to submit the exam.');
   		}
-	},
+	  },
   },
 };
 </script>
