@@ -247,6 +247,15 @@ export default {
       }
   	},
 
+	getOptionText(index) {
+      // Ensure that newQuestion.options[index] exists before accessing its text property
+      if (this.newQuestion.options[index]) {
+      	return this.newQuestion.options[index].text;
+      } else {
+      	return ''; // Return an empty string if newQuestion.options[index] is undefined
+      }
+  	},
+
     resetForm() {
       this.newQuestion = { text: '', options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }] };
       this.correctOptionIndex = null;
