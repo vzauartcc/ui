@@ -1,29 +1,29 @@
 <template>
-    <div class="card home_intro">
-      <div class="card-content">
-        <!-- Always show Exam Center title -->
-        <div class="row">
-          <div class="col s10">
-            <span class="card-title">Exam Center</span>
-          </div>
-          <!-- Conditionally show the Create button if exams have been fetched -->
-          <div class="col s2 right-align" v-if="exams">
-            <router-link to="/ins/exams/new" class="btn new_event_button">Create</router-link>
-          </div>
+  <div class="card home_intro">
+    <div class="card-content">
+      <!-- Always show Exam Center title -->
+      <div class="row">
+        <div class="col s10">
+          <span class="card-title">Exam Center</span>
         </div>
-        
-        <!-- Show spinner while loading -->
-        <div v-if="!exams" class="center-align">
-          <Spinner />
+        <!-- Conditionally show the Create button if exams have been fetched -->
+        <div class="col s2 right-align" v-if="exams">
+          <router-link to="/ins/exams/new" class="btn new_event_button">Create</router-link>
         </div>
+      </div>
+      
+      <!-- Show spinner while loading -->
+      <div v-if="!exams" class="center-align">
+        <Spinner />
+      </div>
   
-        <!-- Show no exams message if exams array is empty -->
-        <div v-if="exams && exams.length === 0" class="left-align">
-          <p class="no_exams">There are no exams to display</p>
-        </div>
+      <!-- Show no exams message if exams array is empty -->
+      <div v-if="exams && exams.length === 0" class="left-align">
+        <p class="no_exams">There are no exams to display</p>
+      </div>
         
-        <!-- Show table if exams array is not empty -->
-        <div v-if="exams && exams.length > 0">
+      <!-- Show table if exams array is not empty -->
+      <div v-if="exams && exams.length > 0">
         <div class="card-body">
           <table class="table">
             <thead>
@@ -78,98 +78,98 @@
 import { zabApi } from '@/helpers/axios.js';
 
 export default {
-    name: 'ExamCenter',
-	  title: 'Exam Center',
-    data() {
-      return {
-        exams: [], // This will hold your exams data
-        selectedExamId: null, // ID of the exam to be deleted
+  name: 'ExamCenter',
+	title: 'Exam Center',
+  data() {
+    return {
+      exams: [], // This will hold your exams data
+      selectedExamId: null, // ID of the exam to be deleted
+    };
+  },
+  async created() {
+    await this.fetchExams();
+    M.Modal.init(document.querySelectorAll('.modal'), {
+      preventScrolling: false
+    });
+  },
+  mounted() {
+    this.initializeTooltips();
+    M.Tooltip.init(document.querySelectorAll(".tooltipped"), {
+      margin: 0,
+    });
+  },
+  updated() {
+    this.initializeTooltips();
+  },
+  watch: {
+    selectedExamId(newVal, oldVal) {
+      if (newVal !== null) {
+        this.openDeleteModal();
+      }
+    },
+  },
+  methods: {
+    async fetchExams() {
+      try {
+        const { data } = await zabApi.get('/exam/exams');
+        this.exams = data.data;
+      } catch(e) {
+        console.error("There was an error fetching the exams: ", e);
       };
     },
-    async created() {
-      await this.fetchExams();
-      M.Modal.init(document.querySelectorAll('.modal'), {
-        preventScrolling: false
-	    });
+    editExam(id) {
+      // Navigate to the exam edit page using Vue Router
+      this.$router.push(`/ins/exams/${id}`);
     },
-    mounted() {
-      this.initializeTooltips();
-      M.Tooltip.init(document.querySelectorAll(".tooltipped"), {
-        margin: 0,
+    prepareDelete(id) {
+      this.selectedExamId = id;
+           
+    },
+    cancelDelete() {
+      this.selectedExamId = null; // Reset on cancel
+      // Optionally reinitialize or ensure the modal can be opened again if needed
+      // this.initModal(); // Uncomment this line if reinitialization is necessary
+    },
+    async confirmDelete() {
+      if (!this.selectedExamId) return;
+      try {
+        await zabApi.delete(`/exam/exams/${this.selectedExamId}`);
+        this.toastSuccess('Exam deleted successfully');
+        this.selectedExamId = null; // Reset selected exam ID
+        await this.fetchExams(); // Refresh the list
+      } catch (e) {
+        console.error("There was an error deleting the exam: ", e);
+        this.toastError('Failed to delete the exam.');
+      }
+    },
+    openDeleteModal() {
+      const instance = M.Modal.getInstance(document.getElementById('deleteExamModal'));
+      if (instance) {
+        instance.open();
+      }
+    },
+
+    truncateExamName(title, maxLength = 20) {
+      if (title && title.length > maxLength) {
+        return { text: title.substring(0, maxLength) + '...', truncated: true };
+      }
+      return { text: title, truncated: false }; // Return original if within limit or empty
+    },
+      
+    shouldShowTooltip(title, maxLength = 20) {
+      return title && title.length > maxLength;
+    },
+      
+    initializeTooltips() {
+      // Ensures the DOM has updated before initializing tooltips
+      this.$nextTick(() => {
+        M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+          margin: 0,
+          // You can add other tooltip options here
+        });
       });
     },
-    updated() {
-      this.initializeTooltips();
-    },
-    watch: {
-        selectedExamId(newVal, oldVal) {
-            if (newVal !== null) {
-                this.openDeleteModal();
-            }
-        },
-    },
-    methods: {
-      async fetchExams() {
-        try {
-            const { data } = await zabApi.get('/exam/exams');
-            this.exams = data.data;
-        } catch(e) {
-          console.error("There was an error fetching the exams: ", e);
-        };
-      },
-      editExam(id) {
-        // Navigate to the exam edit page using Vue Router
-        this.$router.push(`/ins/exams/${id}`);
-      },
-      prepareDelete(id) {
-            this.selectedExamId = id;
-           
-      },
-      cancelDelete() {
-        this.selectedExamId = null; // Reset on cancel
-        // Optionally reinitialize or ensure the modal can be opened again if needed
-        // this.initModal(); // Uncomment this line if reinitialization is necessary
-      },
-      async confirmDelete() {
-        if (!this.selectedExamId) return;
-        try {
-          await zabApi.delete(`/exam/exams/${this.selectedExamId}`);
-          this.toastSuccess('Exam deleted successfully');
-          this.selectedExamId = null; // Reset selected exam ID
-          await this.fetchExams(); // Refresh the list
-        } catch (e) {
-          console.error("There was an error deleting the exam: ", e);
-          this.toastError('Failed to delete the exam.');
-        }
-      },
-      openDeleteModal() {
-        const instance = M.Modal.getInstance(document.getElementById('deleteExamModal'));
-        if (instance) {
-          instance.open();
-        }
-      },
-
-      truncateExamName(title, maxLength = 20) {
-        if (title && title.length > maxLength) {
-          return { text: title.substring(0, maxLength) + '...', truncated: true };
-        }
-        return { text: title, truncated: false }; // Return original if within limit or empty
-      },
-      
-      shouldShowTooltip(title, maxLength = 20) {
-        return title && title.length > maxLength;
-      },
-      
-      initializeTooltips() {
-        // Ensures the DOM has updated before initializing tooltips
-        this.$nextTick(() => {
-          M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-            margin: 0,
-            // You can add other tooltip options here
-          });
-        });
-      },
-    }
+  }
 };
 </script>
   
