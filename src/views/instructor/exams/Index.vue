@@ -38,7 +38,10 @@
             </thead>
             <tbody>
               <tr v-for="exam in exams" :key="exam.id">
-                <td>{{ exam.title }}</td>
+                <td :class="{ 'tooltipped': shouldShowTooltip(exam.title) }"
+                    :data-tooltip="shouldShowTooltip(exam.title) ? exam.title : ''">
+                    {{ truncateExamName(exam.title, 20).text }}
+                </td>
                 <td class="center-align">{{ exam.createdBy.fname + ' ' + exam.createdBy.lname }}</td>
                 <td class="center-align">{{ exam.questionSubsetSize }}</td>
                 <td class="center-align">{{ exam.questionsCount }}</td>
@@ -76,7 +79,7 @@ import { zabApi } from '@/helpers/axios.js';
 
 export default {
     name: 'ExamCenter',
-	title: 'Exam Center',
+	  title: 'Exam Center',
     data() {
       return {
         exams: [], // This will hold your exams data
@@ -86,8 +89,17 @@ export default {
     async created() {
       await this.fetchExams();
       M.Modal.init(document.querySelectorAll('.modal'), {
-		preventScrolling: false
-	  });
+        preventScrolling: false
+	    });
+    },
+    mounted() {
+      this.initializeTooltips();
+      M.Tooltip.init(document.querySelectorAll(".tooltipped"), {
+        margin: 0,
+      });
+    },
+    updated() {
+      this.initializeTooltips();
     },
     watch: {
         selectedExamId(newVal, oldVal) {
@@ -135,7 +147,28 @@ export default {
         if (instance) {
           instance.open();
         }
-      }
+      },
+
+      truncateExamName(title, maxLength = 20) {
+        if (title && title.length > maxLength) {
+          return { text: title.substring(0, maxLength) + '...', truncated: true };
+        }
+        return { text: title, truncated: false }; // Return original if within limit or empty
+      },
+      
+      shouldShowTooltip(title, maxLength = 20) {
+        return title && title.length > maxLength;
+      },
+      
+      initializeTooltips() {
+        // Ensures the DOM has updated before initializing tooltips
+        this.$nextTick(() => {
+          M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+            margin: 0,
+            // You can add other tooltip options here
+          });
+        });
+      },
     }
 };
 </script>

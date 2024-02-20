@@ -7,14 +7,14 @@
 		  </div>
 		  <form @submit.prevent="addQuestion">
 			<!-- Toggle between Multiple Choice and True/False -->
-			<div class="switch">
-            	<label>
-              		Multiple Choice
-              		<input type="checkbox" v-model="isTrueFalse">
-              		<span class="lever"></span>
-              		True/False
-            	</label>
-          	</div>
+			<div class="switch"> <!-- Disable switch when editing a question -->
+    		  <label>
+        		Multiple Choice
+        		<input type="checkbox" v-model="isTrueFalse" :disabled="editingQuestionIndex !== null">
+        	  	<span class="lever" :class="{ 'active': newQuestion.isTrueFalse }"></span>
+        		True/False
+    		  </label>
+			</div>
 			<!-- Question Text Input -->
 			<div class="row">
 			  <div class="input-field col s12">
@@ -27,27 +27,27 @@
 			  <div v-if="!isTrueFalse">
 			  	<div v-for="index in [0, 1, 2, 3]" :key="index" class="col s6">
 				  <label>
-				  <input type="radio" name="correctOption" :value="index" v-model="correctOptionIndex" class="with-gap">
-				  <span></span>
-				</label>
-				<div class="input-field inline">
-				  <input type="text" :id="'option' + index" v-model="newQuestion.options[index].text">
-				  <label :for="'option' + index" :class="{ 'active': newQuestion.options[index].text }">Option {{ index + 1 }}</label>
-				</div>
+				  	<input type="radio" name="correctOption" :value="index" v-model="correctOptionIndex" class="with-gap">
+				  	<span></span>
+				  </label>
+				  <div class="input-field inline">
+				  	<input type="text" :id="'option' + index" v-model="newQuestion.options[index].text">
+				  	<label :for="'option' + index" :class="{ 'active': newQuestion.options[index].text }">Option {{ index + 1 }}</label>
+				  </div>
+			  	</div>
 			  </div>
-			</div>
-			<div v-else>
-			  <div class="col s1">
-				<label>
-				  <input type="radio" name="correctOption" value="0" v-model="correctOptionIndex" class="with-gap">
-				  <span>True</span>
-				</label>
-				<label>
-				  <input type="radio" name="correctOption" value="1" v-model="correctOptionIndex" class="with-gap">
-				  <span>False</span>
-				</label>
+			  <div v-else>
+			  	<div class="col s1">
+				  <label>
+					<input type="radio" name="correctOption" value="0" v-model="correctOptionIndex" class="with-gap">
+				  	<span>True</span>
+				  </label>
+				  <label>
+				  	<input type="radio" name="correctOption" value="1" v-model="correctOptionIndex" class="with-gap">
+				  	<span>False</span>
+				  </label>
+			  	</div>
 			  </div>
-			</div>
 			</div>
 			<!-- Submit Button -->
 			<div class="row">
@@ -57,35 +57,35 @@
 			</div>
 		  </form>
 		</div>
-		</div>
+	  </div>
 	</div>
         
     <!-- Questions List -->
     <div class="card" v-if="questions.length > 0">
-        <div class="card-content">
-			<div class="card-title col s12"><span class="card-title">Exam Questions</span></div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Question</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(question, qIndex) in questions" :key="qIndex">
-                        <td>{{ question.text }}</td>
-                        <td>
-                            <button @click="editQuestion(qIndex)" class="btn waves-effect waves-light">
-                                <i class="material-icons">edit</i>
-                            </button>
-                                <button @click="removeQuestion(qIndex)" class="btn red waves-effect waves-light">
-                                <i class="material-icons">delete</i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+      <div class="card-content">
+		<div class="card-title col s12"><span class="card-title">Exam Questions</span></div>
+     	<table>
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(question, qIndex) in questions" :key="qIndex">
+              <td>{{ question.text }}</td>
+              <td>
+                <button @click="editQuestion(qIndex)" class="btn waves-effect waves-light">
+                  <i class="material-icons">edit</i>
+                </button>
+                <button @click="removeQuestion(qIndex)" class="btn red waves-effect waves-light">
+                  <i class="material-icons">delete</i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
 	 <!-- Exam Name Input and Submit Button -->
@@ -94,7 +94,7 @@
     <div class="row">
       <!-- Exam Name Input -->
       <div class="input-field col s8 m6">
-        <input id="exam-name" type="text" v-model="examName">
+        <input id="exam-name" type="text" v-model="examName" maxlength="50">
         <label for="exam-name" :class="{ 'active': examName }">Exam Name</label>
       </div>
       <!-- Duration Input -->
@@ -177,6 +177,11 @@ export default {
     	return;
   	  }
 
+	  // Reset options for newQuestion if the question type is changed
+      if (this.newQuestion.isTrueFalse !== this.isTrueFalse) {
+        this.newQuestion.options = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }];
+      }
+
 	  // Set the question type based on the toggle
   	  this.newQuestion.isTrueFalse = this.isTrueFalse;
 
@@ -227,10 +232,20 @@ export default {
   	  this.resetForm();
 	},
 
+	getOptionText(index) {
+      // Ensure that newQuestion.options[index] exists before accessing its text property
+      if (this.newQuestion.options[index]) {
+      	return this.newQuestion.options[index].text;
+      } else {
+      	return ''; // Return an empty string if newQuestion.options[index] is undefined
+      }
+  	},
+
     resetForm() {
       this.newQuestion = { text: '', options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }] };
       this.correctOptionIndex = null;
     },
+
     editQuestion(index) {
         this.editingQuestionIndex = index; // Track the index of the question being edited
         const questionToEdit = this.questions[index];
@@ -296,13 +311,14 @@ export default {
     		return;
   		}
 
-		if (!this.examDuration || isNaN(this.examDuration) || this.examDuration <= 0) {
-    		this.toastError('Please enter a valid exam duration.');
-    		return; // Stop the submission process if validation fails
-  		}
+		if (!this.examDuration || isNaN(this.examDuration) || this.examDuration <= 0 || this.examDuration >= 600 || !Number.isInteger(Number(this.examDuration))) {
+        	this.toastError('Please enter a valid exam duration (Whole Minutes).');
+        	return; // Stop the submission process if validation fails
+      	}
 
-		if (!this.questionSubsetSize || isNaN(this.questionSubsetSize) || this.questionSubsetSize <= 0) {
-    		this.toastError('Please enter a valid number of questions per test.');
+		// First, ensure questionSubsetSize is parsed as a number, if it's numeric
+		if (!this.questionSubsetSize || isNaN(this.questionSubsetSize) || this.questionSubsetSize <= 0 || !Number.isInteger(Number(this.questionSubsetSize))) {
+			this.toastError('Please enter a valid number of questions per test.');
     		return; // Stop the submission process if validation fails
   		}
 

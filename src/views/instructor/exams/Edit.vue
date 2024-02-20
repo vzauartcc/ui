@@ -6,14 +6,14 @@
 		
 		  <form @submit.prevent="addOrUpdateQuestion">
 			<!-- Toggle between Multiple Choice and True/False -->
-			<div class="switch">
-            	<label>
-              		Multiple Choice
-              		<input type="checkbox" v-model="isTrueFalse">
-              		<span class="lever" :class="{ 'active': newQuestion.isTrueFalse }"></span>
-              		True/False
-            	</label>
-          	</div>
+			<div class="switch"> <!-- Disable switch when editing a question -->
+        <label>
+          Multiple Choice
+          <input type="checkbox" v-model="isTrueFalse" :disabled="editingQuestionIndex !== null">
+          <span class="lever" :class="{ 'active': newQuestion.isTrueFalse }"></span>
+          True/False
+        </label>
+      </div>
 			<!-- Question Text Input -->
 			<div class="row">
 			  <div class="input-field col s12">
@@ -25,28 +25,28 @@
 			<div class="row">
 			  <div v-if="!isTrueFalse">
 			  	<div v-for="index in [0, 1, 2, 3]" :key="index" class="col s6">
-				  <label>
-				  <input type="radio" name="correctOption" :value="index" v-model="correctOptionIndex" class="with-gap">
-				  <span></span>
-				</label>
-				<div class="input-field inline">
-				  <input type="text" :id="'option' + index" v-model="newQuestion.options[index].text">
-				  <label :for="'option' + index" :class="{ 'active': newQuestion.options[index].text }">Option {{ index + 1 }}</label>
-				</div>
+            <label>
+              <input type="radio" name="correctOption" :value="index" v-model="correctOptionIndex" class="with-gap">
+              <span></span>
+            </label>
+            <div class="input-field inline">
+              <input type="text" :id="'option' + index" v-model="newQuestion.options[index].text">
+              <label :for="'option' + index" :class="{ 'active': newQuestion.options[index].text }">Option {{ index + 1 }}</label>
+            </div>
+          </div>
 			  </div>
-			</div>
-			<div v-else>
-			  <div class="col s1">
-				<label>
-				  <input type="radio" name="correctOption" value="0" v-model="correctOptionIndex" class="with-gap">
-				  <span>True</span>
-				</label>
-				<label>
-				  <input type="radio" name="correctOption" value="1" v-model="correctOptionIndex" class="with-gap">
-				  <span>False</span>
-				</label>
+			  <div v-else>
+			    <div class="col s1">
+				    <label>
+				      <input type="radio" name="correctOption" value="0" v-model="correctOptionIndex" class="with-gap">
+				      <span>True</span>
+				    </label>
+				    <label>
+				      <input type="radio" name="correctOption" value="1" v-model="correctOptionIndex" class="with-gap">
+				      <span>False</span>
+				    </label>
+			    </div>
 			  </div>
-			</div>
 			</div>
 			<!-- Submit Button -->
 			<div class="row">
@@ -93,7 +93,7 @@
     <div class="row">
       <!-- Exam Name Input -->
       <div class="input-field col s8 m6">
-        <input id="exam-name" type="text" v-model="examName">
+        <input id="exam-name" type="text" v-model="examName" maxlength="50">
         <label for="exam-name" :class="{ 'active': examName }">Exam Name</label>
       </div>
       <!-- Duration Input -->
@@ -197,49 +197,54 @@ export default {
     addOrUpdateQuestion() {
       // Check if the question text is empty
       if (!this.newQuestion.text.trim()) {
-    	this.toastError('Please fill in the question.');
-    	return;
-  	  }
+        this.toastError('Please fill in the question.');
+        return;
+      }
 
-	  // Set the question type based on the toggle
-  	  this.newQuestion.isTrueFalse = this.isTrueFalse;
+      // Reset options for newQuestion if the question type is changed
+      if (this.newQuestion.isTrueFalse !== this.isTrueFalse) {
+        this.newQuestion.options = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }];
+      }
 
-  	  // True/False Question Validation
-	  if (this.isTrueFalse) {
-  		if (this.correctOptionIndex === null) {
-    	  this.toastError('Please select a correct option.');
-    	  return;
-  		}
-  		// Set the True/False options and mark the correct one
-  		this.newQuestion.options = [
-    	  { text: 'True', isCorrect: this.correctOptionIndex == 0 },
-    	  { text: 'False', isCorrect: this.correctOptionIndex == 1 }
-  		];
-	  } else {
-      	// Multiple-Choice Question Validation
-      	if (this.newQuestion.options.some(option => !option.text.trim())) {
-      	  this.toastError('Please fill in all options.');
-      	  return;
-      	}
+      // Set the question type based on the toggle
+      this.newQuestion.isTrueFalse = this.isTrueFalse;
+
+      // True/False Question Validation
+      if (this.isTrueFalse) {
         if (this.correctOptionIndex === null) {
-      	  this.toastError('Please select a correct option.');
-      	  return;
-      	}
-  	  }
+          this.toastError('Please select a correct option.');
+          return;
+        }
+        // Set the True/False options and mark the correct one
+        this.newQuestion.options = [
+          { text: 'True', isCorrect: this.correctOptionIndex == 0 },
+          { text: 'False', isCorrect: this.correctOptionIndex == 1 }
+        ];
+      } else {
+        // Multiple-Choice Question Validation
+        if (this.newQuestion.options.some(option => !option.text.trim())) {
+          this.toastError('Please fill in all options.');
+          return;
+        }
+        if (this.correctOptionIndex === null) {
+          this.toastError('Please select a correct option.');
+          return;
+        }
+      }
 
-  	  // Mark the correct option for multiple-choice questions
-  	  if (!this.isTrueFalse) {
-    	this.newQuestion.options.forEach((option, index) => {
-      	  option.isCorrect = (index === parseInt(this.correctOptionIndex));
-    	});
-  	  } else {
-    	// For true/false, automatically set isCorrect based on the option text
-    	this.newQuestion.options.forEach(option => {
-      	  option.isCorrect = option.text.trim().toLowerCase() === 'true';
-    	});
-  	  }
+      // Mark the correct option for multiple-choice questions
+      if (!this.isTrueFalse) {
+        this.newQuestion.options.forEach((option, index) => {
+          option.isCorrect = (index === parseInt(this.correctOptionIndex));
+        });
+      } else {
+        // For true/false, automatically set isCorrect based on the option text
+        this.newQuestion.options.forEach(option => {
+          option.isCorrect = option.text.trim().toLowerCase() === 'true';
+        });
+      }
 
-  	  if (this.editingQuestionIndex !== null) {
+      if (this.editingQuestionIndex !== null) {
         // Directly assign the updated question to the specific index in the array
         // This will maintain reactivity in Vue 3
         this.questions[this.editingQuestionIndex] = { ...this.newQuestion };
@@ -250,17 +255,17 @@ export default {
         this.questions.push(this.newQuestion);
       }
 
-  	  // Reset form for next question
-  	  this.resetForm();
-	},
+      // Reset form for next question
+      this.resetForm();
+    },
 
-  editQuestion(index) {
+    editQuestion(index) {
       // Set the form to reflect the question's data
       this.newQuestion = JSON.parse(JSON.stringify(this.questions[index]));
       this.isTrueFalse = this.newQuestion.isTrueFalse
       this.correctOptionIndex = this.newQuestion.options.findIndex(option => option.isCorrect);
       this.editingQuestionIndex = index; // Track that we're editing an existing question
-  },
+    },
 
     resetForm() {
       // Reset the form to default values
@@ -269,7 +274,7 @@ export default {
       this.editingQuestionIndex = null; // No longer editing
     },
 
-	async submitExam() {
+	  async submitExam() {
   		// Check for an empty exam name
   		if (!this.examName.trim()) {
     		this.toastError('Please provide an exam name.');
@@ -282,18 +287,19 @@ export default {
     		return;
   		}
 
-		if (!this.examDuration || isNaN(this.examDuration) || this.examDuration <= 0) {
-    		this.toastError('Please enter a valid exam duration.');
+      if (!this.examDuration || isNaN(this.examDuration) || this.examDuration <= 0 || this.examDuration >= 600 || !Number.isInteger(Number(this.examDuration))) {
+        this.toastError('Please enter a valid exam duration (Whole Minutes).');
     		return; // Stop the submission process if validation fails
   		}
 
-		if (!this.questionSubsetSize || isNaN(this.questionSubsetSize) || this.questionSubsetSize <= 0) {
-    		this.toastError('Please enter a valid number of questions per test.');
-    		return; // Stop the submission process if validation fails
-  		}
+		  // First, ensure questionSubsetSize is parsed as a number, if it's numeric
+      if (!this.questionSubsetSize || isNaN(this.questionSubsetSize) || this.questionSubsetSize <= 0 || !Number.isInteger(Number(this.questionSubsetSize))) {
+        this.toastError('Please enter a valid number of questions per test.');
+        return; // Stop the submission process if validation fails
+      }
 
-		// Validate if questionSubsetSize exceeds the number of questions in the array
-		if (this.questionSubsetSize > this.questions.length) {
+		  // Validate if questionSubsetSize exceeds the number of questions in the array
+		  if (this.questionSubsetSize > this.questions.length) {
     		this.toastError(`The number of questions per test cannot exceed the total number of questions (${this.questions.length}).`);
     		return; // Stop the submission process if validation fails
   		}
@@ -303,8 +309,8 @@ export default {
   			title: this.examName,
   			description: this.examDescription,
     		questions: this.questions,
-			questionSubsetSize: this.questionSubsetSize,
-			timeLimit: parseInt(this.examDuration),
+			  questionSubsetSize: this.questionSubsetSize,
+			  timeLimit: parseInt(this.examDuration),
   		};
 
   		try {
@@ -318,7 +324,7 @@ export default {
     		// Handle API errors (e.g., show an error message)
     		this.toastError(error.message || 'Failed to submit the exam.');
   		}
-	},
+	  },
 
     //Modal Functions.
     initializeModal() {
@@ -358,7 +364,7 @@ export default {
       	this.questions.splice(this.questionToRemoveIndex, 1);
       	this.questionToRemoveIndex = null; // Reset the index
   	  }
-	},
+	  },
 
     cancelRemove() {
       // Reset or clean up data
