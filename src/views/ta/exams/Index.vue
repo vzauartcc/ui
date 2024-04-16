@@ -4,11 +4,11 @@
         <!-- Always show Exam Center title -->
         <div class="row">
           <div class="col s10">
-            <span class="card-title">Exam Center</span>
+            <span class="card-title">Exams</span>
           </div>
           <!-- Conditionally show the Create button if exams have been fetched -->
           <div class="col s2 right-align" v-if="exams">
-            <router-link to="/ins/exams/new" class="btn new_event_button">Create</router-link>
+            <router-link to="/ta/exam-management/new" class="btn new_event_button">Create</router-link>
           </div>
         </div>
         
@@ -119,7 +119,7 @@ export default {
       },
       editExam(id) {
         // Navigate to the exam edit page using Vue Router
-        this.$router.push(`/ins/exams/${id}`);
+        this.$router.push(`/ta/exam-management/${id}`);
       },
       prepareDelete(id) {
             this.selectedExamId = id;

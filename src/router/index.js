@@ -4,6 +4,7 @@ import Admin from "../views/layout/Admin.vue";
 import Event from "../views/layout/Event.vue";
 import Dashboard from "../views/layout/ControllerDash.vue";
 import Instructor from "../views/layout/Instructor.vue";
+import TA from '../views/layout/TA.vue'
 import { zabApi } from "../helpers/axios";
 import * as uriHelper from "../helpers/uriHelper";
 
@@ -119,18 +120,6 @@ const routes = [
 				component: () => import('../views/instructor/controllers/Edit.vue')
 			},
 			{
-				path: 'exams',
-				component: () => import('../views/instructor/exams/Index.vue')
-			},
-			{
-				path: 'exams/:examId',
-				component: () => import('../views/instructor/exams/Edit.vue')
-			},
-			{
-				path: 'exams/new',
-				component: () => import('../views/instructor/exams/New.vue')
-			},
-			{
 				path: 'solo',
 				component: () => import('../views/instructor/solocerts/Index.vue')
 			},
@@ -181,6 +170,122 @@ const routes = [
 			{
 				path: 'activity',
 				component: () => import('../views/admin/controllers/Activity.vue')
+			},
+			{
+				path: 'events',
+				component: () => import('../views/admin/events/Index.vue')
+			},
+			{
+				path: 'events/new',
+				component: () => import('../views/admin/events/New.vue')
+			},
+			{
+				path: 'events/edit/:slug',
+				component: () => import('../views/admin/events/Edit.vue')
+			},
+			{
+				path: 'events/assign/:slug',
+				component: () => import('../views/admin/events/Assign.vue')
+			},
+			{
+				path: 'events/editRequest/:slug',
+				component: () => import('../views/admin/events/EditStaffingRequest.vue')
+			},
+			{
+				path: 'news',
+				component: () => import('../views/admin/news/Index.vue')
+			},
+			{
+				path: 'news/new',
+				component: () => import('../views/admin/news/New.vue')
+			},
+			{
+				path: 'news/:slug',
+				component: () => import('../views/admin/news/Edit.vue')
+			},
+			{
+				path: 'files/downloads',
+				component: () => import('../views/admin/files/downloads/Index.vue')
+			},
+			{
+				path: 'files/downloads/new',
+				component: () => import('../views/admin/files/downloads/New.vue')
+			},
+			{
+				path: 'files/downloads/:id',
+				component: () => import('../views/admin/files/downloads/Edit.vue')
+			},
+			{
+				path: 'files/documents',
+				component: () => import('../views/admin/files/documents/Index.vue')
+			},
+			{
+				path: 'files/documents/new',
+				component: () => import('../views/admin/files/documents/New.vue')
+			},
+			{
+				path: 'files/documents/:id',
+				component: () => import('../views/admin/files/documents/Edit.vue')
+			},
+			{
+				path: 'feedback',
+				component: () => import('../views/admin/feedback/Index.vue')
+			},
+			{
+				path: 'visit/applications',
+				component: () => import('../views/admin/VisitApplications.vue')
+			},
+			{
+				path: 'absence',
+				component: () => import('../views/admin/absence/Index.vue')
+			},
+			{
+				path: 'absence/new',
+				component: () => import('../views/admin/absence/New.vue')
+			},
+			{
+				path: 'log',
+				component: () => import('../views/admin/log/Index.vue')
+			}
+		]
+	},
+	{
+		path: '/ta', component: TA, meta: { isSenior: true }, children: [
+			{
+				path: '',
+				component: () => import('../views/ta/Index.vue')
+			},
+			{
+				path: 'module-management',
+				component: () => import('../views/ta/trainingModules/Index.vue')
+			},
+			{
+				path: 'module-management/new',
+				component: () => import('../views/ta/trainingModules/New.vue')
+			},
+			{
+				path: 'exam-management',
+				component: () => import('../views/ta/exams/Index.vue')
+			},
+			{
+				path: 'exam-management/:examId',
+				component: () => import('../views/ta/exams/Edit.vue')
+			},
+			{
+				path: 'exam-management/new',
+				component: () => import('../views/ta/exams/New.vue')
+			},
+			{
+				path: 'trainers',
+				component: () => import('../views/ta/trainers/Index.vue')
+			},
+			{
+				path: 'trainers/edit/:cid',
+				component: () => import('../views/ta/trainers/Edit.vue')
+			},
+			{
+				path: 'trainees',
+				component: () => import('../views/ta/trainees/Index.vue')
 			},
 			{
 				path: 'events',

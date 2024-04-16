@@ -84,7 +84,7 @@ export default {
       this.isLoading = true; // Start loading
       try {
         const { data } = await zabApi.get(`/training/modules/${cid}`);
-        this.populatedProgress = data.populatedProgress;
+        this.populatedProgress = data.data;
       } catch (error) {
         console.error("Error fetching training progress:", error);
       } finally {
