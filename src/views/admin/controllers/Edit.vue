@@ -38,54 +38,47 @@
 					</div>
 					<div class="input-field col s12">
 						<div id="certs_container">
-							<label for="minor_certs_container" class="active">Minor Certifications:</label>
+							<label for="minor_certs_container" class="active">Non-Tier Certifications:</label>
 							<div id="minor_certs_container" class="cert_container">
-								<span id="del" :class="{active: form.certs.del}" class="cert cert_minor"
-									@click="toggleCert">DEL</span>
 								<span id="gnd" :class="{active: form.certs.gnd}" class="cert cert_minor"
-									@click="toggleCert">GND</span>
+									@click="toggleCert">GND/DEL</span>
 								<span id="twr" :class="{active: form.certs.twr}" class="cert cert_minor"
 									@click="toggleCert">TWR</span>
 								<span id="app" :class="{active: form.certs.app}" class="cert cert_minor"
 									@click="toggleCert">APP</span>
 							</div>
-							<label for="chicago_certs_container" class="active">KORD & Center Certifications:</label>
+							<label for="chicago_certs_container" class="active">Tier 2 Endorsements:</label>
 							<div id="chicago_certs_container" class="cert_container">
-								<span id="orddel" :class="{active: form.certs.orddel}" class="cert cert_major"
-									@click="toggleCert">ORD_DEL</span>
-								<span id="ordgnd" :class="{active: form.certs.ordgnd}" class="cert cert_major"
-									@click="toggleCert">ORD_GND</span>
-								<span id="ordtwr" :class="{active: form.certs.ordtwr}" class="cert cert_major"
+								<span id="mdwgnd" :class="{active: form.certs.mdwgnd}" class="cert cert_tier-2"
+									@click="toggleCert">MDW_GND/DEL</span>
+								<span id="mdwtwr" :class="{active: form.certs.mdwtwr}" class="cert cert_tier-2"
+									@click="toggleCert">MDW_TWR</span>
+								<span id="zaut2" :class="{active: form.certs.zaut2}" class="cert cert_tier-2"
+									@click="toggleCert">CHI_CTR</span>
+							</div>
+							<label for="chicago_certs_container" class="active">Tier 1 Endorsements:</label>
+							<div id="chicago_certs_container" class="cert_container">
+								<span id="ordgnd" :class="{active: form.certs.ordgnd}" class="cert cert_tier-1"
+									@click="toggleCert">ORD_GND/DEL</span>
+								<span id="ordtwr" :class="{active: form.certs.ordtwr}" class="cert cert_tier-1"
 									@click="toggleCert">ORD_TWR</span>
-								<span id="ordapp" :class="{active: form.certs.ordapp}" class="cert cert_major"
-									@click="toggleCert">ORD_APP</span>
+								<span id="ordapp" :class="{active: form.certs.ordapp}" class="cert cert_tier-1"
+									@click="toggleCert">C90_APP</span>
 								<span id="zau" :class="{active: form.certs.zau}" class="cert cert_center"
 									@click="toggleCert">CHI_CTR</span>
-								<!-- <span id="zmo" :class="{active: form.certs.zmo}" class="cert cert_center"
-									@click="toggleCert">ZMO_CTR</span> -->
 							</div>
 							<label for="solo_certs_container" class="active">Solo Certifications:</label>
 							<div id="solo_certs_container" class="cert_container">
-								<span id="dels" :class="{active: form.certs.dels}" class="cert cert_solon"
-									@click="toggleCert">DEL</span>
-								<span id="gnds" :class="{active: form.certs.gnds}" class="cert cert_solon"
-									@click="toggleCert">GND</span>
-								<span id="twrs" :class="{active: form.certs.twrs}" class="cert cert_solon"
-									@click="toggleCert">TWR</span>
 								<span id="apps" :class="{active: form.certs.apps}" class="cert cert_solon"
 									@click="toggleCert">APP</span>
-								<br/>
-								<span id="orddels" :class="{active: form.certs.orddels}" class="cert cert_solom"
-									@click="toggleCert">ORD_DEL</span>
 								<span id="ordgnds" :class="{active: form.certs.ordgnds}" class="cert cert_solom"
 									@click="toggleCert">ORD_GND</span>
 								<span id="ordtwrs" :class="{active: form.certs.ordtwrs}" class="cert cert_solom"
 									@click="toggleCert">ORD_TWR</span>
 								<span id="ordapps" :class="{active: form.certs.ordapps}" class="cert cert_solom"
-									@click="toggleCert">ORD_APP</span>
+									@click="toggleCert">C90_APP</span>
 								<span id="zaus" :class="{active: form.certs.zaus}" class="cert cert_solom"
 									@click="toggleCert">CHI_CTR</span>
-
 							</div>
 						</div>
 					</div>
@@ -106,11 +99,11 @@
 								@click="toggleRole">WM</span>
 							<span id="ins" class="cert cert_training" :class="{active: form.roles.ins}"
 								@click="toggleRole">INS</span>
-                             <span id="ia" class="cert cert_training" :class="{active: form.roles.ia}"
-                                 @click="toggleRole">IA</span>
+              <span id="ia" class="cert cert_training" :class="{active: form.roles.ia}"
+                @click="toggleRole">IA</span>
 							<span id="mtr" class="cert cert_training" :class="{active: form.roles.mtr}"
 								@click="toggleRole">MTR</span>
-							<span id="vis" class="cert cert_training" :class="{active: form.vis}"
+							<span id="vis" class="cert cert_vis" :class="{active: form.vis}"
 								@click="toggleVis">VIS</span>
 						</div>
 					</div>
@@ -144,20 +137,17 @@ export default {
 					ordapp: false,
 					ordtwr: false,
 					ordgnd: false,
-					orddel: false,
+					mdwtwr: false,
+					mdwgnd: false,
 					app: false,
 					twr: false,
 					gnd: false,
-					del: false,
 					zaus: false,
+					zaut2: false,
 					ordapps: false,
 					ordtwrs: false,
 					ordgnds: false,
-					orddels: false,
 					apps: false,
-					twrs: false,
-					gnds: false,
-					dels: false,
 				},
 				roles: {
 					atm: false,
@@ -168,7 +158,7 @@ export default {
 					wm: false,
 					ins: false,
 					mtr: false,
-                    ia: false,
+          ia: false,
 				},
 			}
 		};
@@ -271,12 +261,22 @@ export default {
 			color: #fff;
 		}
 
+		&.cert_vis {
+			background: $cert_vis;
+			color: #fff;
+		}
+
 		&.cert_center {
 			background-color: $secondary-color-dark;
 			color: #fff;
 		}
 
-		&.cert_major {
+		&.cert_tier-2 {
+			background: $primary-color;
+			color: #fff;
+		}
+
+		&.cert_tier-1 {
 			background: $secondary-color;
 			color: #fff;
 		}
