@@ -128,20 +128,39 @@ export default {
 			this.loading = false;
 		},
 		reduceControllerCerts(certs) {
-			if(!certs) return [];
-			const hasCerts = certs.map(cert => cert.code);
-			let certsToShow = [];
-			certs.forEach(cert => {
-				if(cert.class === "major" || cert.class === "center") {
-					certsToShow.push(cert);
-				} else {
-					const certPos = cert.code.slice(-3);
-					if(!hasCerts.includes(`ord${certPos}`)) {
-						certsToShow.push(cert);
-					}
-				}
-			});
-			return certsToShow;
+  		if (!certs) return [];
+
+  		// Define priority orders
+  		const tierPriority = { 'tier-1': 1, 'tier-2': 2, 'solom': 3, 'solon': 4, 'non-tier': 5 };
+  		const facilityPriority = { 'ctr': 1, 'app': 2, 'twr': 3, 'gnd': 4 };
+
+  		// Group certs by facility
+  		const facilityGroups = certs.reduce((acc, cert) => {
+    		if (!acc[cert.facility]) acc[cert.facility] = [];
+    		acc[cert.facility].push(cert);
+    		return acc;
+  		}, {});
+
+  		// Filter and sort certifications within each facility group
+  		let sortedCerts = [];
+  		Object.keys(facilityGroups).forEach(facility => {
+    		// Sort certs by tier within the facility
+    		facilityGroups[facility].sort((a, b) => (tierPriority[a.class] || 6) - (tierPriority[b.class] || 6));
+
+    		let hasTier1or2 = facilityGroups[facility].some(cert => cert.class === 'tier-1' || cert.class === 'tier-2');
+    		facilityGroups[facility].forEach(cert => {
+      		if (cert.class === 'tier-1' || cert.class === 'tier-2') {
+        		sortedCerts.push(cert);
+      		} else if (cert.class.includes('solo')) {
+        		sortedCerts.push(cert);
+      		} else if (cert.class === 'non-tier' && !hasTier1or2) {
+        		sortedCerts.push(cert);
+      		}
+    		});
+  		});
+
+  		// Finally, sort all selected certs by facility priority
+  		return sortedCerts.sort((a, b) => (facilityPriority[a.facility] || 5) - (facilityPriority[b.facility] || 5));
 		},
 		sec2hm(secs) {
 			if(!secs) return null;
@@ -220,11 +239,15 @@ export default {
 		background-color: $secondary-color-dark;
 	}
 
-	&.cert_major {
+	&.cert_tier-1 {
 		background: $secondary-color;
 	}
 
-	&.cert_minor {
+	&.cert_tier-2 {
+		background: $primary-color;
+	}
+
+	&.cert_non-tier{
 		background: $secondary-color-light;
 	}
     &.cert_solon {
