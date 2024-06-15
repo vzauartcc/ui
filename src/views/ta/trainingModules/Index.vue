@@ -42,12 +42,14 @@
                 <td class="center-align">{{ module.courses.length }}</td>
                 <td class="center-align">{{ module.isExtension }}</td>
                 <td class="center-align">
-                  <button @click="editExam(module._id)" class="btn waves-effect waves-light">
-                    <i class="material-icons">edit</i>
-                  </button>
-                  <button @click="prepareDelete(module._id)" class="btn red waves-effect waves-light modal-trigger">
-                    <i class="material-icons">delete</i>
-                  </button>
+                  <div class="row">
+                    <button @click="editExam(module._id)" class="btn waves-effect waves-light">
+                      <i class="material-icons">edit</i>
+                    </button>
+                    <button @click="prepareDelete(module._id)" class="btn red waves-effect waves-light modal-trigger">
+                      <i class="material-icons">delete</i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
