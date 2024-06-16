@@ -35,7 +35,7 @@
 							<p>This will delete <b>{{file.name}}</b> from the downloads section completely</p>
 						</div>
 						<div class="modal-footer">
-							<a href="#!" class="waves-effect waves-light btn" @click="deleteDownload(file._id)">Delete</a>
+							<a href="#!" class="waves-effect waves-light btn" @click="deleteDownload(file._id, i)">Delete</a>
 							<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancel</a>
 						</div>
 					</div>
@@ -69,14 +69,14 @@ export default {
 			const {data} = await  zabApi.get('/file/downloads');
 			this.downloads = data.data;
 		},
-		async deleteDownload(id) {
+		async deleteDownload(id, index) {
 			try {
 				const {data} = await zabApi.delete(`/file/downloads/${id}`);
 				if(data.ret_det.code === 200) {
 					this.toastSuccess('Download deleted');
 
 					await this.getDownloads();
-					setTimeout(() => M.Modal.getInstance(document.querySelector('.modal_delete')).close(), 500);
+					setTimeout(() => M.Modal.getInstance(document.querySelector(`#modal_delete_${index}`)).close());
 				} else {
 					this.toastError(data.ret_det.message);
 				}

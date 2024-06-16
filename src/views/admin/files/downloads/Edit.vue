@@ -16,8 +16,9 @@
 							<option value="" disabled selected>Choose a category</option>
 							<option value="sectorFiles">Facility Files</option>
 							<option value="training">References</option>
-							<option value="mfr">SOPs and LOAs</option>
 							<option value="misc">Miscellaneous</option>
+							<option value="ins">Instructors</option>
+              <option value="insguides">Instructors Guides</option>
 						</select>
 						<label>Category</label>
 					</div>
@@ -54,7 +55,8 @@ export default {
 				name: '',
 				category: '',
 				description: '',
-				fileName: ''
+				fileName: '',
+				oldFileName: ''
 			},
 			loading: true
 		};
@@ -71,6 +73,7 @@ export default {
 			this.loading = true;
 			const {data} = await zabApi.get(`/file/downloads/${this.$route.params.id}`);
 			this.form = data.data;
+			this.form.oldFileName = data.data.fileName;
 			this.loading = false;
 		},
 		async submitForm() {
@@ -80,6 +83,7 @@ export default {
 				formData.append('category', this.form.category);
 				formData.append('description', this.form.description);
 				formData.append('download', this.$refs.download.files[0]);
+				formData.append('oldFileName', this.form.oldFileName);
 
 				const {data} = await zabApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
 					headers: { 
