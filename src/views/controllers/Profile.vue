@@ -11,7 +11,7 @@
 					<div class="row">
 						<div class="col s5 m4 l3">
 							<div class="controller_image">
-								<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/avatars/${controller.avatar || `${controller.cid}-default.png`}`" alt="" height="170" width="170">
+								<img :src="avatarUrl" alt="" height="170" width="170">
 							</div>
 						</div>
 						<div class="col s7 m8 l9">
@@ -107,7 +107,8 @@ export default {
 		return {
 			controller: null,
 			stats: null,
-			loading: true
+			loading: true,
+			avatarURL: ''
 		};
 	},
 	async mounted() {
@@ -123,6 +124,7 @@ export default {
 				this.controller = data.data;
 				const {data: statsData} = await zabApi.get(`/controller/stats/${this.$route.params.cid}`);
 				this.stats = statsData.data;
+				this.avatarUrl = `https://zauartcc.sfo3.digitaloceanspaces.com/${import.meta.env.VITE_FOLDER_PREFIX}/avatars/${this.controller.avatar || `${this.controller.cid}-default.png`}`;
 			}
 			if(!this.controller || !this.controller.isMem) this.$router.push('/404');
 			this.loading = false;

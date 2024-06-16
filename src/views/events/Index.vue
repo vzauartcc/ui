@@ -10,7 +10,7 @@
 	</div>
 	<div v-if="events && events.length > 0">
 		<div class="card event_card" v-for="event in events" :key="event.id">
-			<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/events/${event.bannerUrl}`" class="event_banner" draggable="false" alt="" />
+			<img :src="getBannerUrl(event.bannerUrl)" class="event_banner" draggable="false" alt="" />
 			<div class="card-content">
 				<div class="row">
 					<div class="col s12 l8">
@@ -50,6 +50,12 @@ export default {
 			const {data} = await zabApi.get('/event');
 			this.events = data.data;
 		},
+		getBannerUrl(bannerUrl) {
+      const folderPrefix = import.meta.env.VITE_FOLDER_PREFIX;
+      return bannerUrl.match(/^http/)
+        ? bannerUrl
+        : `https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/events/${bannerUrl}`;
+    },
 		formatTime(value) {
 			var d = new Date(value);
 			return d.toLocaleString('en-us', {timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hour12: false});

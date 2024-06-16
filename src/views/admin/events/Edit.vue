@@ -132,6 +132,7 @@ export default {
 
 				if(data.ret_det.code === 200) {
 					this.toastSuccess('Event updated');
+					this.$router.push('/events');
 				} else {
 					this.toastError(data.ret_det.message);
 				}
