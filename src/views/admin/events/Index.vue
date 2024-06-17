@@ -114,6 +114,7 @@ export default {
         const {data} = await zabApi.delete(`/event/${slug}`);
         if (data.ret_det.code === 200) {
           this.toastSuccess('Event deleted');
+          this.getUpcomingEvents();
         } else {
           this.toastError(data.ret_det.message);
         }

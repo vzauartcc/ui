@@ -3,7 +3,9 @@
 		<div v-if="docs.length === 0" class="no_files">No documents in this category found</div>
 		<div class="document" v-else v-for="doc in docs" :key="doc.id">
 			<router-link v-if="doc.type === 'doc'" :to="`/files/documents/${doc.slug}`" class="button btn"><i class="material-icons">search</i></router-link>
-			<a v-else :href="`https://zauartcc.sfo3.cdn.digitaloceanspaces.com/documents/${doc.fileName}`" class="btn button" target="_blank"><i class="material-icons">search</i></a>
+			<a v-else :href="getDocumentUrl(doc.fileName)" class="btn button" target="_blank">
+				<i class="material-icons">file_download</i>
+      </a>	
 			<div class="title">{{doc.name}}</div>
 			<div class="desc">{{doc.description}}</div>
 			<div class="info">Updated at {{dtRegionalUS(doc.updatedAt)}}z</div>
@@ -13,7 +15,17 @@
 
 <script>
 export default {
-	props: ['cat', 'docs']
+	props: ['cat', 'docs'],
+	data() {
+		return {
+			folderPrefix: import.meta.env.VITE_FOLDER_PREFIX // Assign the environment variable to a data property
+		}
+	},
+	methods: {
+		getDocumentUrl(fileName) {
+      return `https://zauartcc.sfo3.cdn.digitaloceanspaces.com/${this.folderPrefix}/documents/${fileName}`;
+    }
+	}
 };
 </script>
 

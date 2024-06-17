@@ -21,7 +21,7 @@
     "@sentry/tracing": "^6.15.0",
     "@toast-ui/editor": "^3.1.1",
     "@toast-ui/editor-plugin-table-merged-cell": "^3.0.1",
-    "axios": "^0.24.0",
+    "axios": "^1.7.2",
     "chart.js": "^3.6.0",
     "core-js": "^3.19.1",
     "dayjs": "^1.11.7",

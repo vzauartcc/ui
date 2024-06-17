@@ -76,7 +76,8 @@ export default {
 				name: '',
 				category: '',
 				description: '',
-				content: ''
+				content: '',
+				oldFileName: ''
 			},
 			editor: null,
 			loading: true
@@ -107,6 +108,7 @@ export default {
 		async getDocument() {
 			const {data} = await zabApi.get(`/file/documents/${this.$route.params.id}`);
 			this.form = data.data;
+			this.form.oldFileName = data.data.fileName;
 			this.loading = false;
 		},
 		async updateDocument() {
@@ -121,6 +123,7 @@ export default {
 
 			if (this.form.type === 'file') {
     			formData.append('download', this.$refs.download.files[0]);
+					formData.append('oldFileName', this.form.oldFileName); 
   			}
 
   			const { data } = await zabApi.put(`/file/documents/${this.form.slug}`, formData, {

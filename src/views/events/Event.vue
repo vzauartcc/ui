@@ -4,7 +4,7 @@
 			<Spinner />
 		</div>
 		<div class="event" v-else>
-			<img :src="`${event.bannerUrl.match(/^http/) ? event.bannerUrl : `https://zauartcc.sfo3.digitaloceanspaces.com/events/${event.bannerUrl}`}`" class="event_banner" draggable="false" alt="" />
+      <img :src="getBannerUrl(event.bannerUrl)" class="event_banner" draggable="false" alt="" />
 			<div class="card-content">
 				<div class="row">
 					<div class="col s12">
@@ -49,6 +49,12 @@ export default {
 				this.event = data.data;
 			}
 		},
+		getBannerUrl(bannerUrl) {
+      const folderPrefix = import.meta.env.VITE_FOLDER_PREFIX;
+      return bannerUrl.match(/^http/) 
+        ? bannerUrl 
+        : `https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/events/${bannerUrl}`;
+    },
 		formatTime(value) {
 			var d = new Date(value);
 			return d.toLocaleString('en-us', {timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'});

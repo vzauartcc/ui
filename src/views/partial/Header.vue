@@ -96,6 +96,9 @@
               <li v-if="user.isLoggedIn && user.data.isIns">
                 <router-link to='/ins'>Instructor Dashboard</router-link>
               </li>
+              <li v-if="user.isLoggedIn && user.data.isSenior">
+                <router-link to='/ta'>TA Dashboard</router-link>
+              </li>
               <li v-if="user.isLoggedIn && user.data.isStaff">
                 <router-link to='/admin'>Admin Dashboard</router-link>
               </li>

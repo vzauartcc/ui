@@ -6,7 +6,7 @@
 		<div class="row">
 			<div class="col s12">
 				<ul class="tabs">
-					<li class="tab col s6 l3"><a class="active" href="#sector">Facility Files</a></li>
+					<li class="tab col s6 l3"><a class="active" href="#sectorFiles">Facility Files</a></li>
 				</ul>
 			</div>
 			<div class="loading_container loading_files" v-if="downloads === null">

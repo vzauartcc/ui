@@ -13,7 +13,7 @@
       	<div v-for="(sessions, rating) in sessionsGroupedByRating" :key="rating" class="rating-section">
         <!-- Rating Header -->
         <div class="rating-header" @click="toggleRating(rating)">
-          <h>{{ rating }} <i class="material-icons">{{ isExpanded(rating) ? 'expand_less' : 'expand_more' }}</i></h>
+          <span>{{ rating }} <i class="material-icons">{{ isExpanded(rating) ? 'expand_less' : 'expand_more' }}</i></span>
         </div>
 
         <!-- Sessions Table for the Rating -->
@@ -65,7 +65,7 @@
       	<div v-for="(sessions, rating) in sessionsGroupedByRating" :key="rating" class="rating-section">
         <!-- Rating Header -->
         <div class="rating-header" @click="toggleRating(rating)">
-          <h>{{ rating }} <i class="material-icons">{{ isExpanded(rating) ? 'expand_less' : 'expand_more' }}</i></h>
+          <span>{{ rating }} <i class="material-icons">{{ isExpanded(rating) ? 'expand_less' : 'expand_more' }}</i></span>
         </div>
 
         <!-- Sessions Table for the Rating -->
