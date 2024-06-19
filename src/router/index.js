@@ -399,6 +399,11 @@ const routes = [
 				path: 'staffingrequest/:slug',
 				component: () => import('../views/dashboard/ViewStaffingRequest.vue')
 			},
+			//Testing purposes for now.
+			{
+				path: 'training/exam',
+				component: () => import('../views/dashboard/training/ExamPage.vue')
+			},
 		]
 	},
 //	{

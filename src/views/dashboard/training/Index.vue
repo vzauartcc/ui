@@ -54,21 +54,21 @@
 						<td>{{dtLong(session.endTime)}}</td>
 						<td>{{session.instructor ? (session.instructor.fname + ' ' + session.instructor.lname) : 'Unfulfilled'}}</td>
 						<td class="options">
-                            <a :href="`#modal_delete_${session._id}`" data-position="top" data-tooltip="Cancel Training Session"
+              <a :href="`#modal_delete_${session._id}`" data-position="top" data-tooltip="Cancel Training Session"
 							class="tooltipped modal-trigger"><i class="material-icons red-text text-darken-2">cancel</i></a>
-                        </td>
-                        <div :id="`modal_delete_${session._id}`" class="modal modal_delete">
-                            <div class="modal-content">
-                                <h4>Cancel Training Session?</h4>
-                                <p>This will remove the training session.  <br>
+            </td>
+            <div :id="`modal_delete_${session._id}`" class="modal modal_delete">
+              <div class="modal-content">
+                <h4>Cancel Training Session?</h4>
+                <p>This will remove the training session.  <br>
 								<br>If you are cancelling a scheduled session within 24 hours, please advise the instructor or ta@zauartcc.net via email also.<br><br>
-								Are you sure you wish to cancel?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <a href="#!" @click="deleteSession(session._id)" class="btn waves-effect modal-close">Delete</a>
-                                <a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
-                            </div>
-                        </div>
+									Are you sure you wish to cancel?</p>
+              </div>
+              <div class="modal-footer">
+              	<a href="#!" @click="deleteSession(session._id)" class="btn waves-effect modal-close">Delete</a>
+                <a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
+              </div>
+            </div>
 					</tr>
 				</tbody>
 			</table>
