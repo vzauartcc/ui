@@ -14,7 +14,7 @@
 				<thead class="sessions_list_head">
 					<tr>
 						<th>Student</th>
-						<th>Milestone</th>
+						<th>Course</th>
 						<th>Start</th>
 						<th>End</th>
 						<th class="options">Options</th>

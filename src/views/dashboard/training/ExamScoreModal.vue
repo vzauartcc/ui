@@ -9,7 +9,11 @@
     <div class="modal-content scrollable-content">
       <ul class="collection with-header">
         <li v-for="(question, index) in questions" :key="question._id" class="collection-item">
-          <div class="question-text">{{ index + 1 }}. {{ question.text }}</div>
+          <div class="question-text">
+            {{ index + 1 }}. {{ question.text }}
+            <span v-if="question.isCorrect === true">(Correct)</span>
+            <span v-else>(Incorrect)</span>
+          </div>
           <ul>
             <li v-for="(option, index) in question.options" :key="option._id">
               <span>
