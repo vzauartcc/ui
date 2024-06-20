@@ -1,13 +1,13 @@
 <template>
 	<div class="card">
 		<div class="card-content">
-			<div class="card-title">Training Requests for {{formatDate(date)}}</div>
+			<div class="card-title">Training Sessions for {{formatDate(date)}}</div>
 		</div>
 		<div class="loading_container" v-if="!requests">
 			<Spinner />
 		</div>
 		<div v-else-if="requests.length === 0" class="no_requests">
-			There are no training requests for {{formatDate(date)}}
+			There are no training sessions for {{formatDate(date)}}
 		</div>
 		<div class="requests_wrapper" v-else>
 			<table class="requests_list striped">
