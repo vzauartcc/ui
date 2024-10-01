@@ -11,7 +11,7 @@
 			<div class="card-content assignment_cta">
 				<div v-if="!event.open || new Date(event.eventStart).getTime() < Date.now()" class="sign_up_err">Sign-ups for this event are closed</div>
 				<div v-else-if="!user.data" class="sign_up_err">Log in to sign up</div>
-				<div v-else-if="user.data.member === false" class="sign_up_err">You are not a member of ZAB</div>
+				<div v-else-if="user.data.member === false" class="sign_up_err">You are not a member of ZAU</div>
 				<div v-else-if="assignedPositions" class="sign_up_err">You have been assigned a position. Contact the EC if you need to cancel.</div>
 				<div v-else-if="requestedPositions" class="requested_pos">
 					You have requested<br />

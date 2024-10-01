@@ -3,13 +3,13 @@
 		<div class="card-content">
 			<span class="card-title">Controller Activity Report</span>
 			<div class="card-title2" style="display: flex; align-items: center; justify-content: space-between;">
-  				<div>
-    				<p>Showing controller activity in <strong>{{chkDate2.toLocaleString('en-US', { month: 'long' })}}, {{chkDate2.getFullYear()}}</strong></p>
-  				</div>
-  				<div>
-    				<a class="waves-effect waves-light btn" v-on:click="previousMonth()">Previous</a>
-    				<a class="waves-effect waves-light btn" v-on:click="nextMonth()">Next</a>
-  				</div>
+  			<div>
+    			<p>Showing controller activity in <strong>Q{{ currentQuarter }}, {{ chkDate2.getFullYear() }}</strong></p>
+  			</div>
+  			<div>
+    			<a class="waves-effect waves-light btn" v-on:click="previousQuarter()">Previous</a>
+    			<a class="waves-effect waves-light btn" v-on:click="nextQuarter()">Next</a>
+  			</div>
 			</div>
 		</div>
 		<div class="table_wrapper">
@@ -117,9 +117,10 @@ export default {
 		return {
 			report: null,
 			chkDate2: new Date(),
+			currentQuarter: Math.floor((new Date().getMonth() + 3) / 3), // default to the current quarter
 			reason: '',
 			sortBy: null,
-			descending: true
+			descending: true,
 		};
 	},
 	async mounted() {
@@ -133,40 +134,61 @@ export default {
 		});
 	},
 	methods: {
-		async getActivity(month = null) {
-  			const d = new Date();
-  			const monthDate = month ? new Date(`${month}-01`) : new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-			const monthString = `${monthDate.getUTCFullYear()}-${(monthDate.getUTCMonth() + 1).toString().padStart(2, '0')}`;
-  			this.chkDate = monthString;
-  			const {data: reportData} = await zabApi.get('/stats/activity', {
-    			params: {
-      				month: monthString
-    			}
-  			});
-  			this.report = reportData.data;
-  			//console.log(this.report);
-		},
-		async setDateAndFetchActivity(date) {
-  			this.chkDate2 = date;
-  			const {data: reportData} = await zabApi.get('/stats/activity', {
-    			params: {
-      				month: `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1).toString().padStart(2, '0')}`
-    			}
-  			});
-  			this.report = reportData.data;
-		},
-		async previousMonth() {
-  			const prevMonth = new Date(this.chkDate2.getUTCFullYear(), this.chkDate2.getUTCMonth() - 1, 1);
-  			await this.setDateAndFetchActivity(prevMonth);
-			this.$forceUpdate(); // force a re-render of the component
-		},
-		async nextMonth() {
-  			const nextMonth = new Date(this.chkDate2.getUTCFullYear(), this.chkDate2.getUTCMonth() + 1, 1);
-  			if (nextMonth <= new Date()) {
-    			await this.setDateAndFetchActivity(nextMonth);
-				this.$forceUpdate(); // force a re-render of the component
-  			}
-		},
+		async getActivity(quarter = null) {
+      const d = new Date();
+      const selectedDate = quarter ? new Date(quarter) : d;
+      const currentQuarter = Math.floor((selectedDate.getMonth() + 3) / 3); // Calculate the current quarter (1-4)
+      const year = selectedDate.getFullYear();
+
+      this.chkDate2 = selectedDate; // Update the selected date
+      this.currentQuarter = currentQuarter; // Update the current quarter
+
+      const { data: reportData } = await zabApi.get('/stats/activity', {
+        params: {
+          quarter: currentQuarter,
+          year: year
+        }
+      });
+
+      this.report = reportData.data;
+    },
+
+    async previousQuarter() {
+      let currentQuarter = Math.floor((this.chkDate2.getUTCMonth() + 3) / 3);
+      let newYear = this.chkDate2.getUTCFullYear();
+
+      if (currentQuarter === 1) {
+        currentQuarter = 4;
+        newYear -= 1;
+      } else {
+        currentQuarter -= 1;
+      }
+
+      const newDate = new Date(newYear, (currentQuarter - 1) * 3, 1);
+      await this.getActivity(newDate);
+      this.$forceUpdate(); // Trigger re-render if needed
+    },
+
+    async nextQuarter() {
+      let currentQuarter = Math.floor((this.chkDate2.getUTCMonth() + 3) / 3);
+      let newYear = this.chkDate2.getUTCFullYear();
+
+      if (currentQuarter === 4) {
+        currentQuarter = 1;
+        newYear += 1;
+      } else {
+        currentQuarter += 1;
+      }
+
+      const newDate = new Date(newYear, (currentQuarter - 1) * 3, 1);
+      if (newDate <= new Date()) {
+        await this.getActivity(newDate);
+        this.$forceUpdate();
+      } else {
+        console.log("Cannot select a future quarter.");
+      }
+    },
+
 		async removeController(cid) {
 			try {
 				this.toastInfo('Removing controller...');
