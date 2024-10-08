@@ -88,14 +88,6 @@
                   <a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
                 </div>
               </div>
-
-
-
-
-
-
-
-
 						</tr>
 					</tbody>
 				</table>

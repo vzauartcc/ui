@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@materializecss/materialize": "^1.1.0-alpha",
-    "@sentry/browser": "^6.15.0",
+    "@sentry/browser": "^8.33.1",
     "@sentry/integrations": "^6.15.0",
     "@sentry/tracing": "^6.15.0",
     "@toast-ui/editor": "^3.1.1",
@@ -34,11 +34,11 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^1.10.0",
+    "@vitejs/plugin-vue": "^5.1.4",
     "babel-eslint": "^10.1.0",
     "eslint": "^8.3.0",
     "eslint-plugin-vue": "^8.1.1",
     "sass": "^1.43.5",
-    "vite": "^2.6.14"
+    "vite": "^5.4.8"
   }
 }

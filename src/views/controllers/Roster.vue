@@ -135,38 +135,43 @@ export default {
     reduceControllerCerts(certs) {
   		if (!certs) return [];
 
-  		// Define priority orders
-  		const tierPriority = { 'tier-1': 1, 'tier-2': 2, 'solom': 3, 'solon': 4, 'non-tier': 5 };
-  		const facilityPriority = { 'ctr': 1, 'app': 2, 'twr': 3, 'gnd': 4 };
+  		// Step 1: Sort certs by the 'order' property
+			const sortedCerts = certs.sort((a, b) => (b.order || 0) - (a.order || 0));
 
-  		// Group certs by facility
-  		const facilityGroups = certs.reduce((acc, cert) => {
-    		if (!acc[cert.facility]) acc[cert.facility] = [];
-    		acc[cert.facility].push(cert);
-    		return acc;
-  		}, {});
+  		// Step 2: Remove non-tier certs if a tier-1 cert exists for the same facility/type
+  		const facilityMap = {};  // Track if a tier-1 or tier-2 cert exists for the same facility/type
 
-  		// Filter and sort certifications within each facility group
-  		let sortedCerts = [];
-  		Object.keys(facilityGroups).forEach(facility => {
-    		// Sort certs by tier within the facility
-    		facilityGroups[facility].sort((a, b) => (tierPriority[a.class] || 6) - (tierPriority[b.class] || 6));
+  		return sortedCerts.filter(cert => {
+    		const facilityType = `${cert.facility}-${cert.type}`; // Facility + type (e.g., ORD-GND/DEL)
 
-    		let hasTier1or2 = facilityGroups[facility].some(cert => cert.class === 'tier-1' || cert.class === 'tier-2');
-    		facilityGroups[facility].forEach(cert => {
-      		if (cert.class === 'tier-1' || cert.class === 'tier-2') {
-        		sortedCerts.push(cert);
-      		} else if (cert.class.includes('solo')) {
-        		sortedCerts.push(cert);
-      		} else if (cert.class === 'non-tier' && !hasTier1or2) {
-        		sortedCerts.push(cert);
+    		if (cert.class === 'tier-1') {
+      		// If it's tier-1, store it and ensure only tier-1 and tier-2 certs are shown for this facility/type
+      		facilityMap[facilityType] = 'tier-1';
+      		return true; // Always show tier-1
+    		}
+
+    		if (cert.class === 'tier-2') {
+      		// If a tier-1 cert exists for this facility/type, show only tier-1 and tier-2
+      		if (facilityMap[facilityType] === 'tier-1') return true;
+      		// Otherwise, allow tier-2 to be displayed
+      		facilityMap[facilityType] = 'tier-2';
+      		return true;
+    		}
+
+    		if (cert.class === 'non-tier') {
+      		// Only display non-tier if no tier-1 cert exists for this facility/type
+      		if (!facilityMap[facilityType]) {
+        		facilityMap[facilityType] = 'non-tier';
+        		return true;
       		}
-    		});
-  		});
+      		// If a tier-1 cert exists, don't display non-tier
+      		return false;
+    		}
 
-  		// Finally, sort all selected certs by facility priority
-  		return sortedCerts.sort((a, b) => (facilityPriority[a.facility] || 5) - (facilityPriority[b.facility] || 5));
-		},
+    		// For other cert types (e.g., solo), just include them
+    		return true;
+  		});
+		}
   },
   computed: {
     ...mapState("user", ["user"]),

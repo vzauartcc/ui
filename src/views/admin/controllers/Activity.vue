@@ -230,20 +230,44 @@ export default {
 			return `${hours}:${minutes}:${seconds}`;
 		},
 		reduceControllerCerts(certs) {
-			if(!certs) return [];
-			const hasCerts = certs.map(cert => cert.code);
-			let certsToShow = [];
-			certs.forEach(cert => {
-				if(cert.class === "major" || cert.class === "center") {
-					certsToShow.push(cert);
-				} else {
-					const certPos = cert.code.slice(-3);
-					if(!hasCerts.includes(`ord${certPos}`)) {
-						certsToShow.push(cert);
-					}
-				}
-			});
-			return certsToShow;
+  		if (!certs) return [];
+
+  		// Step 1: Sort certs by the 'order' property
+			const sortedCerts = certs.sort((a, b) => (b.order || 0) - (a.order || 0));
+
+  		// Step 2: Remove non-tier certs if a tier-1 cert exists for the same facility/type
+  		const facilityMap = {};  // Track if a tier-1 or tier-2 cert exists for the same facility/type
+
+  		return sortedCerts.filter(cert => {
+    		const facilityType = `${cert.facility}-${cert.type}`; // Facility + type (e.g., ORD-GND/DEL)
+
+    		if (cert.class === 'tier-1') {
+      		// If it's tier-1, store it and ensure only tier-1 and tier-2 certs are shown for this facility/type
+      		facilityMap[facilityType] = 'tier-1';
+      		return true; // Always show tier-1
+    		}
+
+    		if (cert.class === 'tier-2') {
+      		// If a tier-1 cert exists for this facility/type, show only tier-1 and tier-2
+      		if (facilityMap[facilityType] === 'tier-1') return true;
+      		// Otherwise, allow tier-2 to be displayed
+      		facilityMap[facilityType] = 'tier-2';
+      		return true;
+    		}
+
+    		if (cert.class === 'non-tier') {
+      		// Only display non-tier if no tier-1 cert exists for this facility/type
+      		if (!facilityMap[facilityType]) {
+        		facilityMap[facilityType] = 'non-tier';
+        		return true;
+      		}
+      		// If a tier-1 cert exists, don't display non-tier
+      		return false;
+    		}
+
+    		// For other cert types (e.g., solo), just include them
+    		return true;
+  		});
 		},
 		sort(p) {
 			if(p === this.sortBy) {
@@ -405,12 +429,25 @@ export default {
 			background-color: $secondary-color-dark;
 		}
 
-		&.cert_major {
+		&.cert_tier-1 {
 			background: $secondary-color;
 		}
 
-		&.cert_minor {
-			background: $secondary-color-light;
+		&.cert_tier-2 {
+			background: $primary-color;
+		}
+
+		&.cert_non-tier {
+		background: $secondary-color-light;
+		}
+
+		&.cert_solon {
+			background: #FFA500;
+		}
+		
+		&.cert_solom {
+			background: #FFE83E;
+			color: #000000;
 		}
 	}
 
