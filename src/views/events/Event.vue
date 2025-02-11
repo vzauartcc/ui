@@ -29,7 +29,7 @@ export default {
 	name: 'Events',
 	data() {
 		return {
-			folderPrefix: import.meta.env.VITE_FOLDER_PREFIX,
+			folderPrefix: window.env.VITE_FOLDER_PREFIX,
 			event: null,
 			chips: null
 		};

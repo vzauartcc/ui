@@ -13,12 +13,10 @@
 
 <script>
 
-const folderPrefix = import.meta.env.VITE_FOLDER_PREFIX;
-
 export default {
 	data() {
     return {
-      folderPrefix: import.meta.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
+      folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
     };
   },
 	props: ['cat', 'docs']
