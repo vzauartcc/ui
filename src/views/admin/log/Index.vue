@@ -6,8 +6,10 @@
 		<div class="actions_wrapper" v-if=log>
 			<table class="striped highlight">
 				<thead>
-					<th class="date">Date</th>
-					<th>Action</th>
+					<tr>
+						<th class="date">Date</th>
+						<th>Action</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="item in log" :key=item._id>

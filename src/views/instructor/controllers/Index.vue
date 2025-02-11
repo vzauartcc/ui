@@ -41,45 +41,52 @@
 							<td class="options">
 								<router-link data-position="top" data-tooltip="View Training Sessions" class="tooltipped" :to="`/ins/training/sessions/${controller.cid}`"><i class="material-icons">assignment</i></router-link>
 								<router-link data-position="top" data-tooltip="Edit Controller" class="tooltipped" :to="`/ins/controllers/${controller.cid}`"><i class="material-icons">edit</i></router-link>
-                                  <template v-if="requiresAuth(['atm', 'datm', 'ta', 'ins', 'wm'])">
-                                <template v-if="controller.ratingShort !== 'C3' && controller.ratingShort !== 'SUP' && controller.ratingShort !== 'ADM' && controller.ratingShort !== 'I1' && controller.ratingShort !== 'I3' && controller.ratingShort !== 'C1'  && controller.vis === false">
-                             <a :href="`#modal_promote_${controller.cid}`" data-position="top" data-tooltip="Promote Controller" class="tooltipped modal-trigger"><i class="material-icons green-text text-darken-2">arrow_upward</i></a>
-                            </template>
-                        </template>
-                        </td>
-              <div :id="`modal_promote_${controller.cid}`" class="modal modal_promote" @focus="getNewRating(controller.rating)">
-                <div class="modal-content">
-                  <h4>Promote <b>{{controller.fname}} {{controller.lname}}</b></h4>
-                  <p>This will promote <b>{{controller.fname}} {{controller.lname}}</b> to the next rating. You must state a new rating, date of OTS, callsign of the positon the user was on, and your CID for the promotion below.</p>
-                  <div class="row">
-                    <div class="input-field col s12 m6">
-                      <p>New Rating</p>
-                      <textarea class="materialize-textarea col s12 m10" style="margin-right: 20px; padding-top: 5px" placeholder="New Rating ex. S1" :value="newRating"  disabled></textarea>
-                    </div>
-                    <div class="input-field col s12 m6">
-                      <p>Your CID</p>
-                      <textarea class="materialize-textarea col s12 m10" style="margin-bottom: 20px; padding-top: 5px" placeholder="Your CID" :value="examinerCid" disabled></textarea>
-                    </div>
-                    <div class="input-field col s12 m6">
-                      <p>OTS Position</p>
-                      <textarea class="materialize-textarea col s12 m10" style="margin-bottom: 20px; padding-top: 5px" placeholder="CHI_35_CTR" v-model="position" required></textarea>
-                    </div>
-                    <div class="input-field col s12 m6">
-                      <p>Date of OTS</p>
-                      <flat-pickr class="input-field col s12 m10" placeholder="OTS Date" v-model="otsDate" required></flat-pickr>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <a href="#!" @click="promoteController(controller)" class="btn waves-effect">Promote</a>
-                  <a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
-                </div>
-              </div>
+                <template v-if="requiresAuth(['atm', 'datm', 'ta', 'ins', 'wm'])">
+                  <template v-if="controller.ratingShort !== 'C3' && controller.ratingShort !== 'SUP' && controller.ratingShort !== 'ADM' && controller.ratingShort !== 'I1' && controller.ratingShort !== 'I3' && controller.ratingShort !== 'C1'  && controller.vis === false">
+                    <a href="#" @click.prevent="openModal(controller.cid)" class="tooltipped" data-tooltip="Promote Controller" data-position="top"><i class="material-icons green-text text-darken-2">arrow_upward</i></a>
+                  </template>
+                </template>
+              </td>           
 						</tr>
 					</tbody>
 				</table>
 			</div>
 		</div>
+		<teleport to="body">
+  		<div v-for="controller in controllersFiltered" :key="`modal_promote_${controller.cid}`">
+    		<div :id="`modal_promote_${controller.cid}`" class="modal modal_promote" @focus="getNewRating(controller.rating)">
+      		<div class="modal-content">
+        		<h4>Promote <b>{{controller.fname}} {{controller.lname}}</b></h4>
+        		<p>
+          		This will promote <b>{{controller.fname}} {{controller.lname}}</b> to the next rating. 
+          		You must provide a new rating, date of OTS, callsign of the position, and your CID for the promotion below.
+        		</p>
+        		<div class="row">
+          		<div class="input-field col s12 m6">
+            		<p>New Rating</p>
+            		<textarea class="materialize-textarea col s12 m10" placeholder="New Rating ex. S1" :value="newRating" disabled></textarea>
+          		</div>
+          		<div class="input-field col s12 m6">
+            		<p>Your CID</p>
+            		<textarea class="materialize-textarea col s12 m10" placeholder="Your CID" :value="examinerCid" disabled></textarea>
+          		</div>
+          		<div class="input-field col s12 m6">
+            		<p>OTS Position</p>
+            		<textarea class="materialize-textarea col s12 m10" placeholder="CHI_35_CTR" v-model="position" required></textarea>
+          		</div>
+          		<div class="input-field col s12 m6">
+            		<p>Date of OTS</p>
+            		<flat-pickr class="input-field col s12 m10" placeholder="OTS Date" v-model="otsDate" required></flat-pickr>
+          		</div>
+        		</div>
+      		</div>
+      		<div class="modal-footer">
+        		<a href="#!" @click.prevent="promoteController(controller)" class="btn waves-effect">Promote</a>
+        		<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
+      		</div>
+    		</div>
+  		</div>
+		</teleport>
 	</div>
 </template>
 
@@ -104,7 +111,7 @@ export default {
 			controllers: null,
 			controllersFiltered: null,
 			filter: '',
-              examinerCid: '',
+      examinerCid: '',
       newRating:  '',
       rating: '',
 			reason: null,
@@ -116,23 +123,21 @@ export default {
 		};
 	},
 	async mounted() {
-		await this.getControllers();
-        await this.getControllers();
-    this.getExaminerCid().then((examinerCid) => {
+    await this.getControllers();
+    await this.getExaminerCid().then((examinerCid) => {
       this.examinerCid = examinerCid;
     });
+
     const today = new Date(new Date().toUTCString());
     flatpickr('#otsDate', {
       date: null,
       dateFormat: 'Y-m-d',
       minDate: today,
     });
-		M.Modal.init(document.querySelectorAll('.modal'), {
-			preventScrolling: false
-		});
-		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-			margin: 0
-		});
+
+    this.$nextTick(() => {
+        this.initModals();
+    });
 	},
 	methods: {
 		requiresAuth(roles) {
@@ -142,7 +147,19 @@ export default {
 			} else {
 				return false;
 			}
-	},
+		},
+		initModals() {
+        this.$nextTick(() => {
+            const modals = document.querySelectorAll('.modal');
+            M.Modal.init(modals, { preventScrolling: false });
+        });
+    },
+    openModal(cid) {
+        const modal = document.getElementById(`modal_promote_${cid}`);
+        if (modal) {
+            M.Modal.getInstance(modal).open();
+        }
+    },
 		async getControllers() {
 			const {data} = await zabApi.get('/controller');
 			this.controllers = data.data.home.concat(data.data.visiting);
@@ -216,7 +233,15 @@ export default {
 					return true;
 				}
 			});
-		}
+		},
+		watch: {
+    	controllersFiltered: {
+        handler() {
+            this.initModals();
+        },
+        deep: true
+    	}
+		},
 	}
 };
 </script>

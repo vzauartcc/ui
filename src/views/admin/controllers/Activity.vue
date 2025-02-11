@@ -15,45 +15,47 @@
 		<div class="table_wrapper">
 			<table class="medium striped" v-if="report">
 				<thead>
-					<th>Active?</th>
-					<th @click="sort('fname')">
-						Controller
-						<div class="right">
-							<i class="material-icons" v-if="sortBy !== 'fname'">unfold_more</i>
-							<i class="material-icons active" v-else-if="sortBy === 'fname' && descending">arrow_drop_down</i>
-							<i class="material-icons active" v-else-if="sortBy === 'fname' && !descending">arrow_drop_up</i>
-						</div>
-					</th>
-					<th @click="sort('rating')">
-						Rating
-						<div class="right">
-							<i class="material-icons" v-if="sortBy !== 'rating'">unfold_more</i>
-							<i class="material-icons active" v-else-if="sortBy === 'rating' && descending">arrow_drop_down</i>
-							<i class="material-icons active" v-else-if="sortBy === 'rating' && !descending">arrow_drop_up</i>
-						</div>
-					</th>
-					<th @click="sort('totalTime')">
-						Time
-						<div class="right">
-							<i class="material-icons" v-if="sortBy !== 'totalTime'">unfold_more</i>
-							<i class="material-icons active" v-else-if="sortBy === 'totalTime' && descending">arrow_drop_down</i>
-							<i class="material-icons active" v-else-if="sortBy === 'totalTime' && !descending">arrow_drop_up</i>
-						</div>
-					</th>
-					<th @click="sort('createdAt')">
-						Join Date
-						<div class="right">
-							<i class="material-icons" v-if="sortBy !== 'createdAt'">unfold_more</i>
-							<i class="material-icons active" v-else-if="sortBy === 'createdAt' && descending">arrow_drop_down</i>
-							<i class="material-icons active" v-else-if="sortBy === 'createdAt' && !descending">arrow_drop_up</i>
-						</div>
-					</th>
-					<th class="options">Options</th>
+					<tr>
+						<th>Active?</th>
+						<th @click="sort('fname')">
+							Controller
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'fname'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'fname' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'fname' && !descending">arrow_drop_up</i>
+							</div>
+						</th>
+						<th @click="sort('rating')">
+							Rating
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'rating'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'rating' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'rating' && !descending">arrow_drop_up</i>
+							</div>
+						</th>
+						<th @click="sort('totalTime')">
+							Time
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'totalTime'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'totalTime' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'totalTime' && !descending">arrow_drop_up</i>
+							</div>
+						</th>
+						<th @click="sort('createdAt')">
+							Join Date
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'createdAt'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'createdAt' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'createdAt' && !descending">arrow_drop_up</i>
+							</div>
+						</th>
+						<th class="options">Options</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="controller of sortedArray" :class="[(controller.tooLow)?'too_low':'',(controller.protected)?'protected':'']" :key="controller.cid">
 						<td>
-							<i class="material-icons green-text" v-if="!controller.tooLow || controller.protected">check</i>
+							<i class="material-icons green-text" v-if="!controller.tooLow || controller.protected || controller.exempt">check</i>
 							<i class="material-icons red-text text-darken-1" v-else>close</i>
 						</td>
 						<td>
@@ -88,17 +90,6 @@
 						<td class="options">
 							<a :href="`#modal_delete_${controller.cid}`" data-position="top" data-tooltip="Remove Controller" class="tooltipped modal-trigger"><i class="material-icons red-text text-darken-2">delete</i></a>
 						</td>
-						<div :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
-							<div class="modal-content">
-								<h4>Remove Controller?</h4>
-								<p>This will remove <b>{{controller.fname}} {{controller.lname}}</b> from the Chicago ARTCC. You must state a reason for removal below. Please note that this will delete the controller from both the website and the VATUSA facility roster.</p>
-								<textarea class="materialize-textarea" placeholder="Reason for removal" v-model="reason" required></textarea>
-							</div>
-							<div class="modal-footer">
-								<a href="#!" @click="removeController(controller.cid)" class="btn waves-effect">Remove</a>
-								<a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
-							</div>
-						</div>
 					</tr>
 				</tbody>
 			</table>
@@ -106,6 +97,19 @@
 				<Spinner />
 			</div>
 		</div>
+		<Teleport to="body">
+  		<div v-for="controller in sortedArray" :key="`modal-${controller.cid}`" :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
+    		<div class="modal-content">
+      	<h4>Remove Controller?</h4>
+      	<p>This will remove <b>{{ controller.fname }} {{ controller.lname }}</b> from the Chicago ARTCC.</p>
+      	<textarea class="materialize-textarea" placeholder="Reason for removal" v-model="reason" required></textarea>
+    	</div>
+    	<div class="modal-footer">
+      	<a href="#!" @click.prevent="removeController(controller.cid)" class="btn waves-effect">Remove</a>
+      	<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
+    	</div>
+  	</div>
+	</Teleport>
 	</div>
 </template>
 
@@ -124,7 +128,6 @@ export default {
 		};
 	},
 	async mounted() {
-		console.log(this.chkDate2);
 		await this.getActivity();
 		M.Modal.init(document.querySelectorAll('.modal'), {
 			preventScrolling: false

@@ -5,7 +5,7 @@
         <div>
 <router-link to="/"
           ><img class="mainLogo"
-          src="https://zauartcc.sfo3.digitaloceanspaces.com/site-logo/Main-Logo.png"
+          :src="`https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/site-logo/Main-Logo.png`"
             draggable="false"
             height="165"
         /></router-link>
@@ -38,15 +38,15 @@
           <li class="has_dropdown" data-state="hide">
             <a class="dropdown-left" href="#!" data-target="links-dropdown">LINKS</a>
             <ul id="links-dropdown" class="dropdown-content">
-              <li><a href="https://charts.zauartcc.org">ZAU Charts</a></li>
-              <li><a href="https://map.vatsim.net/">VATSIM Map</a></li>
-              <li><a href="https://skyvector.com/">SkyVector</a></li>
-              <li><a href="https://flightaware.com/statistics/ifr-route/">FlightAware</a></li>
-              <li><a href="https://datis.clowd.io/">DATIS</a></li>
-              <li><a href="https://www.vatsim.net/">VATSIM Home</a></li>
-              <li><a href="https://www.vatusa.net/">VATUSA Home</a></li>
-              <li><a href="https://www.airnav.com/">AirNav</a></li>
-              <li><a href="https://www.virtualnas.net/">vNAS</a></li>
+              <li><a href="https://charts.zauartcc.org" target="_blank" rel="noopener noreferrer">ZAU Charts</a></li>
+              <li><a href="https://map.vatsim.net/" target="_blank" rel="noopener noreferrer">VATSIM Map</a></li>
+              <li><a href="https://skyvector.com/" target="_blank" rel="noopener noreferrer">SkyVector</a></li>
+              <li><a href="https://flightaware.com/statistics/ifr-route/" target="_blank" rel="noopener noreferrer">FlightAware</a></li>
+              <li><a href="https://datis.clowd.io/" target="_blank" rel="noopener noreferrer">DATIS</a></li>
+              <li><a href="https://www.vatsim.net/" target="_blank" rel="noopener noreferrer">VATSIM Home</a></li>
+              <li><a href="https://www.vatusa.net/" target="_blank" rel="noopener noreferrer">VATUSA Home</a></li>
+              <li><a href="https://www.airnav.com/" target="_blank" rel="noopener noreferrer">AirNav</a></li>
+              <li><a href="https://www.virtualnas.net/" target="_blank" rel="noopener noreferrer">vNAS</a></li>
             </ul>
           </li>
           <li class="has_dropdown" data-state="hide">
@@ -149,10 +149,12 @@
 import { mapState, mapMutations, mapActions } from "vuex";
 import Notifications from "./Notifications.vue";
 import { vatsimAuthRedirectUrl } from "@/helpers/uriHelper.js";
+const folderPrefix = import.meta.env.VITE_FOLDER_PREFIX;
 
 export default {
   data() {
     return {
+      folderPrefix: import.meta.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
       number: 0,
       unread: false,
     };

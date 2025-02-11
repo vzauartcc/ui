@@ -29,20 +29,10 @@
 							<router-link data-position="top" data-tooltip="Edit Article" class="tooltipped" :to="`/admin/news/${news.uriSlug}`">
 								<i class="material-icons">edit</i>
 							</router-link>
-							<a :href="`#modal_delete_${i}`" data-position="top" data-tooltip="Delete Article" class="tooltipped modal-trigger">
+							<a href="#" data-position="top" data-tooltip="Delete Article" class="tooltipped modal-trigger" @click.prevent="openModal(i)">
 								<i class="material-icons red-text text-darken-2">delete</i>
 							</a>
 						</td>
-						<div :id="`modal_delete_${i}`" class="modal modal_delete">
-							<div class="modal-content">
-								<h4>Delete article?</h4>
-								<p>This will delete <strong>{{news.title}}</strong> completely</p>
-							</div>
-							<div class="modal-footer">
-								<a href="#!" class="waves-effect btn" @click="deleteNews(news.uriSlug)">Delete</a>
-								<a href="#!" class="modal-close waves-effect btn-flat">Cancel</a>
-							</div>
-						</div>
 					</tr>
 				</tbody>
 			</table>
@@ -50,6 +40,20 @@
 				<Pagination :amount="newsAmount" :page="page" :limit="limit" :amountOfPages="amountOfPages" />
 			</div>
 		</div>
+		<teleport to="body">
+  		<div v-for="(news, i) in newsItems" :key="`modal_${i}`">
+    		<div :id="`modal_delete_${i}`" class="modal modal_delete">
+      		<div class="modal-content">
+        		<h4>Delete article?</h4>
+        		<p>This will delete <strong>{{ news.title }}</strong> completely</p>
+      		</div>
+      		<div class="modal-footer">
+        		<a href="#" class="waves-effect btn" @click.prevent="deleteNews(news.uriSlug)">Delete</a>
+        		<a href="#" class="modal-close waves-effect btn-flat" @click.prevent>Cancel</a>
+      		</div>
+    		</div>
+  		</div>
+		</teleport>
 	</div>
 </template>
 
@@ -84,17 +88,34 @@ export default {
 	},
 	methods: {
 		async getNews() {
-			const {data} = await zabApi.get('/news', {
-				params: {
-					page: this.page, 
-					limit: this.limit
-				}
-			});
-			if(data.ret_det.code === 200) {
-				this.newsItems = data.data;
-				this.newsAmount = data.amount;
-			}
-		},
+    	const { data } = await zabApi.get("/news", {
+      	params: {
+        	page: this.page,
+        	limit: this.limit,
+      	},
+    	});
+    	if (data.ret_det.code === 200) {
+      	this.newsItems = data.data;
+      	this.newsAmount = data.amount;
+      	this.$nextTick(() => {
+        	this.initModals();
+      	});
+    	}
+  	},
+  	openModal(index) {
+    	const modal = document.getElementById(`modal_delete_${index}`);
+    	if (modal) {
+      	M.Modal.getInstance(modal).open();
+    	}
+  	},
+  	initModals() {
+    	this.$nextTick(() => {
+      	const modals = document.querySelectorAll(".modal");
+      	M.Modal.init(modals, {
+        	preventScrolling: false,
+      	});
+    	});
+  	},
 		async deleteNews(slug) {
 			const {data} = await zabApi.delete(`/news/${slug}`);
 			if(data.ret_det.code === 200) {

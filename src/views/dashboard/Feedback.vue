@@ -19,46 +19,14 @@
 				</thead>
 				<tbody class="feedback_list_row" v-if="feedback">
 					<tr v-for="(feedback, i) in feedback" :key="feedback._id">
-						<td>{{dtLong(feedback.createdAt)}}</td>
-						<td id="position">{{feedback.position || '—'}}</td>
-						<td>{{convertRating(feedback.rating)}}</td>
-						<td class="options">
-							<a :href="`#modal_feedback_${i}`" data-position="top" data-tooltip="View Details" class="tooltipped modal-trigger">
-								<i class="material-icons">search</i>
-							</a>
-						</td>
-						<div :id="`modal_feedback_${i}`" class="modal modal_feedback">
-							<div class="modal-content">
-								<div class="modal_title">Feedback Details</div>
-								<div class="feedback">
-									<div class="row row_no_margin" id="feedback">
-										<div class="input-field col s12 m6">
-											<p id="first_name">{{feedback.anonymous ? 'Anonymous' : feedback.name}}</p>
-											<label for="first_name" class="active">From</label>
-										</div>
-										<div class="input-field col s12 m6">
-											<p id="submission">{{dtLong(feedback.createdAt)}}</p>
-											<label for="submission" class="active">Date</label>
-										</div>
-										<div class="input-field col s12 m6">
-											<p id="position">{{feedback.position || '—'}}</p>
-											<label for="position" class="active">Position</label>
-										</div>
-										<div class="input-field col s12 m6">
-											<p id="rating">{{convertRating(feedback.rating)}}</p>
-											<label for="rating" class="active">Rating</label>
-										</div>
-										<div class="input-field col s12">
-											<div id="comments">{{feedback.comments || '—'}}</div>
-											<label for="comments" class="active">Comments</label>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<a href="#!" class="waves-effect btn-flat modal-close">Close</a>
-							</div>
-						</div>
+    				<td>{{dtLong(feedback.createdAt)}}</td>
+    				<td id="position">{{feedback.position || '—'}}</td>
+    				<td>{{convertRating(feedback.rating)}}</td>
+    				<td class="options">
+        			<a href="#" @click.prevent="openModal(i)" data-position="top" data-tooltip="View Details" class="tooltipped modal-trigger">
+            		<i class="material-icons">search</i>
+        			</a>
+    				</td>
 					</tr>
 				</tbody>
 			</table>
@@ -66,6 +34,19 @@
 		<div v-if="feedback && feedbackAmount !== 0">
 			<Pagination :amount="feedbackAmount" :page="page" :limit="limit" :amountOfPages="amountOfPages" />
 		</div>
+		<teleport to="body">
+    	<div v-for="(feedback, i) in feedback" :key="`modal_feedback_${i}`">
+      	<div :id="`modal_feedback_${i}`" class="modal modal_feedback">
+          <div class="modal-content">
+            <div class="modal_title">Feedback Details</div>
+            <p>{{feedback.comments || '—'}}</p>
+          </div>
+          <div class="modal-footer">
+            <a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
+          </div>
+        </div>
+    	</div>
+		</teleport>
 	</div>
 </template>
 
@@ -89,14 +70,11 @@ export default {
 		Pagination
 	},
 	async mounted() {
+    this.getMyFeedback();
 		await this.getMyFeedback();
-		this.amountOfPages = Math.ceil(this.feedbackAmount / this.limit);
-		M.Modal.init(document.querySelectorAll('.modal'), {
-			preventScrolling: false
-		});
-		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-			margin: 0
-		});
+    this.$nextTick(() => {
+        this.initModals(); // Initialize modals properly
+    });
 	},
 	methods: {
 		async getMyFeedback() {
@@ -109,6 +87,18 @@ export default {
 			this.feedback = data.data.feedback;
 			this.feedbackAmount = data.data.amount;
 		},
+		initModals() {
+        this.$nextTick(() => {
+            const modals = document.querySelectorAll(".modal");
+            M.Modal.init(modals, { preventScrolling: false });
+        });
+    },
+		openModal(i) {
+        const modal = document.getElementById(`modal_feedback_${i}`);
+        if (modal) {
+            M.Modal.getInstance(modal).open();
+        }
+    },
 		convertRating(rating) {
 			const ratings = ['Poor', 'Below Average', 'Average', 'Above Average', 'Excellent'];
 			return ratings[rating - 1];
