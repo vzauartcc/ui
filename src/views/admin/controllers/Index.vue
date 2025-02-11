@@ -24,83 +24,90 @@
 					</thead>
 					<tbody class="controller_list_row">
 						<tr v-for="controller in controllersFiltered" :key="controller.cid">
-							<td>
-								<i class="type_controller material-icons right">{{controller.vis?'work':'home'}}</i>
-								<div class="name">
-									<router-link :to="`/controllers/${controller.cid}`">{{controller.fname}} {{controller.lname}} ({{controller.oi}})</router-link>
-								</div>
-								<div class="rating">
-									{{controller.ratingLong}}
-								</div>
-							</td>
-							<td>
-								<div class="cid">
-									{{controller.cid}}
-								</div>
-							</td>
-							<td class="options">
-								<router-link data-position="top" data-tooltip="Edit Controller" class="tooltipped" :to="`/admin/controllers/${controller.cid}`"><i class="material-icons">edit</i></router-link>
-								<a :href="`#modal_delete_${controller.cid}`" data-position="top" data-tooltip="Remove Controller" class="tooltipped modal-trigger"><i class="material-icons red-text text-darken-2">delete</i></a>
+              <td>
+                <i class="type_controller material-icons right">{{ controller.vis ? 'work' : 'home' }}</i>
+                <div class="name">
+                  <router-link :to="`/controllers/${controller.cid}`">{{ controller.fname }} {{ controller.lname }} ({{ controller.oi }})</router-link>
+                </div>
+                <div class="rating">
+                  {{ controller.ratingLong }}
+                </div>
+              </td>
+              <td>
+                <div class="cid">
+                  {{ controller.cid }}
+                </div>
+              </td>
+              <td class="options">
+                <router-link data-position="top" data-tooltip="Edit Controller" class="tooltipped" :to="`/admin/controllers/${controller.cid}`">
+                  <i class="material-icons">edit</i>
+                </router-link>
+                <a :href="`#modal_delete_${controller.cid}`" data-position="top" data-tooltip="Remove Controller" class="tooltipped modal-trigger">
+                  <i class="material-icons red-text text-darken-2">delete</i>
+                </a>
 
                 <template v-if="controller.ratingShort !== 'C3' && controller.ratingShort !== 'SUP' && controller.ratingShort !== 'ADM' && controller.ratingShort !== 'I1' && controller.ratingShort !== 'I3' && controller.ratingShort !== 'C1' && controller.vis === false">
-                  <a :href="`#modal_promote_${controller.cid}`" data-position="top" data-tooltip="Promote Controller" class="tooltipped modal-trigger"><i class="material-icons green-text text-darken-2">arrow_upward</i></a>
+                  <a :href="`#modal_promote_${controller.cid}`" data-position="top" data-tooltip="Promote Controller" class="tooltipped modal-trigger">
+                    <i class="material-icons green-text text-darken-2">arrow_upward</i>
+                  </a>
                 </template>
               </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+		<teleport to="body">
+      <div v-for="controller in controllersFiltered" :key="controller.cid">
+        <!-- Delete Modal -->
+        <div :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
+          <div class="modal-content">
+            <h4>Remove Controller?</h4>
+            <p>
+              This will remove <b>{{ controller.fname }} {{ controller.lname }}</b> from the Chicago ARTCC.
+              You must state a reason for removal below. Please note that this will delete the controller from both the website and the VATUSA facility roster.
+            </p>
+            <textarea class="materialize-textarea" placeholder="Reason for removal" v-model="reason" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <a href="#!" @click.prevent="removeController(controller.cid)" class="btn waves-effect">Remove</a>
+            <a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
+          </div>
+        </div>
 
-							<div :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
-								<div class="modal-content">
-									<h4>Remove Controller?</h4>
-									<p>This will remove <b>{{controller.fname}} {{controller.lname}}</b> from the Chicago ARTCC. You must state a reason for removal below. Please note that this will delete the controller from both the website and the VATUSA facility roster.</p>
-									<textarea class="materialize-textarea" placeholder="Reason for removal" v-model="reason" required></textarea>
-								</div>
-								<div class="modal-footer">
-									<a href="#!" @click="removeController(controller.cid)" class="btn waves-effect">Remove</a>
-									<a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
-								</div>
-							</div>
-
-              <div :id="`modal_promote_${controller.cid}`" class="modal modal_promote" @focus="getNewRating(controller.rating)">
-
-                <div class="modal-content">
-                  <h4>Promote <b>{{controller.fname}} {{controller.lname}}</b></h4>
-                  <p>This will promote <b>{{controller.fname}} {{controller.lname}}</b> to the next rating. You must state a new rating, date of OTS, callsign of the positon the user was on, and your CID for the promotion below.</p>
-                  <div class="row">
-                    <div class="input-field col s12 m6">
-                      <p>New Rating</p>
-                      <textarea class="materialize-textarea col s12 m10" style="margin-right: 20px; padding-top: 5px" placeholder="New Rating ex. S1" :value="newRating"  disabled></textarea>
-                    </div>
-                    <div class="input-field col s12 m6">
-                      <p>Your CID</p>
-                      <textarea class="materialize-textarea col s12 m10" style="margin-bottom: 20px; padding-top: 5px" placeholder="Your CID" :value="examinerCid" disabled></textarea>
-                    </div>
-                    <div class="input-field col s12 m6">
-                      <p>OTS Position</p>
-                      <textarea class="materialize-textarea col s12 m10" style="margin-bottom: 20px; padding-top: 5px" placeholder="CHI_35_CTR" v-model="position" required></textarea>
-                    </div>
-                    <div class="input-field col s12 m6">
-                      <p>Date of OTS</p>
-                      <flat-pickr class="input-field col s12 m10" placeholder="OTS Date" v-model="otsDate" required></flat-pickr>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <a href="#!" @click="promoteController(controller)" class="btn waves-effect">Promote</a>
-                  <a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
-                </div>
+        <!-- Promote Modal -->
+        <div :id="`modal_promote_${controller.cid}`" class="modal modal_promote" @focus="getNewRating(controller.rating)">
+          <div class="modal-content">
+            <h4>Promote <b>{{ controller.fname }} {{ controller.lname }}</b></h4>
+            <p>
+              This will promote <b>{{ controller.fname }} {{ controller.lname }}</b> to the next rating. You must state a new rating, date of OTS, callsign of the position the user was on, and your CID for the promotion below.
+            </p>
+            <div class="row">
+              <div class="input-field col s12 m6">
+                <p>New Rating</p>
+                <textarea class="materialize-textarea col s12 m10" placeholder="New Rating ex. S1" :value="newRating" disabled></textarea>
               </div>
-
-
-
-
-
-
-
-
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
+              <div class="input-field col s12 m6">
+                <p>Your CID</p>
+                <textarea class="materialize-textarea col s12 m10" placeholder="Your CID" :value="examinerCid" disabled></textarea>
+              </div>
+              <div class="input-field col s12 m6">
+                <p>OTS Position</p>
+                <textarea class="materialize-textarea col s12 m10" placeholder="CHI_35_CTR" v-model="position" required></textarea>
+              </div>
+              <div class="input-field col s12 m6">
+                <p>Date of OTS</p>
+                <flat-pickr class="input-field col s12 m10" placeholder="OTS Date" v-model="otsDate" required></flat-pickr>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="#!" @click.prevent="promoteController(controller)" class="btn waves-effect">Promote</a>
+            <a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
+          </div>
+        </div>
+      </div>
+    </teleport>
 	</div>
 </template>
 

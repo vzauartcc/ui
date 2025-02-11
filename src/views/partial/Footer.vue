@@ -6,7 +6,7 @@
         <p>This site works best in Google Chrome, Mozilla Firefox, and Microsoft Edge.</p>
         <p>If you are still using Internet Explorer, move on.</p>
       </div>
-      <img src="https://zauartcc.sfo3.digitaloceanspaces.com/site-logo/Footer-Logo.png" alt="" draggable="false" height="115">
+      <img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/site-logo/Footer-Logo.png`" alt="" draggable="false" height="115">
     </div>
     <div class="footer-copyright">
       <div class="wrapper">
@@ -24,7 +24,13 @@
 </template>
 
 <script>
+
 export default {
+  data() {
+    return {
+      folderPrefix: import.meta.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
+    };
+  },
   mounted () {
     M.Modal.init(document.querySelectorAll('.modal'), {
       preventScrolling: false

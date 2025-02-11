@@ -3,7 +3,7 @@
 		<div v-if="docs.length === 0" class="no_files">No documents in this category found</div>
 		<div class="document" v-else v-for="doc in docs" :key="doc.id">
 			<router-link v-if="doc.type === 'doc'" :to="`/files/documents/${doc.slug}`" class="button btn"><i class="material-icons">search</i></router-link>
-			<a v-else :href="`https://zauartcc.sfo3.cdn.digitaloceanspaces.com/documents/${doc.fileName}`" class="btn button" target="_blank"><i class="material-icons">search</i></a>
+			<a v-else :href="`https://zauartcc.sfo3.cdn.digitaloceanspaces.com/${folderPrefix}/documents/${doc.fileName}`" class="btn button" target="_blank"><i class="material-icons">search</i></a>
 			<div class="title">{{doc.name}}</div>
 			<div class="desc">{{doc.description}}</div>
 			<div class="info">Updated at {{dtRegionalUS(doc.updatedAt)}}z</div>
@@ -12,7 +12,15 @@
 </template>
 
 <script>
+
+const folderPrefix = import.meta.env.VITE_FOLDER_PREFIX;
+
 export default {
+	data() {
+    return {
+      folderPrefix: import.meta.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
+    };
+  },
 	props: ['cat', 'docs']
 };
 </script>

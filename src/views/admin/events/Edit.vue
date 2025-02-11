@@ -22,10 +22,10 @@
 					<div class="file-field input-field col s12">
 						<div class="btn waves-effect waves-light">
 							<span>FILE</span>
-							<input type="file" ref="banner">
+							<input type="file" ref="banner" @change="updateFilePath">
 						</div>
 						<div class="file-path-wrapper">
-							<input class="file-path validate" type="text" :value="form.bannerUrl">
+							<input class="file-path" type="text" :value="filePath" readonly>
 						</div>
 					</div>
 					<div class="input-field col s12">
@@ -71,13 +71,19 @@ import { DateTime } from 'luxon';
 export default {
 	data() {
 		return {
-			form: null
+			form: null,
+			selectedFile: null
 		};
 	},
 	async mounted() {
 		await this.getEvent();
 		this.setTitle(`Edit ${this.form.name}`);
 		M.textareaAutoResize(document.getElementById('description'));
+	},
+	computed: {
+  	filePath() {
+    	return this.selectedFile ? this.selectedFile.name : this.form?.bannerUrl || "";
+  	}
 	},
 	methods: {
 		async getEvent() {
@@ -114,6 +120,12 @@ export default {
 				});
 			});
 		},
+		updateFilePath(event) {
+    if (event.target.files.length > 0) {
+      this.selectedFile = event.target.files[0]; // ✅ Store new file
+      this.form.bannerUrl = this.selectedFile.name; // ✅ Update input field
+    }
+  },
 		async submitForm() {
 			try {
 				const formData = new FormData();
@@ -122,7 +134,10 @@ export default {
 				formData.append('endTime', `${this.$refs.end_date.value}`);
 				formData.append('description', this.form.description);
 				formData.append('positions', JSON.stringify(this.form.positions));
-				formData.append('banner', this.$refs.banner.files[0]);
+
+				if (this.selectedFile) {
+        	formData.append("banner", this.selectedFile); // ✅ Use selected file
+      	}
 
 				const {data} = await zabApi.put(`/event/${this.$route.params.slug}`, formData, {
 					headers: { 
@@ -132,6 +147,7 @@ export default {
 
 				if(data.ret_det.code === 200) {
 					this.toastSuccess('Event updated');
+					this.$router.back();					
 				} else {
 					this.toastError(data.ret_det.message);
 				}
@@ -139,17 +155,31 @@ export default {
 				console.log(e);
 			}
 		},
-		async addPosition(e) {
-			if(this.form.positions && (!this.form.positions.includes(this.$refs.pos.value.toUpperCase()) || this.form.positions.length === 0)) {
-				this.form.positions.push(this.$refs.pos.value.toUpperCase());
-			} else {
-				this.toastError('Position already exists');
-			}
-			e.target.reset();
-		},
-		deletePos(pos) {
-			this.form.positions = this.form.positions.filter(p => p != pos);
-		}
+		async addPosition() {
+    	const newPos = this.$refs.pos.value.toUpperCase();
+
+    	if (!newPos) {
+      	this.toastError("Position cannot be empty");
+      	return;
+    	}
+
+    	if (this.form.positions.includes(newPos)) {
+      	this.toastError("Position already exists");
+      	return;
+    	}
+
+    	// ✅ Preserve selectedFile before updating form
+    	const tempFile = this.selectedFile;
+
+    	// ✅ Use Vue reactivity-friendly update
+  		this.form.positions.push(newPos);
+    
+    	// ✅ Restore the selected file
+    	this.selectedFile = tempFile;
+
+    	// ✅ Clear input field
+    	this.$refs.pos.value = "";
+  	}
 	},
 };
 </script>

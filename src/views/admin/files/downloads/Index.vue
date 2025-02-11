@@ -21,28 +21,36 @@
 					</tr>
 				</thead>
 				<tbody class="controller_list_row">
-					<tr v-for="(file, i) in downloads" :key="file.id">
-						<td class="name">{{file.name}}</td>
-						<td>{{convertCategory(file.category)}}</td>
-						<td>{{dtLong(file.updatedAt)}}</td>
-						<td class="options">
-							<router-link data-position="top" data-tooltip="Edit Download" class="tooltipped" :to="`/admin/files/downloads/${file._id}`"><i class="material-icons">edit</i></router-link>
-							<a :href="`#modal_delete_${i}`" data-position="top" data-tooltip="Delete Download" class="tooltipped modal-trigger"><i class="material-icons red-text text-darken-2">delete</i></a>
-						</td>
-						<div :id="`modal_delete_${i}`" class="modal modal_delete">
-						<div class="modal-content">
-							<h4>Delete download?</h4>
-							<p>This will delete <b>{{file.name}}</b> from the downloads section completely</p>
-						</div>
-						<div class="modal-footer">
-							<a href="#!" class="waves-effect waves-light btn" @click="deleteDownload(file._id)">Delete</a>
-							<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancel</a>
-						</div>
-					</div>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+          <tr v-for="(file, i) in downloads" :key="file.id">
+            <td class="name">{{ file.name }}</td>
+            <td>{{ convertCategory(file.category) }}</td>
+            <td>{{ dtLong(file.updatedAt) }}</td>
+            <td class="options">
+              <router-link data-position="top" data-tooltip="Edit Download" class="tooltipped" :to="`/admin/files/downloads/${file._id}`">
+                <i class="material-icons">edit</i>
+              </router-link>
+              <a href="#" data-position="top" data-tooltip="Delete Download" class="tooltipped modal-trigger" @click.prevent="openModal(i)">
+                <i class="material-icons red-text text-darken-2">delete</i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+		<teleport to="body">
+      <div v-for="(file, i) in downloads" :key="`modal_${i}`">
+        <div :id="`modal_delete_${i}`" class="modal modal_delete">
+          <div class="modal-content">
+            <h4>Delete download?</h4>
+            <p>This will delete <b>{{ file.name }}</b> from the downloads section completely.</p>
+          </div>
+          <div class="modal-footer">
+            <a href="#" class="waves-effect waves-light btn" @click.prevent="deleteDownload(file._id, i)">Delete</a>
+            <a href="#" class="modal-close waves-effect waves-light btn-flat" @click.prevent>Cancel</a>
+          </div>
+        </div>
+      </div>
+    </teleport>
 	</div>
 </template>
 
@@ -59,30 +67,61 @@ export default {
 	},
 	async mounted() {
 		await this.getDownloads();
-		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {});
-		M.Modal.init(document.querySelectorAll('.modal'), {
-			preventScrolling: false
-		});
+		this.$nextTick(() => {
+      M.Tooltip.init(document.querySelectorAll(".tooltipped"), {});
+    });
 	},
+	updated() {
+    this.$nextTick(() => {
+      this.initModals();
+    });
+  },
 	methods: {
 		async getDownloads() {
 			const {data} = await  zabApi.get('/file/downloads');
 			this.downloads = data.data;
 		},
-		async deleteDownload(id) {
-			try {
-				const {data} = await zabApi.delete(`/file/downloads/${id}`);
-				if(data.ret_det.code === 200) {
-					this.toastSuccess('Download deleted');
+		openModal(index) {
+      const modal = document.getElementById(`modal_delete_${index}`);
+      if (modal) {
+        M.Modal.getInstance(modal).open();
+      }
+    },
+    initModals() {
+      this.$nextTick(() => {
+        this.modals = document.querySelectorAll(".modal");
+        M.Modal.init(this.modals, {
+          preventScrolling: false,
+        });
+      });
+    },
+		async deleteDownload(id, modalId) {
+  		if (!id) {
+    		console.error("❌ Error: ID is undefined!");
+    		return this.toastError("Error: Download ID is missing.");
+  		}
 
-					await this.getDownloads();
-					setTimeout(() => M.Modal.getInstance(document.querySelector('.modal_delete')).close(), 500);
-				} else {
-					this.toastError(data.ret_det.message);
-				}
-			} catch(e) {
-				console.log(e);
-			}
+  		try {
+    		const deletePromise = zabApi.delete(`/file/downloads/${id}`);
+
+    		setTimeout(() => {
+      		const modal = document.getElementById(modalId);
+      		if (modal) {
+        		M.Modal.getInstance(modal).close();
+      		}
+    		}, 500);
+
+    		const { data } = await deletePromise;
+
+    		if (data.ret_det.code === 200) {
+      		this.toastSuccess("Download deleted");
+      		await this.getDownloads();
+    		} else {
+      		this.toastError(data.ret_det.message);
+    		}
+  		} catch (e) {
+    		console.log(e);
+  		}
 		},
 		convertCategory(cat) {
 			if(cat == "sectorFiles") return "Facility Files";

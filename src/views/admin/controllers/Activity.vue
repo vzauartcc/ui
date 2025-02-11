@@ -3,57 +3,59 @@
 		<div class="card-content">
 			<span class="card-title">Controller Activity Report</span>
 			<div class="card-title2" style="display: flex; align-items: center; justify-content: space-between;">
-  				<div>
-    				<p>Showing controller activity in <strong>{{chkDate2.toLocaleString('en-US', { month: 'long' })}}, {{chkDate2.getFullYear()}}</strong></p>
-  				</div>
-  				<div>
-    				<a class="waves-effect waves-light btn" v-on:click="previousMonth()">Previous</a>
-    				<a class="waves-effect waves-light btn" v-on:click="nextMonth()">Next</a>
-  				</div>
+  			<div>
+    			<p>Showing controller activity in <strong>Q{{ currentQuarter }}, {{ chkDate2.getFullYear() }}</strong></p>
+  			</div>
+  			<div>
+    			<a class="waves-effect waves-light btn" v-on:click="previousQuarter()">Previous</a>
+    			<a class="waves-effect waves-light btn" v-on:click="nextQuarter()">Next</a>
+  			</div>
 			</div>
 		</div>
 		<div class="table_wrapper">
 			<table class="medium striped" v-if="report">
 				<thead>
-					<th>Active?</th>
-					<th @click="sort('fname')">
-						Controller
-						<div class="right">
-							<i class="material-icons" v-if="sortBy !== 'fname'">unfold_more</i>
-							<i class="material-icons active" v-else-if="sortBy === 'fname' && descending">arrow_drop_down</i>
-							<i class="material-icons active" v-else-if="sortBy === 'fname' && !descending">arrow_drop_up</i>
-						</div>
-					</th>
-					<th @click="sort('rating')">
-						Rating
-						<div class="right">
-							<i class="material-icons" v-if="sortBy !== 'rating'">unfold_more</i>
-							<i class="material-icons active" v-else-if="sortBy === 'rating' && descending">arrow_drop_down</i>
-							<i class="material-icons active" v-else-if="sortBy === 'rating' && !descending">arrow_drop_up</i>
-						</div>
-					</th>
-					<th @click="sort('totalTime')">
-						Time
-						<div class="right">
-							<i class="material-icons" v-if="sortBy !== 'totalTime'">unfold_more</i>
-							<i class="material-icons active" v-else-if="sortBy === 'totalTime' && descending">arrow_drop_down</i>
-							<i class="material-icons active" v-else-if="sortBy === 'totalTime' && !descending">arrow_drop_up</i>
-						</div>
-					</th>
-					<th @click="sort('createdAt')">
-						Join Date
-						<div class="right">
-							<i class="material-icons" v-if="sortBy !== 'createdAt'">unfold_more</i>
-							<i class="material-icons active" v-else-if="sortBy === 'createdAt' && descending">arrow_drop_down</i>
-							<i class="material-icons active" v-else-if="sortBy === 'createdAt' && !descending">arrow_drop_up</i>
-						</div>
-					</th>
-					<th class="options">Options</th>
+					<tr>
+						<th>Active?</th>
+						<th @click="sort('fname')">
+							Controller
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'fname'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'fname' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'fname' && !descending">arrow_drop_up</i>
+							</div>
+						</th>
+						<th @click="sort('rating')">
+							Rating
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'rating'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'rating' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'rating' && !descending">arrow_drop_up</i>
+							</div>
+						</th>
+						<th @click="sort('totalTime')">
+							Time
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'totalTime'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'totalTime' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'totalTime' && !descending">arrow_drop_up</i>
+							</div>
+						</th>
+						<th @click="sort('createdAt')">
+							Join Date
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'createdAt'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'createdAt' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'createdAt' && !descending">arrow_drop_up</i>
+							</div>
+						</th>
+						<th class="options">Options</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="controller of sortedArray" :class="[(controller.tooLow)?'too_low':'',(controller.protected)?'protected':'']" :key="controller.cid">
 						<td>
-							<i class="material-icons green-text" v-if="!controller.tooLow || controller.protected">check</i>
+							<i class="material-icons green-text" v-if="!controller.tooLow || controller.protected || controller.exempt">check</i>
 							<i class="material-icons red-text text-darken-1" v-else>close</i>
 						</td>
 						<td>
@@ -88,17 +90,6 @@
 						<td class="options">
 							<a :href="`#modal_delete_${controller.cid}`" data-position="top" data-tooltip="Remove Controller" class="tooltipped modal-trigger"><i class="material-icons red-text text-darken-2">delete</i></a>
 						</td>
-						<div :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
-							<div class="modal-content">
-								<h4>Remove Controller?</h4>
-								<p>This will remove <b>{{controller.fname}} {{controller.lname}}</b> from the Chicago ARTCC. You must state a reason for removal below. Please note that this will delete the controller from both the website and the VATUSA facility roster.</p>
-								<textarea class="materialize-textarea" placeholder="Reason for removal" v-model="reason" required></textarea>
-							</div>
-							<div class="modal-footer">
-								<a href="#!" @click="removeController(controller.cid)" class="btn waves-effect">Remove</a>
-								<a href="#!" class="btn-flat waves-effect modal-close">Cancel</a>
-							</div>
-						</div>
 					</tr>
 				</tbody>
 			</table>
@@ -106,6 +97,19 @@
 				<Spinner />
 			</div>
 		</div>
+		<Teleport to="body">
+  		<div v-for="controller in sortedArray" :key="`modal-${controller.cid}`" :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
+    		<div class="modal-content">
+      	<h4>Remove Controller?</h4>
+      	<p>This will remove <b>{{ controller.fname }} {{ controller.lname }}</b> from the Chicago ARTCC.</p>
+      	<textarea class="materialize-textarea" placeholder="Reason for removal" v-model="reason" required></textarea>
+    	</div>
+    	<div class="modal-footer">
+      	<a href="#!" @click.prevent="removeController(controller.cid)" class="btn waves-effect">Remove</a>
+      	<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
+    	</div>
+  	</div>
+	</Teleport>
 	</div>
 </template>
 
@@ -117,13 +121,13 @@ export default {
 		return {
 			report: null,
 			chkDate2: new Date(),
+			currentQuarter: Math.floor((new Date().getMonth() + 3) / 3), // default to the current quarter
 			reason: '',
 			sortBy: null,
-			descending: true
+			descending: true,
 		};
 	},
 	async mounted() {
-		console.log(this.chkDate2);
 		await this.getActivity();
 		M.Modal.init(document.querySelectorAll('.modal'), {
 			preventScrolling: false
@@ -133,40 +137,61 @@ export default {
 		});
 	},
 	methods: {
-		async getActivity(month = null) {
-  			const d = new Date();
-  			const monthDate = month ? new Date(`${month}-01`) : new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-			const monthString = `${monthDate.getUTCFullYear()}-${(monthDate.getUTCMonth() + 1).toString().padStart(2, '0')}`;
-  			this.chkDate = monthString;
-  			const {data: reportData} = await zabApi.get('/stats/activity', {
-    			params: {
-      				month: monthString
-    			}
-  			});
-  			this.report = reportData.data;
-  			//console.log(this.report);
-		},
-		async setDateAndFetchActivity(date) {
-  			this.chkDate2 = date;
-  			const {data: reportData} = await zabApi.get('/stats/activity', {
-    			params: {
-      				month: `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1).toString().padStart(2, '0')}`
-    			}
-  			});
-  			this.report = reportData.data;
-		},
-		async previousMonth() {
-  			const prevMonth = new Date(this.chkDate2.getUTCFullYear(), this.chkDate2.getUTCMonth() - 1, 1);
-  			await this.setDateAndFetchActivity(prevMonth);
-			this.$forceUpdate(); // force a re-render of the component
-		},
-		async nextMonth() {
-  			const nextMonth = new Date(this.chkDate2.getUTCFullYear(), this.chkDate2.getUTCMonth() + 1, 1);
-  			if (nextMonth <= new Date()) {
-    			await this.setDateAndFetchActivity(nextMonth);
-				this.$forceUpdate(); // force a re-render of the component
-  			}
-		},
+		async getActivity(quarter = null) {
+      const d = new Date();
+      const selectedDate = quarter ? new Date(quarter) : d;
+      const currentQuarter = Math.floor((selectedDate.getMonth() + 3) / 3); // Calculate the current quarter (1-4)
+      const year = selectedDate.getFullYear();
+
+      this.chkDate2 = selectedDate; // Update the selected date
+      this.currentQuarter = currentQuarter; // Update the current quarter
+
+      const { data: reportData } = await zabApi.get('/stats/activity', {
+        params: {
+          quarter: currentQuarter,
+          year: year
+        }
+      });
+
+      this.report = reportData.data;
+    },
+
+    async previousQuarter() {
+      let currentQuarter = Math.floor((this.chkDate2.getUTCMonth() + 3) / 3);
+      let newYear = this.chkDate2.getUTCFullYear();
+
+      if (currentQuarter === 1) {
+        currentQuarter = 4;
+        newYear -= 1;
+      } else {
+        currentQuarter -= 1;
+      }
+
+      const newDate = new Date(newYear, (currentQuarter - 1) * 3, 1);
+      await this.getActivity(newDate);
+      this.$forceUpdate(); // Trigger re-render if needed
+    },
+
+    async nextQuarter() {
+      let currentQuarter = Math.floor((this.chkDate2.getUTCMonth() + 3) / 3);
+      let newYear = this.chkDate2.getUTCFullYear();
+
+      if (currentQuarter === 4) {
+        currentQuarter = 1;
+        newYear += 1;
+      } else {
+        currentQuarter += 1;
+      }
+
+      const newDate = new Date(newYear, (currentQuarter - 1) * 3, 1);
+      if (newDate <= new Date()) {
+        await this.getActivity(newDate);
+        this.$forceUpdate();
+      } else {
+        console.log("Cannot select a future quarter.");
+      }
+    },
+
 		async removeController(cid) {
 			try {
 				this.toastInfo('Removing controller...');
@@ -208,20 +233,44 @@ export default {
 			return `${hours}:${minutes}:${seconds}`;
 		},
 		reduceControllerCerts(certs) {
-			if(!certs) return [];
-			const hasCerts = certs.map(cert => cert.code);
-			let certsToShow = [];
-			certs.forEach(cert => {
-				if(cert.class === "major" || cert.class === "center") {
-					certsToShow.push(cert);
-				} else {
-					const certPos = cert.code.slice(-3);
-					if(!hasCerts.includes(`ord${certPos}`)) {
-						certsToShow.push(cert);
-					}
-				}
-			});
-			return certsToShow;
+  		if (!certs) return [];
+
+  		// Step 1: Sort certs by the 'order' property
+			const sortedCerts = certs.sort((a, b) => (b.order || 0) - (a.order || 0));
+
+  		// Step 2: Remove non-tier certs if a tier-1 cert exists for the same facility/type
+  		const facilityMap = {};  // Track if a tier-1 or tier-2 cert exists for the same facility/type
+
+  		return sortedCerts.filter(cert => {
+    		const facilityType = `${cert.facility}-${cert.type}`; // Facility + type (e.g., ORD-GND/DEL)
+
+    		if (cert.class === 'tier-1') {
+      		// If it's tier-1, store it and ensure only tier-1 and tier-2 certs are shown for this facility/type
+      		facilityMap[facilityType] = 'tier-1';
+      		return true; // Always show tier-1
+    		}
+
+    		if (cert.class === 'tier-2') {
+      		// If a tier-1 cert exists for this facility/type, show only tier-1 and tier-2
+      		if (facilityMap[facilityType] === 'tier-1') return true;
+      		// Otherwise, allow tier-2 to be displayed
+      		facilityMap[facilityType] = 'tier-2';
+      		return true;
+    		}
+
+    		if (cert.class === 'non-tier') {
+      		// Only display non-tier if no tier-1 cert exists for this facility/type
+      		if (!facilityMap[facilityType]) {
+        		facilityMap[facilityType] = 'non-tier';
+        		return true;
+      		}
+      		// If a tier-1 cert exists, don't display non-tier
+      		return false;
+    		}
+
+    		// For other cert types (e.g., solo), just include them
+    		return true;
+  		});
 		},
 		sort(p) {
 			if(p === this.sortBy) {
@@ -383,12 +432,25 @@ export default {
 			background-color: $secondary-color-dark;
 		}
 
-		&.cert_major {
+		&.cert_tier-1 {
 			background: $secondary-color;
 		}
 
-		&.cert_minor {
-			background: $secondary-color-light;
+		&.cert_tier-2 {
+			background: $primary-color;
+		}
+
+		&.cert_non-tier {
+		background: $secondary-color-light;
+		}
+
+		&.cert_solon {
+			background: #FFA500;
+		}
+		
+		&.cert_solom {
+			background: #FFE83E;
+			color: #000000;
 		}
 	}
 

@@ -61,10 +61,12 @@
 		<div class="table_wrapper" v-else>
 			<table class="medium hover striped">
 				<thead>
-					<th>Position</th>
-					<th>Sign On</th>
-					<th>Sign Off</th>
-					<th>Length</th>
+					<tr>
+						<th>Position</th>
+						<th>Sign On</th>
+						<th>Sign Off</th>
+						<th>Length</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="session in controllingSessions" :key="session.timeStart">
