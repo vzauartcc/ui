@@ -55,6 +55,7 @@ const app = createApp(App)
 	.component('Spinner', Spinner);
 
 	if (process.env.NODE_ENV === 'prod') {
+
 		Sentry.init({
 			dsn: "https://5477b015c06e440ab91805dd9dad31f7@o885721.ingest.sentry.io/5837739",
 			integrations: [
