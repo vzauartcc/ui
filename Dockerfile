@@ -15,7 +15,6 @@ COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
 # Copy Nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# ✅ Replace `%VITE_*%` placeholders with actual values at runtime
-CMD ["/bin/sh", "-c", "sed -i 's|%VITE_VATUSA_API_KEY%|${VITE_VATUSA_API_KEY}|g' /usr/share/nginx/html/index.html && \
-                         sed -i 's|%VITE_FOLDER_PREFIX%|${VITE_FOLDER_PREFIX}|g' /usr/share/nginx/html/index.html && \
+CMD ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/index.html > /usr/share/nginx/html/index.tmp && \
+                         mv /usr/share/nginx/html/index.tmp /usr/share/nginx/html/index.html && \
                          exec nginx -g 'daemon off;'"]
