@@ -149,6 +149,7 @@
 import { mapState, mapMutations, mapActions } from "vuex";
 import Notifications from "./Notifications.vue";
 import { vatsimAuthRedirectUrl } from "@/helpers/uriHelper.js";
+const folderPrefix = import.meta.env.VITE_FOLDER_PREFIX;
 
 export default {
   data() {
