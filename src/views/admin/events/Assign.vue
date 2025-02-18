@@ -33,8 +33,8 @@
 							<td>{{ signup.requests.join(', ') || 'None' }}</td>
 							<td class="options">
 								<!-- Use unique modal per user -->
-								<a href="#" data-target="modal_delete_{{ signup._id }}" class="tooltipped modal-trigger">
-									<i class="material-icons red-text text-darken-2">delete</i>
+								<a href="#" :data-target="'modal_delete_' + signup._id" class="tooltipped modal-trigger">
+    							<i class="material-icons red-text text-darken-2" @click.prevent>delete</i>
 								</a>
 							</td>
 						</tr>
@@ -78,7 +78,7 @@
 
 		<!-- Teleported Modals -->
 		<Teleport to="body">
-			<div id="modal_add_signup" class="modal">
+			<div id="modal_add_signup" class="modal modal_add_signup">
 				<div class="modal-content">
 					<h4>Manually add sign-up</h4>
 					<p>Enter a CID to manually sign a controller up for this event. The controller must have logged in on the website at least once.</p>
@@ -100,7 +100,7 @@
 
 		<Teleport to="body" v-if="event && event.signups">
 			<div v-for="signup in event.signups" :key="signup._id">
-				<div :id="`modal_delete_${signup._id}`" class="modal">
+				<div :id="`modal_delete_${signup._id}`" class="modal modal_delete">
 					<div class="modal-content">
 						<h4>Delete sign-up?</h4>
 						<p>
@@ -115,14 +115,14 @@
 				</div>
 			</div>
 
-			<div id="modal_notify" class="modal">
+			<div id="modal_notify" class="modal modal_notify">
 				<div class="modal-content">
 					<h4>Are you sure?</h4>
 					<p>By clicking notify, an email will be sent out to all controllers that signed up with the position assignments. You can still make changes to the assignments after clicking notify. You cannot undo the email.</p>
 				</div>
 				<div class="modal-footer">
-					<a href="#!" class="waves-effect waves-light btn" @click="notifyAssignments">Notify</a>
-					<a href="#!" class="waved-effect waves-light modal-close btn-flat">Cancel</a>
+					<a href="#!" class="waves-effect waves-light btn" @click.prevent="notifyAssignments">Notify</a>
+					<a href="#!" class="waved-effect waves-light modal-close btn-flat" @click.prevent>Cancel</a>
 				</div>
 			</div>
 		</Teleport>
@@ -144,29 +144,52 @@ export default {
 	},
 	async mounted() {
 		await this.getEventData();
-		this.setTitle(`Position Assignments - ${this.event.name}`);
+		if (this.event && this.event.name) {
+        this.setTitle(`Position Assignments - ${this.event.name}`);
+    }
 		M.FormSelect.init(document.querySelectorAll('select'), {});
-		this.initializeModals(); // Initialize modals
+		this.$nextTick(() => {
+        this.initializeStaticModals(); // Initialize static modals correctly
+    });
 	},
 	methods: {
 		async getEventData() {
         try {
-            const { data } = await zabApi.get(`/event/${this.$route.params.slug}/positions`);
-            this.event = data.data || { signups: [] };
-            this.$nextTick(() => this.initializeModals()); // Ensure modals are initialized
+          const { data } = await zabApi.get(`/event/${this.$route.params.slug}/positions`);
+          this.event = data.data || { signups: [] };
+					this.$nextTick(() => {
+            this.initializeDynamicModals(); // Initialize dynamic modals after data loads
+        });
         } catch (error) {
             console.error("Error fetching event data:", error);
         }
     },
-
-    initializeModals() {
+    initializeStaticModals() {
         this.$nextTick(() => {
-            const modals = document.querySelectorAll('.modal');
-            if (modals.length > 0) {
-                M.Modal.init(modals, { preventScrolling: false });
+            const staticModals = document.querySelectorAll('#modal_add_signup, #modal_notify'); // Select static modals
+            if (staticModals.length > 0) {
+                staticModals.forEach(modal => {
+                    if (!M.Modal.getInstance(modal)) {
+                        M.Modal.init(modal, { preventScrolling: false });
+                    }
+                });
             }
         });
     },
+    initializeDynamicModals() {
+    	this.$nextTick(() => {
+      	setTimeout(() => { // Delay ensures Vue finishes rendering
+        	const dynamicModals = document.querySelectorAll('.modal_delete');
+          if (dynamicModals.length > 0) {
+            dynamicModals.forEach(modal => {
+              if (!M.Modal.getInstance(modal)) {
+                M.Modal.init(modal, { preventScrolling: false });
+              }
+            });
+          }
+        }, 300); // Slight delay to ensure modals are in DOM
+    	});
+		},
 		async notifyAssignments() {
 			try {
 				const { data } = await zabApi.put(`/event/${this.$route.params.slug}/notify`, {
@@ -177,7 +200,7 @@ export default {
 					this.toastSuccess('Controllers notified');
 
 					await this.getEventData();
-					setTimeout(() => M.Modal.getInstance(document.querySelector('#modal_notify')).close(), 500);
+					setTimeout(() => M.Modal.getInstance(document.querySelector('#modal_notify')).close(), 200);
 				} else {
 					this.toastError(data.ret_det.message);
 				}
@@ -194,7 +217,7 @@ export default {
 
 					await this.getEventData();
 					M.FormSelect.init(document.querySelectorAll('select'), {});
-					setTimeout(() => M.Modal.getInstance(document.querySelector('#modal_add_signup')).close(), 500);
+					setTimeout(() => M.Modal.getInstance(document.querySelector('#modal_add_signup')).close(), 200);
 				} else {
 					this.toastError(data.ret_det.message);
 				}
@@ -203,7 +226,7 @@ export default {
 			}
 		},
 		async deleteSignup(cid, modalId) {
-    try {
+    	try {
         const { data } = await zabApi.delete(`/event/${this.$route.params.slug}/mandelete/${cid}`);
         if (data.ret_det.code === 200) {
             this.toastSuccess('Sign-up manually deleted');
@@ -220,10 +243,10 @@ export default {
         } else {
             this.toastError(data.ret_det.message);
         }
-    } catch (e) {
+    	} catch (e) {
         console.log(e);
-    }
-},
+    	}
+		},
 		async assignPos(pos) {
 			try {
 				// Retrieve selected CID from the dropdown
@@ -257,10 +280,11 @@ export default {
     event: {
         handler() {
             this.$nextTick(() => {
-                this.initializeModals(); // Reinitialize modals when event data updates
+                this.initializeDynamicModals(); 
             });
         },
-        deep: true,
+        deep: true, 
+        immediate: true // Ensures it runs initially as well
     },
 	},
 };
