@@ -179,7 +179,10 @@ export default {
 
     	// ✅ Clear input field
     	this.$refs.pos.value = "";
-  	}
+  	},
+		async deletePos(position) {
+  		this.form.positions = this.form.positions.filter(pos => pos !== position);
+		}
 	},
 };
 </script>
