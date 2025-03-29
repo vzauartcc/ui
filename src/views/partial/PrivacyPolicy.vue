@@ -18,7 +18,10 @@
 				</ul>
 				We may share this information with VATSIM and other subdivisions within VATUSA.
 			</p>
-			<p>
+      <p>
+        We do store your Discord ID when you run the /giveroles command within our discord. This ID is the only thing we store in our database and is used for certain functions in our bot. It does not disclose any private details about you or your discord account and we are the only people that have access to see it in our database.
+      </p>
+      <p>
 				We do not store any cookies on your computer, except for functional cookies that are needed to make our website work, like identification tokens. You may choose to disable cookies through your browser at the cost of being able to log in.
 			</p>
 			<p>
