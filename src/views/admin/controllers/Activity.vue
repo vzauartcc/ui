@@ -41,12 +41,12 @@
 								<i class="material-icons active" v-else-if="sortBy === 'totalTime' && !descending">arrow_drop_up</i>
 							</div>
 						</th>
-						<th @click="sort('createdAt')">
+						<th @click="sort('joinDate')">
 							Join Date
 							<div class="right">
-								<i class="material-icons" v-if="sortBy !== 'createdAt'">unfold_more</i>
-								<i class="material-icons active" v-else-if="sortBy === 'createdAt' && descending">arrow_drop_down</i>
-								<i class="material-icons active" v-else-if="sortBy === 'createdAt' && !descending">arrow_drop_up</i>
+								<i class="material-icons" v-if="sortBy !== 'joinDate'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'joinDate' && descending">arrow_drop_down</i>
+								<i class="material-icons active" v-else-if="sortBy === 'joinDate' && !descending">arrow_drop_up</i>
 							</div>
 						</th>
 						<th class="options">Options</th>
@@ -86,7 +86,7 @@
 						</td>
 						<td>{{controller.ratingShort}}</td>
 						<td>{{secondsToHms(controller.totalTime)}}</td>
-						<td>{{dLong(new Date(controller.createdAt))}}</td>
+						<td>{{dLong(new Date(controller.joinDate))}}</td>
 						<td class="options">
 							<a :href="`#modal_delete_${controller.cid}`" data-position="top" data-tooltip="Remove Controller" class="tooltipped modal-trigger"><i class="material-icons red-text text-darken-2">delete</i></a>
 						</td>
