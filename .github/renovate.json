@@ -8,7 +8,7 @@
     "helpers:pinGitHubActionDigests"
   ],
   "schedule": [
-    "every day between 10am and 7pm"
+    "* 10-18 * * *"
   ],
   "dependencyDashboard": true,
   "prConcurrentLimit": 5,
