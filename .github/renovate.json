@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "autodiscover": true,
+  "platform": "github",
+  "extends": [
+    "config:recommended",
+    ":disableMajorUpdates",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "schedule": [
+    "every day between 10am and 7pm"
+  ],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "description": "Group minor and patch updates together, but do not automerge",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all minor and patch updates",
+      "groupNameTemplate": "minor-and-patch-updates",
+      "automerge": false
+    },
+    {
+      "description": "Don't group major updates",
+      "matchUpdateTypes": ["major"],
+      "groupName": null
+    }
+  ]
+}
