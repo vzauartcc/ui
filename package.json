@@ -2,17 +2,20 @@
   "name": "ui",
   "version": "1.0.0",
   "private": true,
-  "author": "Albuquerque ARTCC",
+  "author": "Chicago ARTCC",
   "contributors": [
     "Alexandra Robison",
-    "Daan Janssen"
+    "Daan Janssen",
+    "Timothy Barker",
+    "Ryan Savara"
   ],
   "license": "CC-BY-NC-SA-4.0",
   "scripts": {
     "dev": "vite --open --port 8080",
     "serve": "vite preview --open",
     "build": "vite build",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "start:dev": "doppler run -p ui -c dev -- npm run dev"
   },
   "dependencies": {
     "@materializecss/materialize": "^1.1.0-alpha",
