@@ -22,15 +22,29 @@
 				</thead>
 				<tbody class="sessions_list_row">
 					<tr v-for="(session, i) in sessions" :key="session._id">
-						<td>{{session.student.fname + ' ' + session.student.lname}} <span v-if="session.student.vis === true">(VC)</span></td>
-						<td>{{session.milestone.name}}</td>
-						<td>{{dtLong(session.startTime)}}</td>
-						<td>{{dtLong(session.endTime)}}</td>
+						<td>
+							{{ session.student.fname + ' ' + session.student.lname }}
+							<span v-if="session.student.vis === true">(VC)</span>
+						</td>
+						<td>{{ session.milestone.name }}</td>
+						<td>{{ dtLong(session.startTime) }}</td>
+						<td>{{ dtLong(session.endTime) }}</td>
 						<td class="options">
-							<a href="#" @click.prevent="openModal(i)" data-position="top" data-tooltip="View Details" class="tooltipped">
+							<a
+								href="#"
+								@click.prevent="openModal(i)"
+								data-position="top"
+								data-tooltip="View Details"
+								class="tooltipped"
+							>
 								<i class="material-icons">search</i>
 							</a>
-							<router-link :to="`/ins/training/session/edit/${session._id}`" data-position="top" data-tooltip="Enter Notes" class="tooltipped">
+							<router-link
+								:to="`/ins/training/session/edit/${session._id}`"
+								data-position="top"
+								data-tooltip="Enter Notes"
+								class="tooltipped"
+							>
 								<i class="material-icons">edit</i>
 							</router-link>
 						</td>
@@ -46,7 +60,10 @@
 						<div class="session">
 							<div class="row row_no_margin" id="session">
 								<div class="input-field col s6">
-									<p id="student">{{ session.student.fname + ' ' + session.student.lname }} <span v-if="session.student.vis === true">(VC)</span></p>
+									<p id="student">
+										{{ session.student.fname + ' ' + session.student.lname }}
+										<span v-if="session.student.vis === true">(VC)</span>
+									</p>
 									<label for="student" class="active">Student</label>
 								</div>
 								<div class="input-field col s6">
@@ -75,7 +92,7 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import Completed from './Completed.vue';
 
 export default {
@@ -83,11 +100,11 @@ export default {
 	title: 'Training Sessions',
 	data() {
 		return {
-			sessions: null
+			sessions: null,
 		};
 	},
 	components: {
-		Completed
+		Completed,
 	},
 	async mounted() {
 		await this.getSessions();
@@ -99,9 +116,9 @@ export default {
 	methods: {
 		async getSessions() {
 			try {
-				const {data} = await zabApi.get(`/training/session/open`);
+				const { data } = await zabApi.get(`/training/session/open`);
 				this.sessions = data.data;
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
 		},
@@ -115,9 +132,18 @@ export default {
 		},
 		formatDateTime(value) {
 			const d = new Date(value);
-			return d.toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'UTC', hour12: false});
+			return d.toLocaleString('en-US', {
+				month: 'long',
+				day: 'numeric',
+				year: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit',
+				timeZone: 'UTC',
+				hour12: false,
+			});
 		},
-	}
+	},
 };
 </script>
 
@@ -130,7 +156,7 @@ export default {
 
 .modal_title {
 	font-size: 1.8em;
-	margin-bottom: .5em;
+	margin-bottom: 0.5em;
 }
 
 .session_list {
@@ -142,7 +168,7 @@ export default {
 		.input-field p {
 			line-break: normal;
 			hyphens: auto;
-			margin: .33em 0 0 0;
+			margin: 0.33em 0 0 0;
 		}
 	}
 }

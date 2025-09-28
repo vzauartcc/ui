@@ -3,14 +3,25 @@
 		<div class="loading_container" v-if="!notifications">
 			<Spinner />
 		</div>
-		<span class="no_notif" v-else-if="notifications.length === 0">You have no new notifications</span>
+		<span class="no_notif" v-else-if="notifications.length === 0"
+			>You have no new notifications</span
+		>
 		<div v-else>
-			<div class="notif" v-for="notification in notifications" :key="notification._id" @click="redirectTo(notification.link, notification._id)">
+			<div
+				class="notif"
+				v-for="notification in notifications"
+				:key="notification._id"
+				@click="redirectTo(notification.link, notification._id)"
+			>
 				<div class="notif_unread" v-if="notification.read === false"></div>
-				<div :class="`notif_title ${notification.read ? '' : 'unread'}`">{{notification.title}}</div>
+				<div :class="`notif_title ${notification.read ? '' : 'unread'}`">
+					{{ notification.title }}
+				</div>
 				<div class="notif_text" v-html="notification.content"></div>
 			</div>
-			<span class="load_more" v-if="amount > (page * limit)" @click="getMoreNotifications">Load More</span>
+			<span class="load_more" v-if="amount > page * limit" @click="getMoreNotifications"
+				>Load More</span
+			>
 		</div>
 	</div>
 	<div class="controls">
@@ -20,17 +31,17 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
-	name: "Notifications",
+	name: 'Notifications',
 	data() {
 		return {
 			notifications: null,
 			unread: 0,
 			amount: 0,
 			page: 1,
-			limit: 10
+			limit: 10,
 		};
 	},
 	async mounted() {
@@ -39,31 +50,31 @@ export default {
 	methods: {
 		async getNotifications() {
 			try {
-				const {data} = await zabApi.get(`/user/notifications`, {
+				const { data } = await zabApi.get(`/user/notifications`, {
 					params: {
-						page: this.page, 
-						limit: this.limit
-					}
+						page: this.page,
+						limit: this.limit,
+					},
 				});
 				this.unread = data.data.unread;
 				this.amount = data.data.amount;
 				this.notifications = data.data.notif;
 
-				if(this.unread > 0) {
+				if (this.unread > 0) {
 					this.$parent.unread = true;
 				}
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
 		},
 		async getMoreNotifications() {
 			this.page += 1;
 
-			const {data} = await zabApi.get(`/user/notifications`, {
+			const { data } = await zabApi.get(`/user/notifications`, {
 				params: {
-					page: this.page, 
-					limit: this.limit
-				}
+					page: this.page,
+					limit: this.limit,
+				},
 			});
 
 			this.notifications = this.notifications.concat(data.data.notif);
@@ -72,7 +83,7 @@ export default {
 			try {
 				await zabApi.put(`/user/notifications/read/${id}`);
 				this.$router.push(link);
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
 		},
@@ -80,18 +91,18 @@ export default {
 			try {
 				await zabApi.put(`/user/notifications/read/all`);
 				this.notifications.forEach((notif) => {
-					if(notif.read === false) {
+					if (notif.read === false) {
 						notif.read = true;
 					}
 				});
 				this.$parent.unread = false;
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
 		},
 		async deleteAll() {
 			try {
-				if(this.notifications.length > 0) {
+				if (this.notifications.length > 0) {
 					await zabApi.delete(`/user/notifications`);
 					this.notifications = [];
 					this.$parent.unread = false;
@@ -99,13 +110,12 @@ export default {
 				} else {
 					this.toastInfo('You have no notifications');
 				}
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
-		}
-	}
+		},
+	},
 };
-
 </script>
 
 <style scoped lang="scss">
@@ -131,12 +141,14 @@ export default {
 		background: $primary-color-light;
 		border-radius: 5px;
 		border: 4px solid rgba(0, 0, 0, 0);
-		-webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+		-webkit-box-shadow:
+			inset -1px -1px 0px rgba(0, 0, 0, 0.05),
+			inset 1px 1px 0px rgba(0, 0, 0, 0.05);
 		background-clip: padding-box;
 	}
 
 	.load_more {
-		padding: .8em 0 .8em 0;
+		padding: 0.8em 0 0.8em 0;
 		text-align: center;
 		cursor: pointer;
 
@@ -146,8 +158,8 @@ export default {
 	}
 
 	.notif {
-		padding: .8em 0 .8em 0;
-		border-bottom: 1px solid #EEEEEE;
+		padding: 0.8em 0 0.8em 0;
+		border-bottom: 1px solid #eeeeee;
 		position: relative;
 		cursor: pointer;
 
@@ -162,18 +174,18 @@ export default {
 		.notif_title {
 			font-size: 1rem;
 			padding-left: 1.1em;
-			
+
 			&.unread {
 				font-weight: 600;
 			}
 		}
 
 		.notif_text {
-			font-size: .95rem;
-			margin-top: .5em;
+			font-size: 0.95rem;
+			margin-top: 0.5em;
 			font-weight: 400;
 			padding-left: 1.1em;
-			padding-right: .25em;
+			padding-right: 0.25em;
 		}
 
 		.notif_unread {
@@ -190,17 +202,17 @@ export default {
 }
 
 .controls {
-	border-top: 1px solid #EEEEEE;
-	padding-top: .5em;
-	font-size: .8rem;
-	
+	border-top: 1px solid #eeeeee;
+	padding-top: 0.5em;
+	font-size: 0.8rem;
+
 	button {
 		font-size: 12px;
 		height: 2em;
 		line-height: 2;
 		padding: 0 0.5em;
-		margin-left: -.5em;
-		margin-right: -.5em;
+		margin-left: -0.5em;
+		margin-right: -0.5em;
 	}
 }
 </style>

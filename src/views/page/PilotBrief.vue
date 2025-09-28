@@ -10,10 +10,8 @@
 <script>
 export default {
 	name: 'PilotBriefing',
-	title: 'Pilot Briefing'
+	title: 'Pilot Briefing',
 };
 </script>
 
-
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

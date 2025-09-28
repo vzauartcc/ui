@@ -5,11 +5,19 @@
 				Dashboard
 				<div class="secondary-content"><i class="material-icons">dashboard</i></div>
 			</router-link>
-			<router-link to="/admin/controllers" class="collection-item" v-if="requiresAuth(['atm', 'datm', 'ta', 'wm'])">
+			<router-link
+				to="/admin/controllers"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'ta', 'wm'])"
+			>
 				Controllers
 				<div class="secondary-content"><i class="material-icons">people</i></div>
 			</router-link>
-			<router-link to="/admin/activity" class="collection-item" v-if="requiresAuth(['atm', 'datm', 'ta', 'wm'])">
+			<router-link
+				to="/admin/activity"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'ta', 'wm'])"
+			>
 				Controller Activity
 				<div class="secondary-content"><i class="material-icons">assessment</i></div>
 			</router-link>
@@ -21,15 +29,27 @@
 				Downloads
 				<div class="secondary-content"><i class="material-icons">insert_drive_file</i></div>
 			</router-link>
-			<router-link to="/admin/events" class="collection-item" v-if="requiresAuth(['atm', 'datm', 'ta', 'ec', 'wm'])">
+			<router-link
+				to="/admin/events"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'ta', 'ec', 'wm'])"
+			>
 				Events
 				<div class="secondary-content"><i class="material-icons">event</i></div>
 			</router-link>
-			<router-link to="/admin/feedback" class="collection-item" v-if="requiresAuth(['atm', 'datm', 'ta', 'wm'])">
+			<router-link
+				to="/admin/feedback"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'ta', 'wm'])"
+			>
 				Feedback
 				<div class="secondary-content"><i class="material-icons">feedback</i></div>
 			</router-link>
-			<router-link to="/admin/absence" class="collection-item" v-if="requiresAuth(['atm', 'datm', 'wm'])">
+			<router-link
+				to="/admin/absence"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'wm'])"
+			>
 				Leave of Absence
 				<div class="secondary-content"><i class="material-icons">access_time</i></div>
 			</router-link>
@@ -37,7 +57,11 @@
 				News
 				<div class="secondary-content"><i class="material-icons">rss_feed</i></div>
 			</router-link>
-			<router-link to="/admin/visit/applications" class="collection-item" v-if="requiresAuth(['atm', 'datm', 'wm'])">
+			<router-link
+				to="/admin/visit/applications"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'wm'])"
+			>
 				Visitor Applications
 				<div class="secondary-content"><i class="material-icons">group_add</i></div>
 			</router-link>
@@ -55,19 +79,17 @@ import { mapState } from 'vuex';
 export default {
 	methods: {
 		requiresAuth(roles) {
-			const havePermissions = roles.some(r => this.user.data.roleCodes.includes(r));
-			if(havePermissions) {
+			const havePermissions = roles.some((r) => this.user.data.roleCodes.includes(r));
+			if (havePermissions) {
 				return true;
 			} else {
 				return false;
 			}
-		}
+		},
 	},
 	computed: {
-		...mapState('user', [
-			'user'
-		])
-	}
+		...mapState('user', ['user']),
+	},
 };
 </script>
 

@@ -19,8 +19,10 @@
 				</thead>
 				<tbody>
 					<tr v-for="news in newsItems" :key="news.id">
-						<td><router-link :to="`/news/${news.uriSlug}`">{{news.title}}</router-link></td>
-						<td class="options">{{dLong(news.createdAt)}}</td>
+						<td>
+							<router-link :to="`/news/${news.uriSlug}`">{{ news.title }}</router-link>
+						</td>
+						<td class="options">{{ dLong(news.createdAt) }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -29,15 +31,14 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
-
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
-	data() { 
+	data() {
 		return {
 			newsItems: null,
 			page: 1,
-			limit: 3
+			limit: 3,
 		};
 	},
 	async mounted() {
@@ -45,18 +46,18 @@ export default {
 	},
 	methods: {
 		async getNews() {
-			const {data} = await zabApi.get('/news', {
+			const { data } = await zabApi.get('/news', {
 				params: {
-					page: this.page, 
-					limit: this.limit
-				}
+					page: this.page,
+					limit: this.limit,
+				},
 			});
-			if(data.ret_det.code === 200) {
-				this.newsItems = data.data.slice(0,3);
+			if (data.ret_det.code === 200) {
+				this.newsItems = data.data.slice(0, 3);
 				this.newsAmount = data.amount;
 			}
 		},
-	}
+	},
 };
 </script>
 
@@ -68,12 +69,12 @@ export default {
 tbody {
 	tr {
 		td {
-			transition: .3s ease;
+			transition: 0.3s ease;
 		}
 
 		&:hover {
 			td {
-				background: #EAEAEA;
+				background: #eaeaea;
 			}
 		}
 
@@ -82,5 +83,4 @@ tbody {
 		}
 	}
 }
-
 </style>

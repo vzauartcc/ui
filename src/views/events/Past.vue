@@ -1,12 +1,14 @@
 <template>
-    <div class="card">
-        <div class="card-content">
-            <span class="card-title">Past Events</span>
+	<div class="card">
+		<div class="card-content">
+			<span class="card-title">Past Events</span>
 		</div>
 		<div class="loading_container" v-if="!historicEvents">
 			<Spinner />
 		</div>
-		<p v-else-if="historicEvents && historicEvents.length == 0" class="no_event">There are no past events</p>
+		<p v-else-if="historicEvents && historicEvents.length == 0" class="no_event">
+			There are no past events
+		</p>
 		<div v-else>
 			<table class="event_list striped">
 				<thead class="event_list_head">
@@ -18,25 +20,28 @@
 				<tbody class="event_list_row">
 					<tr v-for="event in historicEvents" :key="event.id">
 						<td class="name">
-							<router-link :to="`/events/${event.url}`">
-								{{event.name}}
-							</router-link><br />
+							<router-link :to="`/events/${event.url}`"> {{ event.name }} </router-link><br />
 						</td>
 						<td class="date right">
-							{{dtLong(event.eventStart)}}
+							{{ dtLong(event.eventStart) }}
 						</td>
 					</tr>
 				</tbody>
 			</table>
 			<div v-if="historicEvents && eventAmount !== 0">
-				<Pagination :amount="eventAmount" :page="page" :limit="limit" :amountOfPages="amountOfPages" />
+				<Pagination
+					:amount="eventAmount"
+					:page="page"
+					:limit="limit"
+					:amountOfPages="amountOfPages"
+				/>
 			</div>
 		</div>
-    </div>
+	</div>
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
 
 export default {
@@ -47,11 +52,11 @@ export default {
 			eventAmount: 1,
 			page: 1,
 			limit: 10,
-			amountOfPages: 1
+			amountOfPages: 1,
 		};
 	},
 	components: {
-		Pagination
+		Pagination,
 	},
 	async mounted() {
 		await this.getHistoricEvents();
@@ -59,30 +64,30 @@ export default {
 	},
 	methods: {
 		async getHistoricEvents() {
-			const {data} = await zabApi.get('/event/archive', {
+			const { data } = await zabApi.get('/event/archive', {
 				params: {
 					page: this.page,
-					limit: this.limit
-				}
+					limit: this.limit,
+				},
 			});
 			this.historicEvents = data.data.events;
 			this.eventAmount = data.data.amount;
 		},
 		updatePageNo(pageNo) {
 			this.page === pageNo;
-		}
+		},
 	},
 	watch: {
-		page: async function() {
+		page: async function () {
 			await this.getHistoricEvents();
 			M.Modal.init(document.querySelectorAll('.modal'), {
-				preventScrolling: false
+				preventScrolling: false,
 			});
 			M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-				margin: 0
+				margin: 0,
 			});
-		}
-	}
+		},
+	},
 };
 </script>
 
@@ -92,7 +97,7 @@ export default {
 }
 
 .event_list_row tr {
-	transition: background-color .3s ease;
+	transition: background-color 0.3s ease;
 	&:hover {
 		background: #eaeaea;
 	}
@@ -103,7 +108,7 @@ export default {
 }
 
 .card .card-content .event_date {
-	font-size: 1.15em; 
+	font-size: 1.15em;
 	margin-top: -15px;
 
 	.rotate {
@@ -116,7 +121,7 @@ td {
 }
 
 td a {
-	transition: .3s;
+	transition: 0.3s;
 	font-weight: 600;
 	&:hover {
 		color: $primary-color-light;

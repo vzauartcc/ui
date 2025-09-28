@@ -8,28 +8,32 @@
 			<div class="row row_no_margin" v-else>
 				<form enctype="multipart/form-data" @submit.prevent="submitForm">
 					<div class="input-field col s12">
-						<input id="name" type="text" v-model="form.name" required>
+						<input id="name" type="text" v-model="form.name" required />
 						<label for="name" class="active">Name</label>
 					</div>
 					<div class="input-field col s12 m6">
-						<input id="startDate" type="text" class="datepicker" ref="start_date" required>
+						<input id="startDate" type="text" class="datepicker" ref="start_date" required />
 						<label for="startDate" class="active">Start Time (Zulu)</label>
 					</div>
 					<div class="input-field col s12 m6">
-						<input id="endDate" type="text" class="datepicker" ref="end_date" required>
+						<input id="endDate" type="text" class="datepicker" ref="end_date" required />
 						<label for="endDate" class="active">End Time (Zulu)</label>
 					</div>
 					<div class="file-field input-field col s12">
 						<div class="btn waves-effect waves-light">
 							<span>FILE</span>
-							<input type="file" ref="banner" @change="updateFilePath">
+							<input type="file" ref="banner" @change="updateFilePath" />
 						</div>
 						<div class="file-path-wrapper">
-							<input class="file-path" type="text" :value="filePath" readonly>
+							<input class="file-path" type="text" :value="filePath" readonly />
 						</div>
 					</div>
 					<div class="input-field col s12">
-						<textarea id="description" class="materialize-textarea" v-model="form.description"></textarea>
+						<textarea
+							id="description"
+							class="materialize-textarea"
+							v-model="form.description"
+						></textarea>
 						<label for="description" class="active">Description</label>
 					</div>
 					<div class="input-field col s12">
@@ -37,14 +41,26 @@
 							<div class="col s12 l6 push-l3">
 								<div class="card card_positions z-depth-2">
 									<p class="positions_title">Event Positions</p>
-									<p class="no_pos" v-if="form.positions && form.positions.length === 0">No positions added yet</p>
+									<p class="no_pos" v-if="form.positions && form.positions.length === 0">
+										No positions added yet
+									</p>
 									<ul v-else>
 										<li v-for="position in form.positions" class="collection-item" :key="position">
-											<div class="pos_header">{{position}} <span class="delete_pos" @click="deletePos(position)">Delete</span></div>
+											<div class="pos_header">
+												{{ position }}
+												<span class="delete_pos" @click="deletePos(position)">Delete</span>
+											</div>
 										</li>
 									</ul>
 									<form @submit.prevent="addPosition">
-										<input type="text" class="positions_input" placeholder="CHI_35_CTR" name="pos" ref="pos" required />
+										<input
+											type="text"
+											class="positions_input"
+											placeholder="CHI_35_CTR"
+											name="pos"
+											ref="pos"
+											required
+										/>
 										<button class="positions_submit" type="submit" name="action">
 											<i class="material-icons">add</i>
 										</button>
@@ -72,7 +88,7 @@ export default {
 	data() {
 		return {
 			form: null,
-			selectedFile: null
+			selectedFile: null,
 		};
 	},
 	async mounted() {
@@ -81,26 +97,29 @@ export default {
 		M.textareaAutoResize(document.getElementById('description'));
 	},
 	computed: {
-  	filePath() {
-    	return this.selectedFile ? this.selectedFile.name : this.form?.bannerUrl || "";
-  	}
+		filePath() {
+			return this.selectedFile ? this.selectedFile.name : this.form?.bannerUrl || '';
+		},
 	},
 	methods: {
 		async getEvent() {
 			const { data } = await zabApi.get(`/event/${this.$route.params.slug}`);
 			this.form = data.data;
-			if(this.form.positions && this.form.positions.length != 0) { this.form.positions = this.form.positions.map(p => p.pos); }
-			else { this.form.positions = []; }
+			if (this.form.positions && this.form.positions.length != 0) {
+				this.form.positions = this.form.positions.map((p) => p.pos);
+			} else {
+				this.form.positions = [];
+			}
 
 			this.$nextTick(() => {
 				// Okay, so working with timezones with JS is hard. This is really gross and I hate it, but it works so 🤷‍♀️
-				const startTime =  DateTime.fromISO(this.form.eventStart);
-				const endTime =  DateTime.fromISO(this.form.eventEnd);
-				
+				const startTime = DateTime.fromISO(this.form.eventStart);
+				const endTime = DateTime.fromISO(this.form.eventEnd);
+
 				flatpickr(this.$refs.start_date, {
 					enableTime: true,
 					time_24hr: true,
-					defaultDate: startTime.plus({minutes: -startTime.offset}).toISO(),
+					defaultDate: startTime.plus({ minutes: -startTime.offset }).toISO(),
 					disableMobile: true,
 					minuteIncrement: 15,
 					dateFormat: 'Y-m-dTH:i:00.000\\Z',
@@ -111,7 +130,7 @@ export default {
 				flatpickr(this.$refs.end_date, {
 					enableTime: true,
 					time_24hr: true,
-					defaultDate: endTime.plus({minutes: -endTime.offset}).toISO(),
+					defaultDate: endTime.plus({ minutes: -endTime.offset }).toISO(),
 					disableMobile: true,
 					minuteIncrement: 15,
 					dateFormat: 'Y-m-dTH:i:00.000\\Z',
@@ -121,11 +140,11 @@ export default {
 			});
 		},
 		updateFilePath(event) {
-    if (event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0]; // ✅ Store new file
-      this.form.bannerUrl = this.selectedFile.name; // ✅ Update input field
-    }
-  },
+			if (event.target.files.length > 0) {
+				this.selectedFile = event.target.files[0]; // ✅ Store new file
+				this.form.bannerUrl = this.selectedFile.name; // ✅ Update input field
+			}
+		},
 		async submitForm() {
 			try {
 				const formData = new FormData();
@@ -136,53 +155,53 @@ export default {
 				formData.append('positions', JSON.stringify(this.form.positions));
 
 				if (this.selectedFile) {
-        	formData.append("banner", this.selectedFile); // ✅ Use selected file
-      	}
+					formData.append('banner', this.selectedFile); // ✅ Use selected file
+				}
 
-				const {data} = await zabApi.put(`/event/${this.$route.params.slug}`, formData, {
-					headers: { 
-						'Content-Type': 'multipart/form-data'
-					}
+				const { data } = await zabApi.put(`/event/${this.$route.params.slug}`, formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
 				});
 
-				if(data.ret_det.code === 200) {
+				if (data.ret_det.code === 200) {
 					this.toastSuccess('Event updated');
-					this.$router.back();					
+					this.$router.back();
 				} else {
 					this.toastError(data.ret_det.message);
 				}
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
 		},
 		async addPosition() {
-    	const newPos = this.$refs.pos.value.toUpperCase();
+			const newPos = this.$refs.pos.value.toUpperCase();
 
-    	if (!newPos) {
-      	this.toastError("Position cannot be empty");
-      	return;
-    	}
+			if (!newPos) {
+				this.toastError('Position cannot be empty');
+				return;
+			}
 
-    	if (this.form.positions.includes(newPos)) {
-      	this.toastError("Position already exists");
-      	return;
-    	}
+			if (this.form.positions.includes(newPos)) {
+				this.toastError('Position already exists');
+				return;
+			}
 
-    	// ✅ Preserve selectedFile before updating form
-    	const tempFile = this.selectedFile;
+			// ✅ Preserve selectedFile before updating form
+			const tempFile = this.selectedFile;
 
-    	// ✅ Use Vue reactivity-friendly update
-  		this.form.positions.push(newPos);
-    
-    	// ✅ Restore the selected file
-    	this.selectedFile = tempFile;
+			// ✅ Use Vue reactivity-friendly update
+			this.form.positions.push(newPos);
 
-    	// ✅ Clear input field
-    	this.$refs.pos.value = "";
-  	},
+			// ✅ Restore the selected file
+			this.selectedFile = tempFile;
+
+			// ✅ Clear input field
+			this.$refs.pos.value = '';
+		},
 		async deletePos(position) {
-  		this.form.positions = this.form.positions.filter(pos => pos !== position);
-		}
+			this.form.positions = this.form.positions.filter((pos) => pos !== position);
+		},
 	},
 };
 </script>
@@ -193,11 +212,11 @@ export default {
 
 	.positions_title {
 		font-weight: 600;
-		padding: .5em 1em;
+		padding: 0.5em 1em;
 	}
 
 	form {
-		padding: .5em 1em;
+		padding: 0.5em 1em;
 	}
 
 	.positions_input {
@@ -225,7 +244,7 @@ export default {
 	}
 
 	.pos_header {
-		padding: .5em 1em;
+		padding: 0.5em 1em;
 	}
 
 	.collection-item:nth-of-type(odd) {
@@ -233,17 +252,16 @@ export default {
 	}
 
 	.no_pos {
-		padding: .5em 1em;
+		padding: 0.5em 1em;
 		font-style: italic;
 	}
 
-	
 	.delete_pos {
 		color: #9e9e9e;
-		font-size: .8rem;
+		font-size: 0.8rem;
 		cursor: pointer;
 		text-decoration: underline;
-		margin-right: .5rem;
+		margin-right: 0.5rem;
 		float: right;
 	}
 }

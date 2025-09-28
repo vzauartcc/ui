@@ -22,12 +22,29 @@
 				</thead>
 				<tbody class="session_list_row">
 					<tr v-for="session in sessions" :key="session._id">
-						<td>{{ session.student ? `${session.student.fname} ${session.student.lname}` : session.studentCid}}</td>
-						<td>{{dtLong(session.startTime)}}</td>
-						<td>{{dtLong(session.endTime)}}</td>
-						<td>{{session.instructor ? `${session.instructor.fname} ${session.instructor.lname}` : session.instructorCid}}</td>
+						<td>
+							{{
+								session.student
+									? `${session.student.fname} ${session.student.lname}`
+									: session.studentCid
+							}}
+						</td>
+						<td>{{ dtLong(session.startTime) }}</td>
+						<td>{{ dtLong(session.endTime) }}</td>
+						<td>
+							{{
+								session.instructor
+									? `${session.instructor.fname} ${session.instructor.lname}`
+									: session.instructorCid
+							}}
+						</td>
 						<td class="options">
-							<router-link :to="`/ins/training/session/${session._id}`" data-position="top" data-tooltip="View Details" class="tooltipped">
+							<router-link
+								:to="`/ins/training/session/${session._id}`"
+								data-position="top"
+								data-tooltip="View Details"
+								class="tooltipped"
+							>
 								<i class="material-icons">search</i>
 							</router-link>
 						</td>
@@ -36,13 +53,18 @@
 			</table>
 		</div>
 		<div v-if="sessions && sessionAmount !== 0">
-			<Pagination :amount="sessionAmount" :page="page" :limit="limit" :amountOfPages="amountOfPages" />
+			<Pagination
+				:amount="sessionAmount"
+				:page="page"
+				:limit="limit"
+				:amountOfPages="amountOfPages"
+			/>
 		</div>
 	</div>
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
 
 export default {
@@ -53,40 +75,40 @@ export default {
 			sessionAmount: 0,
 			page: 1,
 			limit: 20,
-			amountOfPages: 0
+			amountOfPages: 0,
 		};
 	},
 	components: {
-		Pagination
+		Pagination,
 	},
 	async mounted() {
 		await this.getSessions();
 		this.amountOfPages = Math.ceil(this.sessionAmount / this.limit);
 		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-			margin: 0
+			margin: 0,
 		});
 	},
 	methods: {
 		async getSessions() {
-			const {data} = await zabApi.get('/training/sessions', {
+			const { data } = await zabApi.get('/training/sessions', {
 				params: {
 					page: this.page,
-					limit: this.limit
-				}
+					limit: this.limit,
+				},
 			});
 
 			this.sessions = data.data.sessions;
 			this.sessionAmount = data.data.count;
-		}
+		},
 	},
 	watch: {
-		page: async function() {
+		page: async function () {
 			await this.getSessions();
 			M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-				margin: 0
+				margin: 0,
 			});
-		}
-	}
+		},
+	},
 };
 </script>
 

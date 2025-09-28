@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import DocumentCategory from './DocumentCategory.vue';
 
 export default {
@@ -32,11 +32,11 @@ export default {
 	title: 'Documents',
 	data() {
 		return {
-			documents: null
+			documents: null,
 		};
 	},
 	components: {
-		DocumentCategory
+		DocumentCategory,
 	},
 	async mounted() {
 		await this.getDocuments();
@@ -44,13 +44,13 @@ export default {
 	},
 	methods: {
 		async getDocuments() {
-			const {data: fileData} = await zabApi.get('/file/documents');
+			const { data: fileData } = await zabApi.get('/file/documents');
 			this.documents = {
-				loa: fileData.data.filter(doc => doc.category === 'loa'),
-				sop: fileData.data.filter(doc => doc.category === 'sop'),
-				policy: fileData.data.filter(doc => doc.category === 'policy'),
-				misc: fileData.data.filter(doc => doc.category === 'misc'),
-        training: fileData.data.filter(doc => doc.category === 'training'),
+				loa: fileData.data.filter((doc) => doc.category === 'loa'),
+				sop: fileData.data.filter((doc) => doc.category === 'sop'),
+				policy: fileData.data.filter((doc) => doc.category === 'policy'),
+				misc: fileData.data.filter((doc) => doc.category === 'misc'),
+				training: fileData.data.filter((doc) => doc.category === 'training'),
 			};
 		},
 	},
@@ -65,9 +65,9 @@ export default {
 
 .tabs {
 	overflow-x: auto;
-  background-size: auto;
-  display: flex;
-  width: 100%;
+	background-size: auto;
+	display: flex;
+	width: 100%;
 
 	&::-webkit-scrollbar {
 		height: 3px;

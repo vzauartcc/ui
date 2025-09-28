@@ -8,32 +8,53 @@
 			<div v-else>
 				<div class="card_desc">
 					<p>
-						We welcome your feedback! Use the form below to send feedback about one of our controllers. Please note that your identity will always be shared with the ATM, DATM, and TA, regardless of selecting the 'remain anonymous' option.
+						We welcome your feedback! Use the form below to send feedback about one of our
+						controllers. Please note that your identity will always be shared with the ATM, DATM,
+						and TA, regardless of selecting the 'remain anonymous' option.
 					</p>
 				</div>
 				<div v-if="!user.isLoggedIn">
-					<p>To prevent abuse of the system, all users need to log in via VATSIM before sending feedback. The only details shared with us are your name, CID and email address; your password is never revealed.</p><br />
+					<p>
+						To prevent abuse of the system, all users need to log in via VATSIM before sending
+						feedback. The only details shared with us are your name, CID and email address; your
+						password is never revealed.
+					</p>
+					<br />
 					<div class="center-align">
 						<button class="btn btn-waves login_button" @click="login">Login via VATSIM</button>
 					</div>
 				</div>
 				<form class="row row_no_margin" id="feedback" @submit.prevent="submitFeedback" v-else>
 					<div class="input-field col s12 m6">
-						<input id="name" type="text" class="validate" :value="feedback.name" disabled>
+						<input id="name" type="text" class="validate" :value="feedback.name" disabled />
 						<label class="active" for="name">Your Name</label>
 					</div>
 					<div class="input-field col s12 m6">
-						<input id="email" type="email" class="validate" :value="feedback.email" disabled>
+						<input id="email" type="email" class="validate" :value="feedback.email" disabled />
 						<label class="active" for="email">Your Email Address</label>
 					</div>
 					<div class="input-field col s12 m6">
-						<input id="cid" type="text" minlength=6 maxlength=7 class="validate" :value="feedback.cid" disabled>
+						<input
+							id="cid"
+							type="text"
+							minlength="6"
+							maxlength="7"
+							class="validate"
+							:value="feedback.cid"
+							disabled
+						/>
 						<label class="active" for="cid">Your CID</label>
 					</div>
 					<div class="input-field col s12 m6">
 						<select v-model="feedback.controller" required class="materialize-select">
 							<option value="" disabled selected>Select a controller</option>
-							<option v-for="controller in controllers" :value="controller.cid" :key="controller.cid">{{controller.fname}} {{controller.lname}}</option>
+							<option
+								v-for="controller in controllers"
+								:value="controller.cid"
+								:key="controller.cid"
+							>
+								{{ controller.fname }} {{ controller.lname }}
+							</option>
 						</select>
 						<label>Controller</label>
 					</div>
@@ -60,7 +81,12 @@
 						<label>Rating</label>
 					</div>
 					<div class="input-field col s12">
-						<textarea id="comments" class="materialize-textarea" data-length="5000" v-model="feedback.comments"></textarea>
+						<textarea
+							id="comments"
+							class="materialize-textarea"
+							data-length="5000"
+							v-model="feedback.comments"
+						></textarea>
 						<label for="comments">Comments</label>
 					</div>
 					<div class="checkbox col s12">
@@ -79,67 +105,67 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { zabApi } from "@/helpers/axios.js";
-import { vatsimAuthRedirectUrl } from "@/helpers/uriHelper.js";
+import { mapState } from 'vuex';
+import { zabApi } from '@/helpers/axios.js';
+import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 
 export default {
-  name: "Feedback",
-  title: "Leave Feedback",
-  data() {
-    return {
-      feedback: {
-        name: "",
-        email: "",
-        cid: null,
-        controller: null,
-        rating: null,
-        position: null,
-        comments: "",
-        anon: false,
-      },
-      controllers: null,
-    };
-  },
-  async mounted() {
-    await this.getControllers();
-    M.FormSelect.init(document.querySelectorAll("select"), {});
-    M.CharacterCounter.init(document.querySelectorAll("textarea"), {});
-    if (this.user && this.user.isLoggedIn) {
-      this.feedback.name = `${this.user.data.fname} ${this.user.data.lname}`;
-      this.feedback.email = this.user.data.email;
-      this.feedback.cid = this.user.data.cid;
-    }
-  },
-  methods: {
-    async login() {
-      localStorage.setItem("redirect", this.$route.path);
-      window.location.href = vatsimAuthRedirectUrl;
-    },
-    async getControllers() {
-      const { data } = await zabApi.get("/feedback/controllers");
-      this.controllers = data.data;
-    },
-    async submitFeedback() {
-      const { data } = await zabApi.post("/feedback", this.feedback);
-      if (data.ret_det.code === 200) {
-        this.toastSuccess("Feedback sent");
-        document.getElementById("feedback").reset();
-        this.feedback = {
-          name: `${this.user.data.fname} ${this.user.data.lname}`,
-          email: this.user.data.email,
-          cid: this.user.data.cid,
-        };
-        this.$nextTick(() => {
-          M.textareaAutoResize(document.querySelector("textarea"));
-          M.updateTextFields();
-        });
-      } else this.toastError(data.ret_det.message);
-    },
-  },
-  computed: {
-    ...mapState("user", ["user"]),
-  },
+	name: 'Feedback',
+	title: 'Leave Feedback',
+	data() {
+		return {
+			feedback: {
+				name: '',
+				email: '',
+				cid: null,
+				controller: null,
+				rating: null,
+				position: null,
+				comments: '',
+				anon: false,
+			},
+			controllers: null,
+		};
+	},
+	async mounted() {
+		await this.getControllers();
+		M.FormSelect.init(document.querySelectorAll('select'), {});
+		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
+		if (this.user && this.user.isLoggedIn) {
+			this.feedback.name = `${this.user.data.fname} ${this.user.data.lname}`;
+			this.feedback.email = this.user.data.email;
+			this.feedback.cid = this.user.data.cid;
+		}
+	},
+	methods: {
+		async login() {
+			localStorage.setItem('redirect', this.$route.path);
+			window.location.href = vatsimAuthRedirectUrl;
+		},
+		async getControllers() {
+			const { data } = await zabApi.get('/feedback/controllers');
+			this.controllers = data.data;
+		},
+		async submitFeedback() {
+			const { data } = await zabApi.post('/feedback', this.feedback);
+			if (data.ret_det.code === 200) {
+				this.toastSuccess('Feedback sent');
+				document.getElementById('feedback').reset();
+				this.feedback = {
+					name: `${this.user.data.fname} ${this.user.data.lname}`,
+					email: this.user.data.email,
+					cid: this.user.data.cid,
+				};
+				this.$nextTick(() => {
+					M.textareaAutoResize(document.querySelector('textarea'));
+					M.updateTextFields();
+				});
+			} else this.toastError(data.ret_det.message);
+		},
+	},
+	computed: {
+		...mapState('user', ['user']),
+	},
 };
 </script>
 
@@ -158,7 +184,7 @@ export default {
 	padding-left: 1em;
 }
 
-input.valid[type=email]:not(.browser-default) {
+input.valid[type='email']:not(.browser-default) {
 	border-bottom: 1px solid $primary-color;
 	box-shadow: 0 1px 0 0 $primary-color;
 }

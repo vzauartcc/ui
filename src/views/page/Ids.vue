@@ -3,15 +3,29 @@
 		<div class="download_wrapper">
 			<div class="download_container">
 				<div class="top_text">
-					<img src="https://zabartcc.sfo3.digitaloceanspaces.com/images/zab_logo.png" alt="Albuquerque ARTCC Logo" class="download_logo" height="150" width="150">
+					<img
+						src="https://zabartcc.sfo3.digitaloceanspaces.com/images/zab_logo.png"
+						alt="Albuquerque ARTCC Logo"
+						class="download_logo"
+						height="150"
+						width="150"
+					/>
 					<p class="title">Albuquerque ARTCC — Information Display System</p>
 					<p class="description">
-						The ZAB Information Display System (IDS) is a program that provides you with information useful when controlling and helps ease communication and coordination with fellow controllers. <br/><br />Select the download button for your operating system below to download and install the IDS.
+						The ZAB Information Display System (IDS) is a program that provides you with information
+						useful when controlling and helps ease communication and coordination with fellow
+						controllers. <br /><br />Select the download button for your operating system below to
+						download and install the IDS.
 					</p>
 				</div>
 				<div class="row downloads_row">
 					<div class="col s12">
-						<a class="btn waves-effect waves-light download_button windows" href="https://zabartcc.sfo3.digitaloceanspaces.com/ids/AlbuquerqueIDSInstall.exe" target="_blank">DOWNLOAD FOR WINDOWS</a>
+						<a
+							class="btn waves-effect waves-light download_button windows"
+							href="https://zabartcc.sfo3.digitaloceanspaces.com/ids/AlbuquerqueIDSInstall.exe"
+							target="_blank"
+							>DOWNLOAD FOR WINDOWS</a
+						>
 					</div>
 				</div>
 			</div>
@@ -22,7 +36,7 @@
 <script>
 export default {
 	name: 'IDS',
-	title: 'IDS'
+	title: 'IDS',
 };
 </script>
 
@@ -42,7 +56,7 @@ export default {
 	top: 0;
 	left: 0;
 	z-index: 1;
-	content: "";
+	content: '';
 }
 
 .download_logo {
@@ -55,11 +69,13 @@ export default {
 }
 
 .download_container {
-	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+	box-shadow:
+		0 3px 6px rgba(0, 0, 0, 0.16),
+		0 3px 6px rgba(0, 0, 0, 0.23);
 	width: 30%;
 	min-width: 340px;
 	z-index: 1;
-	background-color: #1A1A1A;
+	background-color: #1a1a1a;
 	position: absolute;
 	padding: 1em;
 	margin-left: auto;
@@ -68,14 +84,14 @@ export default {
 	right: 0;
 
 	.other_downloads {
-		color: #6C6C6C;
+		color: #6c6c6c;
 		text-align: center;
 		margin: 1em;
 	}
 
 	.smaller_download {
 		text-align: center;
-		color: #6C6C6C;
+		color: #6c6c6c;
 		text-decoration: underline;
 		user-select: none;
 	}

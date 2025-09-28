@@ -1,47 +1,51 @@
 {
-  "name": "ui",
-  "version": "1.0.0",
-  "private": true,
-  "author": "Chicago ARTCC",
-  "contributors": [
-    "Alexandra Robison",
-    "Daan Janssen",
-    "Timothy Barker",
-    "Ryan Savara"
-  ],
-  "license": "CC-BY-NC-SA-4.0",
-  "scripts": {
-    "dev": "vite --open --port 8080",
-    "serve": "vite preview --open",
-    "build": "vite build",
-    "lint": "eslint src",
-    "start:dev": "doppler run -p ui -c dev -- npm run dev"
-  },
-  "dependencies": {
-    "@materializecss/materialize": "^1.1.0-alpha",
-    "@sentry/browser": "^8.33.1",
-    "@sentry/integrations": "^6.15.0",
-    "@sentry/tracing": "^6.15.0",
-    "@toast-ui/editor": "^3.1.1",
-    "@toast-ui/editor-plugin-table-merged-cell": "^3.0.1",
-    "axios": "^0.24.0",
-    "chart.js": "^3.6.0",
-    "core-js": "^3.19.1",
-    "dayjs": "^1.11.7",
-    "flatpickr": "^4.6.9",
-    "luxon": "^2.1.1",
-    "metar-parser": "^1.0.0",
-    "vue": "^3.2.22",
-    "vue-flatpickr-component": "^11.0.1",
-    "vue-router": "^4.0.12",
-    "vuex": "^4.0.2"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.4",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^8.3.0",
-    "eslint-plugin-vue": "^8.1.1",
-    "sass": "^1.43.5",
-    "vite": "^5.4.8"
-  }
+	"name": "ui",
+	"version": "1.0.0",
+	"private": true,
+	"author": "Chicago ARTCC",
+	"contributors": [
+		"Alexandra Robison",
+		"Daan Janssen",
+		"Timothy Barker",
+		"Ryan Savara"
+	],
+	"license": "CC-BY-NC-SA-4.0",
+	"scripts": {
+		"dev": "vite --open --port 8080",
+		"serve": "vite preview --open",
+		"build": "vite build",
+		"lint": "eslint . --fix",
+		"format": "prettier --write src/",
+		"start:dev": "doppler run -p ui -c dev -- npm run dev",
+		"start:ryan": "npm run start:dev"
+	},
+	"dependencies": {
+		"@toast-ui/editor": "^3.2.2",
+		"@toast-ui/editor-plugin-table-merged-cell": "^3.1.0",
+		"axios": "^1.12.2",
+		"chart.js": "^4.5.0",
+		"core-js": "^3.45.1",
+		"dayjs": "^1.11.18",
+		"flatpickr": "^4.6.13",
+		"luxon": "^3.7.2",
+		"materialize-css": "^1.0.0-rc.2",
+		"metar-parser": "^1.0.1",
+		"vue": "^3.5.18",
+		"vue-flatpickr-component": "^12.0.0",
+		"vue-router": "^4.5.1",
+		"vuex": "^4.1.0"
+	},
+	"devDependencies": {
+		"@eslint/eslintrc": "^3.3.1",
+		"@eslint/js": "^9.31.0",
+		"@vitejs/plugin-vue": "^6.0.1",
+		"@vue/eslint-config-prettier": "^10.2.0",
+		"eslint": "^9.31.0",
+		"eslint-plugin-vue": "~10.3.0",
+		"globals": "^16.3.0",
+		"prettier": "3.6.2",
+		"sass": "^1.93.2",
+		"vite": "^7.0.6",
+		"vite-plugin-vue-devtools": "^8.0.0"
+	}
 }

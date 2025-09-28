@@ -6,9 +6,9 @@
 		<div v-else>
 			<div class="card-content">
 				<div class="row row_no_margin">
-					<div class="col s12 l10 card-title">{{news.title}}</div>
+					<div class="col s12 l10 card-title">{{ news.title }}</div>
 					<div class="col s12 author">
-						By {{news.user.fname}} {{news.user.lname}} on {{dLong(news.createdAt)}}
+						By {{ news.user.fname }} {{ news.user.lname }} on {{ dLong(news.createdAt) }}
 					</div>
 				</div>
 				<div id="news_content"></div>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 
@@ -26,7 +26,7 @@ export default {
 	data() {
 		return {
 			news: null,
-			viewer: null
+			viewer: null,
 		};
 	},
 	async mounted() {
@@ -37,28 +37,27 @@ export default {
 			this.viewer = new Viewer({
 				el: document.getElementById('news_content'),
 				height: '600px',
-				initialValue: this.news.content
+				initialValue: this.news.content,
 			});
 		});
 	},
 	methods: {
 		async getArticle() {
-			const {data} = await zabApi.get(`/news/${this.$route.params.slug}`);
+			const { data } = await zabApi.get(`/news/${this.$route.params.slug}`);
 			this.news = data.data;
 		},
-	}
-
+	},
 };
 </script>
 
 <style lang="scss" scoped>
 .card-title {
 	font-weight: bold;
-	margin-bottom: 0!important;
+	margin-bottom: 0 !important;
 }
 
 .side-title {
-	margin-top: .4em;
+	margin-top: 0.4em;
 }
 
 .author {
@@ -73,7 +72,7 @@ export default {
 	overflow: auto;
 
 	&:deep(.tui-editor-contents) {
-		font-family: "Lato", "Helvetica", sans-serif;
+		font-family: 'Lato', 'Helvetica', sans-serif;
 		font-size: 1rem;
 	}
 
@@ -89,7 +88,7 @@ export default {
 		border-bottom: none;
 		font-weight: 400;
 		color: #000;
-		margin-bottom: .25em;
+		margin-bottom: 0.25em;
 
 		&:first-of-type {
 			margin-top: 0;
@@ -97,7 +96,7 @@ export default {
 
 		&::before {
 			counter-increment: h2;
-			content: counter(h2) ". "
+			content: counter(h2) '. ';
 		}
 	}
 
@@ -110,7 +109,7 @@ export default {
 
 		&::before {
 			counter-increment: h3;
-			content: counter(h2) "." counter(h3) ". "
+			content: counter(h2) '.' counter(h3) '. ';
 		}
 	}
 
@@ -120,12 +119,12 @@ export default {
 		font-size: 1.5em;
 		font-weight: 400;
 		line-height: 110%;
-		margin: 1.52rem 0 .912rem 0;
+		margin: 1.52rem 0 0.912rem 0;
 		color: #000;
 
 		&::before {
 			counter-increment: h4;
-			content: counter(h2) "." counter(h3) "." counter(h4) ". "
+			content: counter(h2) '.' counter(h3) '.' counter(h4) '. ';
 		}
 	}
 
@@ -139,13 +138,13 @@ export default {
 
 		&::before {
 			counter-increment: h5;
-			content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "
+			content: counter(h2) '.' counter(h3) '.' counter(h4) '.' counter(h5) '. ';
 		}
 	}
 
 	&:deep(p) {
 		color: #000;
-		&+p {
+		& + p {
 			margin-top: 1.5em;
 		}
 	}
@@ -163,7 +162,7 @@ export default {
 			}
 		}
 	}
-	
+
 	&:deep(ol) {
 		color: #000;
 

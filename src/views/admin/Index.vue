@@ -12,7 +12,7 @@
 							<div class="card-content">
 								<h6>Total Hours (This Month)</h6>
 								<h5>
-									{{sec2hms(stats.totalTime)}}
+									{{ sec2hms(stats.totalTime) }}
 								</h5>
 							</div>
 						</div>
@@ -22,8 +22,13 @@
 							<div class="card-content">
 								<h6>Total Controllers</h6>
 								<h5>
-									<span class="tooltipped" data-tooltip="Home" data-position="top"><i class="material-icons">home</i> {{stats.counts?.home || 0}}</span> / 
-									<span class="tooltipped" data-tooltip="Visiting" data-position="top"><i class="material-icons">work</i> {{stats.counts?.vis || 0}}</span>
+									<span class="tooltipped" data-tooltip="Home" data-position="top"
+										><i class="material-icons">home</i> {{ stats.counts?.home || 0 }}</span
+									>
+									/
+									<span class="tooltipped" data-tooltip="Visiting" data-position="top"
+										><i class="material-icons">work</i> {{ stats.counts?.vis || 0 }}</span
+									>
 								</h5>
 							</div>
 						</div>
@@ -33,7 +38,7 @@
 							<div class="card-content">
 								<h6>Total Sessions (This Month)</h6>
 								<h5>
-									{{stats.totalSessions}}
+									{{ stats.totalSessions }}
 								</h5>
 							</div>
 						</div>
@@ -82,84 +87,90 @@ export default {
 	title: 'Admin Dashboard',
 	data() {
 		return {
-			stats: null
+			stats: null,
 		};
 	},
 	async mounted() {
 		Chart.register(...registerables);
-		const {data: statsData} = await zabApi.get('/stats/admin');
+		const { data: statsData } = await zabApi.get('/stats/admin');
 		this.stats = statsData.data;
 		this.$nextTick(() => {
 			M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-				margin: 0
+				margin: 0,
 			});
 			new Chart(this.$refs.feedback_chart, {
 				type: 'line',
 				data: {
-					labels: this.stats.feedback.map(f => `${f.month} ${f.year}`),
-					datasets: [{
-						label: "Feedback Submitted",
-						data: this.stats.feedback.map(f => f.total),
-						borderColor: '#FF0000',
-						tension: 0.3
-					}]
+					labels: this.stats.feedback.map((f) => `${f.month} ${f.year}`),
+					datasets: [
+						{
+							label: 'Feedback Submitted',
+							data: this.stats.feedback.map((f) => f.total),
+							borderColor: '#FF0000',
+							tension: 0.3,
+						},
+					],
 				},
 				options: {
 					scales: {
 						y: {
-							beginAtZero: true
-						}
-					}
-				}
+							beginAtZero: true,
+						},
+					},
+				},
 			});
 			new Chart(this.$refs.hours_chart, {
 				type: 'line',
 				data: {
-					labels: this.stats.hours.map(f => `${f.month} ${f.year}`),
-					datasets: [{
-						label: "Total Hours",
-						data: this.stats.hours.map(h => Math.round(h.total/60/60*100)/100),
-						borderColor: '#FF0000',
-						tension: 0.3
-					}]
+					labels: this.stats.hours.map((f) => `${f.month} ${f.year}`),
+					datasets: [
+						{
+							label: 'Total Hours',
+							data: this.stats.hours.map((h) => Math.round((h.total / 60 / 60) * 100) / 100),
+							borderColor: '#FF0000',
+							tension: 0.3,
+						},
+					],
 				},
 				options: {
 					scales: {
 						y: {
 							beginAtZero: true,
-						}
-					}
-				}
+						},
+					},
+				},
 			});
 			new Chart(this.$refs.distb_chart, {
 				type: 'bar',
 				data: {
-					labels: this.stats.counts.byRating.map(f => f.rating),
-					datasets: [{
-						label: "Number of Controllers",
-						data: this.stats.counts.byRating.map(f => f.count),
-						backgroundColor: '#FF0000',
-					}]
+					labels: this.stats.counts.byRating.map((f) => f.rating),
+					datasets: [
+						{
+							label: 'Number of Controllers',
+							data: this.stats.counts.byRating.map((f) => f.count),
+							backgroundColor: '#FF0000',
+						},
+					],
 				},
 				options: {
 					scales: {
 						y: {
 							beginAtZero: true,
-						}
-					}
-				}
+						},
+					},
+				},
 			});
 		});
 	},
 	methods: {
 		sec2hms(secs) {
-			if(!secs) return null;
+			if (!secs) return null;
 			const hours = Math.floor(secs / 3600);
 			const minutes = `0${Math.round((secs / 60) % 60)}`.slice(-2);
 			const seconds = `0${secs % 60}`.slice(-2);
 			return `${hours}:${minutes}:${seconds}`;
 		},
-	}
+	},
 };
 </script>
 
@@ -184,5 +195,4 @@ export default {
 		}
 	}
 }
-
 </style>

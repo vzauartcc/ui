@@ -11,31 +11,46 @@
 					<div class="row">
 						<div class="col s5 m4 l3">
 							<div class="controller_image">
-								<img :src="`https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/avatars/${controller.avatar || `${controller.cid}-default.png`}`" alt="" height="170" width="170">
+								<img
+									:src="`https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/avatars/${controller.avatar || `${controller.cid}-default.png`}`"
+									alt=""
+									height="170"
+									width="170"
+								/>
 							</div>
 						</div>
 						<div class="col s7 m8 l9">
 							<div class="controller_name">
-								{{controller.fname}} {{controller.lname}} ({{controller.oi}})
+								{{ controller.fname }} {{ controller.lname }} ({{ controller.oi }})
 								<span v-if="controller.absence.length > 0" class="controller_loa">LOA</span>
 							</div>
-							<div class="controller_rating">{{controller.ratingLong}}</div>
+							<div class="controller_rating">{{ controller.ratingLong }}</div>
 						</div>
 						<div class="col s12 m8 l9">
 							<div class="controller_certs">
-								<span v-for="role in controller.roles" :class="`cert cert_${role.class}`" :key="role.id" :data-tooltip="role.name" data-position="top">
-									{{role.name}}
+								<span
+									v-for="role in controller.roles"
+									:class="`cert cert_${role.class}`"
+									:key="role.id"
+									:data-tooltip="role.name"
+									data-position="top"
+								>
+									{{ role.name }}
 								</span>
 								<div v-if="controller.certifications.length" class="title">Certifications</div>
-								<span v-for="cert in reduceControllerCerts(controller.certifications)" :class="`cert cert_${cert.class}`" :key="cert.id">
-									{{cert.name}}
+								<span
+									v-for="cert in reduceControllerCerts(controller.certifications)"
+									:class="`cert cert_${cert.class}`"
+									:key="cert.id"
+								>
+									{{ cert.name }}
 								</span>
 							</div>
 						</div>
 					</div>
 					<div class="card z-depth-2" v-if="controller.bio">
 						<div class="card-content">
-							<p class="bio">{{controller.bio}}</p>
+							<p class="bio">{{ controller.bio }}</p>
 						</div>
 					</div>
 				</div>
@@ -56,41 +71,39 @@
 						</thead>
 						<tbody>
 							<tr v-for="month in stats.months" :key="month" class="hover">
-								<td>{{month}}</td>
-								<td>{{sec2hm(stats[month].del)}}</td>
-								<td>{{sec2hm(stats[month].gnd)}}</td>
-								<td>{{sec2hm(stats[month].twr)}}</td>
-								<td>{{sec2hm(stats[month].app)}}</td>
-								<td>{{sec2hm(stats[month].ctr)}}</td>
-								<td>{{sec2hm(totalTime(stats[month])) || '0:00'}}</td>
+								<td>{{ month }}</td>
+								<td>{{ sec2hm(stats[month].del) }}</td>
+								<td>{{ sec2hm(stats[month].gnd) }}</td>
+								<td>{{ sec2hm(stats[month].twr) }}</td>
+								<td>{{ sec2hm(stats[month].app) }}</td>
+								<td>{{ sec2hm(stats[month].ctr) }}</td>
+								<td>{{ sec2hm(totalTime(stats[month])) || '0:00' }}</td>
 							</tr>
 							<tr class="hover">
 								<td>>1 Year</td>
-								<td>{{sec2hm(stats.gtyear.del)}}</td>
-								<td>{{sec2hm(stats.gtyear.gnd)}}</td>
-								<td>{{sec2hm(stats.gtyear.twr)}}</td>
-								<td>{{sec2hm(stats.gtyear.app)}}</td>
-								<td>{{sec2hm(stats.gtyear.ctr)}}</td>
-								<td>{{sec2hm(totalTime(stats.gtyear)) || '0:00'}}</td>
+								<td>{{ sec2hm(stats.gtyear.del) }}</td>
+								<td>{{ sec2hm(stats.gtyear.gnd) }}</td>
+								<td>{{ sec2hm(stats.gtyear.twr) }}</td>
+								<td>{{ sec2hm(stats.gtyear.app) }}</td>
+								<td>{{ sec2hm(stats.gtyear.ctr) }}</td>
+								<td>{{ sec2hm(totalTime(stats.gtyear)) || '0:00' }}</td>
 							</tr>
 							<tr>
 								<td>Total</td>
-								<td>{{sec2hm(stats.total.del) || '0:00'}}</td>
-								<td>{{sec2hm(stats.total.gnd) || '0:00'}}</td>
-								<td>{{sec2hm(stats.total.twr) || '0:00'}}</td>
-								<td>{{sec2hm(stats.total.app) || '0:00'}}</td>
-								<td>{{sec2hm(stats.total.ctr) || '0:00'}}</td>
-								<td>{{sec2hm(totalTime(stats.total)) || '0:00'}}</td>
+								<td>{{ sec2hm(stats.total.del) || '0:00' }}</td>
+								<td>{{ sec2hm(stats.total.gnd) || '0:00' }}</td>
+								<td>{{ sec2hm(stats.total.twr) || '0:00' }}</td>
+								<td>{{ sec2hm(stats.total.app) || '0:00' }}</td>
+								<td>{{ sec2hm(stats.total.ctr) || '0:00' }}</td>
+								<td>{{ sec2hm(totalTime(stats.total)) || '0:00' }}</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				<div class="card-content">
+					<div><strong>Total Sessions:</strong> {{ stats.sessionCount }}</div>
 					<div>
-						<strong>Total Sessions:</strong> {{stats.sessionCount}}
-					</div>
-					<div>
-						<strong>Average Session Length:</strong> {{sec2hm(stats.sessionAvg) || '0:00'}}
+						<strong>Average Session Length:</strong> {{ sec2hm(stats.sessionAvg) || '0:00' }}
 					</div>
 				</div>
 			</div>
@@ -108,7 +121,7 @@ export default {
 			folderPrefix: window.env.VITE_FOLDER_PREFIX,
 			controller: null,
 			stats: null,
-			loading: true
+			loading: true,
 		};
 	},
 	async mounted() {
@@ -119,65 +132,72 @@ export default {
 	methods: {
 		async getController() {
 			this.loading = true;
-			const {data} = await zabApi.get(`/controller/${this.$route.params.cid}`);
-			if(data.ret_det.code === 200) {
+			const { data } = await zabApi.get(`/controller/${this.$route.params.cid}`);
+			if (data.ret_det.code === 200) {
 				this.controller = data.data;
-				const {data: statsData} = await zabApi.get(`/controller/stats/${this.$route.params.cid}`);
+				const { data: statsData } = await zabApi.get(`/controller/stats/${this.$route.params.cid}`);
 				this.stats = statsData.data;
 			}
-			if(!this.controller || !this.controller.isMem) this.$router.push('/404');
+			if (!this.controller || !this.controller.isMem) this.$router.push('/404');
 			this.loading = false;
 		},
 		reduceControllerCerts(certs) {
-  		if (!certs) return [];
+			if (!certs) return [];
 
-  		// Define priority orders
-  		const tierPriority = { 'tier-1': 1, 'tier-2': 2, 'solom': 3, 'solon': 4, 'non-tier': 5 };
-  		const facilityPriority = { 'ctr': 1, 'app': 2, 'twr': 3, 'gnd': 4 };
+			// Define priority orders
+			const tierPriority = { 'tier-1': 1, 'tier-2': 2, solom: 3, solon: 4, 'non-tier': 5 };
+			const facilityPriority = { ctr: 1, app: 2, twr: 3, gnd: 4 };
 
-  		// Group certs by facility
-  		const facilityGroups = certs.reduce((acc, cert) => {
-    		if (!acc[cert.facility]) acc[cert.facility] = [];
-    		acc[cert.facility].push(cert);
-    		return acc;
-  		}, {});
+			// Group certs by facility
+			const facilityGroups = certs.reduce((acc, cert) => {
+				if (!acc[cert.facility]) acc[cert.facility] = [];
+				acc[cert.facility].push(cert);
+				return acc;
+			}, {});
 
-  		// Filter and sort certifications within each facility group
-  		let sortedCerts = [];
-  		Object.keys(facilityGroups).forEach(facility => {
-    		// Sort certs by tier within the facility
-    		facilityGroups[facility].sort((a, b) => (tierPriority[a.class] || 6) - (tierPriority[b.class] || 6));
+			// Filter and sort certifications within each facility group
+			let sortedCerts = [];
+			Object.keys(facilityGroups).forEach((facility) => {
+				// Sort certs by tier within the facility
+				facilityGroups[facility].sort(
+					(a, b) => (tierPriority[a.class] || 6) - (tierPriority[b.class] || 6),
+				);
 
-    		let hasTier1or2 = facilityGroups[facility].some(cert => cert.class === 'tier-1' || cert.class === 'tier-2');
-    		facilityGroups[facility].forEach(cert => {
-      		if (cert.class === 'tier-1' || cert.class === 'tier-2') {
-        		sortedCerts.push(cert);
-      		} else if (cert.class.includes('solo')) {
-        		sortedCerts.push(cert);
-      		} else if (cert.class === 'non-tier' && !hasTier1or2) {
-        		sortedCerts.push(cert);
-      		}
-    		});
-  		});
+				let hasTier1or2 = facilityGroups[facility].some(
+					(cert) => cert.class === 'tier-1' || cert.class === 'tier-2',
+				);
+				facilityGroups[facility].forEach((cert) => {
+					if (cert.class === 'tier-1' || cert.class === 'tier-2') {
+						sortedCerts.push(cert);
+					} else if (cert.class.includes('solo')) {
+						sortedCerts.push(cert);
+					} else if (cert.class === 'non-tier' && !hasTier1or2) {
+						sortedCerts.push(cert);
+					}
+				});
+			});
 
-  		// Finally, sort all selected certs by facility priority
-  		return sortedCerts.sort((a, b) => (facilityPriority[a.facility] || 5) - (facilityPriority[b.facility] || 5));
+			// Finally, sort all selected certs by facility priority
+			return sortedCerts.sort(
+				(a, b) => (facilityPriority[a.facility] || 5) - (facilityPriority[b.facility] || 5),
+			);
 		},
 		sec2hm(secs) {
-			if(!secs) return null;
+			if (!secs) return null;
 			const hours = Math.floor(secs / 3600);
 			const minutes = `0${Math.round((secs / 60) % 60)}`.slice(-2);
 			return `${hours}:${minutes}`;
 		},
 		totalTime(month) {
 			return Object.values(month).reduce((acc, cv) => acc + cv);
-		}
+		},
 	},
 	watch: {
-		'$route.params.cid': async function() { // get new data if route remains the same but parameter changes
+		'$route.params.cid': async function () {
+			// get new data if route remains the same but parameter changes
 			await this.getController();
-		}
-	}
+		},
+	},
 };
 </script>
 
@@ -187,7 +207,7 @@ export default {
 	img {
 		width: 100%;
 		height: auto;
-		padding: .25rem;
+		padding: 0.25rem;
 		border: 1px solid lightgray;
 	}
 }
@@ -209,7 +229,7 @@ export default {
 }
 
 .controller_certs {
-	margin-top: .5em;
+	margin-top: 0.5em;
 }
 
 .cert {
@@ -220,7 +240,7 @@ export default {
 	margin: 2px;
 	user-select: none;
 
-	&+.title {
+	& + .title {
 		margin-top: 1em;
 	}
 
@@ -248,21 +268,21 @@ export default {
 		background: $primary-color;
 	}
 
-	&.cert_non-tier{
+	&.cert_non-tier {
 		background: $secondary-color-light;
 	}
-    &.cert_solon {
-    background: #FFA500;
-    }
-    &.cert_solom {
-    background: #FFE83E;
-    color: #000000;
-}
+	&.cert_solon {
+		background: #ffa500;
+	}
+	&.cert_solom {
+		background: #ffe83e;
+		color: #000000;
+	}
 }
 
 .title {
 	color: #9e9e9e;
-	font-size: .8rem;
+	font-size: 0.8rem;
 }
 
 .bio {
@@ -270,12 +290,13 @@ export default {
 }
 
 .user_biography {
-	margin-top: .75em;
+	margin-top: 0.75em;
 }
 
 .session_table_wrap {
 	@media screen and (min-width: 993px) {
-		th:last-of-type, td:last-of-type {
+		th:last-of-type,
+		td:last-of-type {
 			border-left: 1px solid #000;
 		}
 		tbody tr:last-of-type {
@@ -293,12 +314,12 @@ export default {
 	font-weight: 400;
 	padding: 0.2rem 0.4rem;
 	font-size: 1rem;
-	margin-left: .25em;
+	margin-left: 0.25em;
 	user-select: none;
 }
 
 .hover {
-	transition: .3s ease;
+	transition: 0.3s ease;
 
 	&:hover {
 		background: #eaeaea;
@@ -307,7 +328,7 @@ export default {
 
 .not_found {
 	h5 {
-		margin: .5em 0;
+		margin: 0.5em 0;
 	}
 }
 </style>

@@ -5,20 +5,34 @@
 			<div class="loading_container" v-if="!controllers">
 				<Spinner />
 			</div>
-			<form class="loa_form row row_no_margin"  @submit.prevent=submitForm v-else>
+			<form class="loa_form row row_no_margin" @submit.prevent="submitForm" v-else>
 				<div class="input-field col s12 m6">
 					<select class="materialize-select" v-model="form.controller" required>
 						<option value="" disabled selected>Select a controller</option>
-						<option v-for="controller in controllers" :value="controller.cid" :key="controller.cid">{{controller.fname}} {{controller.lname}}</option>
+						<option v-for="controller in controllers" :value="controller.cid" :key="controller.cid">
+							{{ controller.fname }} {{ controller.lname }}
+						</option>
 					</select>
 					<label>Controller</label>
 				</div>
 				<div class="input-field col s12 m6">
-						<input id="expiration_date" type="text" class="datepicker" ref="expirationDate" required>
-						<label for="expiration_date">Expiration Date (Zulu)</label>
-					</div>
+					<input
+						id="expiration_date"
+						type="text"
+						class="datepicker"
+						ref="expirationDate"
+						required
+					/>
+					<label for="expiration_date">Expiration Date (Zulu)</label>
+				</div>
 				<div class="input-field col s12">
-					<textarea class="materialize-textarea" id="reason" v-model="form.reason" data-length="2000" required></textarea>
+					<textarea
+						class="materialize-textarea"
+						id="reason"
+						v-model="form.reason"
+						data-length="2000"
+						required
+					></textarea>
 					<label for="reason">Reason</label>
 				</div>
 				<div class="input-field col s12">
@@ -29,7 +43,7 @@
 	</div>
 </template>
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -40,9 +54,9 @@ export default {
 		return {
 			form: {
 				controller: 0,
-				reason: ''
+				reason: '',
 			},
-			controllers: null
+			controllers: null,
 		};
 	},
 	async mounted() {
@@ -64,28 +78,28 @@ export default {
 	},
 	methods: {
 		async getControllers() {
-			const {data} = await zabApi.get('/feedback/controllers');
+			const { data } = await zabApi.get('/feedback/controllers');
 			this.controllers = data.data;
 		},
 		async submitForm() {
 			try {
-				const {data} = await zabApi.post('/controller/absence', {
+				const { data } = await zabApi.post('/controller/absence', {
 					...this.form,
-					expirationDate: `${this.$refs.expirationDate.value}T00:00:00.000Z`
+					expirationDate: `${this.$refs.expirationDate.value}T00:00:00.000Z`,
 				});
 
 				console.log(this.$refs.expirationDate.value);
-				if(data.ret_det.code === 200) {
+				if (data.ret_det.code === 200) {
 					this.toastSuccess('Leave of Absence granted');
 
 					this.$router.push('/admin/absence');
 				} else {
 					this.toastError(data.ret_det.message);
 				}
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
-		}
-	}
+		},
+	},
 };
 </script>

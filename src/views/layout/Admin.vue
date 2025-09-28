@@ -1,16 +1,16 @@
 <template>
 	<div id="container">
 		<Header />
-			<main>
-				<div class="row wrapper">
-					<div class="sidebar col s12 l3">
-						<AdminSidebar />
-					</div>
-					<div class="col s12 l9">
-						<router-view></router-view>
-					</div>
+		<main>
+			<div class="row wrapper">
+				<div class="sidebar col s12 l3">
+					<AdminSidebar />
 				</div>
-			</main>
+				<div class="col s12 l9">
+					<router-view></router-view>
+				</div>
+			</div>
+		</main>
 		<Footer />
 	</div>
 </template>
@@ -24,8 +24,8 @@ export default {
 	components: {
 		Header,
 		Footer,
-		AdminSidebar
-	}, 
+		AdminSidebar,
+	},
 };
 </script>
 

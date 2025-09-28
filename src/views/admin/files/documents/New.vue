@@ -3,9 +3,9 @@
 		<div class="card-content">
 			<span class="card-title">New Document</span>
 			<div class="row row_no_margin">
-				<form method="post" @submit.prevent=addDocument>
+				<form method="post" @submit.prevent="addDocument">
 					<div class="input-field col s12 m6">
-						<input id="name" type="text" v-model="form.name" required>
+						<input id="name" type="text" v-model="form.name" required />
 						<label for="name">Name</label>
 					</div>
 					<div class="input-field col s12 m6">
@@ -15,12 +15,17 @@
 							<option value="loa">LOA</option>
 							<option value="policy">Policies</option>
 							<option value="misc">Miscellaneous</option>
-              				<option value="training">Training</option>
+							<option value="training">Training</option>
 						</select>
 						<label>Category</label>
 					</div>
 					<div class="input-field col s12">
-						<textarea id="description" class="materialize-textarea" data-length="400" v-model="form.description"></textarea>
+						<textarea
+							id="description"
+							class="materialize-textarea"
+							data-length="400"
+							v-model="form.description"
+						></textarea>
 						<label for="description">Description (optional)</label>
 					</div>
 					<div class="col s12 radio_select">
@@ -31,7 +36,7 @@
 								<span>File</span>
 							</label>
 							<label>
-								<input type="radio" value="doc" v-model="form.type"/>
+								<input type="radio" value="doc" v-model="form.type" />
 								<span>Document</span>
 							</label>
 						</p>
@@ -43,10 +48,10 @@
 					<div class="file-field input-field col s12" v-if="form.type === 'file'">
 						<div class="btn waves-effect waves-light">
 							<span>FILE</span>
-							<input type="file" ref="download" id="fileInput" required>
+							<input type="file" ref="download" id="fileInput" required />
 						</div>
 						<div class="file-path-wrapper">
-							<input class="file-path validate" type="text" placeholder="Upload a file">
+							<input class="file-path validate" type="text" placeholder="Upload a file" />
 						</div>
 					</div>
 					<div class="input-field col s12">
@@ -62,8 +67,8 @@
 import Editor from '@toast-ui/editor';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
-import {zabApi} from '@/helpers/axios.js';
-import {mapState} from 'vuex';
+import { zabApi } from '@/helpers/axios.js';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'NewDoc',
@@ -75,9 +80,9 @@ export default {
 				category: '',
 				description: '',
 				content: '',
-				type: ''
+				type: '',
 			},
-			editor: null
+			editor: null,
 		};
 	},
 	async mounted() {
@@ -91,17 +96,17 @@ export default {
 				initialEditType: 'markdown',
 				previewStyle: 'tab',
 				usageStatistics: false,
-				plugins: [tableMergedCell]
+				plugins: [tableMergedCell],
 			});
 		});
 	},
 	methods: {
 		async addDocument() {
-			if(this.form.type === 'doc') {
+			if (this.form.type === 'doc') {
 				this.form.content = this.editor.getMarkdown();
-				const {data: addData} = await zabApi.post('/file/documents', this.form);
+				const { data: addData } = await zabApi.post('/file/documents', this.form);
 
-				if(addData.ret_det.code === 200) {
+				if (addData.ret_det.code === 200) {
 					this.toastSuccess('Document created');
 
 					this.$router.push('/admin/files/documents');
@@ -118,35 +123,33 @@ export default {
 				formData.append('author', this.user.data._id);
 				formData.append('type', this.form.type);
 
-				const {data} = await zabApi.post(`/file/documents`, formData, {
-					headers: { 
-						'Content-Type': 'multipart/form-data'
-					}
+				const { data } = await zabApi.post(`/file/documents`, formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
 				});
 
-				if(data.ret_det.code === 200) {
+				if (data.ret_det.code === 200) {
 					this.toastSuccess('File uploaded');
 
-					document.getElementById("fileInput").value = "";
+					document.getElementById('fileInput').value = '';
 					this.$router.push('/admin/files/documents');
 				} else {
 					this.toastError(data.ret_det.message);
 				}
 			}
-		}
+		},
 	},
 	computed: {
-		...mapState('user', [
-			'user'
-		]),
-	}
+		...mapState('user', ['user']),
+	},
 };
 </script>
 
 <style scoped lang="scss">
 .title {
-	color: #9E9E9E;
-	font-size: .75rem;
+	color: #9e9e9e;
+	font-size: 0.75rem;
 }
 
 p label {
@@ -159,7 +162,7 @@ p label {
 
 #tui_editor {
 	&:deep(.tui-editor-contents) {
-		font-family: "Lato", "Helvetica", sans-serif;
+		font-family: 'Lato', 'Helvetica', sans-serif;
 		font-size: 1rem;
 	}
 
@@ -170,7 +173,7 @@ p label {
 	}
 
 	&:deep(h1) {
-		border-bottom: 2px solid #EBEBEB;
+		border-bottom: 2px solid #ebebeb;
 	}
 
 	&:deep(h2) {
@@ -179,7 +182,7 @@ p label {
 		border-bottom: none;
 		font-weight: 400;
 		color: #000;
-		margin-bottom: .25em;
+		margin-bottom: 0.25em;
 
 		&:first-of-type {
 			margin-top: 0;
@@ -187,7 +190,7 @@ p label {
 
 		&::before {
 			counter-increment: h2;
-			content: counter(h2) ". "
+			content: counter(h2) '. ';
 		}
 	}
 
@@ -200,7 +203,7 @@ p label {
 
 		&::before {
 			counter-increment: h3;
-			content: counter(h2) "." counter(h3) ". "
+			content: counter(h2) '.' counter(h3) '. ';
 		}
 	}
 
@@ -210,12 +213,12 @@ p label {
 		font-size: 1.5em;
 		font-weight: 400;
 		line-height: 110%;
-		margin: 1.52rem 0 .912rem 0;
+		margin: 1.52rem 0 0.912rem 0;
 		color: #000;
 
 		&::before {
 			counter-increment: h4;
-			content: counter(h2) "." counter(h3) "." counter(h4) ". "
+			content: counter(h2) '.' counter(h3) '.' counter(h4) '. ';
 		}
 	}
 
@@ -229,13 +232,13 @@ p label {
 
 		&::before {
 			counter-increment: h5;
-			content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "
+			content: counter(h2) '.' counter(h3) '.' counter(h4) '.' counter(h5) '. ';
 		}
 	}
 
 	&:deep(p) {
 		color: #000;
-		&+p {
+		& + p {
 			margin-top: 1.5em;
 		}
 	}
@@ -253,7 +256,7 @@ p label {
 			}
 		}
 	}
-	
+
 	&:deep(ol) {
 		color: #000;
 

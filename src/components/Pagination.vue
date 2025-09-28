@@ -1,13 +1,29 @@
 <template>
 	<div class="row row_no_margin">
 		<div class="page_info col s12 m4">
-			Showing {{minEntries}}–{{maxEntries}} of {{amount}} entries
+			Showing {{ minEntries }}–{{ maxEntries }} of {{ amount }} entries
 		</div>
 		<div class="col s12 m8">
 			<ul class="pagination right">
-				<li :class="isFirstPage ? 'disabled' : 'waves-effect'"><a @click="isFirstPage ? '' : $parent.page = $parent.page - 1"><i class="material-icons">chevron_left</i></a></li>
-				<li v-for="pageNo in showPages" class="waves-effect" :class="pageNo == page ? 'active' : ''" :key="pageNo" @click="$parent.page = pageNo"><a>{{pageNo}}</a></li>
-				<li :class="isLastPage ? 'disabled' : 'waves-effect'"><a @click="isLastPage ? '' : $parent.page = $parent.page + 1"><i class="material-icons">chevron_right</i></a></li>
+				<li :class="isFirstPage ? 'disabled' : 'waves-effect'">
+					<a @click="isFirstPage ? '' : ($parent.page = $parent.page - 1)"
+						><i class="material-icons">chevron_left</i></a
+					>
+				</li>
+				<li
+					v-for="pageNo in showPages"
+					class="waves-effect"
+					:class="pageNo == page ? 'active' : ''"
+					:key="pageNo"
+					@click="$parent.page = pageNo"
+				>
+					<a>{{ pageNo }}</a>
+				</li>
+				<li :class="isLastPage ? 'disabled' : 'waves-effect'">
+					<a @click="isLastPage ? '' : ($parent.page = $parent.page + 1)"
+						><i class="material-icons">chevron_right</i></a
+					>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -17,51 +33,49 @@
 export default {
 	name: 'Pagination',
 	data() {
-		return {
-
-		};
+		return {};
 	},
 	props: ['amount', 'page', 'limit', 'amountOfPages'],
 	computed: {
 		isFirstPage() {
-			if(this.page == 1) return true;
+			if (this.page == 1) return true;
 			else return false;
 		},
 		isLastPage() {
-			if(this.page * this.limit >= this.amount) return true;
+			if (this.page * this.limit >= this.amount) return true;
 			else return false;
 		},
 		minEntries() {
-			if(this.page == 1) return 1;
-			else return ((this.page - 1) * this.limit) + 1;
+			if (this.page == 1) return 1;
+			else return (this.page - 1) * this.limit + 1;
 		},
 		maxEntries() {
-			if(Math.ceil(this.amount / this.limit) == this.page) return this.amount;
+			if (Math.ceil(this.amount / this.limit) == this.page) return this.amount;
 			else return this.page * this.limit;
 		},
 		showPages() {
 			const ceiling = Math.ceil(this.amount / this.limit);
-			if(ceiling <= 5) {
-				return (ceiling);
-			} else if (ceiling > 5 && this.page <= 3 && (this.page - 2) <= this.amountOfPages) {
+			if (ceiling <= 5) {
+				return ceiling;
+			} else if (ceiling > 5 && this.page <= 3 && this.page - 2 <= this.amountOfPages) {
 				return 5;
-			} else if (ceiling > 5 && this.page > (this.amountOfPages - 2)) {
-				if(this.page != this.amountOfPages) {
-					return [this.page - 3, this.page -2, this.page -1, this.page, this.page + 1];
+			} else if (ceiling > 5 && this.page > this.amountOfPages - 2) {
+				if (this.page != this.amountOfPages) {
+					return [this.page - 3, this.page - 2, this.page - 1, this.page, this.page + 1];
 				} else {
-					return [this.page - 4, this.page -3, this.page -2, this.page -1, this.page];
+					return [this.page - 4, this.page - 3, this.page - 2, this.page - 1, this.page];
 				}
 			} else {
 				let array = [];
 				let j = 0; // array starts at zero
-				for(let i = (this.page - 2); i < (this.page + 3); i++) {
+				for (let i = this.page - 2; i < this.page + 3; i++) {
 					array[j] = i;
 					j++;
 				}
 				return array;
 			}
-		}
-	}
+		},
+	},
 };
 </script>
 
