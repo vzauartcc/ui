@@ -1,4 +1,4 @@
-# Chicago ARTCC 2022 - UI 
+# Chicago ARTCC 2022 - UI
 
 A Vue SPA for the Chicago ARTCC Website, forked from the Albuquerque ARTCC project. This communicates with the ZAU API in order to deliver content to users.
 
@@ -14,14 +14,14 @@ The Chicago ARTCC website is hereby released under the Creative Commons CC BY-NC
 
 https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-Note: The original authors of this codebase are members of the Albuquerque ARTCC listed below: 
+Note: The original authors of this codebase are members of the Albuquerque ARTCC listed below:
 
-- Daan Janssen  
-- Alexandra Robison  
-- Robby Maura  
-- Shane Friedman  
-- Evan Bradley  
-- Jeremy Werderman  
+- Daan Janssen
+- Alexandra Robison
+- Robby Maura
+- Shane Friedman
+- Evan Bradley
+- Jeremy Werderman
 - Cole Connelly (@cdconn00)
 - Giovanni Fatelli (@frafire)
 
