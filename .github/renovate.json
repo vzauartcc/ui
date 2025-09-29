@@ -1,9 +1,11 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:recommended", ":disableMajorUpdates", "helpers:pinGitHubActionDigests"],
+	"timezone": "America/Chicago",
 	"schedule": ["* 10-18 * * *"],
 	"dependencyDashboard": true,
 	"prConcurrentLimit": 5,
+	"minimumReleaseAge": "21 days",
 	"packageRules": [
 		{
 			"description": "Group minor and patch updates together, but do not automerge",
