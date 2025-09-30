@@ -305,10 +305,10 @@ const routes = [
 			},
 		],
 	},
-	//	{
-	//		path: '/ids',
-	//		component: () => import('../views/page/Ids.vue')
-	//	},
+	// {
+	// 	path: '/ids',
+	// 	component: () => import('../views/page/Ids.vue'),
+	// },
 	{
 		path: '/:catchAll(.*)',
 		component: Master,

@@ -18,13 +18,13 @@ FROM nginx:alpine AS production
 # Copy built app from builder
 COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
 
-# Copy Nginx config
+# Copy Nginx config without overwriting default /etc/nginx/nginx.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose default port for documentation
 EXPOSE 80
 
-# Substitute variables in index.html for environment variables
+# Substitute variables in index.html for environment variables, and start nginx
 CMD ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/index.html > /usr/share/nginx/html/index.tmp && \
                          mv /usr/share/nginx/html/index.tmp /usr/share/nginx/html/index.html && \
                          exec nginx -g 'daemon off;'"]
