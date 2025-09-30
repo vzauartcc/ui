@@ -7,23 +7,50 @@
 			</div>
 			<div class="row row_no_margin" v-else>
 				<div class="col s12 l6 push-l6 card_desc">
-					<p>Solo certifications may be issued to students who have demonstrated sufficient competency on the position they are receiving a solo certification for. <br /><br />Solo certifications must be issued in accordance with the training syllabus and are automatically submitted to VATUSA. <br /><br />Solo certifications may not extend beyond 30 days in length.</p>
+					<p>
+						Solo certifications may be issued to students who have demonstrated sufficient
+						competency on the position they are receiving a solo certification for. <br /><br />Solo
+						certifications must be issued in accordance with the training syllabus and are
+						automatically submitted to VATUSA. <br /><br />Solo certifications may not extend beyond
+						30 days in length.
+					</p>
 				</div>
-				<form class="col s12 l6 pull-l6" @submit.prevent=submitCert>
+				<form class="col s12 l6 pull-l6" @submit.prevent="submitCert">
 					<div class="row row_no_margin">
 						<div class="col s12 input-field">
 							<select v-model="form.cid" required class="materialize-select">
 								<option value="" disabled selected>Select a controller</option>
-								<option v-for="controller in controllers" :value="controller.cid" :key="controller.cid">{{controller.fname}} {{controller.lname}}</option>
+								<option
+									v-for="controller in controllers"
+									:value="controller.cid"
+									:key="controller.cid"
+								>
+									{{ controller.fname }} {{ controller.lname }}
+								</option>
 							</select>
 							<label>Controller</label>
 						</div>
 						<div class="col s12 input-field">
-							<input id="position" type="text" minlength=7 maxlength=7 class="validate" placeholder="CHI_APP" v-model="form.position" required>
+							<input
+								id="position"
+								type="text"
+								minlength="7"
+								maxlength="7"
+								class="validate"
+								placeholder="CHI_APP"
+								v-model="form.position"
+								required
+							/>
 							<label for="position" class="active">Position</label>
 						</div>
 						<div class="col s12 input-field">
-							<input id="expiration_date" type="text" class="datepicker" ref="expirationDate" required>
+							<input
+								id="expiration_date"
+								type="text"
+								class="datepicker"
+								ref="expirationDate"
+								required
+							/>
 							<label for="expiration_date">Expiration Date</label>
 						</div>
 						<div class="col s12 input-field">
@@ -36,7 +63,7 @@
 	</div>
 </template>
 <script>
-import {vatusaApiAuth, zabApi} from '@/helpers/axios.js';
+import { vatusaApiAuth, zabApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -48,8 +75,8 @@ export default {
 			controllers: null,
 			form: {
 				cid: '',
-				position: ''
-			}
+				position: '',
+			},
 		};
 	},
 	async mounted() {
@@ -67,13 +94,13 @@ export default {
 			altFormat: 'Y-m-d',
 			altInput: true,
 		});
-		
+
 		M.FormSelect.init(document.querySelectorAll('.materialize-select'), {});
 	},
 	methods: {
 		async getControllers() {
-			const {data} = await zabApi.get('/feedback/controllers');
-			this.controllers = data.data.filter(c => {
+			const { data } = await zabApi.get('/feedback/controllers');
+			this.controllers = data.data.filter((c) => {
 				return c.rating > 2 && c.vis == false;
 			});
 		},
@@ -88,11 +115,11 @@ export default {
 				this.toastSuccess('Solo Certification issued');
 
 				this.$router.push('/ins/solo');
-			} catch(e) {
+			} catch (e) {
 				this.toastError(e);
 			}
-		}
-	}
+		},
+	},
 };
 </script>
 

@@ -20,34 +20,60 @@
 					</div>
 					<div class="calendar-body">
 						<div class="week">
-							<router-link :to="`/ins/training/requests/${urlSafeDate(date.date)}`" :class="`day ${date.requests.length > 0 ? 'has_request' : ''}`" v-for="date in dates.slice(0,7)" :key="date.date">
+							<router-link
+								:to="`/ins/training/requests/${urlSafeDate(date.date)}`"
+								:class="`day ${date.requests.length > 0 ? 'has_request' : ''}`"
+								v-for="date in dates.slice(0, 7)"
+								:key="date.date"
+							>
 								<div class="week_date">
-									<span :class="[((new Date(date.date).getTime()) - (new Date().getTime()) < 0 ? 'past_date' : ''), (new Date(new Date().getTime()).getUTCDate() === new Date(date.date).getUTCDate() ? 'current_date' : '')]">
-										{{new Date(date.date).toUTCString().slice(5, 11)}}
+									<span
+										:class="[
+											new Date(date.date).getTime() - new Date().getTime() < 0 ? 'past_date' : '',
+											new Date(new Date().getTime()).getUTCDate() ===
+											new Date(date.date).getUTCDate()
+												? 'current_date'
+												: '',
+										]"
+									>
+										{{ new Date(date.date).toUTCString().slice(5, 11) }}
 									</span>
 								</div>
-								<div :class="`date_requests ${(new Date(Date.UTC(date.date)).getTime()) - (new Date().getTime()) < 0 ? 'past' : ''}`" v-if="date.requests.length > 0">
-									{{date.requests.length}} request<span v-if="date.requests.length > 1">s</span>
+								<div
+									:class="`date_requests ${new Date(Date.UTC(date.date)).getTime() - new Date().getTime() < 0 ? 'past' : ''}`"
+									v-if="date.requests.length > 0"
+								>
+									{{ date.requests.length }} request<span v-if="date.requests.length > 1">s</span>
 								</div>
 							</router-link>
 						</div>
 						<div class="week">
-							<router-link :to="`/ins/training/requests/${urlSafeDate(date.date)}`" :class="`day ${date.requests.length > 0 ? 'has_request' : ''}`" v-for="date in dates.slice(7,14)" :key="date.date">
+							<router-link
+								:to="`/ins/training/requests/${urlSafeDate(date.date)}`"
+								:class="`day ${date.requests.length > 0 ? 'has_request' : ''}`"
+								v-for="date in dates.slice(7, 14)"
+								:key="date.date"
+							>
 								<div class="week_date">
-									{{new Date(date.date).toUTCString().slice(5, 11)}}
+									{{ new Date(date.date).toUTCString().slice(5, 11) }}
 								</div>
 								<div class="date_requests" v-if="date.requests.length > 0">
-									{{date.requests.length}} request<span v-if="date.requests.length > 1">s</span>
+									{{ date.requests.length }} request<span v-if="date.requests.length > 1">s</span>
 								</div>
 							</router-link>
 						</div>
 						<div class="week">
-							<router-link :to="`/ins/training/requests/${urlSafeDate(date.date)}`" :class="`day ${date.requests.length > 0 ? 'has_request' : ''}`" v-for="date in dates.slice(14)" :key="date.date">
+							<router-link
+								:to="`/ins/training/requests/${urlSafeDate(date.date)}`"
+								:class="`day ${date.requests.length > 0 ? 'has_request' : ''}`"
+								v-for="date in dates.slice(14)"
+								:key="date.date"
+							>
 								<div class="week_date">
-									{{new Date(date.date).toUTCString().slice(5, 11)}}
+									{{ new Date(date.date).toUTCString().slice(5, 11) }}
 								</div>
 								<div class="date_requests" v-if="date.requests.length > 0">
-									{{date.requests.length}} request<span v-if="date.requests.length > 1">s</span>
+									{{ date.requests.length }} request<span v-if="date.requests.length > 1">s</span>
 								</div>
 							</router-link>
 						</div>
@@ -68,7 +94,7 @@ export default {
 		return {
 			dates: [],
 			days: 21,
-			loading: true
+			loading: true,
 		};
 	},
 	async mounted() {
@@ -78,41 +104,44 @@ export default {
 	methods: {
 		async getRequests() {
 			try {
-				const {data} = await zabApi.get('/training/request/open', {
+				const { data } = await zabApi.get('/training/request/open', {
 					params: {
-						period: 21 // 21 days from start of week
-					}
+						period: 21, // 21 days from start of week
+					},
 				});
 
-				for(const request of data.data) {
-					for(const date of this.dates) {
-						if(date.date.slice(0,10) === new Date(new Date(request.startTime)).toISOString().slice(0,10)) {
+				for (const request of data.data) {
+					for (const date of this.dates) {
+						if (
+							date.date.slice(0, 10) ===
+							new Date(new Date(request.startTime)).toISOString().slice(0, 10)
+						) {
 							date.requests.push(request);
 						}
 					}
 				}
 				this.loading = false;
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
 		},
 		calculateDates() {
-			const d = new Date((new Date()).toISOString()),
+			const d = new Date(new Date().toISOString()),
 				currentDay = d.getDay(),
 				diff = d.getDate() - currentDay,
 				startOfWeek = d.setDate(diff);
-			
-			for(let i = 0; i < this.days; i++) {
+
+			for (let i = 0; i < this.days; i++) {
 				this.dates.push({
-					"date": (new Date(startOfWeek + (i * 1000 * 60 * 60 * 24)).toISOString()),
-					"requests": []
+					date: new Date(startOfWeek + i * 1000 * 60 * 60 * 24).toISOString(),
+					requests: [],
 				});
 			}
 		},
 		urlSafeDate(date) {
-			return (new Date(date)).toISOString().slice(0,10).replace(/-/g, '');
-		} 
-	}
+			return new Date(date).toISOString().slice(0, 10).replace(/-/g, '');
+		},
+	},
 };
 </script>
 
@@ -127,14 +156,14 @@ export default {
 
 .calendar_wrapper {
 	margin-top: 1em;
-	padding: .25em;
+	padding: 0.25em;
 }
 
 .calendar {
 	display: flex;
 	overflow: auto;
 	flex-direction: column;
-	
+
 	.week {
 		display: flex;
 
@@ -143,23 +172,26 @@ export default {
 			width: 14.285%;
 			min-width: 90px;
 			height: 5em;
-			padding: .4em;
+			padding: 0.4em;
 			text-align: right;
 			border-bottom: 1px solid $gray_light;
-			transition: .3s ease;
+			transition: 0.3s ease;
 
-			&+.day {
+			& + .day {
 				border-left: 1px solid $gray_light;
 			}
 
 			&:hover {
-				box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .20);
+				box-shadow:
+					0 2px 2px 0 rgba(0, 0, 0, 0.14),
+					0 3px 1px -2px rgba(0, 0, 0, 0.12),
+					0 1px 5px 0 rgba(0, 0, 0, 0.2);
 			}
 
 			.current_date {
 				background-color: $primary-color-light;
-				color: #fff!important;
-				padding: .2em .5em;
+				color: #fff !important;
+				padding: 0.2em 0.5em;
 				border-radius: 1em;
 			}
 
@@ -169,9 +201,9 @@ export default {
 
 			.date_requests {
 				text-align: center;
-				font-size: .9rem;
+				font-size: 0.9rem;
 				color: $secondary-color-dark;
-				margin-top: .5em;
+				margin-top: 0.5em;
 
 				&.past {
 					color: $secondary-color-light;
@@ -182,16 +214,15 @@ export default {
 
 	.days {
 		display: flex;
-		
+
 		div {
 			background: $primary-color-light;
 			color: #fff;
 			width: 14.285%;
 			min-width: 90px;
-			padding: .4em;
+			padding: 0.4em;
 			text-align: center;
 		}
 	}
 }
-
 </style>

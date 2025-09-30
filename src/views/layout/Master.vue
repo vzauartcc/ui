@@ -1,16 +1,16 @@
 <template>
 	<div id="container">
 		<Header />
-			<main>
-				<div class="row main-content wrapper">
-					<div class="main_content col s12 l8 push-l4">
-						<router-view></router-view>
-					</div>
-					<div class="sidebar col s12 l4 pull-l8">
-						<Sidebar />
-					</div>
+		<main>
+			<div class="row main-content wrapper">
+				<div class="main_content col s12 l8 push-l4">
+					<router-view></router-view>
 				</div>
-			</main>
+				<div class="sidebar col s12 l4 pull-l8">
+					<Sidebar />
+				</div>
+			</div>
+		</main>
 		<Footer />
 	</div>
 </template>
@@ -24,8 +24,8 @@ export default {
 	components: {
 		Header,
 		Sidebar,
-		Footer
-	}, 
+		Footer,
+	},
 };
 </script>
 

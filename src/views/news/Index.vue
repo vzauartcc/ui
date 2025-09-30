@@ -6,7 +6,9 @@
 		<div class="loading_container" v-if="newsItems === null">
 			<Spinner />
 		</div>
-		<p class="no_news" v-else-if="newsItems && newsItems.length === 0">There have been no news articles yet</p>
+		<p class="no_news" v-else-if="newsItems && newsItems.length === 0">
+			There have been no news articles yet
+		</p>
 		<div class="news_wrapper" v-else>
 			<table class="news_list striped">
 				<thead class="news_list_head">
@@ -17,8 +19,8 @@
 				</thead>
 				<tbody class="news_list_row">
 					<tr v-for="news in newsItems" :key="news._id" @click="goToArticle(news.uriSlug)">
-						<td class="title">{{news.title}}</td>
-						<td class="right">{{dLong(news.createdAt)}}</td>
+						<td class="title">{{ news.title }}</td>
+						<td class="right">{{ dLong(news.createdAt) }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -30,7 +32,7 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import Spinner from '@/components/Spinner.vue';
 import Pagination from '@/components/Pagination.vue';
 
@@ -43,51 +45,51 @@ export default {
 			newsAmount: 1,
 			page: 1,
 			limit: 10,
-			amountOfPages: 1
+			amountOfPages: 1,
 		};
 	},
 	components: {
 		Spinner,
-		Pagination
+		Pagination,
 	},
 	async mounted() {
 		await this.getNews();
 		this.amountOfPages = Math.ceil(this.newsAmount / this.limit);
 		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-			margin: 0
+			margin: 0,
 		});
 		M.Modal.init(document.querySelectorAll('.modal'), {
-			preventScrolling: false
+			preventScrolling: false,
 		});
 	},
 	methods: {
 		async getNews() {
-			const {data} = await zabApi.get('/news', {
+			const { data } = await zabApi.get('/news', {
 				params: {
-					page: this.page, 
-					limit: this.limit
-				}
+					page: this.page,
+					limit: this.limit,
+				},
 			});
-			if(data.ret_det.code === 200) {
+			if (data.ret_det.code === 200) {
 				this.newsItems = data.data;
 				this.newsAmount = data.amount;
 			}
 		},
 		async goToArticle(slug) {
 			this.$router.push(`/news/${slug}`);
-		}
+		},
 	},
 	watch: {
-		page: async function() {
+		page: async function () {
 			await this.getNews();
 			M.Modal.init(document.querySelectorAll('.modal'), {
-				preventScrolling: false
+				preventScrolling: false,
 			});
 			M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-				margin: 0
+				margin: 0,
 			});
-		}
-	}
+		},
+	},
 };
 </script>
 
@@ -101,7 +103,7 @@ export default {
 .news_list_row {
 	tr {
 		cursor: pointer;
-		transition: .3s ease;
+		transition: 0.3s ease;
 
 		.title {
 			color: $primary-color;

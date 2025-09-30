@@ -11,7 +11,10 @@
 						<div class="card stats_card">
 							<div class="card-content">
 								<h6>Students Longest in Queue</h6>
-								<p class="center">Students listed in bold have never had a session, so their last request is displayed instead.</p>
+								<p class="center">
+									Students listed in bold have never had a session, so their last request is
+									displayed instead.
+								</p>
 							</div>
 							<div class="table_wrapper">
 								<table class="striped compact">
@@ -25,19 +28,27 @@
 									</thead>
 									<tbody>
 										<tr v-for="member in stats.controllersWithoutTraining" :key="member.cid">
-											<td><strong>{{member.fname}} {{member.lname}}</strong></td>
-											<td>{{member.ratingLong}}</td>
-											<td>{{stats.lastRequest[member.cid] ? dtStandard(stats.lastRequest[member.cid].lastRequest) : 'N/A'}}</td>
-											<td>{{stats.lastRequest[member.cid]?.milestone.name ?? 'N/A'}}</td>
+											<td>
+												<strong>{{ member.fname }} {{ member.lname }}</strong>
+											</td>
+											<td>{{ member.ratingLong }}</td>
+											<td>
+												{{
+													stats.lastRequest[member.cid]
+														? dtStandard(stats.lastRequest[member.cid].lastRequest)
+														: 'N/A'
+												}}
+											</td>
+											<td>{{ stats.lastRequest[member.cid]?.milestone.name ?? 'N/A' }}</td>
 										</tr>
 										<tr>
-											<td colspan="4" style="background-color: #333;"></td>
+											<td colspan="4" style="background-color: #333"></td>
 										</tr>
 										<tr v-for="session in stats.lastTraining" :key="session.cid">
-											<td>{{session.student.fname}} {{session.student.lname}}</td>
-											<td>{{session.student.ratingLong}}</td>
-											<td>{{dtStandard(session.lastSession)}}</td>
-											<td>{{session.milestone?.name || "Unknown"}}</td>
+											<td>{{ session.student.fname }} {{ session.student.lname }}</td>
+											<td>{{ session.student.ratingLong }}</td>
+											<td>{{ dtStandard(session.lastSession) }}</td>
+											<td>{{ session.milestone?.name || 'Unknown' }}</td>
 										</tr>
 									</tbody>
 								</table>
@@ -57,17 +68,15 @@ export default {
 	title: 'Instructor Dashboard',
 	data() {
 		return {
-			stats: null
+			stats: null,
 		};
 	},
 	async mounted() {
-		const {data: statsData} = await zabApi.get('/stats/ins');
+		const { data: statsData } = await zabApi.get('/stats/ins');
 		this.stats = statsData.data;
-	}
+	},
 };
 </script>
-
-
 
 <style scoped lang="scss">
 .table_wrapper {

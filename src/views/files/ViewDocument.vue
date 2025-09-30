@@ -2,13 +2,12 @@
 	<div class="card">
 		<div class="card-content" v-if="document !== null">
 			<span class="card-title">
-				{{document.name}}
+				{{ document.name }}
 			</span>
 			<div class="document_date">
-				{{dtLong(document.updatedAt)}}
+				{{ dtLong(document.updatedAt) }}
 			</div>
-			<div id="document_content">
-			</div>
+			<div id="document_content"></div>
 		</div>
 		<div class="loading_container" v-else>
 			<Spinner />
@@ -17,7 +16,7 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
@@ -26,7 +25,7 @@ export default {
 	data() {
 		return {
 			document: null,
-			viewer: null
+			viewer: null,
 		};
 	},
 	async mounted() {
@@ -37,26 +36,25 @@ export default {
 				el: document.getElementById('document_content'),
 				height: '600px',
 				initialValue: this.document.content,
-				plugins: [tableMergedCell]
+				plugins: [tableMergedCell],
 			});
-
 		});
 	},
 	methods: {
 		async getDocument() {
-			const {data} = await zabApi.get(`/file/documents/${this.$route.params.slug}`);
+			const { data } = await zabApi.get(`/file/documents/${this.$route.params.slug}`);
 			this.document = data.data;
 			this.setTitle(this.document.name);
 		},
-	}
+	},
 };
 </script>
 
 <style scoped lang="scss">
 .document_date {
 	margin-top: -10px;
-	color: rgba(0,0,0,.42);
-	font-size: .9rem;
+	color: rgba(0, 0, 0, 0.42);
+	font-size: 0.9rem;
 }
 
 #document_content {
@@ -66,7 +64,7 @@ export default {
 	overflow: visible;
 
 	&:deep(.tui-editor-contents) {
-		font-family: "Lato", "Helvetica", sans-serif;
+		font-family: 'Lato', 'Helvetica', sans-serif;
 		font-size: 1rem;
 	}
 
@@ -77,7 +75,7 @@ export default {
 	}
 
 	&:deep(h1) {
-		border-bottom: 2px solid #EBEBEB;
+		border-bottom: 2px solid #ebebeb;
 	}
 
 	&:deep(h2) {
@@ -86,7 +84,7 @@ export default {
 		border-bottom: none;
 		font-weight: 400;
 		color: #000;
-		margin-bottom: .25em;
+		margin-bottom: 0.25em;
 
 		&:first-of-type {
 			margin-top: 0;
@@ -94,7 +92,7 @@ export default {
 
 		&::before {
 			counter-increment: h2;
-			content: counter(h2) ". "
+			content: counter(h2) '. ';
 		}
 	}
 
@@ -107,7 +105,7 @@ export default {
 
 		&::before {
 			counter-increment: h3;
-			content: counter(h2) "." counter(h3) ". "
+			content: counter(h2) '.' counter(h3) '. ';
 		}
 	}
 
@@ -117,12 +115,12 @@ export default {
 		font-size: 1.5em;
 		font-weight: 400;
 		line-height: 110%;
-		margin: 1.52rem 0 .912rem 0;
+		margin: 1.52rem 0 0.912rem 0;
 		color: #000;
 
 		&::before {
 			counter-increment: h4;
-			content: counter(h2) "." counter(h3) "." counter(h4) ". "
+			content: counter(h2) '.' counter(h3) '.' counter(h4) '. ';
 		}
 	}
 
@@ -136,13 +134,13 @@ export default {
 
 		&::before {
 			counter-increment: h5;
-			content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "
+			content: counter(h2) '.' counter(h3) '.' counter(h4) '.' counter(h5) '. ';
 		}
 	}
 
 	&:deep(p) {
 		color: #000;
-		&+p {
+		& + p {
 			margin-top: 1.5em;
 		}
 	}
@@ -160,7 +158,7 @@ export default {
 			}
 		}
 	}
-	
+
 	&:deep(ol) {
 		color: #000;
 
@@ -215,5 +213,4 @@ export default {
 		font-weight: 700;
 	}
 }
-
 </style>

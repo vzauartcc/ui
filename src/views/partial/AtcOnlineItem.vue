@@ -1,14 +1,17 @@
 <template>
 	<router-link :to="`/controllers/${controller.cid}`">
-		<span><strong>{{controller.name}}</strong>/{{controller.ratingShort}}</span>
-		<span class="controller_position">{{controller.pos}}</span>
+		<span
+			><strong>{{ controller.name }}</strong
+			>/{{ controller.ratingShort }}</span
+		>
+		<span class="controller_position">{{ controller.pos }}</span>
 	</router-link>
 </template>
 
 <script>
 export default {
-	name: "AtcOnlineItem",
-	props: ['controller']
+	name: 'AtcOnlineItem',
+	props: ['controller'],
 };
 </script>
 
@@ -19,7 +22,7 @@ a {
 	align-items: center;
 	padding: 10px;
 	position: relative;
-	transition: background-color .3s ease;
+	transition: background-color 0.3s ease;
 
 	&:nth-of-type(2n) {
 		background: $gray-mild;

@@ -22,9 +22,7 @@
 </template>
 
 <script>
-export default {
-
-};
+export default {};
 </script>
 
 <style scoped lang="scss">
@@ -47,7 +45,7 @@ export default {
 
 	.collection-item {
 		color: $primary-color;
-		
+
 		.secondary-content {
 			color: $primary-color;
 		}

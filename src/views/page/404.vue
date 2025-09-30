@@ -2,23 +2,21 @@
 	<div class="card">
 		<div class="card-content">
 			<span class="card-title">404 – Page Not Found</span>
+			<p>OPE! Matt made a problem dont ya know well tell your folks I says hi!.</p>
 			<p>
-				OPE! Matt made a problem dont ya know well tell your folks I says hi!.
+				We're sorry, but the content you request could not be found. If you believe that you are
+				receiving this message in error, please email the webmaster. In the meantime, I have
+				provided a F14 to ease your sorrows.
 			</p>
 			<p>
-				We're sorry, but the content you request could not be found. If you believe that you are receiving this message in error, please email the webmaster. In the meantime, I have provided a F14 to ease your sorrows.
-			</p>
-			<p>
-				<img src="../../assets/images/f14_sorrow.webp">
+				<img src="../../assets/images/f14_sorrow.webp" />
 			</p>
 		</div>
 	</div>
 </template>
 
 <script>
-export default {
-
-};
+export default {};
 </script>
 
 <style lang="scss" scoped>

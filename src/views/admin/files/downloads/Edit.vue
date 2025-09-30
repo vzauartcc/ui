@@ -6,9 +6,9 @@
 				<Spinner />
 			</div>
 			<div class="row row_no_margin" v-else>
-				<form method="post" enctype="multipart/form-data" @submit.prevent=submitForm>
+				<form method="post" enctype="multipart/form-data" @submit.prevent="submitForm">
 					<div class="input-field col s12 l6">
-						<input id="name" type="text" v-model="form.name" required>
+						<input id="name" type="text" v-model="form.name" required />
 						<label for="name" class="active">Name</label>
 					</div>
 					<div class="input-field col s12 l6">
@@ -22,16 +22,21 @@
 						<label>Category</label>
 					</div>
 					<div class="input-field col s12">
-						<textarea id="description" class="materialize-textarea" data-length="400" v-model="form.description"></textarea>
+						<textarea
+							id="description"
+							class="materialize-textarea"
+							data-length="400"
+							v-model="form.description"
+						></textarea>
 						<label for="description" class="active">Description (optional)</label>
 					</div>
 					<div class="file-field input-field col s12">
 						<div class="btn">
 							<span>FILE</span>
-							<input type="file" ref="download">
+							<input type="file" ref="download" />
 						</div>
 						<div class="file-path-wrapper">
-							<input class="file-path validate" type="text" v-model="form.fileName">
+							<input class="file-path validate" type="text" v-model="form.fileName" />
 						</div>
 					</div>
 					<div class="input-field col s12">
@@ -44,7 +49,7 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'EditDownload',
@@ -54,9 +59,9 @@ export default {
 				name: '',
 				category: '',
 				description: '',
-				fileName: ''
+				fileName: '',
 			},
-			loading: true
+			loading: true,
 		};
 	},
 	async mounted() {
@@ -69,7 +74,7 @@ export default {
 	methods: {
 		async getDownload() {
 			this.loading = true;
-			const {data} = await zabApi.get(`/file/downloads/${this.$route.params.id}`);
+			const { data } = await zabApi.get(`/file/downloads/${this.$route.params.id}`);
 			this.form = data.data;
 			this.loading = false;
 		},
@@ -81,22 +86,22 @@ export default {
 				formData.append('description', this.form.description);
 				formData.append('download', this.$refs.download.files[0]);
 
-				const {data} = await zabApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
-					headers: { 
-						'Content-Type': 'multipart/form-data'
-					}
+				const { data } = await zabApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
 				});
 
-				if(data.ret_det.code === 200) {
+				if (data.ret_det.code === 200) {
 					this.toastSuccess('Download updated');
 					this.$router.go(-1); // go back to the previous page
 				} else {
 					this.toastError(data.ret_det.message);
 				}
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
-		}
-	}
+		},
+	},
 };
 </script>

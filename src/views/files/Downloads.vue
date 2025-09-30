@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import DownloadCategory from './DownloadCategory.vue';
 
 export default {
@@ -28,11 +28,11 @@ export default {
 	title: 'Downloads',
 	data() {
 		return {
-			downloads: null
+			downloads: null,
 		};
 	},
 	components: {
-		DownloadCategory
+		DownloadCategory,
 	},
 	async mounted() {
 		await this.getDownloads();
@@ -40,9 +40,9 @@ export default {
 	},
 	methods: {
 		async getDownloads() {
-			const {data: fileData} = await zabApi.get('/file/downloads');
+			const { data: fileData } = await zabApi.get('/file/downloads');
 			this.downloads = {
-				sector: fileData.data.filter(file => file.category === 'sectorFiles'),
+				sector: fileData.data.filter((file) => file.category === 'sectorFiles'),
 			};
 		},
 	},
@@ -51,8 +51,8 @@ export default {
 
 <style scoped lang="scss">
 .download {
-	padding: 1em 1em .5em 1em;
-	transition: background-color .3s ease;
+	padding: 1em 1em 0.5em 1em;
+	transition: background-color 0.3s ease;
 
 	.title {
 		font-weight: 700;
@@ -60,7 +60,7 @@ export default {
 	}
 
 	.desc {
-		font-size: .9rem;
+		font-size: 0.9rem;
 	}
 
 	.button {
@@ -70,19 +70,19 @@ export default {
 
 		&.btn {
 			width: auto;
-			padding: 0 .6em;
+			padding: 0 0.6em;
 			color: #fff;
 		}
 	}
 
 	.info {
-		font-size: .8rem;
+		font-size: 0.8rem;
 		margin-top: 5px;
 		color: #9e9e9e;
 	}
 
 	&:nth-of-type(odd) {
-		background: hsla(0,0%,94.9%,.5);
+		background: hsla(0, 0%, 94.9%, 0.5);
 	}
 
 	&:hover {

@@ -3,9 +3,9 @@
 		<div class="card-content">
 			<span class="card-title">Create News Article</span>
 			<div class="row">
-				<form method="post" @submit.prevent=createNews>
+				<form method="post" @submit.prevent="createNews">
 					<div class="input-field col s12">
-						<input id="title" type="text" v-model="form.title" required>
+						<input id="title" type="text" v-model="form.title" required />
 						<label for="title">Title</label>
 					</div>
 					<div class="input-field col s12">
@@ -24,8 +24,8 @@
 <script>
 import Editor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
-import {mapState} from 'vuex';
-import {zabApi} from '@/helpers/axios.js';
+import { mapState } from 'vuex';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'NewNews',
@@ -33,15 +33,13 @@ export default {
 	data() {
 		return {
 			form: {
-				title: "",
-				content: "",
-			}
+				title: '',
+				content: '',
+			},
 		};
 	},
 	computed: {
-		...mapState('user', [
-			'user'
-		])
+		...mapState('user', ['user']),
 	},
 	async mounted() {
 		this.$nextTick(() => {
@@ -50,33 +48,33 @@ export default {
 				height: '500px',
 				initialEditType: 'wysiwyg',
 				previewStyle: 'tab',
-				usageStatistics: false
+				usageStatistics: false,
 			});
 		});
 	},
 	methods: {
 		async createNews() {
-			const {data} = await zabApi.post('/news', {
+			const { data } = await zabApi.post('/news', {
 				title: this.form.title,
 				content: this.editor.getMarkdown(),
-				createdBy: this.user.data.cid
+				createdBy: this.user.data.cid,
 			});
 
-			if(data.ret_det.code === 200) {
+			if (data.ret_det.code === 200) {
 				this.toastSuccess('News article created');
 
 				this.$router.push('/admin/news');
 			} else {
 				this.toastError(data.ret_det.message);
 			}
-		}
+		},
 	},
 };
 </script>
 
 <style scoped lang="scss">
 .title {
-	color: #9E9E9E;
-	font-size: .75rem;
+	color: #9e9e9e;
+	font-size: 0.75rem;
 }
 </style>

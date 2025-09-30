@@ -6,9 +6,9 @@
 				<Spinner />
 			</div>
 			<div class="row row_no_margin" v-else>
-				<form method="post" @submit.prevent=updateNews>
+				<form method="post" @submit.prevent="updateNews">
 					<div class="input-field col s12">
-						<input id="title" type="text" v-model="news.title" required>
+						<input id="title" type="text" v-model="news.title" required />
 						<label for="title">Title</label>
 					</div>
 					<div class="input-field col s12">
@@ -27,13 +27,13 @@
 <script>
 import Editor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
-import {zabApi} from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'EditNews',
 	data() {
 		return {
-			news: null
+			news: null,
 		};
 	},
 	async mounted() {
@@ -49,20 +49,20 @@ export default {
 				initialEditType: 'wysiwyg',
 				previewStyle: 'tab',
 				usageStatistics: false,
-				initialValue: this.news.content
+				initialValue: this.news.content,
 			});
 		});
 	},
 	methods: {
 		async getArticle() {
-			const {data} = await zabApi.get(`/news/${this.$route.params.slug}`);
+			const { data } = await zabApi.get(`/news/${this.$route.params.slug}`);
 			this.news = data.data;
 		},
 		async updateNews() {
 			this.news.content = this.editor.getMarkdown();
-			const {data} = await zabApi.put(`/news/${this.$route.params.slug}`, this.news);
+			const { data } = await zabApi.put(`/news/${this.$route.params.slug}`, this.news);
 
-			if(data.ret_det.code === 200) {
+			if (data.ret_det.code === 200) {
 				this.toastSuccess('News article updated');
 
 				this.$router.push('/admin/news');
@@ -76,7 +76,7 @@ export default {
 
 <style scoped lang="scss">
 .title {
-	color: #9E9E9E;
-	font-size: .75rem;
+	color: #9e9e9e;
+	font-size: 0.75rem;
 }
 </style>

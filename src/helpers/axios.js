@@ -1,24 +1,24 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const zabApi = axios.create({
-  baseURL: isRunningOnDev() ? "/devapi" : "/api",
-  withCredentials: true,
+	baseURL: isRunningOnDev() ? '/devapi' : '/api',
+	withCredentials: true,
 });
 
 export const vatusaApi = axios.create({
-  baseURL: "https://api.vatusa.net/v2",
+	baseURL: 'https://api.vatusa.net/v2',
 });
 
 export const vatusaApiAuth = axios.create({
-  baseURL: "https://api.vatusa.net/v2",
-  withCredentials: true,
+	baseURL: 'https://api.vatusa.net/v2',
+	withCredentials: true,
 });
 
 function isRunningOnDev() {
-  const host = window.location.host;
-  if (host.includes("localhost") || host == "staging.zauartcc.org") {
-    return true;
-  }
+	const host = window.location.host;
+	if (host.includes('localhost') || host == 'staging.zauartcc.org') {
+		return true;
+	}
 
-  return false;
+	return false;
 }

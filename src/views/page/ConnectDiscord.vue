@@ -3,7 +3,7 @@
 		<div class="card-content">
 			<span class="card-title">Linking Discord...</span>
 			<div>
-				<Spinner/>
+				<Spinner />
 			</div>
 		</div>
 	</div>
@@ -17,28 +17,26 @@ export default {
 	name: 'ConnectDiscord',
 	title: 'Linking Discord...',
 	async mounted() {
-		const {data} = await zabApi.post('/discord/info', {
+		const { data } = await zabApi.post('/discord/info', {
 			cid: this.user.data.cid,
-			code: this.$route.query.code
+			code: this.$route.query.code,
 		});
 
-		if(data.ret_det.code === 200) {
+		if (data.ret_det.code === 200) {
 			this.toastSuccess('Discord account linked');
 		} else {
 			this.toastError(data.ret_det.message);
 		}
-		
-		if(this.user.data.isMem) {
+
+		if (this.user.data.isMem) {
 			this.$router.push('/dash');
 		} else {
 			this.$router.push('/');
 		}
 	},
 	computed: {
-		...mapState('user', [
-			'user'
-		])
-	}
+		...mapState('user', ['user']),
+	},
 };
 </script>
 

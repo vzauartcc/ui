@@ -1,26 +1,22 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":disableMajorUpdates",
-    "helpers:pinGitHubActionDigests"
-  ],
-  "schedule": [
-    "* 10-18 * * *"
-  ],
-  "dependencyDashboard": true,
-  "prConcurrentLimit": 5,
-  "packageRules": [
-    {
-      "description": "Group minor and patch updates together, but do not automerge",
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "all minor and patch updates",
-      "automerge": false
-    },
-    {
-      "description": "Don't group major updates",
-      "matchUpdateTypes": ["major"],
-      "groupName": null
-    }
-  ]
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["config:recommended", ":disableMajorUpdates", "helpers:pinGitHubActionDigests"],
+	"timezone": "America/Chicago",
+	"schedule": ["* 10-18 * * *"],
+	"dependencyDashboard": true,
+	"prConcurrentLimit": 5,
+	"minimumReleaseAge": "21 days",
+	"packageRules": [
+		{
+			"description": "Group minor and patch updates together, but do not automerge",
+			"matchUpdateTypes": ["minor", "patch"],
+			"groupName": "all minor and patch updates",
+			"automerge": false
+		},
+		{
+			"description": "Don't group major updates",
+			"matchUpdateTypes": ["major"],
+			"groupName": null
+		}
+	]
 }

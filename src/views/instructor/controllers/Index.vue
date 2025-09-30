@@ -5,7 +5,13 @@
 				<div class="row row_no_margin">
 					<span class="card-title col s12 m8">Controllers</span>
 					<div class="input-field col s12 m4">
-						<input autocomplete="off" @keyup=filterControllers v-model=filter type="text" placeholder="Search for a controller">
+						<input
+							autocomplete="off"
+							@keyup="filterControllers"
+							v-model="filter"
+							type="text"
+							placeholder="Search for a controller"
+						/>
 						<span class="helper-text right">Search by CID, name, or operating initials</span>
 					</div>
 				</div>
@@ -25,84 +31,144 @@
 					<tbody class="controller_list_row">
 						<tr v-for="controller in controllersFiltered" :key="controller.cid">
 							<td>
-								<i class="material-icons right type_controller">{{controller.vis?'work':'home'}}</i>
+								<i class="material-icons right type_controller">{{
+									controller.vis ? 'work' : 'home'
+								}}</i>
 								<div class="name">
-									<router-link :to="`/controllers/${controller.cid}`">{{controller.fname}} {{controller.lname}} ({{controller.oi}})</router-link>
+									<router-link :to="`/controllers/${controller.cid}`"
+										>{{ controller.fname }} {{ controller.lname }} ({{
+											controller.oi
+										}})</router-link
+									>
 								</div>
 								<div class="rating">
-									{{controller.ratingLong}}
+									{{ controller.ratingLong }}
 								</div>
 							</td>
 							<td>
 								<div class="cid">
-									{{controller.cid}}
+									{{ controller.cid }}
 								</div>
 							</td>
 							<td class="options">
-								<router-link data-position="top" data-tooltip="View Training Sessions" class="tooltipped" :to="`/ins/training/sessions/${controller.cid}`"><i class="material-icons">assignment</i></router-link>
-								<router-link data-position="top" data-tooltip="Edit Controller" class="tooltipped" :to="`/ins/controllers/${controller.cid}`"><i class="material-icons">edit</i></router-link>
-                <template v-if="requiresAuth(['atm', 'datm', 'ta', 'ins', 'wm'])">
-                  <template v-if="controller.ratingShort !== 'C3' && controller.ratingShort !== 'SUP' && controller.ratingShort !== 'ADM' && controller.ratingShort !== 'I1' && controller.ratingShort !== 'I3' && controller.ratingShort !== 'C1'  && controller.vis === false">
-                    <a href="#" @click.prevent="openModal(controller.cid)" class="tooltipped" data-tooltip="Promote Controller" data-position="top"><i class="material-icons green-text text-darken-2">arrow_upward</i></a>
-                  </template>
-                </template>
-              </td>           
+								<router-link
+									data-position="top"
+									data-tooltip="View Training Sessions"
+									class="tooltipped"
+									:to="`/ins/training/sessions/${controller.cid}`"
+									><i class="material-icons">assignment</i></router-link
+								>
+								<router-link
+									data-position="top"
+									data-tooltip="Edit Controller"
+									class="tooltipped"
+									:to="`/ins/controllers/${controller.cid}`"
+									><i class="material-icons">edit</i></router-link
+								>
+								<template v-if="requiresAuth(['atm', 'datm', 'ta', 'ins', 'wm'])">
+									<template
+										v-if="
+											controller.ratingShort !== 'C3' &&
+											controller.ratingShort !== 'SUP' &&
+											controller.ratingShort !== 'ADM' &&
+											controller.ratingShort !== 'I1' &&
+											controller.ratingShort !== 'I3' &&
+											controller.ratingShort !== 'C1' &&
+											controller.vis === false
+										"
+									>
+										<a
+											href="#"
+											@click.prevent="openModal(controller.cid)"
+											class="tooltipped"
+											data-tooltip="Promote Controller"
+											data-position="top"
+											><i class="material-icons green-text text-darken-2">arrow_upward</i></a
+										>
+									</template>
+								</template>
+							</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 		</div>
 		<teleport to="body">
-  		<div v-for="controller in controllersFiltered" :key="`modal_promote_${controller.cid}`">
-    		<div :id="`modal_promote_${controller.cid}`" class="modal modal_promote" @focus="getNewRating(controller.rating)">
-      		<div class="modal-content">
-        		<h4>Promote <b>{{controller.fname}} {{controller.lname}}</b></h4>
-        		<p>
-          		This will promote <b>{{controller.fname}} {{controller.lname}}</b> to the next rating. 
-          		You must provide a new rating, date of OTS, callsign of the position, and your CID for the promotion below.
-        		</p>
-        		<div class="row">
-          		<div class="input-field col s12 m6">
-            		<p>New Rating</p>
-            		<textarea class="materialize-textarea col s12 m10" placeholder="New Rating ex. S1" :value="newRating" disabled></textarea>
-          		</div>
-          		<div class="input-field col s12 m6">
-            		<p>Your CID</p>
-            		<textarea class="materialize-textarea col s12 m10" placeholder="Your CID" :value="examinerCid" disabled></textarea>
-          		</div>
-          		<div class="input-field col s12 m6">
-            		<p>OTS Position</p>
-            		<textarea class="materialize-textarea col s12 m10" placeholder="CHI_35_CTR" v-model="position" required></textarea>
-          		</div>
-          		<div class="input-field col s12 m6">
-            		<p>Date of OTS</p>
-            		<flat-pickr class="input-field col s12 m10" placeholder="OTS Date" v-model="otsDate" required></flat-pickr>
-          		</div>
-        		</div>
-      		</div>
-      		<div class="modal-footer">
-        		<a href="#!" @click.prevent="promoteController(controller)" class="btn waves-effect">Promote</a>
-        		<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
-      		</div>
-    		</div>
-  		</div>
+			<div v-for="controller in controllersFiltered" :key="`modal_promote_${controller.cid}`">
+				<div
+					:id="`modal_promote_${controller.cid}`"
+					class="modal modal_promote"
+					@focus="getNewRating(controller.rating)"
+				>
+					<div class="modal-content">
+						<h4>
+							Promote <b>{{ controller.fname }} {{ controller.lname }}</b>
+						</h4>
+						<p>
+							This will promote <b>{{ controller.fname }} {{ controller.lname }}</b> to the next
+							rating. You must provide a new rating, date of OTS, callsign of the position, and your
+							CID for the promotion below.
+						</p>
+						<div class="row">
+							<div class="input-field col s12 m6">
+								<p>New Rating</p>
+								<textarea
+									class="materialize-textarea col s12 m10"
+									placeholder="New Rating ex. S1"
+									:value="newRating"
+									disabled
+								></textarea>
+							</div>
+							<div class="input-field col s12 m6">
+								<p>Your CID</p>
+								<textarea
+									class="materialize-textarea col s12 m10"
+									placeholder="Your CID"
+									:value="examinerCid"
+									disabled
+								></textarea>
+							</div>
+							<div class="input-field col s12 m6">
+								<p>OTS Position</p>
+								<textarea
+									class="materialize-textarea col s12 m10"
+									placeholder="CHI_35_CTR"
+									v-model="position"
+									required
+								></textarea>
+							</div>
+							<div class="input-field col s12 m6">
+								<p>Date of OTS</p>
+								<flat-pickr
+									class="input-field col s12 m10"
+									placeholder="OTS Date"
+									v-model="otsDate"
+									required
+								></flat-pickr>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<a href="#!" @click.prevent="promoteController(controller)" class="btn waves-effect"
+							>Promote</a
+						>
+						<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
+					</div>
+				</div>
+			</div>
 		</teleport>
 	</div>
 </template>
 
 <script>
-import {vatusaApiAuth, zabApi} from '@/helpers/axios.js';
+import { vatusaApiAuth, zabApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import {ref} from "vue";
-const endDate = document.getElementById('end_date');
 import { mapState } from 'vuex';
 
 export default {
 	computed: {
-		...mapState('user', [
-			'user'
-		])
+		...mapState('user', ['user']),
 	},
 	name: 'Controllers',
 	title: 'Controllers',
@@ -111,120 +177,128 @@ export default {
 			controllers: null,
 			controllersFiltered: null,
 			filter: '',
-      examinerCid: '',
-      newRating:  '',
-      rating: '',
+			examinerCid: '',
+			newRating: '',
+			rating: '',
 			reason: null,
-      position: null,
-      ecid: null,
-      otsDate: {
-        date: null,
-      }
+			position: null,
+			ecid: null,
+			otsDate: {
+				date: null,
+			},
 		};
 	},
 	async mounted() {
-    await this.getControllers();
-    await this.getExaminerCid().then((examinerCid) => {
-      this.examinerCid = examinerCid;
-    });
+		await this.getControllers();
+		await this.getExaminerCid().then((examinerCid) => {
+			this.examinerCid = examinerCid;
+		});
 
-    const today = new Date(new Date().toUTCString());
-    flatpickr('#otsDate', {
-      date: null,
-      dateFormat: 'Y-m-d',
-      minDate: today,
-    });
+		const today = new Date(new Date().toUTCString());
+		flatpickr('#otsDate', {
+			date: null,
+			dateFormat: 'Y-m-d',
+			minDate: today,
+		});
 
-    this.$nextTick(() => {
-        this.initModals();
-    });
+		this.$nextTick(() => {
+			this.initModals();
+		});
 	},
 	methods: {
 		requiresAuth(roles) {
-			const havePermissions = roles.some(r => this.user.data.roleCodes.includes(r));
-			if(havePermissions) {
+			const havePermissions = roles.some((r) => this.user.data.roleCodes.includes(r));
+			if (havePermissions) {
 				return true;
 			} else {
 				return false;
 			}
 		},
 		initModals() {
-        this.$nextTick(() => {
-            const modals = document.querySelectorAll('.modal');
-            M.Modal.init(modals, { preventScrolling: false });
-        });
-    },
-    openModal(cid) {
-        const modal = document.getElementById(`modal_promote_${cid}`);
-        if (modal) {
-            M.Modal.getInstance(modal).open();
-        }
-    },
+			this.$nextTick(() => {
+				const modals = document.querySelectorAll('.modal');
+				M.Modal.init(modals, { preventScrolling: false });
+			});
+		},
+		openModal(cid) {
+			const modal = document.getElementById(`modal_promote_${cid}`);
+			if (modal) {
+				M.Modal.getInstance(modal).open();
+			}
+		},
 		async getControllers() {
-			const {data} = await zabApi.get('/controller');
+			const { data } = await zabApi.get('/controller');
 			this.controllers = data.data.home.concat(data.data.visiting);
-			this.controllers = this.controllers.filter(c => c.member);
+			this.controllers = this.controllers.filter((c) => c.member);
 			this.controllersFiltered = this.controllers;
 		},
-        async getNewRating(controller){
-      let ratings = {
-        '1': 'OBS',
-        '2': 'S1',
-        '3': 'S2',
-        '4': 'S3',
-        '5': 'C1',
-        '7': 'C3',
-        '8': 'I1',
-        '10': 'I3',
-        '11': 'SUP',
-        '12': 'ADM'
-      }
-      let controllerRating = controller + 1;
-      return this.newRating = ratings[controllerRating];
-    },
-    async promoteController(controller) {
-      if((this.position == null || this.position === '') || (this.otsDate.date == null && this.otsDate === 'undefined')) {
-        this.toastError('Please fill out all fields');
-        return;
-      }
-      if((/^([A-Z]{2,3})(_([A-Z,0-9]{1,3}))?_(DEL|GND|TWR|APP|DEP|CTR)$/.test(this.position) || this.position.toLowerCase() === "any") === false) {
-        return this.toastError('Invalid position');
-      }
-      if(controller.rating === '11' || controller.rating === '12'){
-        this.toastError('Controller is an admin or sup, cannot promote');
-      }else if(controller.rating === '10' || controller.rating === '9'){
-        this.toastError('Controller is a I1 or I3, cannot promote');
-      }else{
-        var rating = controller.rating + 1;
-      }
-      await vatusaApiAuth.post(`/user/${controller.cid}/rating`, {
-        rating: rating,
-        examDate: this.otsDate,
-        position: this.position,
-        examiner: this.examinerCid
-      })
-          .then((response) => {
-            if(response === 200) {
-              this.toastSuccess( 'Controller promoted successfully!');
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-            this.toastError('Error promoting controller!');
-          });
-    },
-    async getExaminerCid() {
-      try {
-        const res = await zabApi.get(`/user`)
-        return res.data.data.cid
-      } catch (error) {
-        console.error(error)
-      }
-    },
+		async getNewRating(controller) {
+			let ratings = {
+				1: 'OBS',
+				2: 'S1',
+				3: 'S2',
+				4: 'S3',
+				5: 'C1',
+				7: 'C3',
+				8: 'I1',
+				10: 'I3',
+				11: 'SUP',
+				12: 'ADM',
+			};
+			let controllerRating = controller + 1;
+			return (this.newRating = ratings[controllerRating]);
+		},
+		async promoteController(controller) {
+			if (
+				this.position == null ||
+				this.position === '' ||
+				(this.otsDate.date == null && this.otsDate === 'undefined')
+			) {
+				this.toastError('Please fill out all fields');
+				return;
+			}
+			if (
+				(/^([A-Z]{2,3})(_([A-Z,0-9]{1,3}))?_(DEL|GND|TWR|APP|DEP|CTR)$/.test(this.position) ||
+					this.position.toLowerCase() === 'any') === false
+			) {
+				return this.toastError('Invalid position');
+			}
+			if (controller.rating === '11' || controller.rating === '12') {
+				this.toastError('Controller is an admin or sup, cannot promote');
+			} else if (controller.rating === '10' || controller.rating === '9') {
+				this.toastError('Controller is a I1 or I3, cannot promote');
+			} else {
+				var rating = controller.rating + 1;
+			}
+			await vatusaApiAuth
+				.post(`/user/${controller.cid}/rating`, {
+					rating: rating,
+					examDate: this.otsDate,
+					position: this.position,
+					examiner: this.examinerCid,
+				})
+				.then((response) => {
+					if (response === 200) {
+						this.toastSuccess('Controller promoted successfully!');
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+					this.toastError('Error promoting controller!');
+				});
+		},
+		async getExaminerCid() {
+			try {
+				const res = await zabApi.get(`/user`);
+				return res.data.data.cid;
+			} catch (error) {
+				console.error(error);
+			}
+		},
 		filterControllers() {
 			const search = new RegExp(this.filter, 'ig');
-			this.controllersFiltered = this.controllers.filter(controller => {
-				if(
+			this.controllersFiltered = this.controllers.filter((controller) => {
+				if (
 					controller.fname.match(search) ||
 					controller.lname.match(search) ||
 					controller.oi.match(search) ||
@@ -235,14 +309,14 @@ export default {
 			});
 		},
 		watch: {
-    	controllersFiltered: {
-        handler() {
-            this.initModals();
-        },
-        deep: true
-    	}
+			controllersFiltered: {
+				handler() {
+					this.initModals();
+				},
+				deep: true,
+			},
 		},
-	}
+	},
 };
 </script>
 
@@ -267,12 +341,12 @@ export default {
 
 .type_controller {
 	vertical-align: top;
-	margin-top: .4em;
+	margin-top: 0.4em;
 }
 
 table tbody {
 	tr {
-		transition: background-color .3s ease;
+		transition: background-color 0.3s ease;
 		&:hover {
 			background: #eaeaea;
 		}

@@ -2,31 +2,38 @@
 	<div :id="cat" class="col s12">
 		<div v-if="docs.length === 0" class="no_files">No documents in this category found</div>
 		<div class="document" v-else v-for="doc in docs" :key="doc.id">
-			<router-link v-if="doc.type === 'doc'" :to="`/files/documents/${doc.slug}`" class="button btn"><i class="material-icons">search</i></router-link>
-			<a v-else :href="`https://zauartcc.sfo3.cdn.digitaloceanspaces.com/${folderPrefix}/documents/${doc.fileName}`" class="btn button" target="_blank"><i class="material-icons">search</i></a>
-			<div class="title">{{doc.name}}</div>
-			<div class="desc">{{doc.description}}</div>
-			<div class="info">Updated at {{dtRegionalUS(doc.updatedAt)}}z</div>
+			<router-link v-if="doc.type === 'doc'" :to="`/files/documents/${doc.slug}`" class="button btn"
+				><i class="material-icons">search</i></router-link
+			>
+			<a
+				v-else
+				:href="`https://zauartcc.sfo3.cdn.digitaloceanspaces.com/${folderPrefix}/documents/${doc.fileName}`"
+				class="btn button"
+				target="_blank"
+				><i class="material-icons">search</i></a
+			>
+			<div class="title">{{ doc.name }}</div>
+			<div class="desc">{{ doc.description }}</div>
+			<div class="info">Updated at {{ dtRegionalUS(doc.updatedAt) }}z</div>
 		</div>
 	</div>
 </template>
 
 <script>
-
 export default {
 	data() {
-    return {
-      folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
-    };
-  },
-	props: ['cat', 'docs']
+		return {
+			folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
+		};
+	},
+	props: ['cat', 'docs'],
 };
 </script>
 
 <style lang="scss" scoped>
 .document {
-	padding: 1em 1em .5em 1em;
-	transition: background-color .3s ease;
+	padding: 1em 1em 0.5em 1em;
+	transition: background-color 0.3s ease;
 
 	.title {
 		font-weight: 700;
@@ -35,7 +42,7 @@ export default {
 	}
 
 	.desc {
-		font-size: .9rem;
+		font-size: 0.9rem;
 		width: calc(100% - 45px);
 	}
 
@@ -45,19 +52,19 @@ export default {
 
 		&.btn {
 			width: auto;
-			padding: 0 .6em;
+			padding: 0 0.6em;
 			color: #fff;
 		}
 	}
 
 	.info {
-		font-size: .8rem;
+		font-size: 0.8rem;
 		margin-top: 5px;
 		color: #9e9e9e;
 	}
 
 	&:nth-of-type(odd) {
-		background: hsla(0,0%,94.9%,.5);
+		background: hsla(0, 0%, 94.9%, 0.5);
 	}
 
 	&:hover {

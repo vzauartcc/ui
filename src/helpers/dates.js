@@ -5,46 +5,60 @@
  */
 
 export default {
-	dtLong(isoDate) { // January 2, 2006, 15:04z
+	dtLong(isoDate) {
+		// January 2, 2006, 15:04z
 		const d = new Date(isoDate);
 		return `${d.toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
-			year: 'numeric', 
-			timeZone: 'UTC', 
-			hour: '2-digit', 
+			year: 'numeric',
+			timeZone: 'UTC',
+			hour: '2-digit',
 			minute: '2-digit',
-			hourCycle: 'h23'
+			hourCycle: 'h23',
 		})}z`;
 	},
-	dtFull(isoDate) { // Monday, January 2, 2006, 15:04:05
-		const d =  new Date(isoDate);
+	dtFull(isoDate) {
+		// Monday, January 2, 2006, 15:04:05
+		const d = new Date(isoDate);
 		return d.toLocaleString('en-US', {
-			weekday: 'long', 
-			month: 'long', 
+			weekday: 'long',
+			month: 'long',
 			day: 'numeric',
-			year: 'numeric', 
-			timeZone: 'UTC', 
-			hour: '2-digit', 
-			minute: '2-digit', 
-			second: '2-digit', 
-			hourCycle: 'h23'});
+			year: 'numeric',
+			timeZone: 'UTC',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hourCycle: 'h23',
+		});
 	},
-	dLong(isoDate) { // January 2, 2006
-		const d =  new Date(isoDate);
+	dLong(isoDate) {
+		// January 2, 2006
+		const d = new Date(isoDate);
 		return d.toLocaleString('en-US', {
-			month: 'long', 
+			month: 'long',
 			day: 'numeric',
-			year: 'numeric', 
+			year: 'numeric',
 			timeZone: 'UTC',
 		});
 	},
-	dtStandard(isoDate) { // 2006-01-02, 15:04
+	dtStandard(isoDate) {
+		// 2006-01-02, 15:04
 		const d = new Date(isoDate);
 		return d.toISOString().slice(0, -8).replace('T', ', ');
 	},
-	dtRegionalUS(isoDate) { // 1/2/2006, 15:04
+	dtRegionalUS(isoDate) {
+		// 1/2/2006, 15:04
 		const d = new Date(isoDate);
-		return d.toLocaleString('en-US', {month: 'numeric', day: 'numeric', year: 'numeric', timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'});
-	}
+		return d.toLocaleString('en-US', {
+			month: 'numeric',
+			day: 'numeric',
+			year: 'numeric',
+			timeZone: 'UTC',
+			hour: '2-digit',
+			minute: '2-digit',
+			hourCycle: 'h23',
+		});
+	},
 };

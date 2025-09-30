@@ -1,19 +1,22 @@
 <template>
 	<div class="pilot">
-		<span class="pilot_details"><strong class="text-xl text-black">{{pilot.callsign}}</strong>{{pilot.aircraft}}</span>
-		<span>{{pilot.dep}} - {{pilot.dest}}</span>
+		<span class="pilot_details"
+			><strong class="text-xl text-black">{{ pilot.callsign }}</strong
+			>{{ pilot.aircraft }}</span
+		>
+		<span>{{ pilot.dep }} - {{ pilot.dest }}</span>
 		<div class="flight_info">
-			<h6>Flight Details - {{pilot.callsign}}</h6>
-			<p>{{pilot.route || '—'}}</p>
-			<p class="remarks">{{pilot.remarks || '—'}}</p>
+			<h6>Flight Details - {{ pilot.callsign }}</h6>
+			<p>{{ pilot.route || '—' }}</p>
+			<p class="remarks">{{ pilot.remarks || '—' }}</p>
 		</div>
 	</div>
 </template>
 
 <script>
 export default {
-	name: "PilotOnlineItem",
-	props: ['pilot']
+	name: 'PilotOnlineItem',
+	props: ['pilot'],
 };
 </script>
 
@@ -24,7 +27,7 @@ export default {
 	align-items: center;
 	padding: 10px;
 	position: relative;
-	transition: background-color .3s ease;
+	transition: background-color 0.3s ease;
 
 	&:nth-of-type(2n) {
 		background: rgba(242, 242, 242, 0.5);
@@ -65,7 +68,7 @@ export default {
 	&::before {
 		left: 50%;
 		transform: translateX(-50%);
-		content: "";
+		content: '';
 		pointer-events: none;
 		display: inline-block;
 		position: absolute;
@@ -95,17 +98,15 @@ export default {
 	}
 }
 
-
 .remarks {
 	position: relative;
 	&::before {
 		height: 1px;
 		width: calc(100% - 20px);
 		background: #999;
-		content: "";
+		content: '';
 		position: absolute;
 		top: 0px;
 	}
 }
-
 </style>

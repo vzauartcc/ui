@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 @import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
@@ -9,7 +11,7 @@ $secondary-color: #00c800;
 $secondary-color-light: #00ccff;
 
 $accent-color: #208951;
-$accent-color-light: lighten($accent-color, 10);
+$accent-color-light: color.adjust($accent-color, $lightness: 10%);
 
 $link-color: $primary-color;
 
@@ -18,7 +20,7 @@ $dropdown-color: $primary-color;
 $sidenav-bg-color: $primary-color;
 $sidenav-font-color: #fff;
 
-$footer-copyright-bg-color: #41B6E6;
+$footer-copyright-bg-color: #41b6e6;
 
 $card-padding: 15px;
 // $primary_alt3: #fdd768;
@@ -46,7 +48,7 @@ $cert_training: #f90f0f;
 $cert_vis: #2b39f3;
 
 html {
-	font-family: "Lato", "Helvetica", sans-serif!important;
+	font-family: 'Lato', 'Helvetica', sans-serif !important;
 }
 
 body {
@@ -104,26 +106,31 @@ body {
 table {
 	thead {
 		border-bottom: 1px solid #666;
-		td, th {
-			padding: .75em 1em;
+		td,
+		th {
+			padding: 0.75em 1em;
 		}
 	}
 	tr {
-		td, th {
-			padding: .75em 1em;
+		td,
+		th {
+			padding: 0.75em 1em;
 		}
 	}
 	&.medium {
-		tr, thead {
-			td, th {
-				padding: .5em 1em;
+		tr,
+		thead {
+			td,
+			th {
+				padding: 0.5em 1em;
 			}
 		}
 	}
 	&.compact {
 		tr {
-			td, th {
-				padding: .25em 1em;
+			td,
+			th {
+				padding: 0.25em 1em;
 			}
 		}
 	}
@@ -132,18 +139,22 @@ table {
 	}
 }
 
-input.valid[type=text]:not(.browser-default) {
+input.valid[type='text']:not(.browser-default) {
 	border-bottom: 1px solid $primary-color-light;
 	box-shadow: 0 1px 0 0 $primary-color-light;
 }
 
 @keyframes borderBottom {
-	0% { width: 100%; }
-	100% { width: 0%; }
+	0% {
+		width: 100%;
+	}
+	100% {
+		width: 0%;
+	}
 }
 
 strong {
-	font-weight: bold!important;
+	font-weight: bold !important;
 }
 
 .loading_container {
@@ -151,19 +162,24 @@ strong {
 }
 
 .row_no_margin {
-	margin-bottom: 0!important;
+	margin-bottom: 0 !important;
 }
 
 .options {
 	text-align: right;
 
 	a {
-		-webkit-user-select: none; /* Safari 3.1+ */ -moz-user-select: none; /* Firefox 2+ */ -ms-user-select: none; /* IE 10+ */ user-select: none; /* Standard syntax */ user-drag: none; -webkit-user-drag: none;
+		-webkit-user-select: none; /* Safari 3.1+ */
+		-moz-user-select: none; /* Firefox 2+ */
+		-ms-user-select: none; /* IE 10+ */
+		user-select: none; /* Standard syntax */
+		user-drag: none;
+		-webkit-user-drag: none;
 	}
 }
 
 select:not(.materialize-select):not(.browser-default) {
-	display: initial!important;
+	display: initial !important;
 }
 
 .material-icons {
@@ -176,7 +192,7 @@ select:not(.materialize-select):not(.browser-default) {
 	max-width: 700px;
 }
 .flatpickr-monthDropdown-months {
-    opacity: 1;
+	opacity: 1;
 }
 .table_wrapper {
 	overflow: auto;

@@ -6,9 +6,14 @@
 				<Spinner />
 			</div>
 			<div class="row row_no_margin" v-else>
-				<form ref="editForm" method="post" enctype="multipart/form-data" @submit.prevent=updateDocument>
+				<form
+					ref="editForm"
+					method="post"
+					enctype="multipart/form-data"
+					@submit.prevent="updateDocument"
+				>
 					<div class="input-field col s12 m6">
-						<input id="name" type="text" v-model="form.name" required>
+						<input id="name" type="text" v-model="form.name" required />
 						<label for="name">Name</label>
 					</div>
 					<div class="input-field col s12 m6">
@@ -23,7 +28,12 @@
 						<label>Category</label>
 					</div>
 					<div class="input-field col s12">
-						<textarea id="description" class="materialize-textarea" data-length="400" v-model="form.description"></textarea>
+						<textarea
+							id="description"
+							class="materialize-textarea"
+							data-length="400"
+							v-model="form.description"
+						></textarea>
 						<label for="description">Description (optional)</label>
 					</div>
 					<div class="col s12 radio_select">
@@ -34,7 +44,7 @@
 								<span>File</span>
 							</label>
 							<label>
-								<input type="radio" value="doc" v-model="form.type"/>
+								<input type="radio" value="doc" v-model="form.type" />
 								<span>Document</span>
 							</label>
 						</p>
@@ -46,10 +56,15 @@
 					<div class="file-field input-field col s12" v-if="form.type === 'file'">
 						<div class="btn waves-effect waves-light">
 							<span>FILE</span>
-							<input type="file" ref="download" id="fileInput">
+							<input type="file" ref="download" id="fileInput" />
 						</div>
 						<div class="file-path-wrapper">
-							<input class="file-path validate" type="text" placeholder="Upload a file" :value="form.fileName">
+							<input
+								class="file-path validate"
+								type="text"
+								placeholder="Upload a file"
+								:value="form.fileName"
+							/>
 						</div>
 					</div>
 					<div class="input-field col s12">
@@ -65,8 +80,8 @@
 import Editor from '@toast-ui/editor';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
-import {zabApi} from '@/helpers/axios.js';
-import {mapState} from 'vuex';
+import { zabApi } from '@/helpers/axios.js';
+import { mapState } from 'vuex';
 
 export default {
 	title: 'Edit Document',
@@ -76,10 +91,10 @@ export default {
 				name: '',
 				category: '',
 				description: '',
-				content: ''
+				content: '',
 			},
 			editor: null,
-			loading: true
+			loading: true,
 		};
 	},
 	async mounted() {
@@ -99,54 +114,52 @@ export default {
 				previewStyle: 'tab',
 				usageStatistics: false,
 				initialValue: this.form.content,
-				plugins: [tableMergedCell]
+				plugins: [tableMergedCell],
 			});
 		});
 	},
 	methods: {
 		async getDocument() {
-			const {data} = await zabApi.get(`/file/documents/${this.$route.params.id}`);
+			const { data } = await zabApi.get(`/file/documents/${this.$route.params.id}`);
 			this.form = data.data;
 			this.loading = false;
 		},
 		async updateDocument() {
-  			this.form.content = this.editor.getMarkdown();
-  			const formData = new FormData();
-  			formData.append('name', this.form.name);
-  			formData.append('category', this.form.category);
-  			formData.append('description', this.form.description);
-  			formData.append('author', this.user.data._id);
-  			formData.append('type', this.form.type);
-  			formData.append('content', this.form.content);
+			this.form.content = this.editor.getMarkdown();
+			const formData = new FormData();
+			formData.append('name', this.form.name);
+			formData.append('category', this.form.category);
+			formData.append('description', this.form.description);
+			formData.append('author', this.user.data._id);
+			formData.append('type', this.form.type);
+			formData.append('content', this.form.content);
 
 			if (this.form.type === 'file') {
-    			formData.append('download', this.$refs.download.files[0]);
-  			}
+				formData.append('download', this.$refs.download.files[0]);
+			}
 
-  			const { data } = await zabApi.put(`/file/documents/${this.form.slug}`, formData, {
-    			headers: { 'Content-Type': 'multipart/form-data' },
-  			});
+			const { data } = await zabApi.put(`/file/documents/${this.form.slug}`, formData, {
+				headers: { 'Content-Type': 'multipart/form-data' },
+			});
 
-  			if (data.ret_det.code === 200) {
-  			  this.toastSuccess('Document updated');
-			  this.$router.go(-1); // go back to the previous page
-  			} else {
-  			  this.toastError(data.ret_det.message);
-  			}
-		}
+			if (data.ret_det.code === 200) {
+				this.toastSuccess('Document updated');
+				this.$router.go(-1); // go back to the previous page
+			} else {
+				this.toastError(data.ret_det.message);
+			}
+		},
 	},
 	computed: {
-		...mapState('user', [
-			'user'
-		]),
-	}
+		...mapState('user', ['user']),
+	},
 };
 </script>
 
 <style scoped lang="scss">
 .title {
-	color: #9E9E9E;
-	font-size: .75rem;
+	color: #9e9e9e;
+	font-size: 0.75rem;
 }
 
 p label {
@@ -159,7 +172,7 @@ p label {
 
 #tui_editor {
 	&:deep(.tui-editor-contents) {
-		font-family: "Lato", "Helvetica", sans-serif;
+		font-family: 'Lato', 'Helvetica', sans-serif;
 		font-size: 1rem;
 	}
 
@@ -170,7 +183,7 @@ p label {
 	}
 
 	&:deep(h1) {
-		border-bottom: 2px solid #EBEBEB;
+		border-bottom: 2px solid #ebebeb;
 	}
 
 	&:deep(h2) {
@@ -179,7 +192,7 @@ p label {
 		border-bottom: none;
 		font-weight: 400;
 		color: #000;
-		margin-bottom: .25em;
+		margin-bottom: 0.25em;
 
 		&:first-of-type {
 			margin-top: 0;
@@ -187,7 +200,7 @@ p label {
 
 		&::before {
 			counter-increment: h2;
-			content: counter(h2) ". "
+			content: counter(h2) '. ';
 		}
 	}
 
@@ -200,7 +213,7 @@ p label {
 
 		&::before {
 			counter-increment: h3;
-			content: counter(h2) "." counter(h3) ". "
+			content: counter(h2) '.' counter(h3) '. ';
 		}
 	}
 
@@ -210,12 +223,12 @@ p label {
 		font-size: 1.5em;
 		font-weight: 400;
 		line-height: 110%;
-		margin: 1.52rem 0 .912rem 0;
+		margin: 1.52rem 0 0.912rem 0;
 		color: #000;
 
 		&::before {
 			counter-increment: h4;
-			content: counter(h2) "." counter(h3) "." counter(h4) ". "
+			content: counter(h2) '.' counter(h3) '.' counter(h4) '. ';
 		}
 	}
 
@@ -229,13 +242,13 @@ p label {
 
 		&::before {
 			counter-increment: h5;
-			content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "
+			content: counter(h2) '.' counter(h3) '.' counter(h4) '.' counter(h5) '. ';
 		}
 	}
 
 	&:deep(p) {
 		color: #000;
-		&+p {
+		& + p {
 			margin-top: 1.5em;
 		}
 	}
@@ -253,7 +266,7 @@ p label {
 			}
 		}
 	}
-	
+
 	&:deep(ol) {
 		color: #000;
 

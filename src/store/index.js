@@ -6,6 +6,6 @@ import visit from './visit';
 export default createStore({
 	modules: {
 		user,
-		visit
-	}
+		visit,
+	},
 });
