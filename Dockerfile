@@ -13,13 +13,13 @@ COPY . .
 RUN npm run build
 
 # Step 2: PRODUCTION/SERVE
-FROM nginx:alpine AS production
+FROM nginx:stable-alpine AS production
 
 # Copy built app from builder
 COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
 
-# Copy Nginx config without overwriting default /etc/nginx/nginx.conf
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy Nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose default port for documentation
 EXPOSE 80
