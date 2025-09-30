@@ -12,7 +12,7 @@
 						competency on the position they are receiving a solo certification for. <br /><br />Solo
 						certifications must be issued in accordance with the training syllabus and are
 						automatically submitted to VATUSA. <br /><br />Solo certifications may not extend beyond
-						30 days in length.
+						45 days in length.
 					</p>
 				</div>
 				<form class="col s12 l6 pull-l6" @submit.prevent="submitCert">
@@ -87,8 +87,8 @@ export default {
 
 		flatpickr(this.$refs.expirationDate, {
 			enableTime: false,
-			minDate: today,
-			maxDate: new Date(future.setDate(future.getDate() + 30)),
+			minDate: new Date(today.setDate(today.getDate() + 1)),
+			maxDate: new Date(future.setDate(future.getDate() + 45)),
 			disableMobile: true,
 			dateFormat: 'Y-m-d',
 			altFormat: 'Y-m-d',
