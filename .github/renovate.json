@@ -6,6 +6,7 @@
 	"dependencyDashboard": true,
 	"prConcurrentLimit": 5,
 	"minimumReleaseAge": "21 days",
+	"internalChecksFilter": "strict",
 	"packageRules": [
 		{
 			"description": "Group minor and patch updates together, but do not automerge",
