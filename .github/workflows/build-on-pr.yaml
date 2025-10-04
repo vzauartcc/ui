@@ -1,4 +1,7 @@
-name: Build
+# Make sure to enable 'Require status checks to pass before merging' on the repo,
+# and to select the 'prettier_check' action.
+
+name: Build and Push
 
 on:
   pull_request:
