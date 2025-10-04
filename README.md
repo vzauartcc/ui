@@ -35,7 +35,8 @@ Thank you to all contributors, past and present.
 
 Prerequisites:
 
-- Most recent LTS of Node.js (v16), with the corresponding version of npm.
+- Most recent LTS of Node.js, with the corresponding version of npm.
+- Doppler installed and logged in.
 - Have the ZAU API running locally at `http://localhost:3000`.
 - A basic understanding of Git (branches, merge requests).
 
@@ -43,7 +44,7 @@ If you wish to contribute, please do the following:
 
 1. Clone down the repository to your local machine.
 2. Run `npm install`
-3. Run `npm run dev
+3. Run `npm run start:dev`
 
 This will compile all of the Vue JS, and start a hot-reloading live server with Vite. Visit `http://localhost:8080` to view the app.
 

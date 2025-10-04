@@ -1,24 +1,25 @@
-name: Build and Deploy
+name: Build and Deploy Prod
 
 on:
-  pull_request:
-    branches: [main]
-    types:
-      - closed
+  push:
+    branches:
+      - 'main'
 
 jobs:
   Build-and-Push:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout master
+      - name: Checkout main
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
+
       - name: Log in to container registry
         uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7 # v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push image
         uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a # v2
         with:
@@ -26,34 +27,23 @@ jobs:
           tags: |
             ghcr.io/vzauartcc/ui:${{ github.sha }}
             ghcr.io/vzauartcc/ui:master
-            ghcr.io/vzauartcc/ui:latest
-  Deploy-to-Staging:
-    needs: Build-and-Push
-    environment: staging
-    runs-on: ubuntu-latest
-    steps:
-      - name: Initialize doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      - name: Log into K8s cluster
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 zau-k8s
-      - name: Deploy image to cluster
-        run: kubectl set image deployment/ui-dev ui-dev=ghcr.io/vzauartcc/ui:${{ github.sha }} --record -n zau-staging-web-stack
-      - name: Verify deployment
-        run: kubectl rollout status deployment/ui-dev -n zau-staging-web-stack
+
   Deploy-to-Prod:
-    needs: Deploy-to-Staging
+    needs: Build-and-Push
     environment: prod
     runs-on: ubuntu-latest
+
     steps:
       - name: Initialize doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
       - name: Log into K8s cluster
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 zau-k8s
+
       - name: Deploy image to cluster
         run: kubectl set image deployment/ui ui=ghcr.io/vzauartcc/ui:${{ github.sha }} --record -n zau-web-stack
+
       - name: Verify deployment
         run: kubectl rollout status deployment/ui -n zau-web-stack

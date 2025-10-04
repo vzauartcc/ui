@@ -1,7 +1,3 @@
-## [ZAU-xxxx]
-
----
-
 ### Summary
 
 What does this PR do?
