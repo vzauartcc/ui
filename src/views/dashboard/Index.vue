@@ -21,7 +21,7 @@
 				<span class="section_title"> External Integrations </span>
 				<div class="discord_connect">
 					<template v-if="discordConnected === false">
-						<a href="https://zauartcc.org/login/discord" target="_blank" rel="noreferrer noopener">
+						<a href="/login/discord" target="_blank" rel="noreferrer noopener">
 							<button class="btn waves-effect waves-light" type="submit" name="action">
 								Link Discord
 								<i class="material-icons right">discord</i>
