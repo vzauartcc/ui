@@ -24,6 +24,7 @@ const routes = [
 				path: '/login',
 				beforeEnter() {
 					location.href = uriHelper.vatsimAuthRedirectUrl;
+					return false;
 				},
 			},
 			{
@@ -32,8 +33,10 @@ const routes = [
 			},
 			{
 				path: '/login/discord',
-				beforeEnter() {
-					location.href = uriHelper.discordRedirectUrl;
+				component: { template: '<div>Redirecting to discord...</div>' },
+				meta: {
+					externalRedirect: true,
+					redirectUrlKey: 'discordRedirectUrl',
 				},
 			},
 			{
@@ -337,6 +340,14 @@ router.beforeEach(async (to, from, next) => {
 	window.scrollTo({
 		top: 0,
 	});
+
+	if (to.meta.externalRedirect) {
+		const url = uriHelper[to.meta.redirectUrlKey];
+		location.href = url;
+
+		return false;
+	}
+
 	if (to.meta.loggedIn) {
 		const { data: user } = await zabApi.get('/user');
 		if (user.ret_det.code === 200 && user.data.member === true) {
