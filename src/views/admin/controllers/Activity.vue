@@ -115,11 +115,11 @@
 									<div class="certifications training_request" v-else>
 										<div>
 											{{ controller.ratingLong }} has made
-											<b>{{ controller.totalRequests }}</b> training request(s) in the last 31 days
+											<b>{{ controller.totalRequests }}</b> training request(s) in the last 91 days
 										</div>
 										<div>
 											{{ controller.ratingLong }} has had
-											<b>{{ controller.totalSessions }}</b> training session(s) in the last 31 days
+											<b>{{ controller.totalSessions }}</b> training session(s) in the last 91 days
 										</div>
 									</div>
 								</div>
