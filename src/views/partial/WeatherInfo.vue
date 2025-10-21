@@ -153,14 +153,14 @@ export default {
 					configs: {
 						landing: {
 							NE: '4L/4R',
-							NW: '31L/31C/31R',
-							SE: '13L/13C/13R',
+							NW: '31L/31R',
+							SE: '13L/13R',
 							SW: '22L/22R',
 						},
 						departing: {
 							NE: '4L/4R',
-							NW: '31L/31C/31R',
-							SE: '13L/13C/13R',
+							NW: '31L/31R',
+							SE: '13L/13R',
 							SW: '22L/22R',
 						},
 					},
