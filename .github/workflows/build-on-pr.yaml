@@ -1,0 +1,30 @@
+# Make sure to enable 'Require status checks to pass before merging' on the repo,
+# and to select the 'prettier_check' action.
+
+name: Build and Push
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  Build-and-Push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
+
+      - name: Log in to container registry
+        uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7 # v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a # v2
+        with:
+          push: true
+          tags: |
+            ghcr.io/vzauartcc/ui:${{ github.sha }}

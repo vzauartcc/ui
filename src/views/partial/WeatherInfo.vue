@@ -153,14 +153,14 @@ export default {
 					configs: {
 						landing: {
 							NE: '4L/4R',
-							NW: '31L/31C/31R',
-							SE: '13L/13C/13R',
+							NW: '31L/31R',
+							SE: '13L/13R',
 							SW: '22L/22R',
 						},
 						departing: {
 							NE: '4L/4R',
-							NW: '31L/31C/31R',
-							SE: '13L/13C/13R',
+							NW: '31L/31R',
+							SE: '13L/13R',
 							SW: '22L/22R',
 						},
 					},
@@ -335,27 +335,31 @@ export default {
 					getLanding: function () {
 						if (this.parsedMetar.wind.speedKt <= 6) return this.configs.landing.SE;
 						else {
-							if (this.parsedMetar.wind.direction >= 0 && this.parsedMetar.wind.direction < 130)
-								return this.configs.landing.SW;
-							else if (
+							if (this.parsedMetar.wind.direction >= 0 && this.parsedMetar.wind.direction < 130) {
+								return this.configs.landing.NE;
+							} else if (
 								this.parsedMetar.wind.direction >= 130 &&
 								this.parsedMetar.wind.direction < 310
-							)
-								return this.configs.landing.NE;
-							else return this.configs.landing.SE;
+							) {
+								return this.configs.landing.SW;
+							} else {
+								return this.configs.landing.SE;
+							}
 						}
 					},
 					getDeparting: function () {
 						if (this.parsedMetar.wind.speedKt <= 6) return this.configs.departing.SE;
 						else {
-							if (this.parsedMetar.wind.direction >= 0 && this.parsedMetar.wind.direction < 130)
-								return this.configs.departing.SW;
-							else if (
+							if (this.parsedMetar.wind.direction >= 0 && this.parsedMetar.wind.direction < 130) {
+								return this.configs.departing.NE;
+							} else if (
 								this.parsedMetar.wind.direction >= 130 &&
 								this.parsedMetar.wind.direction < 310
-							)
-								return this.configs.departing.NE;
-							else return this.configs.departing.SE;
+							) {
+								return this.configs.departing.SW;
+							} else {
+								return this.configs.departing.SE;
+							}
 						}
 					},
 				},
@@ -402,9 +406,11 @@ export default {
 		async getWeatherForAirports() {
 			for (const station of this.icao) {
 				const { data } = await zabApi.get(`/ids/stations/${station}`);
-				this.stations[station].metar = data.metar;
-				this.stations[station].parsedMetar = parse(data.metar);
-				this.numStationsLoaded++;
+				if (data.metar) {
+					this.stations[station].metar = data.metar;
+					this.stations[station].parsedMetar = parse(data.metar);
+					this.numStationsLoaded++;
+				}
 			}
 		},
 		formatWind(station) {
