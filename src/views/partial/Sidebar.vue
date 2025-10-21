@@ -95,10 +95,10 @@
 </template>
 
 <script>
-import AtcOnlineItem from './AtcOnlineItem.vue';
-import PilotOnlineItem from './PilotOnlineItem.vue';
 import { zabApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
+import AtcOnlineItem from './AtcOnlineItem.vue';
+import PilotOnlineItem from './PilotOnlineItem.vue';
 
 export default {
 	components: {
@@ -112,29 +112,26 @@ export default {
 			atcOnline: null,
 			ratings: null,
 			airports: [
-				'KORD',
-				'KCHI',
-				'KSBN',
-				'KRFD',
-				'KPIA',
-				'KMSN',
+				'KAZO',
+				'KBTL',
+				'KCID',
+				'KCMI',
+				'KEKM',
+				'KENW',
+				'KFWA',
+				'KGRR',
+				'KLAF',
+				'KMDW',
+				'KMKE',
 				'KMKG',
 				'KMLI',
-				'KMKE',
-				'KGRR',
-				'KFWA',
-				'KCMI',
-				'KCID',
-				'KAZO',
-				'KALO',
-				'KEKM',
-				'KMDW',
-				'KLAF',
-				'KBTL',
+				'KMSN',
+				'KORD',
 				'KOSH',
-				'KUGN',
-				'KENW',
 				'KPWK',
+				'KRFD',
+				'KSBN',
+				'KUGN',
 			],
 			top: null,
 		};

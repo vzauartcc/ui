@@ -59,6 +59,18 @@
 								>
 							</div>
 						</th>
+						<th @click="sort('obsTime')">
+							OBS Time
+							<div class="right">
+								<i class="material-icons" v-if="sortBy !== 'obsTime'">unfold_more</i>
+								<i class="material-icons active" v-else-if="sortBy === 'obsTime' && descending"
+									>arrow_drop_down</i
+								>
+								<i class="material-icons active" v-else-if="sortBy === 'obsTime' && !descending"
+									>arrow_drop_up</i
+								>
+							</div>
+						</th>
 						<th @click="sort('joinDate')">
 							Join Date
 							<div class="right">
@@ -115,18 +127,19 @@
 									<div class="certifications training_request" v-else>
 										<div>
 											{{ controller.ratingLong }} has made
-											<b>{{ controller.totalRequests }}</b> training request(s) in the last 31 days
+											<b>{{ controller.totalRequests }}</b> training request(s) in the last 91 days
 										</div>
 										<div>
 											{{ controller.ratingLong }} has had
-											<b>{{ controller.totalSessions }}</b> training session(s) in the last 31 days
+											<b>{{ controller.totalSessions }}</b> training session(s) in the last 91 days
 										</div>
 									</div>
 								</div>
 							</router-link>
 						</td>
 						<td>{{ controller.ratingShort }}</td>
-						<td>{{ secondsToHms(controller.totalTime) }}</td>
+						<td>{{ controller.rating === 1 ? 'N/A' : secondsToHms(controller.totalTime) }}</td>
+						<td>{{ controller.rating === 1 ? secondsToHms(controller.obsTime) : 'N/A' }}</td>
 						<td>{{ dLong(new Date(controller.joinDate)) }}</td>
 						<td class="options">
 							<a
