@@ -335,27 +335,31 @@ export default {
 					getLanding: function () {
 						if (this.parsedMetar.wind.speedKt <= 6) return this.configs.landing.SE;
 						else {
-							if (this.parsedMetar.wind.direction >= 0 && this.parsedMetar.wind.direction < 130)
-								return this.configs.landing.SW;
-							else if (
+							if (this.parsedMetar.wind.direction >= 0 && this.parsedMetar.wind.direction < 130) {
+								return this.configs.landing.NE;
+							} else if (
 								this.parsedMetar.wind.direction >= 130 &&
 								this.parsedMetar.wind.direction < 310
-							)
-								return this.configs.landing.NE;
-							else return this.configs.landing.SE;
+							) {
+								return this.configs.landing.SW;
+							} else {
+								return this.configs.landing.SE;
+							}
 						}
 					},
 					getDeparting: function () {
 						if (this.parsedMetar.wind.speedKt <= 6) return this.configs.departing.SE;
 						else {
-							if (this.parsedMetar.wind.direction >= 0 && this.parsedMetar.wind.direction < 130)
-								return this.configs.departing.SW;
-							else if (
+							if (this.parsedMetar.wind.direction >= 0 && this.parsedMetar.wind.direction < 130) {
+								return this.configs.departing.NE;
+							} else if (
 								this.parsedMetar.wind.direction >= 130 &&
 								this.parsedMetar.wind.direction < 310
-							)
-								return this.configs.departing.NE;
-							else return this.configs.departing.SE;
+							) {
+								return this.configs.departing.SW;
+							} else {
+								return this.configs.departing.SE;
+							}
 						}
 					},
 				},
