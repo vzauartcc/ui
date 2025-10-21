@@ -402,9 +402,11 @@ export default {
 		async getWeatherForAirports() {
 			for (const station of this.icao) {
 				const { data } = await zabApi.get(`/ids/stations/${station}`);
-				this.stations[station].metar = data.metar;
-				this.stations[station].parsedMetar = parse(data.metar);
-				this.numStationsLoaded++;
+				if (data.metar) {
+					this.stations[station].metar = data.metar;
+					this.stations[station].parsedMetar = parse(data.metar);
+					this.numStationsLoaded++;
+				}
 			}
 		},
 		formatWind(station) {
