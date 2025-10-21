@@ -18,6 +18,15 @@
 				Please enable it to continue.</strong
 			>
 		</noscript>
+		<div
+			id="dev_warn"
+			style="display: none; background-color: yellow; font-weight: bolder; text-align: center"
+		>
+			This is a development version of the website. The data shown here is test data, and does not
+			reflect current information. Please visit
+			<a href="https://zauartcc.org" style="color: red">zauartcc.org</a> for the live version of
+			this website.
+		</div>
 		<div id="app"></div>
 		<div id="ie_warn" style="font-size: 24px; font-weight: 700"></div>
 		<!-- built files will be auto injected -->
@@ -25,6 +34,7 @@
 		<script>
 			window.env = {
 				VITE_FOLDER_PREFIX: '$VITE_FOLDER_PREFIX',
+				NODE_ENV: '$NODE_ENV',
 			};
 		</script>
 
@@ -39,5 +49,9 @@
 			'Internet Explorer is not supported by this site. Please use Chrome, Edge, Firefox or Safari.';
 	} else {
 		ieWarn.parentElement.removeChild(ieWarn);
+	}
+
+	if (window.env.NODE_ENV !== 'production') {
+		document.getElementById('dev_warn').style.display = 'block';
 	}
 </script>
