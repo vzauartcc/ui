@@ -2,20 +2,51 @@
 	<div class="card home_intro">
 		<div class="card-content">
 			<span class="card-title">Controller Dashboard</span>
-			<div class="loading_container" v-if="!controllingSessions">
+			<div class="loading_container" v-if="!activityData">
 				<Spinner />
 			</div>
 			<div v-else>
 				<div class="hours_info">
-					<span>
-						You have controlled for <b>{{ hoursCalc }}</b> in the past 30 days.
+					<span v-if="user.data.rating === 1"
+						>You have observed for <b>{{ hoursCalc }}</b> and completed
+						{{ this.activityData.training.length }} training sessions this
+						{{ this.activityData.period.unit }}.
+						<span
+							v-if="
+								this.calcSeconds >= this.activityData.requirements.observer.seconds ||
+								this.activityData.training.length >=
+									this.activityData.requirements.observer.trainingSessions
+							"
+							>You have met the observer activity requirements for this
+							{{ this.activityData.period.unit }}.</span
+						>
+						<span v-else
+							>You need to observe for <b>{{ calcControlTime }}</b> or complete
+							<b>{{
+								this.activityData.requirements.observer.trainingSessions -
+								this.activityData.training.length
+							}}</b>
+							more training sessions by
+							<b>{{ new Date(this.activityData.period.endOfCurrent).toLocaleDateString() }}</b> to
+							prevent removal from the roster.</span
+						>
 					</span>
-					<span v-if="user.data.rating !== 1 && isActive">
-						You are <b>Exempt</b> from hourly activity requirements at this time.
-					</span>
-					<span v-if="user.data.rating !== 1 && isActive !== true">
-						You will need to control one hour by <b>{{ calcControlDate }}</b> to prevent removal
-						from the roster.
+					<span v-else>
+						You have controlled for <b>{{ hoursCalc }}</b> this {{ this.activityData.period.unit }}.
+						<span v-if="isActive">
+							You are <b>Exempt</b> from hourly activity requirements at this time.
+						</span>
+						<span v-if="isActive !== true">
+							<span v-if="this.calcSeconds >= this.activityData.requirements.controller.seconds"
+								>You have met the activity requirements for this
+								{{ this.activityData.period.unit }}.
+							</span>
+							<span v-else>
+								You need to control <b>{{ calcControlTime }}</b> by
+								<b>{{ new Date(this.activityData.period.endOfCurrent).toLocaleDateString() }}</b> to
+								prevent removal from the roster.
+							</span>
+						</span>
 					</span>
 				</div>
 				<span class="section_title"> External Integrations </span>
@@ -63,10 +94,17 @@
 		<div class="card-content">
 			<span class="card-title">Recent Connections</span>
 		</div>
-		<div class="loading_container" v-if="!controllingSessions">
+		<div class="loading_container" v-if="!activityData">
 			<Spinner />
 		</div>
-		<p v-else-if="controllingSessions && controllingSessions.length === 0" class="no_sessions">
+		<p
+			v-else-if="
+				activityData &&
+				activityData.controllingSessions &&
+				activityData.controllingSessions.length === 0
+			"
+			class="no_sessions"
+		>
 			There are no recent connections to display
 		</p>
 		<div class="table_wrapper" v-else>
@@ -80,7 +118,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="session in controllingSessions" :key="session.timeStart">
+					<tr v-for="session in activityData.controllingSessions" :key="session.timeStart">
 						<td>{{ session.position }}</td>
 						<td>{{ dtLong(session.timeStart) }}</td>
 						<td>{{ dtLong(session.timeEnd) }}</td>
@@ -100,8 +138,8 @@
 	<StaffingRequest />
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
 import { zabApi } from '@/helpers/axios.js';
+import { mapActions, mapState } from 'vuex';
 import StaffingRequest from './StaffingRequest.vue';
 export default {
 	name: 'UserDash',
@@ -109,43 +147,42 @@ export default {
 	data() {
 		return {
 			approvedAirports: [
-				'ORD',
-				'MDW',
-				'SBN',
-				'MKE',
-				'GRR',
+				'ARR',
 				'AZO',
 				'BTL',
-				'EKM',
-				'ENW',
-				'RAC',
-				'PWK',
-				'ARR',
-				'DPA',
 				'CID',
-				'UGN',
-				'MSN',
-				'JVL',
-				'GYY',
-				'MLI',
-				'OSH',
-				'UES',
-				'VOK',
-				'MKG',
-				'ALO',
+				'CMI',
 				'DBQ',
 				'DEC',
+				'DPA',
+				'EKM',
+				'ENW',
 				'FWA',
+				'GRR',
 				'GUS',
-				'CMI',
+				'GYY',
+				'JVL',
 				'LAF',
-				'MWC',
-				'RFD',
 				'LOT',
+				'MDW',
+				'MKE',
+				'MKG',
+				'MLI',
+				'MSN',
+				'MWC',
+				'ORD',
+				'OSH',
+				'PWK',
+				'RAC',
+				'RFD',
+				'SBN',
+				'UES',
+				'UGN',
+				'VOK',
 			],
 			token: '',
 			discordConnected: false,
-			controllingSessions: null,
+			activityData: null,
 		};
 	},
 	components: {
@@ -172,7 +209,7 @@ export default {
 		},
 		async getControllingSessions() {
 			const { data: sessionData } = await zabApi.get('/user/sessions');
-			this.controllingSessions = sessionData.data;
+			this.activityData = sessionData.data;
 		},
 		showToken() {
 			document.getElementById('token_wrap').classList.remove('hidden');
@@ -213,9 +250,16 @@ export default {
 	},
 	computed: {
 		...mapState('user', ['user']),
-		hoursCalc() {
+		calcControlTime() {
+			const requirement =
+				this.user.data.rating === 1
+					? this.activityData.requirements.observer.seconds
+					: this.activityData.requirements.controller.seconds;
+			return this.sec2hms(requirement - this.calcSeconds);
+		},
+		calcSeconds() {
 			let seconds = 0;
-			for (const session of this.controllingSessions) {
+			for (const session of this.activityData.sessions) {
 				if (
 					Math.abs(new Date().getTime() - new Date(session.timeEnd).getTime()) /
 						(1000 * 60 * 60 * 24) <
@@ -225,33 +269,10 @@ export default {
 					seconds += newSeconds;
 				}
 			}
-			return this.sec2hms(seconds);
+			return seconds;
 		},
-		calcControlDate() {
-			let date = new Date(this.user.data.joinDate ?? Date.now());
-			let seconds = 0;
-
-			if (this.controllingSessions.length > 0) {
-				for (const session of this.controllingSessions) {
-					if (seconds < 3600 && this.approvedAirports.includes(session.position.slice(0, 3))) {
-						const newSeconds = (new Date(session.timeEnd) - new Date(session.timeStart)) / 1000;
-						seconds += newSeconds;
-						date = new Date(session.timeEnd);
-					}
-					if (seconds >= 3600) {
-						break;
-					}
-				}
-			}
-
-			const endOfThisMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
-			const endOfNextMonth = new Date(date.getFullYear(), date.getMonth() + 2, 0, 23, 59, 59, 999);
-
-			if (seconds >= 3600) {
-				return this.formatDate(endOfNextMonth);
-			} else {
-				return this.formatDate(endOfThisMonth);
-			}
+		hoursCalc() {
+			return this.sec2hms(this.calcSeconds);
 		},
 		isActive() {
 			const today = new Date();

@@ -5,7 +5,7 @@ import store from './store';
 import FlatPickr from 'vue-flatpickr-component';
 
 import 'materialize-css/sass/materialize.scss';
-/* eslint 'no-unused-vars': 'off' */
+// eslint-disable-next-line no-unused-vars
 import M from 'materialize-css';
 
 import dates from './helpers/dates.js';
