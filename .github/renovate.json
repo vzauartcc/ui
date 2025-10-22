@@ -9,6 +9,22 @@
 	"internalChecksFilter": "strict",
 	"packageRules": [
 		{
+			"description": "Group minor, patch, and digest updates for GitHub Actions",
+			"matchManagers": ["github-actions"],
+			"matchUpdateTypes": ["minor", "patch", "digest"],
+			"groupName": "all minor and patch github action updates",
+			"automerge": false,
+			"enabled": true
+		},
+		{
+			"description": "Allow major updates for GitHub Actions (override global block) and keep them separate",
+			"matchManagers": ["github-actions"],
+			"matchUpdateTypes": ["major"],
+			"enabled": true,
+			"groupName": null,
+			"automerge": false
+		},
+		{
 			"description": "Group minor and patch updates together, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
 			"groupName": "all minor and patch updates",
