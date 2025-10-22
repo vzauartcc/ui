@@ -223,7 +223,7 @@ export default {
 
 			const { data: reportData } = await zabApi.get('/stats/activity', {
 				params: {
-					quarter: currentQuarter,
+					period: currentQuarter,
 					year: year,
 				},
 			});
