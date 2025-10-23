@@ -1,7 +1,7 @@
 <template>
 	<div class="card">
 		<div class="card-content">
-			<span class="card-title"> Enter Session Notes </span>
+			<span class="card-title">Enter Session Notes</span>
 			<div class="loading_container" v-if="session === null">
 				<Spinner />
 			</div>
@@ -77,7 +77,7 @@
 									</div>
 								</div>
 							</div>
-							<label for="end_time" class="active">End Time (Zulu) </label>
+							<label for="end_time" class="active">End Time (Zulu)</label>
 						</div>
 						<div class="input-field col s12 m6 milestone">
 							<select required disabled class="materialize-select">
@@ -171,13 +171,25 @@
 					</div>
 					<div class="row row_no_margin">
 						<div class="input-field col s12 submit_buttons">
-							<button type="button" v-if="step === 3" class="btn right" @click="submitForm">
-								Finalize
+							<button
+								type="button"
+								v-if="step === 3"
+								class="btn right"
+								@click="submitForm"
+								:disabled="!isCurrentPartValid"
+							>
+								Submit to VATUSA
 							</button>
 							<button type="button" v-if="step === 3" class="btn-flat right" @click="saveForm">
 								Save
 							</button>
-							<button type="button" class="btn right" v-if="step !== 3" @click="step += 1">
+							<button
+								type="button"
+								class="btn right"
+								v-if="step !== 3"
+								@click="step += 1"
+								:disabled="!isCurrentPartValid"
+							>
 								Next
 							</button>
 							<button type="button" v-if="step !== 1" @click="step -= 1" class="btn-flat right">
@@ -193,6 +205,7 @@
 
 <script>
 import { zabApi } from '@/helpers/axios.js';
+import { nextTick } from 'vue';
 
 export default {
 	name: 'EditSessionNotes',
@@ -206,6 +219,9 @@ export default {
 	},
 	async mounted() {
 		await this.getSessionDetails();
+		await nextTick();
+		M.textareaAutoResize(document.getElementById('studentNotes'));
+		M.textareaAutoResize(document.getElementById('insNotes'));
 
 		this.setTimes();
 
@@ -215,12 +231,32 @@ export default {
 		});
 		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
 	},
+	computed: {
+		isCurrentPartValid() {
+			switch (this.step) {
+				case 1:
+					return !(!this.session.position || !/^[A-Z]{3}_[A-Z]{3}$/.test(this.session.position));
+				case 2:
+					return !(
+						!this.session.movements ||
+						this.session.movements < 1 ||
+						!this.session.location ||
+						!this.session.progress
+					);
+				case 3:
+					return !!this.session.studentNotes;
+				default:
+					return false;
+			}
+		},
+	},
 	methods: {
 		async getSessionDetails() {
 			try {
 				const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
 				this.session = data.data;
 			} catch (e) {
+				this.toastError(`Error loading session data: ${e}`);
 				console.log(e);
 			}
 		},
@@ -249,40 +285,12 @@ export default {
 		},
 		async submitForm() {
 			try {
-				// In theory, we get here when the user presses 'Push to Vatsim and Lock'
-
-				// Calculate the hours string for the session length
-				const delta =
-					Math.abs(new Date(this.session.endTime) - new Date(this.session.startTime)) / 1000;
-				const hours = Math.floor(delta / 3600);
-				const minutes = Math.floor(delta / 60) % 60;
-				this.duration = `${('00' + hours).slice(-2)}:${('00' + minutes).slice(-2)}`;
-				// Force Save the data to the local database
-				await this.saveForm();
-				// Hit the local database to Finalize the record
 				const { data } = await zabApi.put(
 					`/training/session/submit/${this.$route.params.id}`,
 					this.session,
 				);
 				if (data.ret_det.code === 200) {
-					// Put a little message on screen saying success
 					this.toastSuccess('Session notes finalized');
-
-					// Send the training notes to vatsim
-					/*	await vatusaApiAuth.post(`/user/${this.session.student.cid}/training/record/`, {
-					"instructor_id": this.session.instructor.cid,
-                	"session_date": dayjs(this.session.startTime).format("YYYY-MM-DD HH:mm"),
-					"position": this.session.position,
-					"duration": this.session.duration,
-					"movements": this.session.movements,
-					"score": this.session.progress,
-					"notes": this.session.studentNotes,
-			     	"ots_status": this.session.ots,
-				    "location": this.session.location,
-                    "is_cbt": false,
-                    "solo_granted": false
-
-				});*/
 					this.$router.push('/ins/training/sessions');
 				} else {
 					this.toastError(data.ret_det.message);
