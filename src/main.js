@@ -12,6 +12,7 @@ import dates from './helpers/dates.js';
 import toasts from './helpers/toasts.js';
 
 import Spinner from './components/Spinner.vue';
+import SmallSpinner from './components/SmallSpinner.vue';
 
 const app = createApp(App)
 	.use(store)
@@ -51,6 +52,7 @@ app
 			}, 1000);
 		},
 	})
-	.component('Spinner', Spinner);
+	.component('Spinner', Spinner)
+	.component('SmallSpinner', SmallSpinner);
 
 app.mount('#app');
