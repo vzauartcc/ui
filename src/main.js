@@ -1,18 +1,17 @@
 import { createApp } from 'vue';
+import FlatPickr from 'vue-flatpickr-component';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import FlatPickr from 'vue-flatpickr-component';
 
-import 'materialize-css/sass/materialize.scss';
-// eslint-disable-next-line no-unused-vars
 import M from 'materialize-css';
+import 'materialize-css/sass/materialize.scss';
 
 import dates from './helpers/dates.js';
 import toasts from './helpers/toasts.js';
 
-import Spinner from './components/Spinner.vue';
 import SmallSpinner from './components/SmallSpinner.vue';
+import Spinner from './components/Spinner.vue';
 
 const app = createApp(App)
 	.use(store)
@@ -54,5 +53,7 @@ app
 	})
 	.component('Spinner', Spinner)
 	.component('SmallSpinner', SmallSpinner);
+
+app.config.globalProperties.$M = M;
 
 app.mount('#app');
