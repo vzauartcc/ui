@@ -110,10 +110,17 @@
 								</div>
 							</div>
 							<div class="modal-footer">
-								<span v-if="!submitting">
+								<span v-if="submitting">
 									<SmallSpinner />
 								</span>
-								<a href="#!" class="waves-effect btn" @click="takeSession(i, request._id)"> Take</a>
+								<a
+									href="#!"
+									class="waves-effect btn"
+									@click="takeSession(i, request._id)"
+									:class="{ disabled: submitting }"
+								>
+									Take</a
+								>
 								<a href="#!" class="waves-effect btn-flat modal-close">Cancel</a>
 							</div>
 						</div>
@@ -131,6 +138,7 @@
 									href="#!"
 									class="waves-effect btn modal-close"
 									@click="deleteRequest(request._id)"
+									:class="{ disabled: submitting }"
 									>Delete</a
 								>
 								<span v-if="submitting">

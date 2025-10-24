@@ -31,7 +31,7 @@
 							<label for="controller">Controller</label>
 						</div>
 						<div class="col s12 input-field">
-							<select v-mode="form.position" required class="materialize-select" id="position">
+							<select v-model="form.position" required class="materialize-select" id="position">
 								<option value="" disabled selected>Select a position</option>
 								<option v-for="position in positions" :value="position" :key="position">
 									{{ position }}

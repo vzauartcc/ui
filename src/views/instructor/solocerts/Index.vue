@@ -11,7 +11,7 @@
 			</div>
 			<div>
 				<p class="no_certs" v-if="loading === false && certs.length === 0">
-					There are no solo certificates on record for ZAU
+					There are no solo certificates on record for ZAU.
 				</p>
 			</div>
 		</div>
@@ -23,20 +23,26 @@
 				<thead class="certs_list_head">
 					<tr>
 						<th>Controller</th>
+						<th>Instructor</th>
 						<th>Position</th>
 						<th>Expires</th>
 						<th class="options">Options</th>
 					</tr>
 				</thead>
 				<tbody class="certs_list_row">
-					<tr v-for="(cert, _) in certs" :key="cert.id">
+					<tr v-for="cert in certs" :key="cert.id">
 						<td>
 							<router-link :to="`/controllers/${cert.cid}`" class="controller_link">{{
-								getName(cert.cid)
+								cert.student.fname + ' ' + cert.student.lname
+							}}</router-link>
+						</td>
+						<td>
+							<router-link :to="`/controllers/${cert.cid}`" class="controller_link">{{
+								cert.instructor.fname + ' ' + cert.instructor.lname
 							}}</router-link>
 						</td>
 						<td>{{ cert.position }}</td>
-						<td>{{ cert.expires }}</td>
+						<td>{{ new Date(cert.expirationDate).toLocaleDateString() }}</td>
 						<td class="options">
 							<a
 								href="#"
@@ -53,15 +59,23 @@
 			</table>
 		</div>
 		<teleport to="body">
-			<div v-for="(cert, _) in certs" :key="`modal_delete_${cert.cid}`">
+			<div v-for="cert in certs" :key="`modal_delete_${cert.cid}`">
 				<div :id="`modal_delete_${cert.cid}`" class="modal modal_delete">
 					<div class="modal-content">
 						<h4>Delete Solo Certificate?</h4>
 						<p>This will remove the Solo Certification from VATUSA.</p>
 					</div>
 					<div class="modal-footer">
-						<a href="#" @click.prevent="deleteCert(cert.id)" class="btn waves-effect modal-close"
-							>Delete</a
+						<a
+							href="#"
+							@click.prevent="deleteCert(cert._id)"
+							class="btn waves-effect modal-close"
+							:class="{ disabled: submitting }"
+						>
+							<span v-if="submitting">
+								<SmallSpinner />
+							</span>
+							Delete</a
 						>
 						<a href="#" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
 					</div>
@@ -72,21 +86,20 @@
 </template>
 
 <script>
-import { vatusaApiAuth, vatusaApi, zabApi } from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'SoloCerts',
 	title: 'Solo Certifications',
 	data() {
 		return {
+			submitting: false,
 			positions: ['ORD', 'CHI', 'MKE', 'MDW', 'FWA', 'RFD', 'MLI'],
 			certs: [],
-			controllers: null,
 			loading: true,
 		};
 	},
 	async mounted() {
-		await this.getControllers();
 		await this.getSoloCerts();
 		this.loading = false;
 		this.initModals(); // Initialize modals after data is loaded
@@ -94,35 +107,24 @@ export default {
 	methods: {
 		async getSoloCerts() {
 			try {
-				// Fetch and decode API data.
-				// The API returns back base 64 encoded data with authentication blocks.   The payload needs to be base64 decoded and then parsd for json.
-				const { data } = await vatusaApi.get('/solo');
-				const payload = atob(data.payload);
-				var data1 = JSON.parse(payload);
-				for (const cert of data1.data) {
-					if (this.positions.includes(cert.position.slice(0, 3))) this.certs.push(cert);
-				}
+				const { data } = await zabApi.get('/training/solo');
+				this.certs = data.data || [];
 			} catch (e) {
-				console.log(e);
-			}
-		},
-		async getControllers() {
-			try {
-				const { data } = await zabApi.get('/feedback/controllers');
-				this.controllers = data.data;
-			} catch (e) {
+				this.toastError(`Error fetching solo certifications: ${e.message ? e.message : e}`);
 				console.log(e);
 			}
 		},
 		async deleteCert(id) {
 			try {
-				const formData = new FormData();
-				formData.append('id', id);
+				this.submitting = true;
 
-				// form data seems not to be passed when using the DELETE method.   This works only when the ID is passed on the URL.
-				await vatusaApiAuth.delete('/solo?id=' + id, { data: formData });
+				const { data } = await zabApi.delete(`/training/solo/${id}`);
 
-				this.toastSuccess('Solo Certification deleted');
+				if (data.ret_det.code !== 200) {
+					this.toastError(data.ret_det.message);
+				} else {
+					this.toastSuccess('Solo Certification deleted');
+				}
 
 				this.certs = [];
 				await this.getSoloCerts();
@@ -131,15 +133,11 @@ export default {
 					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
 				});
 			} catch (e) {
+				this.toastError(`Error deleting solo certification: ${e.message ? e.message : e}`);
 				this.toastError(e);
+			} finally {
+				this.submitting = false;
 			}
-		},
-		getName(cid2) {
-			const controller = this.controllers.filter((i) => {
-				return i.cid === cid2;
-			});
-			console.log(controller);
-			return controller[0].fname + ' ' + controller[0].lname;
 		},
 		openModal(cid) {
 			this.$nextTick(() => {
