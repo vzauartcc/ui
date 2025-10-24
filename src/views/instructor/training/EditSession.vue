@@ -176,11 +176,23 @@
 								v-if="step === 3"
 								class="btn right"
 								@click="submitForm"
-								:disabled="!isCurrentPartValid"
+								:disabled="!isCurrentPartValid || submitting"
 							>
+								<span v-if="submitting">
+									<SmallSpinner />
+								</span>
 								Submit to VATUSA
 							</button>
-							<button type="button" v-if="step === 3" class="btn-flat right" @click="saveForm">
+							<button
+								type="button"
+								v-if="step === 3"
+								class="btn-flat right"
+								@click="saveForm"
+								:disabled="!isCurrentPartValid || submitting"
+							>
+								<span v-if="submitting">
+									<SmallSpinner />
+								</span>
 								Save
 							</button>
 							<button
@@ -212,6 +224,7 @@ export default {
 	title: 'Enter Session Notes',
 	data() {
 		return {
+			submitting: false,
 			session: null,
 			step: 1,
 			duration: 0,
@@ -237,12 +250,7 @@ export default {
 				case 1:
 					return !(!this.session.position || !/^[A-Z]{3}_[A-Z]{3}$/.test(this.session.position));
 				case 2:
-					return !(
-						!this.session.movements ||
-						this.session.movements < 1 ||
-						!this.session.location ||
-						!this.session.progress
-					);
+					return !(this.session.movements < 0 || !this.session.location || !this.session.progress);
 				case 3:
 					return !!this.session.studentNotes;
 				default:
@@ -262,6 +270,7 @@ export default {
 		},
 		async saveForm() {
 			try {
+				this.submitting = true;
 				const { data } = await zabApi.put(`/training/session/save/${this.$route.params.id}`, {
 					position: this.session.position,
 					movements: this.session.movements,
@@ -281,10 +290,13 @@ export default {
 				}
 			} catch (e) {
 				console.log(e);
+			} finally {
+				this.submitting = false;
 			}
 		},
 		async submitForm() {
 			try {
+				this.submitting = true;
 				const { data } = await zabApi.put(
 					`/training/session/submit/${this.$route.params.id}`,
 					this.session,
@@ -297,6 +309,8 @@ export default {
 				}
 			} catch (e) {
 				console.log(e);
+			} finally {
+				this.submitting = false;
 			}
 		},
 		formatHtmlDate(value) {

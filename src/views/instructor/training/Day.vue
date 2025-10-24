@@ -110,7 +110,10 @@
 								</div>
 							</div>
 							<div class="modal-footer">
-								<a href="#!" class="waves-effect btn" @click="takeSession(i, request._id)">Take</a>
+								<span v-if="!submitting">
+									<SmallSpinner />
+								</span>
+								<a href="#!" class="waves-effect btn" @click="takeSession(i, request._id)"> Take</a>
 								<a href="#!" class="waves-effect btn-flat modal-close">Cancel</a>
 							</div>
 						</div>
@@ -130,6 +133,9 @@
 									@click="deleteRequest(request._id)"
 									>Delete</a
 								>
+								<span v-if="submitting">
+									<SmallSpinner />
+								</span>
 								<a href="#!" class="waves-effect btn-flat modal-close">Cancel</a>
 							</div>
 						</div>
@@ -148,6 +154,7 @@ export default {
 	name: 'TrainingRequestsDay',
 	data() {
 		return {
+			submitting: false,
 			date: '',
 			times: {},
 			requests: null,
@@ -175,6 +182,7 @@ export default {
 		},
 		async takeSession(i, id) {
 			try {
+				this.submitting = true;
 				const { data } = await zabApi.post(`/training/request/take/${id}`, {
 					startTime: this.requests[i].startTime,
 					endTime: this.requests[i].endTime,
@@ -188,10 +196,13 @@ export default {
 				}
 			} catch (e) {
 				console.log(e);
+			} finally {
+				this.submitting = false;
 			}
 		},
 		async deleteRequest(id) {
 			try {
+				this.submitting = true;
 				const { data } = await zabApi.delete(`/training/request/${id}`);
 
 				if (data.ret_det.code === 200) {
@@ -202,6 +213,8 @@ export default {
 				}
 			} catch (e) {
 				console.log(e);
+			} finally {
+				this.submitting = false;
 			}
 		},
 		verifyRoute() {
