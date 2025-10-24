@@ -24,7 +24,7 @@
 						<th>Milestone</th>
 						<th>Start</th>
 						<th>End</th>
-						<th class="options">Options</th>
+						<th class="options" id="options_w">Options</th>
 					</tr>
 				</thead>
 				<tbody class="sessions_list_row">
@@ -54,6 +54,14 @@
 							>
 								<i class="material-icons">edit</i>
 							</router-link>
+							<a
+								href="#"
+								@click.prevent="openDelete(i)"
+								data-position="top"
+								data-tooltip="Unclaim Request"
+								class="tooltipped"
+								><i class="material-icons red-text text-darken-2">delete</i></a
+							>
 						</td>
 					</tr>
 				</tbody>
@@ -94,6 +102,33 @@
 				</div>
 			</div>
 		</teleport>
+		<teleport to="body">
+			<div v-for="(session, i) in sessions" :key="`modal_session_delete_${i}`">
+				<div :id="`modal_session_delete_${i}`" class="modal modal_session_delete">
+					<div class="modal-content">
+						<div class="modal_title">Unclaim Training Session?</div>
+						<p>
+							This will remove you as the Instructor for the session and allow another Instructor to
+							claim it.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<a
+							href="#"
+							@click.prevent="deleteSession(session._id)"
+							class="btn waves-effect modal-close"
+							:class="{ disabled: submitting }"
+						>
+							<span v-if="submitting">
+								<SmallSpinner />
+							</span>
+							Unclaim</a
+						>
+						<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
+					</div>
+				</div>
+			</div>
+		</teleport>
 	</div>
 	<Completed />
 </template>
@@ -107,6 +142,7 @@ export default {
 	title: 'Training Sessions',
 	data() {
 		return {
+			submitting: false,
 			sessions: null,
 		};
 	},
@@ -136,6 +172,31 @@ export default {
 					M.Modal.init(modal, { preventScrolling: false }).open();
 				}
 			});
+		},
+		openDelete(i) {
+			this.$nextTick(() => {
+				const modal = document.getElementById(`modal_session_delete_${i}`);
+				if (modal) {
+					M.Modal.init(modal, { preventScrolling: false }).open();
+				}
+			});
+		},
+		async deleteSession(id) {
+			try {
+				this.submitting = true;
+				await zabApi.delete(`/training/session/${id}`);
+
+				this.sessions = [];
+				await this.getSessions();
+			} catch (e) {
+				console.log(e);
+				this.toastError(e);
+			} finally {
+				this.submitting = false;
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_session_delete')).close();
+				});
+			}
 		},
 		formatDateTime(value) {
 			const d = new Date(value);
@@ -178,5 +239,9 @@ export default {
 			margin: 0.33em 0 0 0;
 		}
 	}
+}
+
+#options_w {
+	width: 10rem;
 }
 </style>
