@@ -1,7 +1,14 @@
 <template>
 	<div class="card">
 		<div class="card-content">
-			<div class="card-title">Your Training Sessions</div>
+			<div class="row row_no_margin">
+				<div class="card-title col s8">Your Training Sessions</div>
+				<div class="col s4">
+					<router-link to="/ins/training/session/new"
+						><span class="btn new_event_button right">New</span></router-link
+					>
+				</div>
+			</div>
 		</div>
 		<div v-if="sessions === null" class="loading_container">
 			<Spinner />

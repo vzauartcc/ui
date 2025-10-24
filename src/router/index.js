@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Master from '../views/layout/Master.vue';
-import Admin from '../views/layout/Admin.vue';
-import Event from '../views/layout/Event.vue';
-import Dashboard from '../views/layout/ControllerDash.vue';
-import Instructor from '../views/layout/Instructor.vue';
 import { zabApi } from '../helpers/axios';
 import * as uriHelper from '../helpers/uriHelper';
+import Admin from '../views/layout/Admin.vue';
+import Dashboard from '../views/layout/ControllerDash.vue';
+import Event from '../views/layout/Event.vue';
+import Instructor from '../views/layout/Instructor.vue';
+import Master from '../views/layout/Master.vue';
 
 const routes = [
 	{
@@ -167,6 +167,10 @@ const routes = [
 			{
 				path: 'training/session/edit/:id',
 				component: () => import('../views/instructor/training/EditSession.vue'),
+			},
+			{
+				path: 'training/session/new',
+				component: () => import('../views/instructor/training/NewSession.vue'),
 			},
 			{
 				path: 'training/session/:id',
