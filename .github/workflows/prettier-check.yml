@@ -9,6 +9,7 @@ on:
 
 jobs:
   prettier_check:
+    if: github.actor != 'renovate[bot]'
     runs-on: ubuntu-latest
 
     steps:
