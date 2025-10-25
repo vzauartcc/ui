@@ -30,19 +30,25 @@
 					</tr>
 				</thead>
 				<tbody class="certs_list_row">
-					<tr v-for="cert in certs" :key="cert.id">
+					<tr
+						v-for="cert in certs"
+						:key="cert.id"
+						:class="{ 'flash-date': isDateNextWeek(cert.expires) }"
+					>
 						<td>
-							<router-link :to="`/controllers/${cert.cid}`" class="controller_link">{{
-								cert.student.fname + ' ' + cert.student.lname
+							<router-link :to="`/controllers/${cert.studentCid}`" class="controller_link">{{
+								getName(cert.student)
 							}}</router-link>
 						</td>
 						<td>
-							<router-link :to="`/controllers/${cert.cid}`" class="controller_link">{{
-								cert.instructor.fname + ' ' + cert.instructor.lname
+							<router-link :to="`/controllers/${cert.instructorCid}`" class="controller_link">{{
+								getName(cert.instructor)
 							}}</router-link>
 						</td>
 						<td>{{ cert.position }}</td>
-						<td>{{ new Date(cert.expirationDate).toLocaleDateString() }}</td>
+						<td :class="{ 'expired-date': isExpired(cert.expires) }">
+							{{ new Date(cert.expires).toLocaleDateString() }}
+						</td>
 						<td class="options">
 							<a
 								href="#"
@@ -54,6 +60,43 @@
 								<i class="material-icons red-text text-darken-2" @click.prevent>delete</i>
 							</a>
 						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="certs_wrapper old_certs" v-if="old.length > 0">
+			<hr />
+			<div class="card-title col s8"><span class="card-title">Expired Solo Endorsements</span></div>
+			<table class="certs_list striped compact">
+				<thead class="certs_list_head">
+					<tr>
+						<th>Controller</th>
+						<th>Instructor</th>
+						<th>Position</th>
+						<th>Expires</th>
+						<th class="options">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+							&nbsp;&nbsp;&nbsp;
+						</th>
+					</tr>
+				</thead>
+				<tbody class="certs_list_row">
+					<tr v-for="cert in old" :key="cert.id">
+						<td>
+							<router-link :to="`/controllers/${cert.studentCid}`" class="controller_link">{{
+								getName(cert.student)
+							}}</router-link>
+						</td>
+						<td>
+							<router-link :to="`/controllers/${cert.instructorCid}`" class="controller_link">{{
+								getName(cert.instructor)
+							}}</router-link>
+						</td>
+						<td>{{ cert.position }}</td>
+						<td>
+							{{ new Date(cert.expires).toLocaleDateString() }}
+						</td>
+						<td class="options"></td>
 					</tr>
 				</tbody>
 			</table>
@@ -96,6 +139,7 @@ export default {
 			submitting: false,
 			positions: ['ORD', 'CHI', 'MKE', 'MDW', 'FWA', 'RFD', 'MLI'],
 			certs: [],
+			old: [],
 			loading: true,
 		};
 	},
@@ -108,7 +152,14 @@ export default {
 		async getSoloCerts() {
 			try {
 				const { data } = await zabApi.get('/training/solo');
-				this.certs = data.data || [];
+				this.certs =
+					data.data.filter(
+						(c) => new Date(c.expires).getTime() >= new Date().setHours(0, 0, 0, 0),
+					) || [];
+				this.old =
+					data.data.filter(
+						(c) => new Date(c.expires).getTime() < new Date().setHours(0, 0, 0, 0),
+					) || [];
 			} catch (e) {
 				this.toastError(`Error fetching solo endorsements: ${e.message ? e.message : e}`);
 				console.log(e);
@@ -138,6 +189,32 @@ export default {
 			} finally {
 				this.submitting = false;
 			}
+		},
+		getName(user) {
+			if (user && user.fname && user.lname) {
+				return `${user.fname} ${user.lname}`;
+			} else {
+				return 'Unknown';
+			}
+		},
+		isDateNextWeek(date) {
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+			const nextWeek = new Date();
+			nextWeek.setDate(today.getDate() + 7);
+
+			const itemDate = new Date(date);
+			itemDate.setHours(0, 0, 0, 0);
+
+			return itemDate >= today && itemDate <= nextWeek;
+		},
+		isExpired(date) {
+			const itemDate = new Date(date);
+			itemDate.setHours(0, 0, 0, 0);
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+
+			return itemDate < today;
 		},
 		openModal(cid) {
 			this.$nextTick(() => {
@@ -186,5 +263,27 @@ table tbody {
 .modal_delete {
 	min-width: 400px;
 	width: 30%;
+}
+
+.old_certs {
+	margin-top: 2rem;
+}
+
+@keyframes flash {
+	0%,
+	100% {
+		background-color: unset;
+	}
+	50% {
+		background-color: #ffeb3b;
+	}
+}
+
+.flash-date {
+	animation: 2s infinite alternate ease-in-out flash;
+	position: relative;
+}
+.expired-date {
+	color: red;
 }
 </style>
