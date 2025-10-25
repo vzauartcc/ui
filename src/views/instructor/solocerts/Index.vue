@@ -2,7 +2,7 @@
 	<div class="card">
 		<div class="card-content">
 			<div class="row row_no_margin">
-				<div class="card-title col s8"><span class="card-title">Solo Certificates</span></div>
+				<div class="card-title col s8"><span class="card-title">Solo Endorsements</span></div>
 				<div class="col s4">
 					<router-link to="/ins/solo/new">
 						<span class="btn waves-effect waves-light right">New</span></router-link
@@ -11,7 +11,7 @@
 			</div>
 			<div>
 				<p class="no_certs" v-if="loading === false && certs.length === 0">
-					There are no solo certificates on record for ZAU.
+					There are no solo endorsements on record for ZAU with VATUSA.
 				</p>
 			</div>
 		</div>
@@ -48,7 +48,7 @@
 								href="#"
 								@click.prevent="openModal(cert.cid)"
 								data-position="top"
-								data-tooltip="Delete Solo Certificate"
+								data-tooltip="Delete Solo Endorsement"
 								class="tooltipped"
 							>
 								<i class="material-icons red-text text-darken-2" @click.prevent>delete</i>
@@ -62,8 +62,8 @@
 			<div v-for="cert in certs" :key="`modal_delete_${cert.cid}`">
 				<div :id="`modal_delete_${cert.cid}`" class="modal modal_delete">
 					<div class="modal-content">
-						<h4>Delete Solo Certificate?</h4>
-						<p>This will remove the Solo Certification from VATUSA.</p>
+						<h4>Delete Solo Endorsement?</h4>
+						<p>This will remove the Solo Endorsement from VATUSA.</p>
 					</div>
 					<div class="modal-footer">
 						<a
@@ -90,7 +90,7 @@ import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'SoloCerts',
-	title: 'Solo Certifications',
+	title: 'Solo Endorsements',
 	data() {
 		return {
 			submitting: false,
@@ -110,7 +110,7 @@ export default {
 				const { data } = await zabApi.get('/training/solo');
 				this.certs = data.data || [];
 			} catch (e) {
-				this.toastError(`Error fetching solo certifications: ${e.message ? e.message : e}`);
+				this.toastError(`Error fetching solo endorsements: ${e.message ? e.message : e}`);
 				console.log(e);
 			}
 		},
@@ -123,7 +123,7 @@ export default {
 				if (data.ret_det.code !== 200) {
 					this.toastError(data.ret_det.message);
 				} else {
-					this.toastSuccess('Solo Certification deleted');
+					this.toastSuccess('Solo Endorsement deleted');
 				}
 
 				this.certs = [];
@@ -133,7 +133,7 @@ export default {
 					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
 				});
 			} catch (e) {
-				this.toastError(`Error deleting solo certification: ${e.message ? e.message : e}`);
+				this.toastError(`Error deleting solo endorsement: ${e.message ? e.message : e}`);
 				this.toastError(e);
 			} finally {
 				this.submitting = false;

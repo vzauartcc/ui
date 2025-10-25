@@ -12,7 +12,12 @@
 						on the position for which they are receiving the solo endorsement. <br /><br />Solo
 						endorsements must be issued in accordance with the training syllabus and are
 						automatically submitted to VATUSA. <br /><br />Solo endorsements may not extend beyond
-						<b>45 days</b> in length.
+						<b>45 days</b> in length.<br /><br />This form only submits the solo endorsement to
+						VATUSA.
+						<b
+							>Please do not forget to edit the controller to update the Solo Endorsement section,
+							which updates the controller roster.</b
+						>
 					</p>
 				</div>
 				<form class="col s12 l6 pull-l6" @submit.prevent="submitCert">
@@ -84,7 +89,7 @@ export default {
 				cid: '',
 				position: '',
 			},
-			positions: ['ORD_GND', 'MDW_TWR', 'MKE_TWR', 'ORD_TWR', 'MKE_APP', 'CHI_APP', 'CHI_CTR'],
+			positions: ['ORD_GND', 'ORD_TWR', 'MKE_APP', 'CHI_APP', 'CHI_CTR'],
 		};
 	},
 	async mounted() {
