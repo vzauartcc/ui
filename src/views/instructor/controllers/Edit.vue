@@ -120,7 +120,7 @@
 									>CHI_CTR</span
 								>
 							</div>
-							<label for="solo_certs_container" class="active">Solo Certifications:</label>
+							<label for="solo_certs_container" class="active">Solo Endorsements:</label>
 							<div id="solo_certs_container" class="cert_container">
 								<span
 									id="apps"

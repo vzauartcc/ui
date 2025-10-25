@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import vueDevTools from 'vite-plugin-vue-devtools';
 import { fileURLToPath, URL } from 'url';
+import { defineConfig } from 'vite';
+import vueDevTools from 'vite-plugin-vue-devtools';
 
 export default defineConfig({
 	plugins: [vue(), vueDevTools()],
@@ -37,6 +37,7 @@ export default defineConfig({
 		},
 	},
 	define: {
-		'process.env': process.env,
+		'process.env.VITE_FOLDER_PREFIX': JSON.stringify(process.env.VITE_FOLDER_PREFIX),
+		'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
 	},
 });

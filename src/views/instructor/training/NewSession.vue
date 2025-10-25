@@ -1,8 +1,8 @@
 <template>
 	<div class="card">
 		<div class="card-content">
-			<span class="card-title">Enter Session Notes</span>
-			<div class="loading_container" v-if="session === null">
+			<span class="card-title"> Enter Session Notes </span>
+			<div class="loading_container" v-if="controllers === null || milestones === null">
 				<Spinner />
 			</div>
 			<div class="session_notes" v-else>
@@ -32,61 +32,78 @@
 				<form>
 					<div class="row row_no_margin" v-show="step === 1">
 						<div class="input-field col s12 m6">
-							<input
-								id="student"
-								type="text"
-								:value="session.student.fname + ' ' + session.student.lname"
-								required
-								disabled
-							/>
-							<label for="student" class="active">Student Name</label>
+							<select class="materialize-select" v-model="form.student" required id="student">
+								<option value="" disabled selected>Select a controller</option>
+								<option
+									v-for="controller in controllers"
+									:value="controller.cid"
+									:key="controller.cid"
+								>
+									{{ controller.fname }} {{ controller.lname }}
+								</option>
+							</select>
+							<label for="student">Student</label>
 						</div>
 						<div class="input-field col s12 m6">
 							<input
 								id="instructor"
 								type="text"
-								:value="session.instructor.fname + ' ' + session.instructor.lname"
+								:value="user.data.fname + ' ' + user.data.lname"
 								required
 								disabled
 							/>
 							<label for="instructor" class="active">Instructor Name</label>
 						</div>
 						<div class="input-field col s12 m6">
-							<div id="start_time">
-								<div class="date">{{ formatHtmlDate(session.startTime) }}</div>
-								<div class="controls">
-									<div>
-										<i class="material-icons" @click="increaseTime('start')">arrow_drop_up</i>
-									</div>
-									<div>
-										<i class="material-icons" @click="decreaseTime('start')">arrow_drop_down</i>
-									</div>
-								</div>
+							<div class="input-field col s12 m6">
+								<input
+									id="start_date"
+									type="text"
+									class="datepicker"
+									ref="start_date"
+									required
+									data-input
+									v-model="form.startTime"
+								/>
+								<label for="start_date" class="active flatpickr-wrap">Start Time (Zulu)</label>
 							</div>
-							<label for="start_time" class="active">Start Time (Zulu)</label>
 						</div>
 						<div class="input-field col s12 m6">
-							<div id="end_time">
-								<div class="date">{{ formatHtmlDate(session.endTime) }}</div>
-								<div class="controls">
-									<div>
-										<i class="material-icons" @click="increaseTime('end')">arrow_drop_up</i>
-									</div>
-									<div>
-										<i class="material-icons" @click="decreaseTime('end')">arrow_drop_down</i>
-									</div>
-								</div>
+							<div class="input-field col s12 m6">
+								<input
+									id="end_date"
+									type="text"
+									class="datepicker"
+									ref="end_date"
+									required
+									data-input
+									v-model="form.endTime"
+								/>
+								<label for="end_date" class="active flatpickr-wrap">End Time (Zulu)</label>
 							</div>
-							<label for="end_time" class="active">End Time (Zulu)</label>
 						</div>
 						<div class="input-field col s12 m6 milestone">
-							<select required disabled class="materialize-select">
-								<option disabled selected>{{ session.milestone.name }}</option>
+							<select v-model="form.milestone" class="materialize-select">
+								<option value="" disabled selected>Select a milestone</option>
+								<option
+									v-for="milestone in milestones"
+									:key="milestone._id"
+									:value="milestone.code"
+								>
+									{{ milestone.code + ' - ' + milestone.name }}
+								</option>
 							</select>
-							<label>Milestone</label>
+							<label class="active">Milestone <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s12 m6 position">
-							<input id="position" type="text" required v-model="session.position" />
+							<input
+								id="position"
+								type="text"
+								minlength="7"
+								maxlength="7"
+								required
+								v-model="form.position"
+							/>
 							<label for="position" class="active">Position</label>
 						</div>
 					</div>
@@ -97,13 +114,15 @@
 								type="number"
 								min="0"
 								max="500"
+								step="1"
+								onkeydown="return event.key.length === 1 && !/[0-9]/.test(event.key) ? false : true;"
 								required
-								v-model="session.movements"
+								v-model="form.movements"
 							/>
 							<label for="movements" class="active">Movements</label>
 						</div>
 						<div class="input-field col s12 m6">
-							<select required v-model="session.location" class="materialize-select">
+							<select required v-model="form.location" class="materialize-select">
 								<option value="" disabled selected>Select a location</option>
 								<option value="0">Classroom</option>
 								<option value="1">Live Network</option>
@@ -112,7 +131,7 @@
 							<label>Location</label>
 						</div>
 						<div class="input-field col s12 m6">
-							<select required v-model="session.progress" class="materialize-select">
+							<select required v-model="form.progress" class="materialize-select">
 								<option value="" disabled selected>Select an option</option>
 								<option value="1">No Progress</option>
 								<option value="2">Little Progress</option>
@@ -123,7 +142,7 @@
 							<label>Progress</label>
 						</div>
 						<div class="input-field col s12 m6">
-							<select required v-model="session.ots" class="materialize-select">
+							<select required v-model="form.ots" class="materialize-select">
 								<option value="" disabled selected>Select an option</option>
 								<option value="0">No OTS</option>
 								<option value="1">OTS Pass</option>
@@ -139,7 +158,7 @@
 								id="studentNotes"
 								class="materialize-textarea"
 								data-length="3000"
-								v-model="session.studentNotes"
+								v-model="form.studentNotes"
 							></textarea>
 							<label for="studentNotes" class="active"
 								>Student Notes
@@ -156,7 +175,7 @@
 								id="insNotes"
 								class="materialize-textarea"
 								data-length="3000"
-								v-model="session.insNotes"
+								v-model="form.insNotes"
 							></textarea>
 							<label for="insNotes" class="active"
 								>Instructor Notes
@@ -217,70 +236,119 @@
 
 <script>
 import { zabApi } from '@/helpers/axios.js';
-import { nextTick } from 'vue';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import { mapActions, mapState } from 'vuex';
 
 export default {
-	name: 'EditSessionNotes',
+	name: 'NewSessionNotes',
 	title: 'Enter Session Notes',
 	data() {
 		return {
 			submitting: false,
-			session: null,
 			step: 1,
 			duration: 0,
+			controllers: null,
+			milestones: null,
+			form: {
+				student: 0,
+				ots: '0',
+			},
 		};
 	},
 	async mounted() {
-		await this.getSessionDetails();
-		await nextTick();
-		M.textareaAutoResize(document.getElementById('studentNotes'));
-		M.textareaAutoResize(document.getElementById('insNotes'));
-
-		this.setTimes();
+		await this.getControllers();
+		await this.getTrainingMilestones();
 
 		M.FormSelect.init(document.querySelectorAll('select'), {});
 		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
 			margin: 0,
 		});
 		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
+
+		const today = new Date(new Date().toUTCString());
+		flatpickr(this.$refs.start_date, {
+			enableTime: true,
+			time_24hr: true,
+			disableMobile: true,
+			minuteIncrement: 15,
+			dateFormat: 'Y-m-dTH:i:00.000\\Z',
+			altFormat: 'Y-m-d H:i',
+			altInput: true,
+		});
+
+		flatpickr(this.$refs.end_date, {
+			enableTime: true,
+			time_24hr: true,
+			maxDate: today,
+			disableMobile: true,
+			minuteIncrement: 15,
+			dateFormat: 'Y-m-dTH:i:00.000\\Z',
+			altFormat: 'Y-m-d H:i',
+			altInput: true,
+		});
 	},
 	computed: {
+		...mapState('user', ['user']),
 		isCurrentPartValid() {
 			switch (this.step) {
 				case 1:
-					return !(!this.session.position || !/^[A-Z]{3}_[A-Z]{3}$/.test(this.session.position));
+					return !(
+						this.form.student === 0 ||
+						!this.form.milestone ||
+						!this.form.position ||
+						!/^[A-Z]{3}_[A-Z]{3}$/.test(this.form.position) ||
+						!this.form.startTime ||
+						!this.form.endTime ||
+						new Date(this.form.startTime) > new Date(this.form.endTime)
+					);
 				case 2:
-					return !(this.session.movements < 0 || !this.session.location || !this.session.progress);
+					return !(this.form.movements < 0 || !this.form.location || !this.form.progress);
 				case 3:
-					return !!this.session.studentNotes;
+					return !!this.form.studentNotes;
 				default:
 					return false;
 			}
 		},
 	},
 	methods: {
+		...mapActions('user', ['getUser']),
+		async getTrainingMilestones() {
+			const { data } = await zabApi.get(`/training/milestones`);
+			this.milestones = data.data.milestones;
+		},
+		async getControllers() {
+			const { data } = await zabApi.get('/feedback/controllers');
+			this.controllers = data.data;
+		},
 		async getSessionDetails() {
 			try {
 				const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
 				this.session = data.data;
 			} catch (e) {
-				this.toastError(`Error loading session data: ${e}`);
 				console.log(e);
 			}
 		},
 		async saveForm() {
+			if (new Date(this.form.startTime) > new Date(this.form.endTime)) {
+				this.toastError(`Start Date must be before End Date`);
+				return;
+			}
+
+			this.submitting = true;
 			try {
-				this.submitting = true;
-				const { data } = await zabApi.put(`/training/session/save/${this.$route.params.id}`, {
-					position: this.session.position,
-					movements: this.session.movements,
-					progress: this.session.progress,
-					ots: this.session.ots,
-					location: this.session.location,
-					startTime: this.session.startTime,
-					endTime: this.session.endTime,
-					studentNotes: this.session.studentNotes,
-					insNotes: this.session.insNotes,
+				const { data } = await zabApi.post(`/training/session/save`, {
+					student: this.form.student,
+					milestone: this.form.milestone,
+					position: this.form.position,
+					movements: this.form.movements,
+					progress: this.form.progress,
+					ots: this.form.ots,
+					location: this.form.location,
+					startTime: this.form.startTime,
+					endTime: this.form.endTime,
+					studentNotes: this.form.studentNotes,
+					insNotes: this.form.insNotes,
 				});
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Session notes saved');
@@ -295,14 +363,28 @@ export default {
 			}
 		},
 		async submitForm() {
+			if (new Date(this.form.startTime) > new Date(this.form.endTime)) {
+				this.toastError(`Start Date must be before End Date`);
+				return;
+			}
+
+			this.submitting = true;
 			try {
-				this.submitting = true;
-				const { data } = await zabApi.put(
-					`/training/session/submit/${this.$route.params.id}`,
-					this.session,
-				);
+				const { data } = await zabApi.post(`/training/session/submit`, {
+					student: this.form.student,
+					milestone: this.form.milestone,
+					position: this.form.position,
+					movements: this.form.movements,
+					progress: this.form.progress,
+					ots: this.form.ots,
+					location: this.form.location,
+					startTime: this.form.startTime,
+					endTime: this.form.endTime,
+					studentNotes: this.form.studentNotes,
+					insNotes: this.form.insNotes,
+				});
 				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes finalized');
+					this.toastSuccess('Session notes saved');
 					this.$router.push('/ins/training/sessions');
 				} else {
 					this.toastError(data.ret_det.message);
@@ -311,54 +393,6 @@ export default {
 				console.log(e);
 			} finally {
 				this.submitting = false;
-			}
-		},
-		formatHtmlDate(value) {
-			const d = new Date(value).toISOString();
-			return d.replace('T', ' ').slice(0, 16);
-		},
-		setTimes() {
-			this.oldTimes = {
-				startTime: this.session.startTime,
-				endTime: this.session.endTime,
-			};
-		},
-		increaseTime(type) {
-			if (
-				type === 'start' &&
-				this.session.startTime !== this.oldTimes.endTime &&
-				new Date(this.session.startTime) < new Date(this.session.endTime)
-			) {
-				let d = new Date(this.session.startTime);
-				d.setUTCMinutes(d.getUTCMinutes() + 15);
-				this.session.startTime = d.toISOString();
-			} else if (
-				type === 'end' &&
-				this.session.endTime !== this.oldTimes.endTime &&
-				new Date(this.session.endTime) >= new Date(this.session.startTime)
-			) {
-				let d = new Date(this.session.endTime);
-				d.setUTCMinutes(d.getUTCMinutes() + 15);
-				this.session.endTime = d.toISOString();
-			}
-		},
-		decreaseTime(type) {
-			if (
-				type === 'start' &&
-				this.session.startTime !== this.oldTimes.startTime &&
-				new Date(this.session.startTime) <= new Date(this.session.endTime)
-			) {
-				let d = new Date(this.session.startTime);
-				d.setUTCMinutes(d.getUTCMinutes() - 15);
-				this.session.startTime = d.toISOString();
-			} else if (
-				type === 'end' &&
-				this.session.endTime !== this.oldTimes.startTime &&
-				new Date(this.session.endTime) > new Date(this.session.startTime)
-			) {
-				let d = new Date(this.session.endTime);
-				d.setUTCMinutes(d.getUTCMinutes() - 15);
-				this.session.endTime = d.toISOString();
 			}
 		},
 	},

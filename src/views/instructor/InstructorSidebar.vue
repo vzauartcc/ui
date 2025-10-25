@@ -18,7 +18,7 @@
 				<div class="secondary-content"><i class="material-icons">download</i></div>
 			</router-link>
 			<router-link to="/ins/solo" class="collection-item">
-				Solo Certifications
+				Solo Endorsements
 				<div class="secondary-content"><i class="material-icons">streetview</i></div>
 			</router-link>
 			<router-link to="/ins/training/requests" class="collection-item">

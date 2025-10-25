@@ -2,7 +2,7 @@
 	<div class="card">
 		<div class="card-content">
 			<div class="row row_no_margin">
-				<div class="card-title col s8"><span class="card-title">Solo Certificates</span></div>
+				<div class="card-title col s8"><span class="card-title">Solo Endorsements</span></div>
 				<div class="col s4">
 					<router-link to="/ins/solo/new">
 						<span class="btn waves-effect waves-light right">New</span></router-link
@@ -11,7 +11,7 @@
 			</div>
 			<div>
 				<p class="no_certs" v-if="loading === false && certs.length === 0">
-					There are no solo certificates on record for ZAU
+					There are no solo endorsements on record for ZAU with VATUSA.
 				</p>
 			</div>
 		</div>
@@ -23,26 +23,38 @@
 				<thead class="certs_list_head">
 					<tr>
 						<th>Controller</th>
+						<th>Instructor</th>
 						<th>Position</th>
 						<th>Expires</th>
 						<th class="options">Options</th>
 					</tr>
 				</thead>
 				<tbody class="certs_list_row">
-					<tr v-for="(cert, _) in certs" :key="cert.id">
+					<tr
+						v-for="cert in certs"
+						:key="cert.id"
+						:class="{ 'flash-date': isDateNextWeek(cert.expires) }"
+					>
 						<td>
-							<router-link :to="`/controllers/${cert.cid}`" class="controller_link">{{
-								getName(cert.cid)
+							<router-link :to="`/controllers/${cert.studentCid}`" class="controller_link">{{
+								getName(cert.student)
+							}}</router-link>
+						</td>
+						<td>
+							<router-link :to="`/controllers/${cert.instructorCid}`" class="controller_link">{{
+								getName(cert.instructor)
 							}}</router-link>
 						</td>
 						<td>{{ cert.position }}</td>
-						<td>{{ cert.expires }}</td>
+						<td :class="{ 'expired-date': isExpired(cert.expires) }">
+							{{ new Date(cert.expires).toLocaleDateString() }}
+						</td>
 						<td class="options">
 							<a
 								href="#"
 								@click.prevent="openModal(cert.cid)"
 								data-position="top"
-								data-tooltip="Delete Solo Certificate"
+								data-tooltip="Delete Solo Endorsement"
 								class="tooltipped"
 							>
 								<i class="material-icons red-text text-darken-2" @click.prevent>delete</i>
@@ -52,16 +64,61 @@
 				</tbody>
 			</table>
 		</div>
+		<div class="certs_wrapper old_certs" v-if="old.length > 0">
+			<hr />
+			<div class="card-title col s8"><span class="card-title">Expired Solo Endorsements</span></div>
+			<table class="certs_list striped compact">
+				<thead class="certs_list_head">
+					<tr>
+						<th>Controller</th>
+						<th>Instructor</th>
+						<th>Position</th>
+						<th>Expires</th>
+						<th class="options">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+							&nbsp;&nbsp;&nbsp;
+						</th>
+					</tr>
+				</thead>
+				<tbody class="certs_list_row">
+					<tr v-for="cert in old" :key="cert.id">
+						<td>
+							<router-link :to="`/controllers/${cert.studentCid}`" class="controller_link">{{
+								getName(cert.student)
+							}}</router-link>
+						</td>
+						<td>
+							<router-link :to="`/controllers/${cert.instructorCid}`" class="controller_link">{{
+								getName(cert.instructor)
+							}}</router-link>
+						</td>
+						<td>{{ cert.position }}</td>
+						<td>
+							{{ new Date(cert.expires).toLocaleDateString() }}
+						</td>
+						<td class="options"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 		<teleport to="body">
-			<div v-for="(cert, _) in certs" :key="`modal_delete_${cert.cid}`">
+			<div v-for="cert in certs" :key="`modal_delete_${cert.cid}`">
 				<div :id="`modal_delete_${cert.cid}`" class="modal modal_delete">
 					<div class="modal-content">
-						<h4>Delete Solo Certificate?</h4>
-						<p>This will remove the Solo Certification from VATUSA.</p>
+						<h4>Delete Solo Endorsement?</h4>
+						<p>This will remove the Solo Endorsement from VATUSA.</p>
 					</div>
 					<div class="modal-footer">
-						<a href="#" @click.prevent="deleteCert(cert.id)" class="btn waves-effect modal-close"
-							>Delete</a
+						<a
+							href="#"
+							@click.prevent="deleteCert(cert._id)"
+							class="btn waves-effect modal-close"
+							:class="{ disabled: submitting }"
+						>
+							<span v-if="submitting">
+								<SmallSpinner />
+							</span>
+							Delete</a
 						>
 						<a href="#" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
 					</div>
@@ -72,21 +129,21 @@
 </template>
 
 <script>
-import { vatusaApiAuth, vatusaApi, zabApi } from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'SoloCerts',
-	title: 'Solo Certifications',
+	title: 'Solo Endorsements',
 	data() {
 		return {
+			submitting: false,
 			positions: ['ORD', 'CHI', 'MKE', 'MDW', 'FWA', 'RFD', 'MLI'],
 			certs: [],
-			controllers: null,
+			old: [],
 			loading: true,
 		};
 	},
 	async mounted() {
-		await this.getControllers();
 		await this.getSoloCerts();
 		this.loading = false;
 		this.initModals(); // Initialize modals after data is loaded
@@ -94,35 +151,31 @@ export default {
 	methods: {
 		async getSoloCerts() {
 			try {
-				// Fetch and decode API data.
-				// The API returns back base 64 encoded data with authentication blocks.   The payload needs to be base64 decoded and then parsd for json.
-				const { data } = await vatusaApi.get('/solo');
-				const payload = atob(data.payload);
-				var data1 = JSON.parse(payload);
-				for (const cert of data1.data) {
-					if (this.positions.includes(cert.position.slice(0, 3))) this.certs.push(cert);
-				}
+				const { data } = await zabApi.get('/training/solo');
+				this.certs =
+					data.data.filter(
+						(c) => new Date(c.expires).getTime() >= new Date().setHours(0, 0, 0, 0),
+					) || [];
+				this.old =
+					data.data.filter(
+						(c) => new Date(c.expires).getTime() < new Date().setHours(0, 0, 0, 0),
+					) || [];
 			} catch (e) {
-				console.log(e);
-			}
-		},
-		async getControllers() {
-			try {
-				const { data } = await zabApi.get('/feedback/controllers');
-				this.controllers = data.data;
-			} catch (e) {
+				this.toastError(`Error fetching solo endorsements: ${e.message ? e.message : e}`);
 				console.log(e);
 			}
 		},
 		async deleteCert(id) {
 			try {
-				const formData = new FormData();
-				formData.append('id', id);
+				this.submitting = true;
 
-				// form data seems not to be passed when using the DELETE method.   This works only when the ID is passed on the URL.
-				await vatusaApiAuth.delete('/solo?id=' + id, { data: formData });
+				const { data } = await zabApi.delete(`/training/solo/${id}`);
 
-				this.toastSuccess('Solo Certification deleted');
+				if (data.ret_det.code !== 200) {
+					this.toastError(data.ret_det.message);
+				} else {
+					this.toastSuccess('Solo Endorsement deleted');
+				}
 
 				this.certs = [];
 				await this.getSoloCerts();
@@ -131,15 +184,37 @@ export default {
 					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
 				});
 			} catch (e) {
+				this.toastError(`Error deleting solo endorsement: ${e.message ? e.message : e}`);
 				this.toastError(e);
+			} finally {
+				this.submitting = false;
 			}
 		},
-		getName(cid2) {
-			const controller = this.controllers.filter((i) => {
-				return i.cid === cid2;
-			});
-			console.log(controller);
-			return controller[0].fname + ' ' + controller[0].lname;
+		getName(user) {
+			if (user && user.fname && user.lname) {
+				return `${user.fname} ${user.lname}`;
+			} else {
+				return 'Unknown';
+			}
+		},
+		isDateNextWeek(date) {
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+			const nextWeek = new Date();
+			nextWeek.setDate(today.getDate() + 7);
+
+			const itemDate = new Date(date);
+			itemDate.setHours(0, 0, 0, 0);
+
+			return itemDate >= today && itemDate <= nextWeek;
+		},
+		isExpired(date) {
+			const itemDate = new Date(date);
+			itemDate.setHours(0, 0, 0, 0);
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+
+			return itemDate < today;
 		},
 		openModal(cid) {
 			this.$nextTick(() => {
@@ -188,5 +263,27 @@ table tbody {
 .modal_delete {
 	min-width: 400px;
 	width: 30%;
+}
+
+.old_certs {
+	margin-top: 2rem;
+}
+
+@keyframes flash {
+	0%,
+	100% {
+		background-color: unset;
+	}
+	50% {
+		background-color: #ffeb3b;
+	}
+}
+
+.flash-date {
+	animation: 2s infinite alternate ease-in-out flash;
+	position: relative;
+}
+.expired-date {
+	color: red;
 }
 </style>
