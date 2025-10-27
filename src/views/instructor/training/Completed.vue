@@ -47,6 +47,15 @@
 							>
 								<i class="material-icons">search</i>
 							</router-link>
+							<router-link
+								:to="`/ins/training/session/edit/${session._id}`"
+								data-position="top"
+								data-tooltip="Enter Notes"
+								class="tooltipped"
+								v-if="session.ots === 0 || session.ots === 3"
+							>
+								<i class="material-icons">edit</i>
+							</router-link>
 						</td>
 					</tr>
 				</tbody>
@@ -64,8 +73,8 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'CompletedSessions',
