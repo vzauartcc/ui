@@ -181,11 +181,12 @@
 								<span v-if="submitting">
 									<SmallSpinner />
 								</span>
-								Submit to VATUSA
+								<span v-if="!session.vatusaId || session.vatusaId === 0">Submit to VATUSA</span>
+								<span v-else>Update</span>
 							</button>
 							<button
 								type="button"
-								v-if="step === 3"
+								v-if="step === 3 && (!session.vatusaId || session.vatusaId === 0)"
 								class="btn-flat right"
 								@click="saveForm"
 								:disabled="!isCurrentPartValid || submitting"
