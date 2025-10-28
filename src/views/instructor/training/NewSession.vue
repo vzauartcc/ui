@@ -42,7 +42,7 @@
 									{{ controller.fname }} {{ controller.lname }}
 								</option>
 							</select>
-							<label for="student">Student</label>
+							<label for="student">Student <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s12 m6">
 							<input
@@ -65,7 +65,9 @@
 									data-input
 									v-model="form.startTime"
 								/>
-								<label for="start_date" class="active flatpickr-wrap">Start Time (Zulu)</label>
+								<label for="start_date" class="active flatpickr-wrap"
+									>Start Time (Zulu) <span class="red-text">*</span></label
+								>
 							</div>
 						</div>
 						<div class="input-field col s12 m6">
@@ -79,7 +81,9 @@
 									data-input
 									v-model="form.endTime"
 								/>
-								<label for="end_date" class="active flatpickr-wrap">End Time (Zulu)</label>
+								<label for="end_date" class="active flatpickr-wrap"
+									>End Time (Zulu) <span class="red-text">*</span></label
+								>
 							</div>
 						</div>
 						<div class="input-field col s12 m6 milestone">
@@ -93,7 +97,9 @@
 									{{ milestone.code + ' - ' + milestone.name }}
 								</option>
 							</select>
-							<label class="active">Milestone <span class="red-text">*</span></label>
+							<label class="active"
+								>Milestone (Cannot be modified later) <span class="red-text">*</span></label
+							>
 						</div>
 						<div class="input-field col s12 m6 position">
 							<input
@@ -104,7 +110,7 @@
 								required
 								v-model="form.position"
 							/>
-							<label for="position" class="active">Position</label>
+							<label for="position" class="active">Position <span class="red-text">*</span></label>
 						</div>
 					</div>
 					<div class="row row_no_margin" v-show="step === 2">
@@ -128,7 +134,7 @@
 								<option value="1">Live Network</option>
 								<option value="2">Sweatbox</option>
 							</select>
-							<label>Location</label>
+							<label>Location <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s12 m6">
 							<select required v-model="form.progress" class="materialize-select">
@@ -139,7 +145,7 @@
 								<option value="4">Great Progress</option>
 								<option value="5">Exceptional Progress</option>
 							</select>
-							<label>Progress</label>
+							<label>Progress <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s12 m6">
 							<select required v-model="form.ots" class="materialize-select">
@@ -149,7 +155,7 @@
 								<option value="2">OTS Fail</option>
 								<option value="3">Recommend OTS</option>
 							</select>
-							<label>OTS</label>
+							<label>OTS <span class="red-text">*</span></label>
 						</div>
 					</div>
 					<div class="row row_no_margin" v-show="step === 3">
@@ -161,7 +167,7 @@
 								v-model="form.studentNotes"
 							></textarea>
 							<label for="studentNotes" class="active"
-								>Student Notes
+								>Student Notes <span class="red-text">*</span>
 								<i
 									class="material-icons tooltipped"
 									data-position="right"
@@ -270,6 +276,7 @@ export default {
 		flatpickr(this.$refs.start_date, {
 			enableTime: true,
 			time_24hr: true,
+			maxDate: today,
 			disableMobile: true,
 			minuteIncrement: 15,
 			dateFormat: 'Y-m-dTH:i:00.000\\Z',
