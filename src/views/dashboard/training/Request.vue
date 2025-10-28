@@ -5,6 +5,13 @@
 			<div class="loading_container" v-if="!milestones">
 				<Spinner />
 			</div>
+			<!-- Disable the training request form as well. Remove this div if needing to reenable. -->
+			<div class="request_wrapper row row_no_margin" v-else-if="true">
+				<span class="col">
+					Training Requests are disabled at this time. To request training, please see
+					#training-request channel in the vZAU Discord.</span
+				>
+			</div>
 			<div class="request_wrapper row row_no_margin" v-else>
 				<div class="col s12 l6 push-l6">
 					<p>
@@ -62,9 +69,9 @@
 
 <script>
 import { zabApi } from '@/helpers/axios.js';
-import { mapState } from 'vuex';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'RequestTraining',
@@ -174,6 +181,7 @@ export default {
 				});
 				return milestonesShowed;
 			}
+			return [];
 		},
 		...mapState('user', ['user']),
 	},

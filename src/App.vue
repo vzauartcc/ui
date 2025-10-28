@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
 import Spinner from '@/components/Spinner.vue';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
 	async mounted() {

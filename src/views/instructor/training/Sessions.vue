@@ -1,7 +1,14 @@
 <template>
 	<div class="card">
 		<div class="card-content">
-			<div class="card-title">Your Training Sessions</div>
+			<div class="row row_no_margin">
+				<div class="card-title col s8">Your Training Sessions</div>
+				<div class="col s4">
+					<router-link to="/ins/training/session/new"
+						><span class="btn new_event_button right">New</span></router-link
+					>
+				</div>
+			</div>
 		</div>
 		<div v-if="sessions === null" class="loading_container">
 			<Spinner />
@@ -17,7 +24,7 @@
 						<th>Milestone</th>
 						<th>Start</th>
 						<th>End</th>
-						<th class="options">Options</th>
+						<th class="options" id="options_w">Options</th>
 					</tr>
 				</thead>
 				<tbody class="sessions_list_row">
@@ -47,6 +54,14 @@
 							>
 								<i class="material-icons">edit</i>
 							</router-link>
+							<a
+								href="#"
+								@click.prevent="openDelete(i)"
+								data-position="top"
+								data-tooltip="Delete Training Session"
+								class="tooltipped"
+								><i class="material-icons red-text text-darken-2">delete</i></a
+							>
 						</td>
 					</tr>
 				</tbody>
@@ -87,6 +102,32 @@
 				</div>
 			</div>
 		</teleport>
+		<teleport to="body">
+			<div v-for="(session, i) in sessions" :key="`modal_session_delete_${i}`">
+				<div :id="`modal_session_delete_${i}`" class="modal modal_session_delete">
+					<div class="modal-content">
+						<div class="modal_title">Delete Training Session?</div>
+						<p>
+							This will <b>permanently</b> delete the training session, including any notes entered.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<a
+							href="#"
+							@click.prevent="deleteSession(session._id)"
+							class="btn waves-effect modal-close"
+							:class="{ disabled: submitting }"
+						>
+							<span v-if="submitting">
+								<SmallSpinner />
+							</span>
+							Delete</a
+						>
+						<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
+					</div>
+				</div>
+			</div>
+		</teleport>
 	</div>
 	<Completed />
 </template>
@@ -100,6 +141,7 @@ export default {
 	title: 'Training Sessions',
 	data() {
 		return {
+			submitting: false,
 			sessions: null,
 		};
 	},
@@ -129,6 +171,31 @@ export default {
 					M.Modal.init(modal, { preventScrolling: false }).open();
 				}
 			});
+		},
+		openDelete(i) {
+			this.$nextTick(() => {
+				const modal = document.getElementById(`modal_session_delete_${i}`);
+				if (modal) {
+					M.Modal.init(modal, { preventScrolling: false }).open();
+				}
+			});
+		},
+		async deleteSession(id) {
+			try {
+				this.submitting = true;
+				await zabApi.delete(`/training/session/${id}`);
+
+				this.sessions = [];
+				await this.getSessions();
+			} catch (e) {
+				console.log(e);
+				this.toastError(e);
+			} finally {
+				this.submitting = false;
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_session_delete')).close();
+				});
+			}
 		},
 		formatDateTime(value) {
 			const d = new Date(value);
@@ -171,5 +238,9 @@ export default {
 			margin: 0.33em 0 0 0;
 		}
 	}
+}
+
+#options_w {
+	width: 10rem;
 }
 </style>
