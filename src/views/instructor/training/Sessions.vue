@@ -58,7 +58,7 @@
 								href="#"
 								@click.prevent="openDelete(i)"
 								data-position="top"
-								data-tooltip="Unclaim Request"
+								data-tooltip="Delete Training Session"
 								class="tooltipped"
 								><i class="material-icons red-text text-darken-2">delete</i></a
 							>
@@ -106,10 +106,9 @@
 			<div v-for="(session, i) in sessions" :key="`modal_session_delete_${i}`">
 				<div :id="`modal_session_delete_${i}`" class="modal modal_session_delete">
 					<div class="modal-content">
-						<div class="modal_title">Unclaim Training Session?</div>
+						<div class="modal_title">Delete Training Session?</div>
 						<p>
-							This will remove you as the Instructor for the session and allow another Instructor to
-							claim it.
+							This will <b>permanently</b> delete the training session, including any notes entered.
 						</p>
 					</div>
 					<div class="modal-footer">
@@ -122,7 +121,7 @@
 							<span v-if="submitting">
 								<SmallSpinner />
 							</span>
-							Unclaim</a
+							Delete</a
 						>
 						<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
 					</div>
