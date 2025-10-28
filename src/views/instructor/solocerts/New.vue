@@ -74,7 +74,7 @@
 	</div>
 </template>
 <script>
-import { vatusaApiAuth, zabApi } from '@/helpers/axios.js';
+import { zabApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -122,29 +122,31 @@ export default {
 	},
 	methods: {
 		async getControllers() {
-			const { data } = await zabApi.get('/feedback/controllers');
-			this.controllers = data.data.filter((c) => {
-				// Must be at least a S1, must be less than a C1, must not be a visitor
-				return c.rating > 1 && c.rating < 5 && c.vis === false;
-			});
+			try {
+				const { data } = await zabApi.get('/feedback/controllers');
+				this.controllers = data.data.filter((c) => {
+					// Must be at least a S1, must be less than a C1, must not be a visitor
+					return c.rating > 1 && c.rating < 5 && c.vis === false;
+				});
+			} catch (e) {
+				this.toastError(e);
+			}
 		},
 		async submitCert() {
 			this.submitting = true;
 			try {
-				const formData = new FormData();
-				formData.append('cid', this.form.cid);
-				formData.append('position', this.form.position);
-				formData.append('expDate', this.$refs.expirationDate.value);
-				const res = await vatusaApiAuth.post('/solo', formData);
-
-				await zabApi.post('/training/solo', {
+				const { data } = await zabApi.post('/training/solo', {
 					student: this.form.cid,
 					position: this.form.position,
 					expirationDate: this.$refs.expirationDate.value,
-					vatusaId: res.data.id,
 				});
 
-				this.toastSuccess('Solo Endorsement issued');
+				if (data.ret_det.code !== 200) {
+					this.toastError(data.ret_det.message);
+					return;
+				} else {
+					this.toastSuccess('Solo Endorsement issued');
+				}
 
 				this.$router.push('/ins/solo');
 			} catch (e) {
