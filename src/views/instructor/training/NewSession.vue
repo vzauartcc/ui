@@ -272,14 +272,21 @@ export default {
 		});
 		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
 
-		const today = new Date(new Date().toUTCString());
+		const today = new Date();
 		flatpickr(this.$refs.start_date, {
 			enableTime: true,
 			time_24hr: true,
-			maxDate: today,
+			maxDate: new Date(
+				today.getUTCFullYear(),
+				today.getUTCMonth(),
+				today.getUTCDate(),
+				today.getUTCHours(),
+				Math.ceil(today.getUTCMinutes() / 15) * 15,
+				0,
+			),
 			disableMobile: true,
 			minuteIncrement: 15,
-			dateFormat: 'Y-m-dTH:i:00.000\\Z',
+			dateFormat: 'Z',
 			altFormat: 'Y-m-d H:i',
 			altInput: true,
 		});
@@ -287,12 +294,27 @@ export default {
 		flatpickr(this.$refs.end_date, {
 			enableTime: true,
 			time_24hr: true,
-			maxDate: today,
+			maxDate: new Date(
+				today.getUTCFullYear(),
+				today.getUTCMonth(),
+				today.getUTCDate(),
+				today.getUTCHours(),
+				Math.ceil(today.getUTCMinutes() / 15) * 15,
+				0,
+			),
 			disableMobile: true,
 			minuteIncrement: 15,
-			dateFormat: 'Y-m-dTH:i:00.000\\Z',
+			dateFormat: 'Z',
 			altFormat: 'Y-m-d H:i',
 			altInput: true,
+			defaultDate: new Date(
+				today.getUTCFullYear(),
+				today.getUTCMonth(),
+				today.getUTCDate(),
+				today.getUTCHours(),
+				Math.ceil(today.getUTCMinutes() / 15) * 15,
+				0,
+			),
 		});
 	},
 	computed: {
@@ -307,7 +329,9 @@ export default {
 						!/^[A-Z]{3}_[A-Z]{3}$/.test(this.form.position) ||
 						!this.form.startTime ||
 						!this.form.endTime ||
-						new Date(this.form.startTime) > new Date(this.form.endTime)
+						new Date(this.form.startTime) > new Date(this.form.endTime) ||
+						new Date(this.form.endTime).getTime() - new Date(this.form.startTime).getTime() >
+							24 * 60 * 60 * 1000
 					);
 				case 2:
 					return !(this.form.movements < 0 || !this.form.location || !this.form.progress);
@@ -327,14 +351,6 @@ export default {
 		async getControllers() {
 			const { data } = await zabApi.get('/feedback/controllers');
 			this.controllers = data.data;
-		},
-		async getSessionDetails() {
-			try {
-				const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
-				this.session = data.data;
-			} catch (e) {
-				console.log(e);
-			}
 		},
 		async saveForm() {
 			if (new Date(this.form.startTime) > new Date(this.form.endTime)) {
