@@ -68,6 +68,8 @@
 								<template v-if="requiresAuth(['atm', 'datm', 'ta', 'ins', 'wm'])">
 									<template
 										v-if="
+											// disable promote button
+											false &&
 											controller.ratingShort !== 'C3' &&
 											controller.ratingShort !== 'SUP' &&
 											controller.ratingShort !== 'ADM' &&
