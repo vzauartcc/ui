@@ -116,11 +116,9 @@
 							href="#"
 							@click.prevent="deleteSession(session._id)"
 							class="btn waves-effect modal-close"
-							:class="{ disabled: submitting }"
+							:class="{ disabled: spinners.length > 0 }"
 						>
-							<span v-if="submitting">
-								<SmallSpinner />
-							</span>
+							<span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>
 							Delete</a
 						>
 						<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
@@ -141,7 +139,7 @@ export default {
 	title: 'Training Sessions',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			sessions: null,
 		};
 	},
@@ -161,7 +159,8 @@ export default {
 				const { data } = await zabApi.get(`/training/session/open`);
 				this.sessions = data.data;
 			} catch (e) {
-				console.log(e);
+				console.error('error getting open sessions', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		openModal(i) {
@@ -182,16 +181,16 @@ export default {
 		},
 		async deleteSession(id) {
 			try {
-				this.submitting = true;
+				this.spinners.push('delete');
 				await zabApi.delete(`/training/session/${id}`);
 
 				this.sessions = [];
 				await this.getSessions();
 			} catch (e) {
-				console.log(e);
-				this.toastError(e);
+				console.error('error deleting session', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 				this.$nextTick(() => {
 					M.Modal.getInstance(document.querySelector('.modal_session_delete')).close();
 				});

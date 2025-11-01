@@ -22,8 +22,8 @@ export default {
 							commit('setVisitLoggedIn', true);
 						}
 					})
-					.catch((err) => {
-						console.log(err);
+					.catch((e) => {
+						console.error('[store] error getting visitor', e);
 						return router.push('/');
 					});
 			}
@@ -36,8 +36,8 @@ export default {
 					commit('setVisit', null);
 					commit('setVisitLoggedIn', false);
 				})
-				.catch((err) => {
-					console.log(err);
+				.catch((e) => {
+					console.error('[store] error logging out visitor', e);
 				});
 		},
 	},

@@ -131,15 +131,27 @@ export default {
 	},
 	methods: {
 		async getController() {
-			this.loading = true;
-			const { data } = await zabApi.get(`/controller/${this.$route.params.cid}`);
-			if (data.ret_det.code === 200) {
-				this.controller = data.data;
-				const { data: statsData } = await zabApi.get(`/controller/stats/${this.$route.params.cid}`);
-				this.stats = statsData.data;
+			try {
+				this.loading = true;
+				const { data } = await zabApi.get(`/controller/${this.$route.params.cid}`);
+				if (data.ret_det.code === 200) {
+					this.controller = data.data;
+					try {
+						const { data: statsData } = await zabApi.get(
+							`/controller/stats/${this.$route.params.cid}`,
+						);
+						this.stats = statsData.data;
+					} catch (e) {
+						console.error('error getting controller stats', e);
+						this.toastError('Something went wrong, please try again later');
+					}
+				}
+				if (!this.controller || !this.controller.isMem) this.$router.push('/404');
+				this.loading = false;
+			} catch (e) {
+				console.error('error getting controller', e);
+				this.toastError('Something went wrong, please try again later');
 			}
-			if (!this.controller || !this.controller.isMem) this.$router.push('/404');
-			this.loading = false;
 		},
 		reduceControllerCerts(certs) {
 			if (!certs) return [];

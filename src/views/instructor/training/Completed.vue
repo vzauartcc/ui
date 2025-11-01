@@ -99,15 +99,20 @@ export default {
 	},
 	methods: {
 		async getSessions() {
-			const { data } = await zabApi.get('/training/sessions', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
+			try {
+				const { data } = await zabApi.get('/training/sessions', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
 
-			this.sessions = data.data.sessions;
-			this.sessionAmount = data.data.count;
+				this.sessions = data.data.sessions;
+				this.sessionAmount = data.data.count;
+			} catch (e) {
+				console.error('error getting sessions', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 	},
 	watch: {

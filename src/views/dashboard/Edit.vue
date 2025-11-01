@@ -13,7 +13,9 @@
 					<label for="bio" class="active">Biography</label>
 				</div>
 				<div class="input-field col s12">
-					<input type="submit" class="btn right" value="Update" />
+					<button type="submit" class="btn right" :disabled="spinners.length > 0">
+						<span v-if="spinners.some((s) => s !== 'update')"> <SmallSpinner /> </span>Update
+					</button>
 				</div>
 			</form>
 		</div>
@@ -21,13 +23,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { zabApi } from '@/helpers/axios.js';
+import { mapState } from 'vuex';
 
 export default {
 	data() {
 		return {
 			form: {
+				spinners: [],
 				bio: '',
 			},
 		};
@@ -42,12 +45,20 @@ export default {
 	},
 	methods: {
 		async updateProfile() {
-			const { data } = await zabApi.put('/user/profile', this.form);
+			try {
+				this.spinners.push('update');
+				const { data } = await zabApi.put('/user/profile', this.form);
 
-			if (data.ret_det.code === 200) {
-				this.toastSuccess('Profile successfully updated');
-			} else {
-				this.toastError(data.ret_det.message);
+				if (data.ret_det.code === 200) {
+					this.toastSuccess('Profile successfully updated');
+				} else {
+					this.toastError(data.ret_det.message);
+				}
+			} catch (e) {
+				console.error('error updating profile', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}
 		},
 	},

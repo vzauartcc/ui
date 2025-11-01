@@ -34,8 +34,8 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	title: 'Action Log',
@@ -56,15 +56,20 @@ export default {
 	},
 	methods: {
 		async getLog() {
-			const { data: dossierData } = await zabApi.get('/controller/log', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			this.log = dossierData.data.dossier;
-			this.logAmount = dossierData.data.amount;
-			this.amountOfPages = Math.ceil(this.logAmount / this.limit);
+			try {
+				const { data: dossierData } = await zabApi.get('/controller/log', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				this.log = dossierData.data.dossier;
+				this.logAmount = dossierData.data.amount;
+				this.amountOfPages = Math.ceil(this.logAmount / this.limit);
+			} catch (e) {
+				console.error('error getting log', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		populateLog(log) {
 			let action = log.action;

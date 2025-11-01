@@ -70,7 +70,9 @@
 						</div>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="Update" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Update
+						</button>
 					</div>
 				</form>
 			</div>
@@ -87,6 +89,7 @@ import { DateTime } from 'luxon';
 export default {
 	data() {
 		return {
+			spinners: [],
 			form: null,
 			selectedFile: null,
 		};
@@ -103,41 +106,46 @@ export default {
 	},
 	methods: {
 		async getEvent() {
-			const { data } = await zabApi.get(`/event/${this.$route.params.slug}`);
-			this.form = data.data;
-			if (this.form.positions && this.form.positions.length != 0) {
-				this.form.positions = this.form.positions.map((p) => p.pos);
-			} else {
-				this.form.positions = [];
+			try {
+				const { data } = await zabApi.get(`/event/${this.$route.params.slug}`);
+				this.form = data.data;
+				if (this.form.positions && this.form.positions.length != 0) {
+					this.form.positions = this.form.positions.map((p) => p.pos);
+				} else {
+					this.form.positions = [];
+				}
+
+				this.$nextTick(() => {
+					// Okay, so working with timezones with JS is hard. This is really gross and I hate it, but it works so 🤷‍♀️
+					const startTime = DateTime.fromISO(this.form.eventStart);
+					const endTime = DateTime.fromISO(this.form.eventEnd);
+
+					flatpickr(this.$refs.start_date, {
+						enableTime: true,
+						time_24hr: true,
+						defaultDate: startTime.plus({ minutes: -startTime.offset }).toISO(),
+						disableMobile: true,
+						minuteIncrement: 15,
+						dateFormat: 'Y-m-dTH:i:00.000\\Z',
+						altFormat: 'Y-m-d H:i',
+						altInput: true,
+					});
+
+					flatpickr(this.$refs.end_date, {
+						enableTime: true,
+						time_24hr: true,
+						defaultDate: endTime.plus({ minutes: -endTime.offset }).toISO(),
+						disableMobile: true,
+						minuteIncrement: 15,
+						dateFormat: 'Y-m-dTH:i:00.000\\Z',
+						altFormat: 'Y-m-d H:i',
+						altInput: true,
+					});
+				});
+			} catch (e) {
+				console.error('error getting event', e);
+				this.toastError('Something went wrong, please try again later');
 			}
-
-			this.$nextTick(() => {
-				// Okay, so working with timezones with JS is hard. This is really gross and I hate it, but it works so 🤷‍♀️
-				const startTime = DateTime.fromISO(this.form.eventStart);
-				const endTime = DateTime.fromISO(this.form.eventEnd);
-
-				flatpickr(this.$refs.start_date, {
-					enableTime: true,
-					time_24hr: true,
-					defaultDate: startTime.plus({ minutes: -startTime.offset }).toISO(),
-					disableMobile: true,
-					minuteIncrement: 15,
-					dateFormat: 'Y-m-dTH:i:00.000\\Z',
-					altFormat: 'Y-m-d H:i',
-					altInput: true,
-				});
-
-				flatpickr(this.$refs.end_date, {
-					enableTime: true,
-					time_24hr: true,
-					defaultDate: endTime.plus({ minutes: -endTime.offset }).toISO(),
-					disableMobile: true,
-					minuteIncrement: 15,
-					dateFormat: 'Y-m-dTH:i:00.000\\Z',
-					altFormat: 'Y-m-d H:i',
-					altInput: true,
-				});
-			});
 		},
 		updateFilePath(event) {
 			if (event.target.files.length > 0) {
@@ -147,6 +155,7 @@ export default {
 		},
 		async submitForm() {
 			try {
+				this.spinners.push('submit');
 				const formData = new FormData();
 				formData.append('name', this.form.name);
 				formData.append('startTime', `${this.$refs.start_date.value}`);
@@ -171,7 +180,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error submitting event', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 		async addPosition() {

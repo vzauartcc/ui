@@ -32,7 +32,9 @@
 					<button
 						@click="deleteRequest()"
 						class="btn btn-small waves-effect waves-light btn_delete"
+						:disabled="spinners.length > 0"
 					>
+						<span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>
 						Delete Request
 					</button>
 				</div>
@@ -59,7 +61,13 @@
 					<div class="chips chips-placeholder"></div>
 				</div>
 				<div class="modal-footer">
-					<a href="#" class="waves-effect waves-light btn" @click.prevent="addRequest()">Sign up</a>
+					<a
+						href="#"
+						class="waves-effect waves-light btn"
+						@click.prevent="addRequest()"
+						:class="{ disabled: spinners.length > 0 }"
+						><span v-if="spinners.some((s) => s === 'add')"> <SmallSpinner /> </span>Sign up</a
+					>
 					<a href="#!" class="modal-close waves-effect btn-flat">Cancel</a>
 				</div>
 			</div>
@@ -78,6 +86,7 @@ export default {
 	},
 	data() {
 		return {
+			spinners: [],
 			event: null,
 			positionCategories: {
 				enroute: {
@@ -124,11 +133,13 @@ export default {
 					);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error getting positions', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async addRequest() {
 			try {
+				this.spinners.push('add');
 				const requests = this.chips.chipsData.map((chip) => chip.tag);
 				const { data } = await zabApi.put(`/event/${this.$route.params.slug}/signup`, { requests });
 				if (data.ret_det.code === 200) {
@@ -142,11 +153,15 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error adding signup', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'add');
 			}
 		},
 		async deleteRequest() {
 			try {
+				this.spinners.push('delete');
 				while (this.chips.chipsData.length) {
 					this.chips.deleteChip(0);
 				}
@@ -159,7 +174,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting signup', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 	},

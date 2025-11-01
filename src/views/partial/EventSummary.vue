@@ -58,8 +58,13 @@ export default {
 	},
 	methods: {
 		async getUpcomingEvents() {
-			const { data } = await zabApi.get('/event');
-			this.events = data.data;
+			try {
+				const { data } = await zabApi.get('/event');
+				this.events = data.data;
+			} catch (e) {
+				console.error('error getting upcoming events', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		formatTime(value) {
 			const d = new Date(value);

@@ -13,11 +13,6 @@
 			</div>
 		</div>
 		<div v-else>
-			<!--<div class="card">
-				<div class="card-content">
-					<span>Note: For ZMO certs, please follow <a href="https://docs.google.com/spreadsheets/d/1-4IZNAukEu7I24OcracEZzRe6XkgDVukUFSteZHzUhU/edit?usp=sharing" target="_blank">this link to the Miami-Nassau Mutual Roster</a>.</span>
-				</div>
-			</div>-->
 			<div class="card">
 				<div class="card-content">
 					<span class="card-title">Home Controllers</span>
@@ -135,9 +130,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { zabApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'Controller Roster',
@@ -158,10 +153,15 @@ export default {
 	},
 	methods: {
 		async getControllers() {
-			const { data } = await zabApi.get('/controller');
-			this.controllers = data.data;
-			this.controllers.home = this.controllers.home.filter((c) => c.member);
-			this.controllers.visiting = this.controllers.visiting.filter((c) => c.member);
+			try {
+				const { data } = await zabApi.get('/controller');
+				this.controllers = data.data;
+				this.controllers.home = this.controllers.home.filter((c) => c.member);
+				this.controllers.visiting = this.controllers.visiting.filter((c) => c.member);
+			} catch (e) {
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async login() {
 			localStorage.setItem('redirect', this.$route.path);
@@ -255,7 +255,6 @@ td {
 	-moz-user-select: none; /* Firefox 2+ */
 	-ms-user-select: none; /* IE 10+ */
 	user-select: none; /* Standard syntax */
-	user-drag: none;
 	-webkit-user-drag: none;
 }
 

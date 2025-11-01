@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'HistoricEvents',
@@ -64,14 +64,19 @@ export default {
 	},
 	methods: {
 		async getHistoricEvents() {
-			const { data } = await zabApi.get('/event/archive', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			this.historicEvents = data.data.events;
-			this.eventAmount = data.data.amount;
+			try {
+				const { data } = await zabApi.get('/event/archive', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				this.historicEvents = data.data.events;
+				this.eventAmount = data.data.amount;
+			} catch (e) {
+				console.error('error getting historical events', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		updatePageNo(pageNo) {
 			this.page === pageNo;

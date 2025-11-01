@@ -92,7 +92,13 @@
 						</p>
 					</div>
 					<div class="modal-footer">
-						<a href="#!" @click.prevent="deleteLoa(absence._id)" class="btn waves-effect">Delete</a>
+						<a
+							href="#!"
+							@click.prevent="deleteLoa(absence._id)"
+							class="btn waves-effect"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
+						>
 						<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
 					</div>
 				</div>
@@ -109,6 +115,7 @@ export default {
 	title: 'Leave of Absence',
 	data() {
 		return {
+			spinners: [],
 			absences: null,
 		};
 	},
@@ -123,11 +130,16 @@ export default {
 	},
 	methods: {
 		async getAbsences() {
-			const { data } = await zabApi.get('/controller/absence');
-			this.absences = data.data;
-			this.$nextTick(() => {
-				this.initModals();
-			});
+			try {
+				const { data } = await zabApi.get('/controller/absence');
+				this.absences = data.data;
+				this.$nextTick(() => {
+					this.initModals();
+				});
+			} catch (e) {
+				console.error('error getting absences', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index, type) {
 			const modal = document.getElementById(`modal_${type}_${index}`);
@@ -145,6 +157,7 @@ export default {
 		},
 		async deleteLoa(id) {
 			try {
+				this.spinners.push('delete');
 				const { data } = await zabApi.delete(`/controller/absence/${id}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Controller removed from LOA successfully');
@@ -158,7 +171,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting absence', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 	},

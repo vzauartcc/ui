@@ -73,8 +73,12 @@
 						</p>
 					</div>
 					<div class="modal-footer">
-						<a href="#" class="waves-effect btn" @click.prevent="deleteStaffingRequest(request._id)"
-							>Delete</a
+						<a
+							href="#"
+							class="waves-effect btn"
+							@click.prevent="deleteStaffingRequest(request._id)"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
 						>
 						<a href="#" class="modal-close waves-effect btn-flat" @click.prevent>Cancel</a>
 					</div>
@@ -85,13 +89,14 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'staffingRequests',
 	data() {
 		return {
+			spinners: [],
 			requests: null,
 			requestAmount: 1,
 			page: 1,
@@ -116,15 +121,19 @@ export default {
 	},
 	methods: {
 		async getStaffingRequests() {
-			const { data } = await zabApi.get('/event/staffingRequest', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			this.requests = data.data.requests;
-			console.log(this.requests);
-			this.requestAmount = data.data.amount;
+			try {
+				const { data } = await zabApi.get('/event/staffingRequest', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				this.requests = data.data.requests;
+				this.requestAmount = data.data.amount;
+			} catch (e) {
+				console.error('error getting staffing requests', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index) {
 			const modal = document.getElementById(`modal_request_${index}`);
@@ -142,6 +151,7 @@ export default {
 		},
 		async deleteStaffingRequest(_id) {
 			try {
+				this.spinners.push('delete');
 				const { data } = await zabApi.delete(`/event/staffingRequest/${_id}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Staffing Request deleted');
@@ -150,7 +160,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting staffing request', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		dtLong(dateString) {

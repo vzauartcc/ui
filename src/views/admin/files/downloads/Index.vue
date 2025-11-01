@@ -70,7 +70,8 @@
 							href="#"
 							class="waves-effect waves-light btn"
 							@click.prevent="deleteDownload(file._id, i)"
-							>Delete</a
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
 						>
 						<a href="#" class="modal-close waves-effect waves-light btn-flat" @click.prevent
 							>Cancel</a
@@ -90,6 +91,7 @@ export default {
 	title: 'Downloads',
 	data() {
 		return {
+			spinners: [],
 			downloads: null,
 		};
 	},
@@ -106,8 +108,13 @@ export default {
 	},
 	methods: {
 		async getDownloads() {
-			const { data } = await zabApi.get('/file/downloads');
-			this.downloads = data.data;
+			try {
+				const { data } = await zabApi.get('/file/downloads');
+				this.downloads = data.data;
+			} catch (e) {
+				console.error('error getting downloads', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index) {
 			const modal = document.getElementById(`modal_delete_${index}`);
@@ -130,6 +137,7 @@ export default {
 			}
 
 			try {
+				this.spinners.push('delete');
 				const deletePromise = zabApi.delete(`/file/downloads/${id}`);
 
 				setTimeout(() => {
@@ -148,7 +156,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting download', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		convertCategory(cat) {

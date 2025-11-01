@@ -44,14 +44,19 @@ export default {
 	},
 	methods: {
 		async getDocuments() {
-			const { data: fileData } = await zabApi.get('/file/documents');
-			this.documents = {
-				loa: fileData.data.filter((doc) => doc.category === 'loa'),
-				sop: fileData.data.filter((doc) => doc.category === 'sop'),
-				policy: fileData.data.filter((doc) => doc.category === 'policy'),
-				misc: fileData.data.filter((doc) => doc.category === 'misc'),
-				training: fileData.data.filter((doc) => doc.category === 'training'),
-			};
+			try {
+				const { data: fileData } = await zabApi.get('/file/documents');
+				this.documents = {
+					loa: fileData.data.filter((doc) => doc.category === 'loa'),
+					sop: fileData.data.filter((doc) => doc.category === 'sop'),
+					policy: fileData.data.filter((doc) => doc.category === 'policy'),
+					misc: fileData.data.filter((doc) => doc.category === 'misc'),
+					training: fileData.data.filter((doc) => doc.category === 'training'),
+				};
+			} catch (e) {
+				console.error('error getting documents', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 	},
 };

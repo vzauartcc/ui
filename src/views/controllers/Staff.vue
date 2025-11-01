@@ -114,8 +114,13 @@ export default {
 		StaffCard,
 	},
 	async mounted() {
-		const { data } = await zabApi.get('/controller/staff');
-		this.staff = data.data;
+		try {
+			const { data } = await zabApi.get('/controller/staff');
+			this.staff = data.data;
+		} catch (e) {
+			console.error('error getting staff', e);
+			this.toastError('Something went wrong, please try again later');
+		}
 	},
 };
 </script>

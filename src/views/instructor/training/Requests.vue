@@ -122,7 +122,8 @@ export default {
 				}
 				this.loading = false;
 			} catch (e) {
-				console.log(e);
+				console.error('error getting requests', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		calculateDates() {

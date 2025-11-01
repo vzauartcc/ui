@@ -84,7 +84,8 @@
 					href="javascript:void(0);"
 					class="modal-close waves-effect waves-green btn-flat"
 					@click="confirmDelete"
-					>Confirm</a
+					:class="{ disabled: spinners.length > 0 }"
+					><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Confirm</a
 				>
 			</div>
 		</div>
@@ -99,6 +100,7 @@ export default {
 	title: 'Exam Center',
 	data() {
 		return {
+			spinners: [],
 			exams: [], // This will hold your exams data
 			selectedExamId: null, // ID of the exam to be deleted
 		};
@@ -131,7 +133,8 @@ export default {
 				const { data } = await zabApi.get('/exam/exams');
 				this.exams = data.data;
 			} catch (e) {
-				console.error('There was an error fetching the exams: ', e);
+				console.error('error getting exams', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		editExam(id) {
@@ -149,13 +152,16 @@ export default {
 		async confirmDelete() {
 			if (!this.selectedExamId) return;
 			try {
+				this.spinners.push('delete');
 				await zabApi.delete(`/exam/exams/${this.selectedExamId}`);
 				this.toastSuccess('Exam deleted successfully');
 				this.selectedExamId = null; // Reset selected exam ID
 				await this.fetchExams(); // Refresh the list
 			} catch (e) {
-				console.error('There was an error deleting the exam: ', e);
-				this.toastError('Failed to delete the exam.');
+				console.error('error deleting exams', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		openDeleteModal() {

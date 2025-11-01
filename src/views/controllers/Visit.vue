@@ -85,7 +85,9 @@
 								class="btn right"
 								@click.prevent="submitApplication"
 								ref="submitButton"
+								:disabled="spinners.length > 0"
 							>
+								<span v-if="spinners.some((s) => s === 'submit')"> <SmallSpinner /> </span>
 								Submit
 							</button>
 						</div>
@@ -108,6 +110,7 @@ export default {
 	title: 'Become A Visitor',
 	data() {
 		return {
+			spinners: [],
 			pendingApplication: false,
 			checks: {},
 			whyNot: ['calculating, , , '],
@@ -155,7 +158,9 @@ export default {
 					);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error checking applications', e);
+				this.toastError('Something went wrong, please try again later');
+
 				this.checks = {
 					visiting: false,
 				};
@@ -165,7 +170,7 @@ export default {
 		},
 		async submitApplication() {
 			try {
-				this.$refs.submitButton.classList.add('disabled');
+				this.spinners.push('submit');
 				const { data } = await zabApi.post('/controller/visit', {
 					...this.form,
 					email: this.$refs.email.value,
@@ -177,7 +182,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error submitting application', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

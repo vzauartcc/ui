@@ -79,8 +79,10 @@
 								name="action"
 								@click="unlinkDiscord()"
 								style="background-color: #e4002b"
+								:disabled="spinners.length > 0"
 							>
-								Unlink Discord
+								<span v-if="spinners.some((s) => s === 'unlink')"> <SmallSpinner /> </span>Unlink
+								Discord
 								<i class="material-icons right">discord</i>
 							</button>
 						</a>
@@ -146,6 +148,7 @@ export default {
 	title: 'Dashboard',
 	data() {
 		return {
+			spinners: [],
 			approvedAirports: [
 				'ARR',
 				'AZO',
@@ -195,21 +198,39 @@ export default {
 	},
 	methods: {
 		async generateToken() {
-			const { data: tokenRet } = await zabApi.post('/user/idsToken');
-			if (tokenRet.ret_det.code === 200) {
-				this.toastSuccess('Token successfully generated');
-				this.token = tokenRet.data;
-			} else {
-				this.toastError(tokenRet.ret_det.message);
+			try {
+				this.spinners.push('generate');
+				const { data: tokenRet } = await zabApi.post('/user/idsToken');
+				if (tokenRet.ret_det.code === 200) {
+					this.toastSuccess('Token successfully generated');
+					this.token = tokenRet.data;
+				} else {
+					this.toastError(tokenRet.ret_det.message);
+				}
+			} catch (e) {
+				console.error('error generating token', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'generate');
 			}
 		},
 		async getDiscordStatus() {
-			const { data: discordData } = await zabApi.get('/discord/user');
-			this.discordConnected = discordData.data;
+			try {
+				const { data: discordData } = await zabApi.get('/discord/user');
+				this.discordConnected = discordData.data;
+			} catch (e) {
+				console.error('error getting discord status', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async getControllingSessions() {
-			const { data: sessionData } = await zabApi.get('/user/sessions');
-			this.activityData = sessionData.data;
+			try {
+				const { data: sessionData } = await zabApi.get('/user/sessions');
+				this.activityData = sessionData.data;
+			} catch (e) {
+				console.error('error getting sessions', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		showToken() {
 			document.getElementById('token_wrap').classList.remove('hidden');
@@ -223,12 +244,20 @@ export default {
 			this.$router.push('/login/discord');
 		},
 		async unlinkDiscord() {
-			const { data: unlinkData } = await zabApi.delete('/discord/user');
-			if (unlinkData.ret_det.code === 200) {
-				this.toastSuccess('Discord unlinked.');
-				await this.getDiscordStatus();
-			} else {
-				this.toastError(unlinkData.ret_det.message);
+			try {
+				this.spinners.push('unlink');
+				const { data: unlinkData } = await zabApi.delete('/discord/user');
+				if (unlinkData.ret_det.code === 200) {
+					this.toastSuccess('Discord unlinked.');
+					await this.getDiscordStatus();
+				} else {
+					this.toastError(unlinkData.ret_det.message);
+				}
+			} catch (e) {
+				console.error('error unlinking discord', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'unlink');
 			}
 		},
 		sec2hms(secs) {

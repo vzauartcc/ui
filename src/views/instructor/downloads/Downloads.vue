@@ -41,11 +41,16 @@ export default {
 	},
 	methods: {
 		async getDownloads() {
-			const { data: fileData } = await zabApi.get('/file/downloads');
-			this.downloads = {
-				ins: fileData.data.filter((file) => file.category === 'ins'),
-				insguides: fileData.data.filter((file) => file.category === 'insguides'),
-			};
+			try {
+				const { data: fileData } = await zabApi.get('/file/downloads');
+				this.downloads = {
+					ins: fileData.data.filter((file) => file.category === 'ins'),
+					insguides: fileData.data.filter((file) => file.category === 'insguides'),
+				};
+			} catch (e) {
+				console.error('error getting downloads', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 	},
 };

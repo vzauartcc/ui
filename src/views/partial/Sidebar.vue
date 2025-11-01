@@ -145,12 +145,23 @@ export default {
 	},
 	methods: {
 		async getOnline() {
-			const { data } = await zabApi.get('/online');
-			this.pilotsOnline = data.data.pilots;
-			this.atcOnline = data.data.atc;
-			const { data: topData } = await zabApi.get('/online/top');
-			this.top = topData.data;
-			this.getZuluTime(); // update time when refreshing who's online
+			try {
+				const { data } = await zabApi.get('/online');
+				this.pilotsOnline = data.data.pilots;
+				this.atcOnline = data.data.atc;
+			} catch (e) {
+				console.error('error getting online data', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+
+			try {
+				const { data: topData } = await zabApi.get('/online/top');
+				this.top = topData.data;
+				this.getZuluTime(); // update time when refreshing who's online
+			} catch (e) {
+				console.error('error getting top controllers/positions', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		getZuluTime() {
 			return new Date().toLocaleString('en-US', {

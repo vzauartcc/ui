@@ -70,13 +70,13 @@
 						</label>
 					</div>
 					<div class="input-field col s12">
-						<input
+						<button
 							type="submit"
-							class="btn waves-effect waves-light right"
-							value="Update"
-							:disabled="isButtonDisabled"
-							@click.prevent="submitForm"
-						/>
+							class="btn right"
+							:disabled="isButtonDisabled || spinners.length > 0"
+						>
+							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Update
+						</button>
 					</div>
 				</form>
 			</div>
@@ -93,6 +93,7 @@ import { DateTime } from 'luxon';
 export default {
 	data() {
 		return {
+			spinners: [],
 			request: {
 				accepted: false,
 			},
@@ -133,8 +134,9 @@ export default {
 						altInput: true,
 					});
 				});
-			} catch (error) {
-				console.log(error);
+			} catch (e) {
+				console.error('error getting staffing requests', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		updateDateLocal(event) {
@@ -144,6 +146,7 @@ export default {
 		},
 		async submitForm() {
 			try {
+				this.spinners.push('submit');
 				const requestBody = {
 					name: this.request.name,
 					date: this.$refs.date.value,
@@ -173,7 +176,10 @@ export default {
 					this.isButtonDisabled = true;
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error updating staffing request', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

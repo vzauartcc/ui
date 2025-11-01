@@ -11,7 +11,7 @@
 
 <script>
 import { zabApi } from '@/helpers/axios.js';
-import { mapMutations, mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 export default {
 	name: 'LoginVerify',
 	title: 'Verifying Login...',
@@ -31,8 +31,9 @@ export default {
 			} else {
 				this.toastError('Something went wrong, please try again');
 			}
-		} catch {
-			this.toastError('Something went wrong, please try again');
+		} catch (e) {
+			console.error('error logging in', e);
+			this.toastError('Something went wrong, please try again later');
 		}
 		this.$router.push(localStorage.getItem('redirect') || '/');
 	},

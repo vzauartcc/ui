@@ -43,8 +43,13 @@ export default {
 	},
 	methods: {
 		async getArticle() {
-			const { data } = await zabApi.get(`/news/${this.$route.params.slug}`);
-			this.news = data.data;
+			try {
+				const { data } = await zabApi.get(`/news/${this.$route.params.slug}`);
+				this.news = data.data;
+			} catch (e) {
+				console.error('error getting article', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 	},
 };

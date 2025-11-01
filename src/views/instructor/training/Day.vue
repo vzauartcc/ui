@@ -117,9 +117,9 @@
 									href="#!"
 									class="waves-effect btn"
 									@click="takeSession(i, request._id)"
-									:class="{ disabled: submitting }"
+									:class="{ disabled: spinners.length > 0 }"
 								>
-									Take</a
+									<span v-if="spinners.some((s) => s === 'take')"> <SmallSpinner /> </span>Take</a
 								>
 								<a href="#!" class="waves-effect btn-flat modal-close">Cancel</a>
 							</div>
@@ -138,12 +138,10 @@
 									href="#!"
 									class="waves-effect btn modal-close"
 									@click="deleteRequest(request._id)"
-									:class="{ disabled: submitting }"
+									:class="{ disabled: spinners.length > 0 }"
+									><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span
 									>Delete</a
 								>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
 								<a href="#!" class="waves-effect btn-flat modal-close">Cancel</a>
 							</div>
 						</div>
@@ -162,7 +160,7 @@ export default {
 	name: 'TrainingRequestsDay',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			date: '',
 			times: {},
 			requests: null,
@@ -185,12 +183,13 @@ export default {
 				const { data } = await zabApi.get(`/training/request/${this.$route.params.date}`);
 				this.requests = data.data;
 			} catch (e) {
-				console.log(e);
+				console.error('error getting requests', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async takeSession(i, id) {
 			try {
-				this.submitting = true;
+				this.spinners.push('take');
 				const { data } = await zabApi.post(`/training/request/take/${id}`, {
 					startTime: this.requests[i].startTime,
 					endTime: this.requests[i].endTime,
@@ -203,14 +202,15 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error taking session', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'take');
 			}
 		},
 		async deleteRequest(id) {
 			try {
-				this.submitting = true;
+				this.spinners.push('delete');
 				const { data } = await zabApi.delete(`/training/request/${id}`);
 
 				if (data.ret_det.code === 200) {
@@ -220,9 +220,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting request', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		verifyRoute() {

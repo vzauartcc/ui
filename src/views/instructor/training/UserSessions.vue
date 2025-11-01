@@ -60,8 +60,8 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'CompletedSessions',
@@ -87,16 +87,21 @@ export default {
 	},
 	methods: {
 		async getSessions() {
-			const { data } = await zabApi.get(`/training/sessions/${this.$route.params.cid}`, {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
+			try {
+				const { data } = await zabApi.get(`/training/sessions/${this.$route.params.cid}`, {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
 
-			this.sessions = data.data.sessions;
-			this.sessionAmount = data.data.count;
-			this.controller = data.data.controller.fname + ' ' + data.data.controller.lname;
+				this.sessions = data.data.sessions;
+				this.sessionAmount = data.data.count;
+				this.controller = data.data.controller.fname + ' ' + data.data.controller.lname;
+			} catch (e) {
+				console.error('error getting sessions', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 	},
 };

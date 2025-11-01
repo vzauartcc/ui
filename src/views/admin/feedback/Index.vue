@@ -114,13 +114,16 @@
 							href="#!"
 							class="waves-effect waves-light btn"
 							@click.prevent="approveFeedback(feedback._id)"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'approve')"> <SmallSpinner /> </span
 							>Approve</a
 						>
 						<a
 							href="#!"
 							class="waves-effect waves-light btn-flat"
 							@click.prevent="rejectFeedback(feedback._id)"
-							>Reject</a
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'reject')"> <SmallSpinner /> </span>Reject</a
 						>
 					</div>
 				</div>
@@ -139,6 +142,7 @@ export default {
 	title: 'Feedback',
 	data() {
 		return {
+			spinners: [],
 			unapproved: null,
 		};
 	},
@@ -156,11 +160,16 @@ export default {
 	},
 	methods: {
 		async getUnapproved() {
-			const { data } = await zabApi.get('/feedback/unapproved');
-			this.unapproved = data.data;
-			this.$nextTick(() => {
-				this.initModals(); // Initialize modals after loading data
-			});
+			try {
+				const { data } = await zabApi.get('/feedback/unapproved');
+				this.unapproved = data.data;
+				this.$nextTick(() => {
+					this.initModals(); // Initialize modals after loading data
+				});
+			} catch (e) {
+				console.error('error getting unapproved feedback', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index) {
 			const modal = document.getElementById(`modal_unapproved_${index}`);
@@ -178,6 +187,7 @@ export default {
 		},
 		async approveFeedback(id) {
 			try {
+				this.spinners.push('approve');
 				const { data } = await zabApi.put(`/feedback/approve/${id}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Feedback approved');
@@ -190,11 +200,15 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error approving feedback', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'approve');
 			}
 		},
 		async rejectFeedback(id) {
 			try {
+				this.spinners.push('reject');
 				const { data } = await zabApi.put(`/feedback/reject/${id}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Feedback rejected');
@@ -207,7 +221,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error rejecting feedback', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'reject');
 			}
 		},
 		convertRating(rating) {

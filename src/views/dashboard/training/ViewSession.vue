@@ -109,8 +109,13 @@ export default {
 	},
 	methods: {
 		async getSessionDetails() {
-			const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
-			this.session = data.data;
+			try {
+				const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
+				this.session = data.data;
+			} catch (e) {
+				console.error('error getting session details', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		formatLocation(location) {
 			const locations = ['Classroom', 'Live Network', 'Sweatbox'];

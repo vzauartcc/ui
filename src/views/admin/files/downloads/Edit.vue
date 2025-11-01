@@ -40,7 +40,9 @@
 						</div>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="update" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Update
+						</button>
 					</div>
 				</form>
 			</div>
@@ -55,6 +57,7 @@ export default {
 	name: 'EditDownload',
 	data() {
 		return {
+			spinners: [],
 			form: {
 				name: '',
 				category: '',
@@ -73,13 +76,19 @@ export default {
 	},
 	methods: {
 		async getDownload() {
-			this.loading = true;
-			const { data } = await zabApi.get(`/file/downloads/${this.$route.params.id}`);
-			this.form = data.data;
-			this.loading = false;
+			try {
+				this.loading = true;
+				const { data } = await zabApi.get(`/file/downloads/${this.$route.params.id}`);
+				this.form = data.data;
+				this.loading = false;
+			} catch (e) {
+				console.error('error getting download', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async submitForm() {
 			try {
+				this.spinners.push('submit');
 				const formData = new FormData();
 				formData.append('name', this.form.name);
 				formData.append('category', this.form.category);
@@ -99,7 +108,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error updating download', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

@@ -72,8 +72,12 @@
 						</p>
 					</div>
 					<div class="modal-footer">
-						<a href="#" class="waves-effect btn" @click.prevent="deleteNews(news.uriSlug)"
-							>Delete</a
+						<a
+							href="#"
+							class="waves-effect btn"
+							@click.prevent="deleteNews(news.uriSlug)"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
 						>
 						<a href="#" class="modal-close waves-effect btn-flat" @click.prevent>Cancel</a>
 					</div>
@@ -84,14 +88,15 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'News',
 	title: 'News',
 	data() {
 		return {
+			spinners: [],
 			newsItems: null,
 			newsAmount: 0,
 			page: 1,
@@ -114,18 +119,23 @@ export default {
 	},
 	methods: {
 		async getNews() {
-			const { data } = await zabApi.get('/news', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			if (data.ret_det.code === 200) {
-				this.newsItems = data.data;
-				this.newsAmount = data.amount;
-				this.$nextTick(() => {
-					this.initModals();
+			try {
+				const { data } = await zabApi.get('/news', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
 				});
+				if (data.ret_det.code === 200) {
+					this.newsItems = data.data;
+					this.newsAmount = data.amount;
+					this.$nextTick(() => {
+						this.initModals();
+					});
+				}
+			} catch (e) {
+				console.error('error getting news', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		openModal(index) {
@@ -143,14 +153,25 @@ export default {
 			});
 		},
 		async deleteNews(slug) {
-			const { data } = await zabApi.delete(`/news/${slug}`);
-			if (data.ret_det.code === 200) {
-				this.toastSuccess('News article deleted');
+			try {
+				this.spinners.push('delete');
+				const { data } = await zabApi.delete(`/news/${slug}`);
+				if (data.ret_det.code === 200) {
+					this.toastSuccess('News article deleted');
 
-				setTimeout(() => M.Modal.getInstance(document.querySelector('.modal_delete')).close(), 500);
-				await this.getNews();
-			} else {
-				this.toastError(data.ret_det.message);
+					setTimeout(
+						() => M.Modal.getInstance(document.querySelector('.modal_delete')).close(),
+						500,
+					);
+					await this.getNews();
+				} else {
+					this.toastError(data.ret_det.message);
+				}
+			} catch (e) {
+				console.error('error deleting news', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 	},

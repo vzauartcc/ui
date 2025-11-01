@@ -113,11 +113,9 @@
 							href="#"
 							@click.prevent="deleteCert(cert._id)"
 							class="btn waves-effect modal-close"
-							:class="{ disabled: submitting }"
+							:class="{ disabled: spinners.length > 0 }"
 						>
-							<span v-if="submitting">
-								<SmallSpinner />
-							</span>
+							<span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>
 							Delete</a
 						>
 						<a href="#" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
@@ -136,7 +134,7 @@ export default {
 	title: 'Solo Endorsements',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			positions: ['ORD', 'CHI', 'MKE', 'MDW', 'FWA', 'RFD', 'MLI'],
 			certs: [],
 			old: [],
@@ -161,13 +159,13 @@ export default {
 						(c) => new Date(c.expires).getTime() < new Date().setHours(0, 0, 0, 0),
 					) || [];
 			} catch (e) {
+				console.error('error getting solo certs', e);
 				this.toastError(`Error fetching solo endorsements: ${e.message ? e.message : e}`);
-				console.log(e);
 			}
 		},
 		async deleteCert(id) {
 			try {
-				this.submitting = true;
+				this.spinners.push('delete');
 
 				const { data } = await zabApi.delete(`/training/solo/${id}`);
 
@@ -184,10 +182,10 @@ export default {
 					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
 				});
 			} catch (e) {
-				this.toastError(`Error deleting solo endorsement: ${e.message ? e.message : e}`);
-				this.toastError(e);
+				console.error('error deleting cert', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		getName(user) {

@@ -12,13 +12,17 @@ export default {
 	actions: {
 		getUser: async ({ commit, state }) => {
 			if (!state.user.isLoggedIn) {
-				const { data: user } = await zabApi.get('/user');
-				if (user.ret_det.code === 200) {
-					commit('setUser', user.data);
-					commit('setLoggedIn', true);
-				}
-				if (user.ret_det.code === 403) {
-					console.error(user.ret_det.message);
+				try {
+					const { data: user } = await zabApi.get('/user');
+					if (user.ret_det.code === 200) {
+						commit('setUser', user.data);
+						commit('setLoggedIn', true);
+					}
+					if (user.ret_det.code === 403) {
+						console.error(user.ret_det.message);
+					}
+				} catch (e) {
+					console.error('[store] error getting user', e);
 				}
 			}
 			commit('setQuery', true);
@@ -30,8 +34,8 @@ export default {
 					commit('setUser', null);
 					commit('setLoggedIn', false);
 				})
-				.catch((err) => {
-					console.log(err);
+				.catch((e) => {
+					console.error('[store] error logging out', e);
 				});
 		},
 	},

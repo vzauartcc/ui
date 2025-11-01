@@ -32,9 +32,9 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
-import Spinner from '@/components/Spinner.vue';
 import Pagination from '@/components/Pagination.vue';
+import Spinner from '@/components/Spinner.vue';
+import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'News',
@@ -64,15 +64,20 @@ export default {
 	},
 	methods: {
 		async getNews() {
-			const { data } = await zabApi.get('/news', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			if (data.ret_det.code === 200) {
-				this.newsItems = data.data;
-				this.newsAmount = data.amount;
+			try {
+				const { data } = await zabApi.get('/news', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				if (data.ret_det.code === 200) {
+					this.newsItems = data.data;
+					this.newsAmount = data.amount;
+				}
+			} catch (e) {
+				console.error('error getting news', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async goToArticle(slug) {

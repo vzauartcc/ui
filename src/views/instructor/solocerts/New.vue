@@ -57,15 +57,13 @@
 							<label for="expiration_date" class="active flatpickr-wrap">Expiration Date</label>
 						</div>
 						<div class="col s12 input-field">
-							<input
+							<button
 								type="submit"
-								class="btn"
-								value="Submit"
-								:disabled="!isCurrentPartValid || submitting"
-							/>
-							<span v-if="submitting">
-								<SmallSpinner />
-							</span>
+								class="btn right"
+								:disabled="spinners.length > 0 || !isCurrentPartValid"
+							>
+								<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Submit
+							</button>
 						</div>
 					</div>
 				</form>
@@ -83,7 +81,7 @@ export default {
 	title: 'Issue Solo Endorsement',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			controllers: null,
 			form: {
 				cid: '',
@@ -129,11 +127,12 @@ export default {
 					return c.rating > 1 && c.rating < 5 && c.vis === false;
 				});
 			} catch (e) {
-				this.toastError(e);
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async submitCert() {
-			this.submitting = true;
+			this.spinners.push('submit');
 			try {
 				const { data } = await zabApi.post('/training/solo', {
 					student: this.form.cid,
@@ -150,9 +149,10 @@ export default {
 
 				this.$router.push('/ins/solo');
 			} catch (e) {
-				this.toastError(e);
+				console.log('error submitting cert', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

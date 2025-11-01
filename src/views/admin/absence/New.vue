@@ -36,7 +36,9 @@
 					<label for="reason">Reason</label>
 				</div>
 				<div class="input-field col s12">
-					<input type="submit" class="btn right" value="Grant" />
+					<button type="submit" class="btn right" :disabled="spinners.length > 0">
+						<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Grant
+					</button>
 				</div>
 			</form>
 		</div>
@@ -52,6 +54,7 @@ export default {
 	title: 'Grant Leave of Absence',
 	data() {
 		return {
+			spinners: [],
 			form: {
 				controller: 0,
 				reason: '',
@@ -78,11 +81,17 @@ export default {
 	},
 	methods: {
 		async getControllers() {
-			const { data } = await zabApi.get('/feedback/controllers');
-			this.controllers = data.data;
+			try {
+				const { data } = await zabApi.get('/feedback/controllers');
+				this.controllers = data.data;
+			} catch (e) {
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async submitForm() {
 			try {
+				this.spinners.push('submit');
 				const { data } = await zabApi.post('/controller/absence', {
 					...this.form,
 					expirationDate: `${this.$refs.expirationDate.value}T00:00:00.000Z`,
@@ -97,7 +106,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error creating absence', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

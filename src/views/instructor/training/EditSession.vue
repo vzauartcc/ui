@@ -176,11 +176,9 @@
 								v-if="step === 3"
 								class="btn right"
 								@click="submitForm"
-								:disabled="!isCurrentPartValid || submitting"
+								:disabled="!isCurrentPartValid || spinners.length > 0"
 							>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
+								<span v-if="spinners.some((s) => s === 'submit')"> <SmallSpinner /> </span>
 								<span v-if="!session.vatusaId || session.vatusaId === 0">Submit to VATUSA</span>
 								<span v-else>Update</span>
 							</button>
@@ -189,11 +187,9 @@
 								v-if="step === 3 && (!session.vatusaId || session.vatusaId === 0)"
 								class="btn-flat right"
 								@click="saveForm"
-								:disabled="!isCurrentPartValid || submitting"
+								:disabled="!isCurrentPartValid || spinners.length > 0"
 							>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
+								<span v-if="spinners.some((s) => s === 'save')"> <SmallSpinner /> </span>
 								Save
 							</button>
 							<button
@@ -225,7 +221,7 @@ export default {
 	title: 'Enter Session Notes',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			session: null,
 			step: 1,
 			duration: 0,
@@ -265,13 +261,13 @@ export default {
 				const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
 				this.session = data.data;
 			} catch (e) {
+				console.error('error getting session details', e);
 				this.toastError(`Error loading session data: ${e}`);
-				console.log(e);
 			}
 		},
 		async saveForm() {
 			try {
-				this.submitting = true;
+				this.spinners.push('save');
 				const { data } = await zabApi.put(`/training/session/save/${this.$route.params.id}`, {
 					position: this.session.position,
 					movements: this.session.movements,
@@ -290,14 +286,15 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error saving form', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'save');
 			}
 		},
 		async submitForm() {
 			try {
-				this.submitting = true;
+				this.spinners.push('submit');
 				const { data } = await zabApi.put(
 					`/training/session/submit/${this.$route.params.id}`,
 					this.session,
@@ -309,9 +306,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error submitting form', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 		formatHtmlDate(value) {
