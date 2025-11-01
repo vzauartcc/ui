@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - 'development'
+  workflow_dispatch:
 
 jobs:
   Build-and-Push:
     runs-on: ubuntu-latest
+    if: |
+      !(github.event.head_commit.author.email == '29139614+renovate[bot]@users.noreply.github.com' ||
+      github.event.head_commit.committer.email == '29139614+renovate[bot]@users.noreply.github.com')
 
     steps:
       - name: Checkout master
@@ -38,6 +42,9 @@ jobs:
     needs: Build-and-Push
     environment: staging
     runs-on: ubuntu-latest
+    if: |
+      !(github.event.head_commit.author.email == '29139614+renovate[bot]@users.noreply.github.com' ||
+      github.event.head_commit.committer.email == '29139614+renovate[bot]@users.noreply.github.com')
 
     steps:
       - name: Initialize doctl
