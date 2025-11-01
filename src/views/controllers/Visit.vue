@@ -7,11 +7,12 @@
 				click the button below to login and continue.<br />
 			</p>
 			<p>
-				<b class="red-text">Important: </b>please ensure that you meet all requirements to become a
-				visitor, as outlined in our
-				<router-link to="/files/documents/visiting-controller-policy-26476"
-					><b>Visiting Controller Policy</b></router-link
-				>. Any application that doesn't meet the requirements will be rejected.
+				<b class="red-text">Important: </b>Please ensure that you meet all requirements to become a
+				visitor, as outlined in
+				<a
+					href="https://vatusa-storage.nyc3.cdn.digitaloceanspaces.com/docs/general-division-policy.pdf"
+					><b>VATUSA DP001, Chapter 14</b></a
+				>. Any application that does not meet the requirements will be rejected.
 			</p>
 			<div v-if="!user.isLoggedIn">
 				<button class="btn btn-waves login_button" @click="login">Login with VATSIM</button>
@@ -21,8 +22,18 @@
 					<br />We have received your visiting application successfully! Our staff team will review
 					your application as soon as possible. In the meantime, if you have any questions or
 					concerns, please don't hesitate to
-					<a class="mailto_link" href="mailto:datm@zabartcc.org">let the DATM know.</a>
+					<a class="mailto_link" href="mailto:datm@zauartcc.org">let the DATM know.</a>
 				</p>
+			</div>
+			<div v-else-if="!checks.visiting">
+				<br /><br />
+				<p>
+					You do not meet VATUSA's requirements to become a visiting controller. Once you have met
+					the requirements, please come back to complete your visiting application.
+				</p>
+				<br />
+				<p>Requirements not met: {{ this.whyNot.join(', ') }}.</p>
+				<br />
 			</div>
 			<div v-else>
 				<br />
@@ -89,15 +100,17 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { zabApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
+import { mapState } from 'vuex';
 export default {
 	name: 'VisitorApply',
 	title: 'Become A Visitor',
 	data() {
 		return {
 			pendingApplication: false,
+			checks: {},
+			whyNot: ['calculating, , , '],
 			form: {
 				facility: null,
 				reason: null,
@@ -115,9 +128,39 @@ export default {
 		async checkOpenApplications() {
 			try {
 				const { data: statusData } = await zabApi.get('/controller/visit/status');
-				this.pendingApplication = !!statusData.data;
+				this.pendingApplication = !!statusData.data.count;
+				this.checks = statusData.data.status;
+
+				this.whyNot = [];
+				if (!this.checks.hasHome) {
+					this.whyNot.push('no home facility');
+				}
+				if (!this.checks.needsBasic) {
+					this.whyNot.push('need basic training');
+				}
+				if (!this.checks.hasRating) {
+					this.whyNot.push('rating less than S3');
+				}
+				if (!this.checks.promo) {
+					this.whyNot.push(`recently promoted (${this.checks.promoDays || 'Unknown'} days ago)`);
+				}
+				if (!this.checks.ratingConsolidation) {
+					this.whyNot.push(
+						`rating hours less than 50 (${this.checks.ratingHours || 'Unknown'} hours)`,
+					);
+				}
+				if (!this.checks.recentlyRostered) {
+					this.whyNot.push(
+						`added to a roster in the past 60 days (${this.checks.visitingDays || 'Unknown'} days ago)`,
+					);
+				}
 			} catch (e) {
 				console.log(e);
+				this.checks = {
+					visiting: false,
+				};
+				this.whyNot = [];
+				this.whyNot.push('an error occurred');
 			}
 		},
 		async submitApplication() {

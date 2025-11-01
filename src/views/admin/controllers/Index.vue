@@ -70,6 +70,8 @@
 
 								<template
 									v-if="
+										// disable promote button
+										false &&
 										controller.ratingShort !== 'C3' &&
 										controller.ratingShort !== 'SUP' &&
 										controller.ratingShort !== 'ADM' &&
@@ -187,10 +189,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { vatusaApiAuth, zabApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import { mapState } from 'vuex';
 
 export default {
 	computed: {

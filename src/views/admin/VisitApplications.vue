@@ -20,12 +20,12 @@
 					</tr>
 				</thead>
 				<tbody class="certs_list_row">
-					<tr v-for="app in applications" :key="app.cid">
-						<td>{{ app.fname }} {{ app.lname }}</td>
-						<td>{{ app.rating }}</td>
-						<td>{{ app.home }}</td>
+					<tr v-for="app in applications" :key="app.application.cid">
+						<td>{{ app.application.fname }} {{ app.application.lname }}</td>
+						<td>{{ app.application.rating }}</td>
+						<td>{{ app.application.home }}</td>
 						<td class="options">
-							<a href="#" class="modal-trigger" @click.prevent="openModal(app.cid)">
+							<a href="#" class="modal-trigger" @click.prevent="openModal(app.application.cid)">
 								<i class="material-icons">search</i>
 							</a>
 						</td>
@@ -36,54 +36,127 @@
 		<teleport to="body">
 			<div v-for="app in applications" :key="`modal_${app.cid}`">
 				<!-- Application Details Modal -->
-				<div :id="`modal_${app.cid}`" class="modal modal_visit">
+				<div :id="`modal_${app.application.cid}`" class="modal modal_visit">
 					<div class="modal-content">
 						<div class="modal_title">Visiting Application</div>
 						<div class="row row_no_margin">
 							<div class="input-field col s6">
-								<p id="name">{{ app.fname + ' ' + app.lname }}</p>
+								<p id="name">{{ app.application.fname + ' ' + app.application.lname }}</p>
 								<label for="name" class="active">Name</label>
 							</div>
 							<div class="input-field col s6">
-								<p id="email">{{ app.email }}</p>
+								<p id="email">{{ app.application.email }}</p>
 								<label for="email" class="active">Email</label>
 							</div>
 							<div class="input-field col s6">
-								<p id="cid">{{ app.cid }}</p>
+								<p id="cid">{{ app.application.cid }}</p>
 								<label for="cid" class="active">CID</label>
 							</div>
 							<div class="input-field col s6">
-								<p id="rating">{{ app.rating }}</p>
+								<p id="rating">{{ app.application.rating }}</p>
 								<label for="rating" class="active">Rating</label>
 							</div>
 							<div class="input-field col s6">
-								<p id="home">{{ app.home }}</p>
+								<p id="home">{{ app.application.home }}</p>
 								<label for="home" class="active">Home ARTCC</label>
 							</div>
 							<div class="input-field col s6">
-								<p id="submission_date">{{ dtLong(app.createdAt) }}</p>
+								<p id="submission_date">{{ dtLong(app.application.createdAt) }}</p>
 								<label for="submission_date" class="active">Date</label>
 							</div>
 							<div class="input-field col s12">
-								<p id="join_reason">{{ app.reason }}</p>
+								<p id="join_reason">{{ app.application.reason }}</p>
 								<label for="join_reason" class="active">Why would you like to visit ZAU?</label>
+							</div>
+						</div>
+						<div class="row" v-if="!app.statusChecks.visiting">
+							<hr />
+							<div class="input-field col s6">
+								<p
+									id="50-hours"
+									:style="!app.statusChecks.ratingConsolidation ? 'color: red' : 'color: green'"
+								>
+									{{
+										app.statusChecks.ratingConsolidation
+											? 'Yes'
+											: app.statusChecks.ratingHours || 'Unknown' + ' hours'
+									}}
+								</p>
+								<label for="50-hours" class="active"
+									>Rating Consolidation (50 hours in rating)</label
+								>
+							</div>
+							<div class="input-field col s6">
+								<p id="promo" :style="!app.statusChecks.promo ? 'color: red' : 'color: green'">
+									{{
+										app.statusChecks.promo
+											? 'Yes'
+											: app.statusChecks.promoDays || 'Unknown' + ' days'
+									}}
+								</p>
+								<label for="promo" class="active">90 days in rating</label>
+							</div>
+							<div class="input-field col s6">
+								<p id="rating" :style="!app.statusChecks.hasRating ? 'color: red' : 'color: green'">
+									{{ app.statusChecks.hasRating ? 'Yes' : 'No' }}
+								</p>
+								<label for="rating" class="active">Has S3 rating</label>
+							</div>
+							<div class="input-field col s6">
+								<p
+									id="60-days"
+									:style="!app.statusChecks.recentlyRostered ? 'color: red' : 'color: green'"
+								>
+									{{
+										app.statusChecks.recentlyRostered
+											? 'Yes'
+											: app.statusChecks.visitingDays || 'Unknown' + ' days'
+									}}
+								</p>
+								<label for="60-days" class="active"
+									>Rostered Recently (60 days since added to a VATUSA subdivision)</label
+								>
+							</div>
+							<div class="input-field col s6">
+								<p id="has-home" :style="!app.statusChecks.hasHome ? 'color: red' : 'color: green'">
+									{{ app.statusChecks.hasHome ? 'Yes' : 'No' }}
+								</p>
+								<label for="has-home" class="active">Has home facility</label>
+							</div>
+							<div class="input-field col s6">
+								<p
+									id="needs-basic"
+									:style="!app.statusChecks.needsBasic ? 'color: red' : 'color: green'"
+								>
+									{{ !app.statusChecks.needsBasic ? 'Yes' : 'No' }}
+								</p>
+								<label for="needs-basic" class="active">Needs Basic</label>
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer">
 						<a href="#!" class="btn-flat modal-close right" @click.prevent>Cancel</a>
-						<a href="#" class="btn-flat right" @click.prevent="openRejectModal(app.cid)">Reject</a>
+						<a href="#" class="btn-flat right" @click.prevent="openRejectModal(app.application.cid)"
+							>Reject</a
+						>
 						<a
 							href="#"
 							class="waves-effect waves-light btn right"
-							@click.prevent="approveVisitor(app.cid)"
+							@click.prevent="approveVisitor(app.application.cid)"
+							:style="app.statusChecks.visiting ? '' : 'background-color:red'"
 							>Approve</a
 						>
+						<p v-if="app.statusChecks.visiting" class="left" style="color: green">
+							Meets VATUSA requirements
+						</p>
+						<p v-else class="left" style="color: red; font-weight: bolder">
+							Does not meet VATUSA requirements
+						</p>
 					</div>
 				</div>
 
 				<!-- Reject Application Modal -->
-				<div :id="`modal_reject_${app.cid}`" class="modal modal_visit">
+				<div :id="`modal_reject_${app.application.cid}`" class="modal modal_visit">
 					<div class="modal-content">
 						<div class="modal_title">Reject Visiting Application?</div>
 						<p>
@@ -95,16 +168,19 @@
 						<div class="row row_no_margin">
 							<div class="input-field col s12">
 								<input
-									:id="`reason_${app.cid}`"
-									:name="`reason_${app.cid}`"
-									v-model="reason[app.cid]"
+									:id="`reason_${app.application.cid}`"
+									:name="`reason_${app.application.cid}`"
+									v-model="reason[app.application.cid]"
 								/>
-								<label :for="`reason_${app.cid}`" class="active">Reason</label>
+								<label :for="`reason_${app.application.cid}`" class="active">Reason</label>
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer">
-						<a href="#" class="waves-effect btn modal-close" @click.prevent="rejectVisitor(app.cid)"
+						<a
+							href="#"
+							class="waves-effect btn modal-close"
+							@click.prevent="rejectVisitor(app.application.cid)"
 							>Reject</a
 						>
 						<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Cancel</a>
