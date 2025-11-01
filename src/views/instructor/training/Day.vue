@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -180,7 +180,7 @@ export default {
 	methods: {
 		async getRequests() {
 			try {
-				const { data } = await zabApi.get(`/training/request/${this.$route.params.date}`);
+				const { data } = await zauApi.get(`/training/request/${this.$route.params.date}`);
 				this.requests = data.data;
 			} catch (e) {
 				console.error('error getting requests', e);
@@ -190,7 +190,7 @@ export default {
 		async takeSession(i, id) {
 			try {
 				this.spinners.push('take');
-				const { data } = await zabApi.post(`/training/request/take/${id}`, {
+				const { data } = await zauApi.post(`/training/request/take/${id}`, {
 					startTime: this.requests[i].startTime,
 					endTime: this.requests[i].endTime,
 					instructor: this.user.data._id,
@@ -211,7 +211,7 @@ export default {
 		async deleteRequest(id) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zabApi.delete(`/training/request/${id}`);
+				const { data } = await zauApi.delete(`/training/request/${id}`);
 
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Training request deleted');

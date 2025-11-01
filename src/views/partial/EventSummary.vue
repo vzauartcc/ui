@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Events',
@@ -59,7 +59,7 @@ export default {
 	methods: {
 		async getUpcomingEvents() {
 			try {
-				const { data } = await zabApi.get('/event');
+				const { data } = await zauApi.get('/event');
 				this.events = data.data;
 			} catch (e) {
 				console.error('error getting upcoming events', e);

@@ -35,7 +35,7 @@
 
 <script>
 import Pagination from '@/components/Pagination.vue';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	title: 'Action Log',
@@ -57,7 +57,7 @@ export default {
 	methods: {
 		async getLog() {
 			try {
-				const { data: dossierData } = await zabApi.get('/controller/log', {
+				const { data: dossierData } = await zauApi.get('/controller/log', {
 					params: {
 						page: this.page,
 						limit: this.limit,

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Notifications',
@@ -55,7 +55,7 @@ export default {
 	methods: {
 		async getNotifications() {
 			try {
-				const { data } = await zabApi.get(`/user/notifications`, {
+				const { data } = await zauApi.get(`/user/notifications`, {
 					params: {
 						page: this.page,
 						limit: this.limit,
@@ -77,7 +77,7 @@ export default {
 			this.page += 1;
 
 			try {
-				const { data } = await zabApi.get(`/user/notifications`, {
+				const { data } = await zauApi.get(`/user/notifications`, {
 					params: {
 						page: this.page,
 						limit: this.limit,
@@ -92,7 +92,7 @@ export default {
 		},
 		async redirectTo(link, id) {
 			try {
-				await zabApi.put(`/user/notifications/read/${id}`);
+				await zauApi.put(`/user/notifications/read/${id}`);
 				this.$router.push(link);
 			} catch (e) {
 				console.log('error redirecting', e);
@@ -102,7 +102,7 @@ export default {
 		async readAll() {
 			try {
 				this.spinners.push('read');
-				await zabApi.put(`/user/notifications/read/all`);
+				await zauApi.put(`/user/notifications/read/all`);
 				this.notifications.forEach((notif) => {
 					if (notif.read === false) {
 						notif.read = true;
@@ -120,7 +120,7 @@ export default {
 			try {
 				this.spinners.push('delete');
 				if (this.notifications.length > 0) {
-					await zabApi.delete(`/user/notifications`);
+					await zauApi.delete(`/user/notifications`);
 					this.notifications = [];
 					this.$parent.unread = false;
 					this.toastSuccess('Deleted all notifications successfully');

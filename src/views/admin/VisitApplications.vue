@@ -202,7 +202,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'VisitorApplications',
@@ -220,7 +220,7 @@ export default {
 	methods: {
 		async getNewApplications() {
 			try {
-				const { data } = await zabApi.get('/controller/visit');
+				const { data } = await zauApi.get('/controller/visit');
 				this.applications = data.data;
 				this.$nextTick(() => {
 					this.initModals();
@@ -247,7 +247,7 @@ export default {
 		async approveVisitor(cid) {
 			try {
 				this.spinners.push('approve');
-				const { data } = await zabApi.put(`/controller/visit/${cid}`);
+				const { data } = await zauApi.put(`/controller/visit/${cid}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Visiting application approved');
 					await this.getNewApplications();
@@ -264,7 +264,7 @@ export default {
 		async rejectVisitor(cid) {
 			try {
 				this.spinners.push('reject');
-				const { data } = await zabApi.delete(`/controller/visit/${cid}`, {
+				const { data } = await zauApi.delete(`/controller/visit/${cid}`, {
 					data: {
 						reason: this.reason[cid],
 					},

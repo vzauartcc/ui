@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import Editor from '@toast-ui/editor';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
@@ -124,7 +124,7 @@ export default {
 	methods: {
 		async getDocument() {
 			try {
-				const { data } = await zabApi.get(`/file/documents/${this.$route.params.id}`);
+				const { data } = await zauApi.get(`/file/documents/${this.$route.params.id}`);
 				this.form = data.data;
 				this.loading = false;
 			} catch (e) {
@@ -148,7 +148,7 @@ export default {
 					formData.append('download', this.$refs.download.files[0]);
 				}
 
-				const { data } = await zabApi.put(`/file/documents/${this.form.slug}`, formData, {
+				const { data } = await zauApi.put(`/file/documents/${this.form.slug}`, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' },
 				});
 

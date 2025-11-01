@@ -193,7 +193,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
@@ -227,7 +227,7 @@ export default {
 			this.currentQuarter = currentQuarter; // Update the current quarter
 
 			try {
-				const { data: reportData } = await zabApi.get('/stats/activity', {
+				const { data: reportData } = await zauApi.get('/stats/activity', {
 					params: {
 						period: currentQuarter,
 						year: year,
@@ -281,7 +281,7 @@ export default {
 			try {
 				this.spinners.push('remove');
 				this.toastInfo('Removing controller...');
-				const { data } = await zabApi.delete(`/controller/${cid}`, {
+				const { data } = await zauApi.delete(`/controller/${cid}`, {
 					data: {
 						reason: this.reason,
 					},

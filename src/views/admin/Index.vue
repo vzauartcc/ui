@@ -79,7 +79,7 @@
 	</div>
 </template>
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { Chart, registerables } from 'chart.js';
 
 export default {
@@ -93,7 +93,7 @@ export default {
 	async mounted() {
 		Chart.register(...registerables);
 		try {
-			const { data: statsData } = await zabApi.get('/stats/admin');
+			const { data: statsData } = await zauApi.get('/stats/admin');
 			this.stats = statsData.data;
 			this.$nextTick(() => {
 				M.Tooltip.init(document.querySelectorAll('.tooltipped'), {

@@ -1,4 +1,4 @@
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	namespaced: true,
@@ -13,7 +13,7 @@ export default {
 		getUser: async ({ commit, state }) => {
 			if (!state.user.isLoggedIn) {
 				try {
-					const { data: user } = await zabApi.get('/user');
+					const { data: user } = await zauApi.get('/user');
 					if (user.ret_det.code === 200) {
 						commit('setUser', user.data);
 						commit('setLoggedIn', true);
@@ -28,7 +28,7 @@ export default {
 			commit('setQuery', true);
 		},
 		logout: async ({ commit }) => {
-			zabApi
+			zauApi
 				.get('/user/logout')
 				.then(() => {
 					commit('setUser', null);

@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 import { mapState } from 'vuex';
 
@@ -147,7 +147,7 @@ export default {
 		},
 		async getControllers() {
 			try {
-				const { data } = await zabApi.get('/feedback/controllers');
+				const { data } = await zauApi.get('/feedback/controllers');
 				this.controllers = data.data;
 			} catch (e) {
 				console.error('error getting controllers', e);
@@ -157,7 +157,7 @@ export default {
 		async submitFeedback() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zabApi.post('/feedback', this.feedback);
+				const { data } = await zauApi.post('/feedback', this.feedback);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Feedback sent');
 					document.getElementById('feedback').reset();

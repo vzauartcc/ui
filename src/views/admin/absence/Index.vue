@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Absence',
@@ -131,7 +131,7 @@ export default {
 	methods: {
 		async getAbsences() {
 			try {
-				const { data } = await zabApi.get('/controller/absence');
+				const { data } = await zauApi.get('/controller/absence');
 				this.absences = data.data;
 				this.$nextTick(() => {
 					this.initModals();
@@ -158,7 +158,7 @@ export default {
 		async deleteLoa(id) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zabApi.delete(`/controller/absence/${id}`);
+				const { data } = await zauApi.delete(`/controller/absence/${id}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Controller removed from LOA successfully');
 

@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
@@ -43,7 +43,7 @@ export default {
 	methods: {
 		async getDocument() {
 			try {
-				const { data } = await zabApi.get(`/file/documents/${this.$route.params.slug}`);
+				const { data } = await zauApi.get(`/file/documents/${this.$route.params.slug}`);
 				this.document = data.data;
 				this.setTitle(this.document.name);
 			} catch (e) {

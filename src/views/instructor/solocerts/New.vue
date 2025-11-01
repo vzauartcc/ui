@@ -72,7 +72,7 @@
 	</div>
 </template>
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -121,7 +121,7 @@ export default {
 	methods: {
 		async getControllers() {
 			try {
-				const { data } = await zabApi.get('/feedback/controllers');
+				const { data } = await zauApi.get('/feedback/controllers');
 				this.controllers = data.data.filter((c) => {
 					// Must be at least a S1, must be less than a C1, must not be a visitor
 					return c.rating > 1 && c.rating < 5 && c.vis === false;
@@ -134,7 +134,7 @@ export default {
 		async submitCert() {
 			this.spinners.push('submit');
 			try {
-				const { data } = await zabApi.post('/training/solo', {
+				const { data } = await zauApi.post('/training/solo', {
 					student: this.form.cid,
 					position: this.form.position,
 					expirationDate: this.$refs.expirationDate.value,

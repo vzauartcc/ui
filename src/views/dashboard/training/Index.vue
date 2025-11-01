@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import PastSessions from './Past.vue';
 
 export default {
@@ -106,7 +106,7 @@ export default {
 	methods: {
 		async getUpcomingSessions() {
 			try {
-				const { data } = await zabApi.get(`/training/request/upcoming`);
+				const { data } = await zauApi.get(`/training/request/upcoming`);
 				this.upcomingSessions = data.data;
 			} catch (e) {
 				console.error('error getting upcoming requests', e);
@@ -122,7 +122,7 @@ export default {
 		async deleteSession(id) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zabApi.delete(`/training/request/${id}`);
+				const { data } = await zauApi.delete(`/training/request/${id}`);
 
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Training request deleted');

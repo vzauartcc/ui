@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapActions, mapMutations } from 'vuex';
 export default {
 	name: 'LoginVerify',
@@ -21,7 +21,7 @@ export default {
 	},
 	async mounted() {
 		try {
-			const { data } = await zabApi.post('/user/login', {
+			const { data } = await zauApi.post('/user/login', {
 				code: this.$route.query.code,
 			});
 			if (data.ret_det.code === 200) {

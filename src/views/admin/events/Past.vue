@@ -87,7 +87,7 @@
 
 <script>
 import Pagination from '@/components/Pagination.vue';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'HistoricEvents',
@@ -119,7 +119,7 @@ export default {
 	methods: {
 		async getHistoricEvents() {
 			try {
-				const { data } = await zabApi.get('/event/archive', {
+				const { data } = await zauApi.get('/event/archive', {
 					params: {
 						page: this.page,
 						limit: this.limit,
@@ -149,7 +149,7 @@ export default {
 		async deleteEvent(slug) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zabApi.delete(`/event/${slug}`);
+				const { data } = await zauApi.delete(`/event/${slug}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Event deleted');
 					await this.getHistoricEvents(); // Refresh event list

@@ -237,7 +237,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { mapActions, mapState } from 'vuex';
@@ -342,7 +342,7 @@ export default {
 		...mapActions('user', ['getUser']),
 		async getTrainingMilestones() {
 			try {
-				const { data } = await zabApi.get(`/training/milestones`);
+				const { data } = await zauApi.get(`/training/milestones`);
 				this.milestones = data.data.milestones;
 			} catch (e) {
 				console.error('error getting milestones', e);
@@ -351,7 +351,7 @@ export default {
 		},
 		async getControllers() {
 			try {
-				const { data } = await zabApi.get('/feedback/controllers');
+				const { data } = await zauApi.get('/feedback/controllers');
 				this.controllers = data.data;
 			} catch (e) {
 				console.error('error getting controllers', e);
@@ -366,7 +366,7 @@ export default {
 
 			this.spinners.push('save');
 			try {
-				const { data } = await zabApi.post(`/training/session/save`, {
+				const { data } = await zauApi.post(`/training/session/save`, {
 					student: this.form.student,
 					milestone: this.form.milestone,
 					position: this.form.position,
@@ -400,7 +400,7 @@ export default {
 
 			this.spinners.push('submit');
 			try {
-				const { data } = await zabApi.post(`/training/session/submit`, {
+				const { data } = await zauApi.post(`/training/session/submit`, {
 					student: this.form.student,
 					milestone: this.form.milestone,
 					position: this.form.position,

@@ -1,4 +1,4 @@
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import router from '@/router/index.js';
 
 export default {
@@ -14,7 +14,7 @@ export default {
 		getVisit: async ({ commit, state }) => {
 			if (!state.visit.isLoggedIn) {
 				// we have a token already set
-				zabApi
+				zauApi
 					.get('/user/visit')
 					.then(({ data }) => {
 						if (data) {
@@ -30,7 +30,7 @@ export default {
 			commit('setVisitQuery', true);
 		},
 		logout: async ({ commit }) => {
-			zabApi
+			zauApi
 				.get('/user/visit/logout')
 				.then(() => {
 					commit('setVisit', null);

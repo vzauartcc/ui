@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'ViewSession',
@@ -120,7 +120,7 @@ export default {
 	methods: {
 		async getSessionDetails() {
 			try {
-				const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
+				const { data } = await zauApi.get(`/training/session/${this.$route.params.id}`);
 				this.session = data.data;
 			} catch (e) {
 				console.error('error getting session details', e);

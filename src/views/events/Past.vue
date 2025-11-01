@@ -42,7 +42,7 @@
 
 <script>
 import Pagination from '@/components/Pagination.vue';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'HistoricEvents',
@@ -65,7 +65,7 @@ export default {
 	methods: {
 		async getHistoricEvents() {
 			try {
-				const { data } = await zabApi.get('/event/archive', {
+				const { data } = await zauApi.get('/event/archive', {
 					params: {
 						page: this.page,
 						limit: this.limit,

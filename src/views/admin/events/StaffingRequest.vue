@@ -90,7 +90,7 @@
 
 <script>
 import Pagination from '@/components/Pagination.vue';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'staffingRequests',
@@ -122,7 +122,7 @@ export default {
 	methods: {
 		async getStaffingRequests() {
 			try {
-				const { data } = await zabApi.get('/event/staffingRequest', {
+				const { data } = await zauApi.get('/event/staffingRequest', {
 					params: {
 						page: this.page,
 						limit: this.limit,
@@ -152,7 +152,7 @@ export default {
 		async deleteStaffingRequest(_id) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zabApi.delete(`/event/staffingRequest/${_id}`);
+				const { data } = await zauApi.delete(`/event/staffingRequest/${_id}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Staffing Request deleted');
 					await this.getStaffingRequests();

@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 import EventAssignmentTable from './EventAssignmentTable.vue';
 
@@ -118,7 +118,7 @@ export default {
 	methods: {
 		async getPositions() {
 			try {
-				const { data } = await zabApi.get(`/event/${this.$route.params.slug}/positions`);
+				const { data } = await zauApi.get(`/event/${this.$route.params.slug}/positions`);
 				this.event = data.data;
 
 				if (this.event.positions !== null) {
@@ -141,7 +141,7 @@ export default {
 			try {
 				this.spinners.push('add');
 				const requests = this.chips.chipsData.map((chip) => chip.tag);
-				const { data } = await zabApi.put(`/event/${this.$route.params.slug}/signup`, { requests });
+				const { data } = await zauApi.put(`/event/${this.$route.params.slug}/signup`, { requests });
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Request submitted');
 
@@ -165,7 +165,7 @@ export default {
 				while (this.chips.chipsData.length) {
 					this.chips.deleteChip(0);
 				}
-				const { data } = await zabApi.delete(`/event/${this.$route.params.slug}/signup`);
+				const { data } = await zauApi.delete(`/event/${this.$route.params.slug}/signup`);
 
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Request deleted');

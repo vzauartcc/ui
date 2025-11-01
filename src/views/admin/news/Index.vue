@@ -89,7 +89,7 @@
 
 <script>
 import Pagination from '@/components/Pagination.vue';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'News',
@@ -120,7 +120,7 @@ export default {
 	methods: {
 		async getNews() {
 			try {
-				const { data } = await zabApi.get('/news', {
+				const { data } = await zauApi.get('/news', {
 					params: {
 						page: this.page,
 						limit: this.limit,
@@ -155,7 +155,7 @@ export default {
 		async deleteNews(slug) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zabApi.delete(`/news/${slug}`);
+				const { data } = await zauApi.delete(`/news/${slug}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('News article deleted');
 

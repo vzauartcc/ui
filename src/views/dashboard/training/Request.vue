@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { mapState } from 'vuex';
@@ -128,7 +128,7 @@ export default {
 				if (!this.request.milestone) {
 					this.toastError('You must select a milestone');
 				} else {
-					const { data } = await zabApi.post('/training/request/new', {
+					const { data } = await zauApi.post('/training/request/new', {
 						...this.request,
 						startTime: `${this.$refs.start_date.value}`,
 						endTime: `${this.$refs.end_date.value}`,
@@ -149,7 +149,7 @@ export default {
 		},
 		async getTrainingMilestones() {
 			try {
-				const { data } = await zabApi.get(`/training/milestones`);
+				const { data } = await zauApi.get(`/training/milestones`);
 				this.milestones = data.data.milestones;
 			} catch (e) {
 				console.error('error getting milestones', e);

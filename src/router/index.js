@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { zabApi } from '../helpers/axios';
+import { zauApi } from '../helpers/axios';
 import * as uriHelper from '../helpers/uriHelper';
 import Admin from '../views/layout/Admin.vue';
 import Dashboard from '../views/layout/ControllerDash.vue';
@@ -354,7 +354,7 @@ router.beforeEach(async (to, from, next) => {
 
 	if (to.meta.loggedIn) {
 		try {
-			const { data: user } = await zabApi.get('/user');
+			const { data: user } = await zauApi.get('/user');
 			if (user.ret_det.code === 200 && user.data.member === true) {
 				next();
 			} else {
@@ -366,7 +366,7 @@ router.beforeEach(async (to, from, next) => {
 	} else if (to.meta.isAdmin) {
 		// Route is an admin route.
 		try {
-			const { data: user } = await zabApi.get('/user');
+			const { data: user } = await zauApi.get('/user');
 			if (user.ret_det.code === 200 && user.data.isStaff === true) {
 				next();
 			} else {
@@ -378,7 +378,7 @@ router.beforeEach(async (to, from, next) => {
 	} else if (to.meta.isIns) {
 		// Route is an admin route.
 		try {
-			const { data: user } = await zabApi.get('/user');
+			const { data: user } = await zauApi.get('/user');
 			if (user.ret_det.code === 200 && user.data.isIns === true) {
 				next();
 			} else {

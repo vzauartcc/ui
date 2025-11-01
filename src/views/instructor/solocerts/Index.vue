@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'SoloCerts',
@@ -149,7 +149,7 @@ export default {
 	methods: {
 		async getSoloCerts() {
 			try {
-				const { data } = await zabApi.get('/training/solo');
+				const { data } = await zauApi.get('/training/solo');
 				this.certs =
 					data.data.filter(
 						(c) => new Date(c.expires).getTime() >= new Date().setHours(0, 0, 0, 0),
@@ -167,7 +167,7 @@ export default {
 			try {
 				this.spinners.push('delete');
 
-				const { data } = await zabApi.delete(`/training/solo/${id}`);
+				const { data } = await zauApi.delete(`/training/solo/${id}`);
 
 				if (data.ret_det.code !== 200) {
 					this.toastError(data.ret_det.message);

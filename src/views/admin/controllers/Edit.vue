@@ -254,7 +254,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
@@ -308,7 +308,7 @@ export default {
 	methods: {
 		async getController() {
 			try {
-				const { data } = await zabApi.get(`/controller/${this.$route.params.cid}`);
+				const { data } = await zauApi.get(`/controller/${this.$route.params.cid}`);
 				this.controller = data.data;
 				this.form = {
 					...this.form,
@@ -327,7 +327,7 @@ export default {
 			}
 
 			try {
-				this.usedOi = (await zabApi.get(`/controller/oi`)).data.data;
+				this.usedOi = (await zauApi.get(`/controller/oi`)).data.data;
 			} catch (e) {
 				console.error('error getting taken operator initials', e);
 				this.toastError('Something went wrong, please try again later');
@@ -359,7 +359,7 @@ export default {
 				if (!this.oiAvail) {
 					this.toastError('Operating initials already in use');
 				} else {
-					const { data } = await zabApi.put(`/controller/${this.controller.cid}`, {
+					const { data } = await zauApi.put(`/controller/${this.controller.cid}`, {
 						form: this.form,
 					});
 

@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
@@ -47,7 +47,7 @@ export default {
 	methods: {
 		async getNews() {
 			try {
-				const { data } = await zabApi.get('/news', {
+				const { data } = await zauApi.get('/news', {
 					params: {
 						page: this.page,
 						limit: this.limit,

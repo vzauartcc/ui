@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import Editor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
 import { mapState } from 'vuex';
@@ -59,7 +59,7 @@ export default {
 		async createNews() {
 			try {
 				this.spinners.push('create');
-				const { data } = await zabApi.post('/news', {
+				const { data } = await zauApi.post('/news', {
 					title: this.form.title,
 					content: this.editor.getMarkdown(),
 					createdBy: this.user.data.cid,

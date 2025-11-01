@@ -197,7 +197,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'EventAssignments',
@@ -223,7 +223,7 @@ export default {
 	methods: {
 		async getEventData() {
 			try {
-				const { data } = await zabApi.get(`/event/${this.$route.params.slug}/positions`);
+				const { data } = await zauApi.get(`/event/${this.$route.params.slug}/positions`);
 				this.event = data.data || { signups: [] };
 				this.$nextTick(() => {
 					this.initializeDynamicModals(); // Initialize dynamic modals after data loads
@@ -263,7 +263,7 @@ export default {
 		async notifyAssignments() {
 			try {
 				this.spinners.push('notify');
-				const { data } = await zabApi.put(`/event/${this.$route.params.slug}/notify`, {
+				const { data } = await zauApi.put(`/event/${this.$route.params.slug}/notify`, {
 					assignment: this.event.positions,
 				});
 
@@ -288,7 +288,7 @@ export default {
 		async addSignup() {
 			try {
 				this.spinners.push('add');
-				const { data } = await zabApi.put(
+				const { data } = await zauApi.put(
 					`/event/${this.$route.params.slug}/mansignup/${this.cid}`,
 				);
 				if (data.ret_det.code === 200) {
@@ -314,7 +314,7 @@ export default {
 		async deleteSignup(cid, modalId) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zabApi.delete(`/event/${this.$route.params.slug}/mandelete/${cid}`);
+				const { data } = await zauApi.delete(`/event/${this.$route.params.slug}/mandelete/${cid}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Sign-up manually deleted');
 					await this.getEventData();
@@ -344,7 +344,7 @@ export default {
 				const selectElement = this.$refs[`pos_${pos}`][0]; // Vue $refs returns an array for elements inside v-for
 				const selectedCid = selectElement.value;
 
-				const update = await zabApi.put(`/event/${this.$route.params.slug}/assign`, {
+				const update = await zauApi.put(`/event/${this.$route.params.slug}/assign`, {
 					position: pos,
 					cid: selectedCid,
 				});

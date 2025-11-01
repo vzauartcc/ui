@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -47,7 +47,7 @@ export default {
 		async updateProfile() {
 			try {
 				this.spinners.push('update');
-				const { data } = await zabApi.put('/user/profile', this.form);
+				const { data } = await zauApi.put('/user/profile', this.form);
 
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Profile successfully updated');

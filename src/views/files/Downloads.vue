@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import DownloadCategory from './DownloadCategory.vue';
 
 export default {
@@ -41,7 +41,7 @@ export default {
 	methods: {
 		async getDownloads() {
 			try {
-				const { data: fileData } = await zabApi.get('/file/downloads');
+				const { data: fileData } = await zauApi.get('/file/downloads');
 				this.downloads = {
 					sector: fileData.data.filter((file) => file.category === 'sectorFiles'),
 				};

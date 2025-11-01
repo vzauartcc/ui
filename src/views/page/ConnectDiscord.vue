@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -18,7 +18,7 @@ export default {
 	title: 'Linking Discord...',
 	async mounted() {
 		try {
-			const { data } = await zabApi.post('/discord/info', {
+			const { data } = await zauApi.post('/discord/info', {
 				cid: this.user.data.cid,
 				code: this.$route.query.code,
 			});

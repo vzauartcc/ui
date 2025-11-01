@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -144,7 +144,7 @@ export default {
 		async submitRequest() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zabApi.post('/event/staffingRequest', this.request);
+				const { data } = await zauApi.post('/event/staffingRequest', this.request);
 				console.log(data);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Staffing Request sent');

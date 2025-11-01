@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { DateTime } from 'luxon';
@@ -107,7 +107,7 @@ export default {
 	methods: {
 		async getEvent() {
 			try {
-				const { data } = await zabApi.get(`/event/${this.$route.params.slug}`);
+				const { data } = await zauApi.get(`/event/${this.$route.params.slug}`);
 				this.form = data.data;
 				if (this.form.positions && this.form.positions.length != 0) {
 					this.form.positions = this.form.positions.map((p) => p.pos);
@@ -167,7 +167,7 @@ export default {
 					formData.append('banner', this.selectedFile); // ✅ Use selected file
 				}
 
-				const { data } = await zabApi.put(`/event/${this.$route.params.slug}`, formData, {
+				const { data } = await zauApi.put(`/event/${this.$route.params.slug}`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},

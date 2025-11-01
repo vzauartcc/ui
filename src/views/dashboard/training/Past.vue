@@ -59,7 +59,7 @@
 
 <script>
 import Pagination from '@/components/Pagination.vue';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'PastSessions',
@@ -85,7 +85,7 @@ export default {
 	methods: {
 		async getPastSessions() {
 			try {
-				const { data } = await zabApi.get(`/training/sessions/past`, {
+				const { data } = await zauApi.get(`/training/sessions/past`, {
 					params: {
 						page: this.page,
 						limit: this.limit,

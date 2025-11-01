@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import DocumentCategory from './DocumentCategory.vue';
 
 export default {
@@ -45,7 +45,7 @@ export default {
 	methods: {
 		async getDocuments() {
 			try {
-				const { data: fileData } = await zabApi.get('/file/documents');
+				const { data: fileData } = await zauApi.get('/file/documents');
 				this.documents = {
 					loa: fileData.data.filter((doc) => doc.category === 'loa'),
 					sop: fileData.data.filter((doc) => doc.category === 'sop'),

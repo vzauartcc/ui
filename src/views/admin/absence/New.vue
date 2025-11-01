@@ -45,7 +45,7 @@
 	</div>
 </template>
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -82,7 +82,7 @@ export default {
 	methods: {
 		async getControllers() {
 			try {
-				const { data } = await zabApi.get('/feedback/controllers');
+				const { data } = await zauApi.get('/feedback/controllers');
 				this.controllers = data.data;
 			} catch (e) {
 				console.error('error getting controllers', e);
@@ -92,7 +92,7 @@ export default {
 		async submitForm() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zabApi.post('/controller/absence', {
+				const { data } = await zauApi.post('/controller/absence', {
 					...this.form,
 					expirationDate: `${this.$refs.expirationDate.value}T00:00:00.000Z`,
 				});

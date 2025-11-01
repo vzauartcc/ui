@@ -134,7 +134,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import RecentFeedback from './Recent.vue';
 
 export default {
@@ -161,7 +161,7 @@ export default {
 	methods: {
 		async getUnapproved() {
 			try {
-				const { data } = await zabApi.get('/feedback/unapproved');
+				const { data } = await zauApi.get('/feedback/unapproved');
 				this.unapproved = data.data;
 				this.$nextTick(() => {
 					this.initModals(); // Initialize modals after loading data
@@ -188,7 +188,7 @@ export default {
 		async approveFeedback(id) {
 			try {
 				this.spinners.push('approve');
-				const { data } = await zabApi.put(`/feedback/approve/${id}`);
+				const { data } = await zauApi.put(`/feedback/approve/${id}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Feedback approved');
 					await this.getUnapproved();
@@ -209,7 +209,7 @@ export default {
 		async rejectFeedback(id) {
 			try {
 				this.spinners.push('reject');
-				const { data } = await zabApi.put(`/feedback/reject/${id}`);
+				const { data } = await zauApi.put(`/feedback/reject/${id}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Feedback rejected');
 					await this.getUnapproved();

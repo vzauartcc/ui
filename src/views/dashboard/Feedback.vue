@@ -65,7 +65,7 @@
 
 <script>
 import Pagination from '@/components/Pagination.vue';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'UserFeedback',
@@ -92,7 +92,7 @@ export default {
 	methods: {
 		async getMyFeedback() {
 			try {
-				const { data } = await zabApi.get(`/feedback/own`, {
+				const { data } = await zauApi.get(`/feedback/own`, {
 					params: {
 						page: this.page,
 						limit: this.limit,

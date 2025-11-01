@@ -140,7 +140,7 @@
 	<StaffingRequest />
 </template>
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapActions, mapState } from 'vuex';
 import StaffingRequest from './StaffingRequest.vue';
 export default {
@@ -200,7 +200,7 @@ export default {
 		async generateToken() {
 			try {
 				this.spinners.push('generate');
-				const { data: tokenRet } = await zabApi.post('/user/idsToken');
+				const { data: tokenRet } = await zauApi.post('/user/idsToken');
 				if (tokenRet.ret_det.code === 200) {
 					this.toastSuccess('Token successfully generated');
 					this.token = tokenRet.data;
@@ -216,7 +216,7 @@ export default {
 		},
 		async getDiscordStatus() {
 			try {
-				const { data: discordData } = await zabApi.get('/discord/user');
+				const { data: discordData } = await zauApi.get('/discord/user');
 				this.discordConnected = discordData.data;
 			} catch (e) {
 				console.error('error getting discord status', e);
@@ -225,7 +225,7 @@ export default {
 		},
 		async getControllingSessions() {
 			try {
-				const { data: sessionData } = await zabApi.get('/user/sessions');
+				const { data: sessionData } = await zauApi.get('/user/sessions');
 				this.activityData = sessionData.data;
 			} catch (e) {
 				console.error('error getting sessions', e);
@@ -246,7 +246,7 @@ export default {
 		async unlinkDiscord() {
 			try {
 				this.spinners.push('unlink');
-				const { data: unlinkData } = await zabApi.delete('/discord/user');
+				const { data: unlinkData } = await zauApi.delete('/discord/user');
 				if (unlinkData.ret_det.code === 200) {
 					this.toastSuccess('Discord unlinked.');
 					await this.getDiscordStatus();

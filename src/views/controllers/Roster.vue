@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 import { mapState } from 'vuex';
 
@@ -154,7 +154,7 @@ export default {
 	methods: {
 		async getControllers() {
 			try {
-				const { data } = await zabApi.get('/controller');
+				const { data } = await zauApi.get('/controller');
 				this.controllers = data.data;
 				this.controllers.home = this.controllers.home.filter((c) => c.member);
 				this.controllers.visiting = this.controllers.visiting.filter((c) => c.member);

@@ -213,7 +213,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { nextTick } from 'vue';
 
 export default {
@@ -258,7 +258,7 @@ export default {
 	methods: {
 		async getSessionDetails() {
 			try {
-				const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
+				const { data } = await zauApi.get(`/training/session/${this.$route.params.id}`);
 				this.session = data.data;
 			} catch (e) {
 				console.error('error getting session details', e);
@@ -268,7 +268,7 @@ export default {
 		async saveForm() {
 			try {
 				this.spinners.push('save');
-				const { data } = await zabApi.put(`/training/session/save/${this.$route.params.id}`, {
+				const { data } = await zauApi.put(`/training/session/save/${this.$route.params.id}`, {
 					position: this.session.position,
 					movements: this.session.movements,
 					progress: this.session.progress,
@@ -295,7 +295,7 @@ export default {
 		async submitForm() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zabApi.put(
+				const { data } = await zauApi.put(
 					`/training/session/submit/${this.$route.params.id}`,
 					this.session,
 				);

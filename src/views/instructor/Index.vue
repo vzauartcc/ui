@@ -61,7 +61,7 @@
 	</div>
 </template>
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'InsDash',
@@ -73,7 +73,7 @@ export default {
 	},
 	async mounted() {
 		try {
-			const { data: statsData } = await zabApi.get('/stats/ins');
+			const { data: statsData } = await zauApi.get('/stats/ins');
 			this.stats = statsData.data;
 		} catch (e) {
 			console.error('error getting stats', e);

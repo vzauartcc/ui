@@ -168,7 +168,7 @@
 </template>
 
 <script>
-import { vatusaApiAuth, zabApi } from '@/helpers/axios.js';
+import { vatusaApiAuth, zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { mapState } from 'vuex';
@@ -236,7 +236,7 @@ export default {
 		},
 		async getControllers() {
 			try {
-				const { data } = await zabApi.get('/controller');
+				const { data } = await zauApi.get('/controller');
 				this.controllers = data.data.home.concat(data.data.visiting);
 				this.controllers = this.controllers.filter((c) => c.member);
 				this.controllersFiltered = this.controllers;
@@ -307,7 +307,7 @@ export default {
 		},
 		async getExaminerCid() {
 			try {
-				const res = await zabApi.get(`/user`);
+				const res = await zauApi.get(`/user`);
 				return res.data.data.cid;
 			} catch (e) {
 				console.error('error getting examiner id', e);

@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 
@@ -44,7 +44,7 @@ export default {
 	methods: {
 		async getArticle() {
 			try {
-				const { data } = await zabApi.get(`/news/${this.$route.params.slug}`);
+				const { data } = await zauApi.get(`/news/${this.$route.params.slug}`);
 				this.news = data.data;
 			} catch (e) {
 				console.error('error getting article', e);

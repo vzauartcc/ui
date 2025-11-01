@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import Editor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
 
@@ -59,7 +59,7 @@ export default {
 	methods: {
 		async getArticle() {
 			try {
-				const { data } = await zabApi.get(`/news/${this.$route.params.slug}`);
+				const { data } = await zauApi.get(`/news/${this.$route.params.slug}`);
 				this.news = data.data;
 			} catch (e) {
 				console.error('error getting article', e);
@@ -70,7 +70,7 @@ export default {
 			try {
 				this.spinners.push('update');
 				this.news.content = this.editor.getMarkdown();
-				const { data } = await zabApi.put(`/news/${this.$route.params.slug}`, this.news);
+				const { data } = await zauApi.put(`/news/${this.$route.params.slug}`, this.news);
 
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('News article updated');

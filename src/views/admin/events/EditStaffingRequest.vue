@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { DateTime } from 'luxon';
@@ -110,7 +110,7 @@ export default {
 	methods: {
 		async getStaffingRequest() {
 			try {
-				const { data } = await zabApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
+				const { data } = await zauApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
 				this.request = data.staffingRequest;
 
 				if (this.request.accepted) {
@@ -158,7 +158,7 @@ export default {
 					vaName: this.request.vaName,
 				};
 
-				const { data } = await zabApi.put(
+				const { data } = await zauApi.put(
 					`/event/staffingRequest/${this.$route.params.slug}`,
 					requestBody,
 				);

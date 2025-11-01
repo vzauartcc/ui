@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 import AtcOnlineItem from './AtcOnlineItem.vue';
 import PilotOnlineItem from './PilotOnlineItem.vue';
@@ -146,21 +146,23 @@ export default {
 	methods: {
 		async getOnline() {
 			try {
-				const { data } = await zabApi.get('/online');
+				const { data } = await zauApi.get('/online');
 				this.pilotsOnline = data.data.pilots;
 				this.atcOnline = data.data.atc;
 			} catch (e) {
 				console.error('error getting online data', e);
-				this.toastError('Something went wrong, please try again later');
+				// Don't do toast for this since these are background checks.
+				// this.toastError('Something went wrong, please try again later');
 			}
 
 			try {
-				const { data: topData } = await zabApi.get('/online/top');
+				const { data: topData } = await zauApi.get('/online/top');
 				this.top = topData.data;
 				this.getZuluTime(); // update time when refreshing who's online
 			} catch (e) {
 				console.error('error getting top controllers/positions', e);
-				this.toastError('Something went wrong, please try again later');
+				// Don't do toast for this since these are background checks.
+				// this.toastError('Something went wrong, please try again later');
 			}
 		},
 		getZuluTime() {

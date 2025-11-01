@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Downloads',
@@ -109,7 +109,7 @@ export default {
 	methods: {
 		async getDownloads() {
 			try {
-				const { data } = await zabApi.get('/file/downloads');
+				const { data } = await zauApi.get('/file/downloads');
 				this.downloads = data.data;
 			} catch (e) {
 				console.error('error getting downloads', e);
@@ -138,7 +138,7 @@ export default {
 
 			try {
 				this.spinners.push('delete');
-				const deletePromise = zabApi.delete(`/file/downloads/${id}`);
+				const deletePromise = zauApi.delete(`/file/downloads/${id}`);
 
 				setTimeout(() => {
 					const modal = document.getElementById(modalId);

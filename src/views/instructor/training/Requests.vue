@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'TrainingRequests',
@@ -104,7 +104,7 @@ export default {
 	methods: {
 		async getRequests() {
 			try {
-				const { data } = await zabApi.get('/training/request/open', {
+				const { data } = await zauApi.get('/training/request/open', {
 					params: {
 						period: 21, // 21 days from start of week
 					},

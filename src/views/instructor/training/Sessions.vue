@@ -131,7 +131,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import Completed from './Completed.vue';
 
 export default {
@@ -156,7 +156,7 @@ export default {
 	methods: {
 		async getSessions() {
 			try {
-				const { data } = await zabApi.get(`/training/session/open`);
+				const { data } = await zauApi.get(`/training/session/open`);
 				this.sessions = data.data;
 			} catch (e) {
 				console.error('error getting open sessions', e);
@@ -182,7 +182,7 @@ export default {
 		async deleteSession(id) {
 			try {
 				this.spinners.push('delete');
-				await zabApi.delete(`/training/session/${id}`);
+				await zauApi.delete(`/training/session/${id}`);
 
 				this.sessions = [];
 				await this.getSessions();

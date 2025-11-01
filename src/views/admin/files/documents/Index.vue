@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Documents',
@@ -111,7 +111,7 @@ export default {
 	methods: {
 		async getDocuments() {
 			try {
-				const { data } = await zabApi.get('/file/documents');
+				const { data } = await zauApi.get('/file/documents');
 				this.documents = data.data;
 			} catch (e) {
 				console.error('error getting documents', e);
@@ -136,7 +136,7 @@ export default {
 			try {
 				this.spinners.push('delete');
 
-				const deletePromise = zabApi.delete(`/file/documents/${id}`);
+				const deletePromise = zauApi.delete(`/file/documents/${id}`);
 
 				setTimeout(() => {
 					const modal = document.getElementById(modalId);

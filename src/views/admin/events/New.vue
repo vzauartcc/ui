@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -116,7 +116,7 @@ export default {
 
 			try {
 				this.spinners.push('submit');
-				const { data: eventCreate } = await zabApi.post('/event', formData, {
+				const { data: eventCreate } = await zauApi.post('/event', formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},

@@ -185,7 +185,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
@@ -229,7 +229,7 @@ export default {
 	methods: {
 		async fetchExamDetails() {
 			try {
-				const { data } = await zabApi.get(`/exam/exams/${this.examId}`);
+				const { data } = await zauApi.get(`/exam/exams/${this.examId}`);
 				this.populateForm(data.data);
 			} catch (e) {
 				console.error('error getting exam details', e);
@@ -390,7 +390,7 @@ export default {
 			try {
 				this.spinners.push('submit');
 				// Example API call to save the exam
-				await zabApi.patch(`/exam/exams/${this.examId}`, examData);
+				await zauApi.patch(`/exam/exams/${this.examId}`, examData);
 				// If successful, redirect to the exams index page
 				this.$router.push({ path: '/ins/exams' });
 				// Optionally, display a success message

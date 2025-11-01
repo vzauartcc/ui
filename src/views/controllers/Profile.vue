@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Controller Profile',
@@ -133,11 +133,11 @@ export default {
 		async getController() {
 			try {
 				this.loading = true;
-				const { data } = await zabApi.get(`/controller/${this.$route.params.cid}`);
+				const { data } = await zauApi.get(`/controller/${this.$route.params.cid}`);
 				if (data.ret_det.code === 200) {
 					this.controller = data.data;
 					try {
-						const { data: statsData } = await zabApi.get(
+						const { data: statsData } = await zauApi.get(
 							`/controller/stats/${this.$route.params.cid}`,
 						);
 						this.stats = statsData.data;

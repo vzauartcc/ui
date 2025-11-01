@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'EditDownload',
@@ -78,7 +78,7 @@ export default {
 		async getDownload() {
 			try {
 				this.loading = true;
-				const { data } = await zabApi.get(`/file/downloads/${this.$route.params.id}`);
+				const { data } = await zauApi.get(`/file/downloads/${this.$route.params.id}`);
 				this.form = data.data;
 				this.loading = false;
 			} catch (e) {
@@ -95,7 +95,7 @@ export default {
 				formData.append('description', this.form.description);
 				formData.append('download', this.$refs.download.files[0]);
 
-				const { data } = await zabApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
+				const { data } = await zauApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},

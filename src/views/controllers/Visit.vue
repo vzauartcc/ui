@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 import { mapState } from 'vuex';
 export default {
@@ -130,7 +130,7 @@ export default {
 		},
 		async checkOpenApplications() {
 			try {
-				const { data: statusData } = await zabApi.get('/controller/visit/status');
+				const { data: statusData } = await zauApi.get('/controller/visit/status');
 				this.pendingApplication = !!statusData.data.count;
 				this.checks = statusData.data.status;
 
@@ -171,7 +171,7 @@ export default {
 		async submitApplication() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zabApi.post('/controller/visit', {
+				const { data } = await zauApi.post('/controller/visit', {
 					...this.form,
 					email: this.$refs.email.value,
 				});

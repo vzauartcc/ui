@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -81,7 +81,7 @@ export default {
 				formData.append('download', this.$refs.download.files[0]);
 				formData.append('author', this.user.data._id);
 
-				const { data } = await zabApi.post(`/file/downloads`, formData, {
+				const { data } = await zauApi.post(`/file/downloads`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},

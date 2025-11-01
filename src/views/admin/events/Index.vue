@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import Past from './Past.vue';
 import StaffingRequest from './StaffingRequest.vue';
 
@@ -160,7 +160,7 @@ export default {
 	methods: {
 		async getUpcomingEvents() {
 			try {
-				const { data } = await zabApi.get('/event');
+				const { data } = await zauApi.get('/event');
 				this.events = data.data;
 			} catch (e) {
 				console.error('error getting upcoming events', e);
@@ -185,7 +185,7 @@ export default {
 		async deleteEvent(slug) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zabApi.delete(`/event/${slug}`);
+				const { data } = await zauApi.delete(`/event/${slug}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Event deleted');
 					this.getUpcomingEvents();
@@ -206,7 +206,7 @@ export default {
 		async submitForm(url) {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zabApi.post('/event/sendEvent', { url });
+				const { data } = await zauApi.post('/event/sendEvent', { url });
 				if (data.status === 200) {
 					this.toastSuccess('Discord Embed Sent');
 				} else if (data.status === 201) {
