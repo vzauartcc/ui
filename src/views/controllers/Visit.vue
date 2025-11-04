@@ -85,7 +85,9 @@
 								class="btn right"
 								@click.prevent="submitApplication"
 								ref="submitButton"
+								:disabled="spinners.length > 0"
 							>
+								<span v-if="spinners.some((s) => s === 'submit')"> <SmallSpinner /> </span>
 								Submit
 							</button>
 						</div>
@@ -100,7 +102,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 import { mapState } from 'vuex';
 export default {
@@ -108,6 +110,7 @@ export default {
 	title: 'Become A Visitor',
 	data() {
 		return {
+			spinners: [],
 			pendingApplication: false,
 			checks: {},
 			whyNot: ['calculating, , , '],
@@ -127,7 +130,7 @@ export default {
 		},
 		async checkOpenApplications() {
 			try {
-				const { data: statusData } = await zabApi.get('/controller/visit/status');
+				const { data: statusData } = await zauApi.get('/controller/visit/status');
 				this.pendingApplication = !!statusData.data.count;
 				this.checks = statusData.data.status;
 
@@ -155,7 +158,9 @@ export default {
 					);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error checking applications', e);
+				this.toastError('Something went wrong, please try again later');
+
 				this.checks = {
 					visiting: false,
 				};
@@ -165,8 +170,8 @@ export default {
 		},
 		async submitApplication() {
 			try {
-				this.$refs.submitButton.classList.add('disabled');
-				const { data } = await zabApi.post('/controller/visit', {
+				this.spinners.push('submit');
+				const { data } = await zauApi.post('/controller/visit', {
 					...this.form,
 					email: this.$refs.email.value,
 				});
@@ -177,7 +182,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error submitting application', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

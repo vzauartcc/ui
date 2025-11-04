@@ -72,7 +72,8 @@
 							href="#"
 							class="waves-effect waves-light btn"
 							@click.prevent="deleteDownload(doc._id, i)"
-							>Delete</a
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
 						>
 						<a href="#" class="modal-close waves-effect waves-light btn-flat" @click.prevent
 							>Cancel</a
@@ -85,13 +86,14 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Documents',
 	title: 'Documents',
 	data() {
 		return {
+			spinners: [],
 			documents: null,
 		};
 	},
@@ -108,8 +110,13 @@ export default {
 	},
 	methods: {
 		async getDocuments() {
-			const { data } = await zabApi.get('/file/documents');
-			this.documents = data.data;
+			try {
+				const { data } = await zauApi.get('/file/documents');
+				this.documents = data.data;
+			} catch (e) {
+				console.error('error getting documents', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index) {
 			const modal = document.getElementById(`modal_delete_${index}`);
@@ -127,12 +134,10 @@ export default {
 		},
 		async deleteDownload(id, modalId) {
 			try {
-				console.log('🛠️ deleteDownload called with:', { id, modalId });
+				this.spinners.push('delete');
 
-				// 🔥 Start API deletion request immediately
-				const deletePromise = zabApi.delete(`/file/documents/${id}`);
+				const deletePromise = zauApi.delete(`/file/documents/${id}`);
 
-				// 🕒 **Wait 500ms before closing the modal**
 				setTimeout(() => {
 					const modal = document.getElementById(modalId);
 					if (modal) {
@@ -141,17 +146,19 @@ export default {
 					}
 				}, 500);
 
-				// 🚀 Await API response after starting the delete request
 				const { data } = await deletePromise;
 
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Document successfully deleted');
-					await this.getDocuments(); // ✅ Refresh the document list
+					await this.getDocuments();
 				} else {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting download', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		convertCategory(cat) {

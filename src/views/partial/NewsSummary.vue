@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
@@ -46,15 +46,20 @@ export default {
 	},
 	methods: {
 		async getNews() {
-			const { data } = await zabApi.get('/news', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			if (data.ret_det.code === 200) {
-				this.newsItems = data.data.slice(0, 3);
-				this.newsAmount = data.amount;
+			try {
+				const { data } = await zauApi.get('/news', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				if (data.ret_det.code === 200) {
+					this.newsItems = data.data.slice(0, 3);
+					this.newsAmount = data.amount;
+				}
+			} catch (e) {
+				console.error('error getting news', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 	},

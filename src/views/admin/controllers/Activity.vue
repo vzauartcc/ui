@@ -178,8 +178,12 @@
 					></textarea>
 				</div>
 				<div class="modal-footer">
-					<a href="#!" @click.prevent="removeController(controller.cid)" class="btn waves-effect"
-						>Remove</a
+					<a
+						href="#!"
+						@click.prevent="removeController(controller.cid)"
+						class="btn waves-effect"
+						:class="{ disabled: spinners.length > 0 }"
+						><span v-if="spinners.some((s) => s === 'remove')"> <SmallSpinner /> </span>Remove</a
 					>
 					<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
 				</div>
@@ -189,11 +193,12 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
 		return {
+			spinners: [],
 			report: null,
 			chkDate2: new Date(),
 			currentQuarter: Math.floor((new Date().getMonth() + 3) / 3), // default to the current quarter
@@ -221,14 +226,19 @@ export default {
 			this.chkDate2 = selectedDate; // Update the selected date
 			this.currentQuarter = currentQuarter; // Update the current quarter
 
-			const { data: reportData } = await zabApi.get('/stats/activity', {
-				params: {
-					period: currentQuarter,
-					year: year,
-				},
-			});
+			try {
+				const { data: reportData } = await zauApi.get('/stats/activity', {
+					params: {
+						period: currentQuarter,
+						year: year,
+					},
+				});
 
-			this.report = reportData.data;
+				this.report = reportData.data;
+			} catch (e) {
+				console.error('error getting activity', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 
 		async previousQuarter() {
@@ -269,8 +279,9 @@ export default {
 
 		async removeController(cid) {
 			try {
+				this.spinners.push('remove');
 				this.toastInfo('Removing controller...');
-				const { data } = await zabApi.delete(`/controller/${cid}`, {
+				const { data } = await zauApi.delete(`/controller/${cid}`, {
 					data: {
 						reason: this.reason,
 					},
@@ -288,7 +299,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error removing controller', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'remove');
 			}
 		},
 		secondsToHms(secs) {

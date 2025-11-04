@@ -177,7 +177,12 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<a href="#!" @click.prevent="promoteController(controller)" class="btn waves-effect"
+						<a
+							href="#!"
+							@click.prevent="promoteController(controller)"
+							class="btn waves-effect"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'promote')"> <SmallSpinner /> </span
 							>Promote</a
 						>
 						<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
@@ -189,7 +194,7 @@
 </template>
 
 <script>
-import { vatusaApiAuth, zabApi } from '@/helpers/axios.js';
+import { vatusaApiAuth, zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { mapState } from 'vuex';
@@ -202,6 +207,7 @@ export default {
 	title: 'Controllers',
 	data() {
 		return {
+			spinners: [],
 			controllers: null,
 			controllersFiltered: null,
 			filter: '',
@@ -244,10 +250,15 @@ export default {
 			}
 		},
 		async getControllers() {
-			const { data } = await zabApi.get('/controller');
-			this.controllers = data.data.home.concat(data.data.visiting);
-			this.controllers = this.controllers.filter((c) => c.member);
-			this.controllersFiltered = this.controllers;
+			try {
+				const { data } = await zauApi.get('/controller');
+				this.controllers = data.data.home.concat(data.data.visiting);
+				this.controllers = this.controllers.filter((c) => c.member);
+				this.controllersFiltered = this.controllers;
+			} catch (e) {
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async getNewRating(controller) {
 			let ratings = {
@@ -289,6 +300,7 @@ export default {
 				var rating = controller.rating + 1;
 			}
 
+			this.spinners.push('promote');
 			await vatusaApiAuth
 				.post(`/user/${controller.cid}/rating`, {
 					rating: rating,
@@ -303,23 +315,27 @@ export default {
 				})
 				.catch((error) => {
 					console.log(error);
-					this.toastError('Error promoting controller!');
+					this.toastError('Something went wrong, please try again later');
+				})
+				.finally(() => {
+					this.spinners = this.spinners.filter((s) => s !== 'promote');
 				});
 		},
 		async getExaminerCid() {
 			try {
-				const res = await zabApi.get(`/user`);
+				const res = await zauApi.get(`/user`);
 
 				return res.data.data.cid;
-			} catch (error) {
-				console.error(error);
+			} catch (e) {
+				console.error('error getting examiner', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 
 		async removeController(cid) {
 			try {
 				this.toastInfo('Removing controller...');
-				const { data } = await zabApi.delete(`/controller/${cid}`, {
+				const { data } = await zauApi.delete(`/controller/${cid}`, {
 					data: {
 						reason: this.reason,
 					},
@@ -337,7 +353,8 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error removing controller', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		filterControllers() {

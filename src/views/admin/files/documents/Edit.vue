@@ -68,7 +68,9 @@
 						</div>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="Update" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'update')"> <SmallSpinner /> </span>Update
+						</button>
 					</div>
 				</form>
 			</div>
@@ -77,16 +79,17 @@
 </template>
 
 <script>
+import { zauApi } from '@/helpers/axios.js';
 import Editor from '@toast-ui/editor';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
-import { zabApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 
 export default {
 	title: 'Edit Document',
 	data() {
 		return {
+			spinners: [],
 			form: {
 				name: '',
 				category: '',
@@ -120,33 +123,46 @@ export default {
 	},
 	methods: {
 		async getDocument() {
-			const { data } = await zabApi.get(`/file/documents/${this.$route.params.id}`);
-			this.form = data.data;
-			this.loading = false;
+			try {
+				const { data } = await zauApi.get(`/file/documents/${this.$route.params.id}`);
+				this.form = data.data;
+				this.loading = false;
+			} catch (e) {
+				console.error('error getting documents', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async updateDocument() {
-			this.form.content = this.editor.getMarkdown();
-			const formData = new FormData();
-			formData.append('name', this.form.name);
-			formData.append('category', this.form.category);
-			formData.append('description', this.form.description);
-			formData.append('author', this.user.data._id);
-			formData.append('type', this.form.type);
-			formData.append('content', this.form.content);
+			try {
+				this.spinners.push('update');
+				this.form.content = this.editor.getMarkdown();
+				const formData = new FormData();
+				formData.append('name', this.form.name);
+				formData.append('category', this.form.category);
+				formData.append('description', this.form.description);
+				formData.append('author', this.user.data._id);
+				formData.append('type', this.form.type);
+				formData.append('content', this.form.content);
 
-			if (this.form.type === 'file') {
-				formData.append('download', this.$refs.download.files[0]);
-			}
+				if (this.form.type === 'file') {
+					formData.append('download', this.$refs.download.files[0]);
+				}
 
-			const { data } = await zabApi.put(`/file/documents/${this.form.slug}`, formData, {
-				headers: { 'Content-Type': 'multipart/form-data' },
-			});
+				const { data } = await zauApi.put(`/file/documents/${this.form.slug}`, formData, {
+					headers: { 'Content-Type': 'multipart/form-data' },
+				});
 
-			if (data.ret_det.code === 200) {
-				this.toastSuccess('Document updated');
-				this.$router.go(-1); // go back to the previous page
-			} else {
-				this.toastError(data.ret_det.message);
+				if (data.ret_det.code === 200) {
+					this.toastSuccess('Document updated');
+					this.$router.go(-1); // go back to the previous page
+				} else {
+					this.toastError(data.ret_det.message);
+				}
+			} catch (e) {
+				console.error('error updating document', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}
 		},
 	},

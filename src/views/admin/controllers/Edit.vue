@@ -243,7 +243,9 @@
 						</div>
 					</div>
 					<div class="input-field col s12">
-						<button type="submit" class="btn right">Update</button>
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'update')"> <SmallSpinner /> </span>Update
+						</button>
 					</div>
 				</div>
 			</form>
@@ -252,11 +254,12 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
 		return {
+			spinners: [],
 			controller: null,
 			usedOi: [],
 			oi: '',
@@ -304,20 +307,31 @@ export default {
 	},
 	methods: {
 		async getController() {
-			const { data } = await zabApi.get(`/controller/${this.$route.params.cid}`);
-			this.controller = data.data;
-			this.form = {
-				...this.form,
-				fname: this.controller.fname,
-				lname: this.controller.lname,
-				email: this.controller.email,
-				oi: this.controller.oi,
-				vis: this.controller.vis,
-			};
+			try {
+				const { data } = await zauApi.get(`/controller/${this.$route.params.cid}`);
+				this.controller = data.data;
+				this.form = {
+					...this.form,
+					fname: this.controller.fname,
+					lname: this.controller.lname,
+					email: this.controller.email,
+					oi: this.controller.oi,
+					vis: this.controller.vis,
+				};
 
-			this.controller.certifications.forEach((cert) => (this.form.certs[cert.code] = true));
-			this.controller.roles.forEach((role) => (this.form.roles[role.code] = true));
-			this.usedOi = (await zabApi.get(`/controller/oi`)).data.data;
+				this.controller.certifications.forEach((cert) => (this.form.certs[cert.code] = true));
+				this.controller.roles.forEach((role) => (this.form.roles[role.code] = true));
+			} catch (e) {
+				console.error('error getting controller', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+
+			try {
+				this.usedOi = (await zauApi.get(`/controller/oi`)).data.data;
+			} catch (e) {
+				console.error('error getting taken operator initials', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		checkOi(e) {
 			this.form.oi = e.target.value.toUpperCase();
@@ -341,10 +355,11 @@ export default {
 		},
 		async updateController() {
 			try {
+				this.spinners.push('update');
 				if (!this.oiAvail) {
 					this.toastError('Operating initials already in use');
 				} else {
-					const { data } = await zabApi.put(`/controller/${this.controller.cid}`, {
+					const { data } = await zauApi.put(`/controller/${this.controller.cid}`, {
 						form: this.form,
 					});
 
@@ -355,7 +370,10 @@ export default {
 					}
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error updating controller', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}
 		},
 	},

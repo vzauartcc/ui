@@ -117,9 +117,9 @@
 									href="#!"
 									class="waves-effect btn"
 									@click="takeSession(i, request._id)"
-									:class="{ disabled: submitting }"
+									:class="{ disabled: spinners.length > 0 }"
 								>
-									Take</a
+									<span v-if="spinners.some((s) => s === 'take')"> <SmallSpinner /> </span>Take</a
 								>
 								<a href="#!" class="waves-effect btn-flat modal-close">Cancel</a>
 							</div>
@@ -138,12 +138,10 @@
 									href="#!"
 									class="waves-effect btn modal-close"
 									@click="deleteRequest(request._id)"
-									:class="{ disabled: submitting }"
+									:class="{ disabled: spinners.length > 0 }"
+									><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span
 									>Delete</a
 								>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
 								<a href="#!" class="waves-effect btn-flat modal-close">Cancel</a>
 							</div>
 						</div>
@@ -155,14 +153,14 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 
 export default {
 	name: 'TrainingRequestsDay',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			date: '',
 			times: {},
 			requests: null,
@@ -182,16 +180,17 @@ export default {
 	methods: {
 		async getRequests() {
 			try {
-				const { data } = await zabApi.get(`/training/request/${this.$route.params.date}`);
+				const { data } = await zauApi.get(`/training/request/${this.$route.params.date}`);
 				this.requests = data.data;
 			} catch (e) {
-				console.log(e);
+				console.error('error getting requests', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async takeSession(i, id) {
 			try {
-				this.submitting = true;
-				const { data } = await zabApi.post(`/training/request/take/${id}`, {
+				this.spinners.push('take');
+				const { data } = await zauApi.post(`/training/request/take/${id}`, {
 					startTime: this.requests[i].startTime,
 					endTime: this.requests[i].endTime,
 					instructor: this.user.data._id,
@@ -203,15 +202,16 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error taking session', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'take');
 			}
 		},
 		async deleteRequest(id) {
 			try {
-				this.submitting = true;
-				const { data } = await zabApi.delete(`/training/request/${id}`);
+				this.spinners.push('delete');
+				const { data } = await zauApi.delete(`/training/request/${id}`);
 
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Training request deleted');
@@ -220,9 +220,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting request', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		verifyRoute() {

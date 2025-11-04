@@ -58,7 +58,9 @@
 							<label for="remarks" class="active">Remarks</label>
 						</div>
 						<div class="submit_request">
-							<input type="submit" class="btn" value="Request" :disabled="makingRequest" />
+							<button type="submit" class="btn right" :disabled="spinners.length > 0">
+								<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Request
+							</button>
 						</div>
 					</form>
 				</div>
@@ -68,7 +70,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { mapState } from 'vuex';
@@ -78,13 +80,13 @@ export default {
 	title: 'Request Training',
 	data() {
 		return {
+			spinners: [],
 			request: {
 				milestone: '',
 				remarks: '',
 				submitter: '',
 			},
 			milestones: null,
-			makingRequest: false,
 		};
 	},
 	async mounted() {
@@ -122,11 +124,11 @@ export default {
 	methods: {
 		async submitRequest() {
 			try {
+				this.spinners.push('submit');
 				if (!this.request.milestone) {
 					this.toastError('You must select a milestone');
 				} else {
-					this.makingRequest = true;
-					const { data } = await zabApi.post('/training/request/new', {
+					const { data } = await zauApi.post('/training/request/new', {
 						...this.request,
 						startTime: `${this.$refs.start_date.value}`,
 						endTime: `${this.$refs.end_date.value}`,
@@ -134,19 +136,25 @@ export default {
 					if (data.ret_det.code === 200) {
 						this.toastSuccess('Training session requested');
 						this.$router.push('/dash/training');
-						this.makingRequest = false;
 					} else {
 						this.toastError(data.ret_det.message);
-						this.makingRequest = false;
 					}
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error creating request', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 		async getTrainingMilestones() {
-			const { data } = await zabApi.get(`/training/milestones`);
-			this.milestones = data.data.milestones;
+			try {
+				const { data } = await zauApi.get(`/training/milestones`);
+				this.milestones = data.data.milestones;
+			} catch (e) {
+				console.error('error getting milestones', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 	},
 	computed: {

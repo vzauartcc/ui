@@ -58,8 +58,8 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'PastSessions',
@@ -84,14 +84,19 @@ export default {
 	},
 	methods: {
 		async getPastSessions() {
-			const { data } = await zabApi.get(`/training/sessions/past`, {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			this.pastSessions = data.data.sessions;
-			this.sessionAmount = data.data.count;
+			try {
+				const { data } = await zauApi.get(`/training/sessions/past`, {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				this.pastSessions = data.data.sessions;
+				this.sessionAmount = data.data.count;
+			} catch (e) {
+				console.error('error getting past sessions', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 	},
 };

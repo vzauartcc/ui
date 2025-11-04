@@ -70,13 +70,13 @@
 						</label>
 					</div>
 					<div class="input-field col s12">
-						<input
+						<button
 							type="submit"
-							class="btn waves-effect waves-light right"
-							value="Update"
-							:disabled="isButtonDisabled"
-							@click.prevent="submitForm"
-						/>
+							class="btn right"
+							:disabled="isButtonDisabled || spinners.length > 0"
+						>
+							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Update
+						</button>
 					</div>
 				</form>
 			</div>
@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { DateTime } from 'luxon';
@@ -93,6 +93,7 @@ import { DateTime } from 'luxon';
 export default {
 	data() {
 		return {
+			spinners: [],
 			request: {
 				accepted: false,
 			},
@@ -109,7 +110,7 @@ export default {
 	methods: {
 		async getStaffingRequest() {
 			try {
-				const { data } = await zabApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
+				const { data } = await zauApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
 				this.request = data.staffingRequest;
 
 				if (this.request.accepted) {
@@ -133,8 +134,9 @@ export default {
 						altInput: true,
 					});
 				});
-			} catch (error) {
-				console.log(error);
+			} catch (e) {
+				console.error('error getting staffing requests', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		updateDateLocal(event) {
@@ -144,6 +146,7 @@ export default {
 		},
 		async submitForm() {
 			try {
+				this.spinners.push('submit');
 				const requestBody = {
 					name: this.request.name,
 					date: this.$refs.date.value,
@@ -155,7 +158,7 @@ export default {
 					vaName: this.request.vaName,
 				};
 
-				const { data } = await zabApi.put(
+				const { data } = await zauApi.put(
 					`/event/staffingRequest/${this.$route.params.slug}`,
 					requestBody,
 				);
@@ -173,7 +176,10 @@ export default {
 					this.isButtonDisabled = true;
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error updating staffing request', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

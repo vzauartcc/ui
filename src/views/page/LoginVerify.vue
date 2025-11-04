@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
-import { mapMutations, mapActions } from 'vuex';
+import { zauApi } from '@/helpers/axios.js';
+import { mapActions, mapMutations } from 'vuex';
 export default {
 	name: 'LoginVerify',
 	title: 'Verifying Login...',
@@ -21,7 +21,7 @@ export default {
 	},
 	async mounted() {
 		try {
-			const { data } = await zabApi.post('/user/login', {
+			const { data } = await zauApi.post('/user/login', {
 				code: this.$route.query.code,
 			});
 			if (data.ret_det.code === 200) {
@@ -31,8 +31,9 @@ export default {
 			} else {
 				this.toastError('Something went wrong, please try again');
 			}
-		} catch {
-			this.toastError('Something went wrong, please try again');
+		} catch (e) {
+			console.error('error logging in', e);
+			this.toastError('Something went wrong, please try again later');
 		}
 		this.$router.push(localStorage.getItem('redirect') || '/');
 	},

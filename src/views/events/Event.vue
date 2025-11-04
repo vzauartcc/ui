@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Events',
@@ -52,11 +52,16 @@ export default {
 	},
 	methods: {
 		async getEvent() {
-			const { data } = await zabApi.get(`/event/${this.$route.params.slug}`);
-			if (data.data === null) {
-				this.$router.push('/events');
-			} else {
-				this.event = data.data;
+			try {
+				const { data } = await zauApi.get(`/event/${this.$route.params.slug}`);
+				if (data.data === null) {
+					this.$router.push('/events');
+				} else {
+					this.event = data.data;
+				}
+			} catch (e) {
+				console.error('error getting event details', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		formatTime(value) {

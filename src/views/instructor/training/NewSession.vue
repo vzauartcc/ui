@@ -201,11 +201,9 @@
 								v-if="step === 3"
 								class="btn right"
 								@click="submitForm"
-								:disabled="!isCurrentPartValid || submitting"
+								:disabled="!isCurrentPartValid || spinners.length > 0"
 							>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
+								<span v-if="spinners.some((s) => s === 'submit')"> <SmallSpinner /> </span>
 								Submit to VATUSA
 							</button>
 							<button
@@ -213,11 +211,9 @@
 								v-if="step === 3"
 								class="btn-flat right"
 								@click="saveForm"
-								:disabled="!isCurrentPartValid || submitting"
+								:disabled="!isCurrentPartValid || spinners.length > 0"
 							>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
+								<span v-if="spinners.some((s) => s === 'save')"> <SmallSpinner /> </span>
 								Save
 							</button>
 							<button
@@ -241,7 +237,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { mapActions, mapState } from 'vuex';
@@ -251,7 +247,7 @@ export default {
 	title: 'Enter Session Notes',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			step: 1,
 			duration: 0,
 			controllers: null,
@@ -345,12 +341,22 @@ export default {
 	methods: {
 		...mapActions('user', ['getUser']),
 		async getTrainingMilestones() {
-			const { data } = await zabApi.get(`/training/milestones`);
-			this.milestones = data.data.milestones;
+			try {
+				const { data } = await zauApi.get(`/training/milestones`);
+				this.milestones = data.data.milestones;
+			} catch (e) {
+				console.error('error getting milestones', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async getControllers() {
-			const { data } = await zabApi.get('/feedback/controllers');
-			this.controllers = data.data;
+			try {
+				const { data } = await zauApi.get('/feedback/controllers');
+				this.controllers = data.data;
+			} catch (e) {
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async saveForm() {
 			if (new Date(this.form.startTime) > new Date(this.form.endTime)) {
@@ -358,9 +364,9 @@ export default {
 				return;
 			}
 
-			this.submitting = true;
+			this.spinners.push('save');
 			try {
-				const { data } = await zabApi.post(`/training/session/save`, {
+				const { data } = await zauApi.post(`/training/session/save`, {
 					student: this.form.student,
 					milestone: this.form.milestone,
 					position: this.form.position,
@@ -380,9 +386,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error saving form', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'save');
 			}
 		},
 		async submitForm() {
@@ -391,9 +398,9 @@ export default {
 				return;
 			}
 
-			this.submitting = true;
+			this.spinners.push('submit');
 			try {
-				const { data } = await zabApi.post(`/training/session/submit`, {
+				const { data } = await zauApi.post(`/training/session/submit`, {
 					student: this.form.student,
 					milestone: this.form.milestone,
 					position: this.form.position,
@@ -413,9 +420,10 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error submitting form', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

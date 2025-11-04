@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Staffing Request',
@@ -57,11 +57,16 @@ export default {
 	},
 	methods: {
 		async getStaffingRequest() {
-			const { data } = await zabApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
-			if (data.staffingRequest === null) {
-				this.$router.push('/dash');
-			} else {
-				this.request = data.staffingRequest;
+			try {
+				const { data } = await zauApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
+				if (data.staffingRequest === null) {
+					this.$router.push('/dash');
+				} else {
+					this.request = data.staffingRequest;
+				}
+			} catch (e) {
+				console.error('error getting staffing request', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		formatTime(value) {

@@ -76,6 +76,7 @@
 									@change="assignPos(position._id)"
 									:ref="`pos_${position._id}`"
 									class="materialize-select"
+									:disabled="spinners.length > 0"
 								>
 									<option value="" :selected="!position.takenBy">Unassigned</option>
 									<option
@@ -126,7 +127,13 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<a href="#!" class="waves-effect waves-light btn" @click.prevent="addSignup">Add</a>
+					<a
+						href="#!"
+						class="waves-effect waves-light btn"
+						@click.prevent="addSignup"
+						:class="{ disabled: spinners.length > 0 }"
+						><span v-if="spinners.some((s) => s === 'add')"> <SmallSpinner /> </span>Add</a
+					>
 					<a href="#!" class="waved-effect waves-light modal-close btn-flat" @click.prevent
 						>Cancel</a
 					>
@@ -149,7 +156,8 @@
 							href="#!"
 							class="waves-effect waves-light btn"
 							@click.prevent="deleteSignup(signup.cid, signup._id)"
-							>Delete</a
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
 						>
 						<a href="#!" class="waves-effect waves-light modal-close btn-flat" @click.prevent
 							>Cancel</a
@@ -168,8 +176,16 @@
 					</p>
 				</div>
 				<div class="modal-footer">
-					<a href="#!" class="waves-effect waves-light btn" @click.prevent="notifyAssignments"
-						>Notify</a
+					<a
+						href="#!"
+						class="waves-effect waves-light btn"
+						@click.prevent="notifyAssignments"
+						:class="{ disabled: spinners.length > 0 }"
+					>
+						<span v-if="spinners.some((s) => s === 'notify')">
+							<SmallSpinner />
+						</span>
+						Notify</a
 					>
 					<a href="#!" class="waved-effect waves-light modal-close btn-flat" @click.prevent
 						>Cancel</a
@@ -181,12 +197,13 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'EventAssignments',
 	data() {
 		return {
+			spinners: [],
 			event: null,
 			cid: null,
 			selectedUser: null,
@@ -206,13 +223,14 @@ export default {
 	methods: {
 		async getEventData() {
 			try {
-				const { data } = await zabApi.get(`/event/${this.$route.params.slug}/positions`);
+				const { data } = await zauApi.get(`/event/${this.$route.params.slug}/positions`);
 				this.event = data.data || { signups: [] };
 				this.$nextTick(() => {
 					this.initializeDynamicModals(); // Initialize dynamic modals after data loads
 				});
-			} catch (error) {
-				console.error('Error fetching event data:', error);
+			} catch (e) {
+				console.error('error getting event positions', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		initializeStaticModals() {
@@ -244,7 +262,8 @@ export default {
 		},
 		async notifyAssignments() {
 			try {
-				const { data } = await zabApi.put(`/event/${this.$route.params.slug}/notify`, {
+				this.spinners.push('notify');
+				const { data } = await zauApi.put(`/event/${this.$route.params.slug}/notify`, {
 					assignment: this.event.positions,
 				});
 
@@ -260,12 +279,16 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error notifying', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'notify');
 			}
 		},
 		async addSignup() {
 			try {
-				const { data } = await zabApi.put(
+				this.spinners.push('add');
+				const { data } = await zauApi.put(
 					`/event/${this.$route.params.slug}/mansignup/${this.cid}`,
 				);
 				if (data.ret_det.code === 200) {
@@ -282,12 +305,16 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error adding signup', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'add');
 			}
 		},
 		async deleteSignup(cid, modalId) {
 			try {
-				const { data } = await zabApi.delete(`/event/${this.$route.params.slug}/mandelete/${cid}`);
+				this.spinners.push('delete');
+				const { data } = await zauApi.delete(`/event/${this.$route.params.slug}/mandelete/${cid}`);
 				if (data.ret_det.code === 200) {
 					this.toastSuccess('Sign-up manually deleted');
 					await this.getEventData();
@@ -304,16 +331,20 @@ export default {
 					this.toastError(data.ret_det.message);
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting signup', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		async assignPos(pos) {
 			try {
+				this.spinners.push('assign');
 				// Retrieve selected CID from the dropdown
 				const selectElement = this.$refs[`pos_${pos}`][0]; // Vue $refs returns an array for elements inside v-for
 				const selectedCid = selectElement.value;
 
-				const update = await zabApi.put(`/event/${this.$route.params.slug}/assign`, {
+				const update = await zauApi.put(`/event/${this.$route.params.slug}/assign`, {
 					position: pos,
 					cid: selectedCid,
 				});
@@ -326,8 +357,10 @@ export default {
 					this.toastError(update.data.ret_det.message);
 				}
 			} catch (e) {
-				console.error(e);
+				console.error('error assigning position', e);
 				this.toastError('An error occurred while assigning position');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'assign');
 			}
 		},
 		filterPos(userCerts) {

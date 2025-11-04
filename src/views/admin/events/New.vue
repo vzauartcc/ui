@@ -38,7 +38,9 @@
 						<label for="description">Description</label>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn right" value="submit" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Submit
+						</button>
 					</div>
 				</form>
 			</div>
@@ -47,7 +49,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -56,6 +58,7 @@ export default {
 	title: 'New Event',
 	data() {
 		return {
+			spinners: [],
 			form: {
 				name: '',
 				eventStart: {
@@ -111,17 +114,25 @@ export default {
 			formData.append('endTime', `${this.$refs.end_date.value}`);
 			formData.append('description', this.form.description);
 
-			const { data: eventCreate } = await zabApi.post('/event', formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				},
-			});
+			try {
+				this.spinners.push('submit');
+				const { data: eventCreate } = await zauApi.post('/event', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
+				});
 
-			if (eventCreate.ret_det.code !== 200) {
-				this.toastError(eventCreate.ret_det.message);
-			} else {
-				this.toastSuccess('Event created');
-				this.$router.push('/admin/events');
+				if (eventCreate.ret_det.code !== 200) {
+					this.toastError(eventCreate.ret_det.message);
+				} else {
+					this.toastSuccess('Event created');
+					this.$router.push('/admin/events');
+				}
+			} catch (e) {
+				console.error('error creating event', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

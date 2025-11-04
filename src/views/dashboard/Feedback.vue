@@ -64,8 +64,8 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'UserFeedback',
@@ -91,14 +91,19 @@ export default {
 	},
 	methods: {
 		async getMyFeedback() {
-			const { data } = await zabApi.get(`/feedback/own`, {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			this.feedback = data.data.feedback;
-			this.feedbackAmount = data.data.amount;
+			try {
+				const { data } = await zauApi.get(`/feedback/own`, {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				this.feedback = data.data.feedback;
+				this.feedbackAmount = data.data.amount;
+			} catch (e) {
+				console.error('error getting my feedback', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		initModals() {
 			this.$nextTick(() => {

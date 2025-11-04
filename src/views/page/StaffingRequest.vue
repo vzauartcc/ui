@@ -83,7 +83,9 @@
 						<label for="description" class="active">Additional Information</label>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="Send" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Send
+						</button>
 					</div>
 				</form>
 			</div>
@@ -92,17 +94,18 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'Staffing',
 	title: 'Request Staffing',
 	data() {
 		return {
+			spinners: [],
 			request: {
 				name: '',
 				vaName: '',
@@ -139,20 +142,30 @@ export default {
 			this.request.date = chicagoDate;
 		},
 		async submitRequest() {
-			const { data } = await zabApi.post('/event/staffingRequest', this.request);
-			console.log(data);
-			if (data.ret_det.code === 200) {
-				this.toastSuccess('Staffing Request sent');
-				document.getElementById('request').reset();
-				this.request = {
-					name: `${this.user.data.fname} ${this.user.data.lname}`,
-					email: this.user.data.email,
-					cid: this.user.data.cid,
-				};
-				this.$nextTick(() => {
-					M.updateTextFields();
-				});
-			} else this.toastError(data.ret_det.message);
+			try {
+				this.spinners.push('submit');
+				const { data } = await zauApi.post('/event/staffingRequest', this.request);
+				console.log(data);
+				if (data.ret_det.code === 200) {
+					this.toastSuccess('Staffing Request sent');
+					document.getElementById('request').reset();
+					this.request = {
+						name: `${this.user.data.fname} ${this.user.data.lname}`,
+						email: this.user.data.email,
+						cid: this.user.data.cid,
+					};
+					this.$nextTick(() => {
+						M.updateTextFields();
+					});
+				} else {
+					this.toastError(data.ret_det.message);
+				}
+			} catch (e) {
+				console.error('error submitting request', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
+			}
 		},
 	},
 	computed: {

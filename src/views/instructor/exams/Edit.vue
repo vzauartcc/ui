@@ -132,7 +132,12 @@
 				</div>
 				<!-- Submit Button -->
 				<div class="col s12 m4 right-align">
-					<button class="btn bottom waves-effect waves-light" @click="submitExam">
+					<button
+						class="btn bottom waves-effect waves-light"
+						@click="submitExam"
+						:disabled="spinners.length > 0"
+					>
+						<span v-if="spinners.some((s) => s === 'submit')"> <SmallSpinner /> </span>
 						{{ examId ? 'Update' : 'Create' }} Exam<i class="material-icons right">send</i>
 					</button>
 				</div>
@@ -180,11 +185,12 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
 		return {
+			spinners: [],
 			examId: this.$route.params.examId, // Assuming you're using vue-router
 			examName: '',
 			examDescription: '',
@@ -223,10 +229,12 @@ export default {
 	methods: {
 		async fetchExamDetails() {
 			try {
-				const { data } = await zabApi.get(`/exam/exams/${this.examId}`);
+				const { data } = await zauApi.get(`/exam/exams/${this.examId}`);
 				this.populateForm(data.data);
-			} catch (error) {
-				console.error('Error fetching exam details:', error);
+			} catch (e) {
+				console.error('error getting exam details', e);
+				this.toastError('Something went wrong, please try again later');
+
 				// Handle error
 			}
 		},
@@ -380,15 +388,19 @@ export default {
 			};
 
 			try {
+				this.spinners.push('submit');
 				// Example API call to save the exam
-				await zabApi.patch(`/exam/exams/${this.examId}`, examData);
+				await zauApi.patch(`/exam/exams/${this.examId}`, examData);
 				// If successful, redirect to the exams index page
 				this.$router.push({ path: '/ins/exams' });
 				// Optionally, display a success message
 				this.toastSuccess('Exam updated successfully');
-			} catch (error) {
+			} catch (e) {
+				console.error('error submitting exam', e);
 				// Handle API errors (e.g., show an error message)
-				this.toastError(error.message || 'Failed to submit the exam.');
+				this.toastError(e.message || 'Failed to submit the exam.');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 
