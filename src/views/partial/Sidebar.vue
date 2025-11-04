@@ -141,14 +141,14 @@ export default {
 		await this.getOnline();
 		setInterval(() => {
 			this.getOnline();
-		}, 15000);
+		}, 60_000);
 	},
 	methods: {
 		async getOnline() {
 			try {
 				const { data } = await zauApi.get('/online');
-				this.pilotsOnline = data.data.pilots;
-				this.atcOnline = data.data.atc;
+				this.pilotsOnline = data.pilots;
+				this.atcOnline = data.atc;
 			} catch (e) {
 				console.error('error getting online data', e);
 				// Don't do toast for this since these are background checks.
@@ -157,7 +157,7 @@ export default {
 
 			try {
 				const { data: topData } = await zauApi.get('/online/top');
-				this.top = topData.data;
+				this.top = topData;
 				this.getZuluTime(); // update time when refreshing who's online
 			} catch (e) {
 				console.error('error getting top controllers/positions', e);

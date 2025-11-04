@@ -43,7 +43,7 @@ export default {
 			try {
 				const { data: fileData } = await zauApi.get('/file/downloads');
 				this.downloads = {
-					sector: fileData.data.filter((file) => file.category === 'sectorFiles'),
+					sector: fileData.filter((file) => file.category === 'sectorFiles'),
 				};
 			} catch (e) {
 				console.error('error getting downloads', e);

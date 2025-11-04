@@ -125,7 +125,7 @@ export default {
 		async getDocument() {
 			try {
 				const { data } = await zauApi.get(`/file/documents/${this.$route.params.id}`);
-				this.form = data.data;
+				this.form = data;
 				this.loading = false;
 			} catch (e) {
 				console.error('error getting documents', e);
@@ -148,19 +148,21 @@ export default {
 					formData.append('download', this.$refs.download.files[0]);
 				}
 
-				const { data } = await zauApi.put(`/file/documents/${this.form.slug}`, formData, {
+				await zauApi.put(`/file/documents/${this.form.slug}`, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' },
 				});
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Document updated');
-					this.$router.go(-1); // go back to the previous page
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Document updated');
+				this.$router.go(-1); // go back to the previous page
 			} catch (e) {
-				console.error('error updating document', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error updating document', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}

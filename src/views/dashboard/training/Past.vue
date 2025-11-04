@@ -91,8 +91,8 @@ export default {
 						limit: this.limit,
 					},
 				});
-				this.pastSessions = data.data.sessions;
-				this.sessionAmount = data.data.count;
+				this.pastSessions = data.sessions;
+				this.sessionAmount = data.count;
 			} catch (e) {
 				console.error('error getting past sessions', e);
 				this.toastError('Something went wrong, please try again later');

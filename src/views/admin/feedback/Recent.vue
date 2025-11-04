@@ -162,8 +162,8 @@ export default {
 						limit: this.limit,
 					},
 				});
-				this.recentFeedback = data.data.feedback;
-				this.feedbackAmount = data.data.amount;
+				this.recentFeedback = data.feedback;
+				this.feedbackAmount = data.amount;
 				this.$nextTick(() => {
 					this.initModals();
 				});

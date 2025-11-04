@@ -59,22 +59,24 @@ export default {
 		async createNews() {
 			try {
 				this.spinners.push('create');
-				const { data } = await zauApi.post('/news', {
+				await zauApi.post('/news', {
 					title: this.form.title,
 					content: this.editor.getMarkdown(),
 					createdBy: this.user.data.cid,
 				});
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('News article created');
+				this.toastSuccess('News article created');
 
-					this.$router.push('/admin/news');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.$router.push('/admin/news');
 			} catch (e) {
-				console.error('error creating news', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error creating news', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'create');
 			}

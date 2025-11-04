@@ -18,16 +18,12 @@ export default {
 	title: 'Linking Discord...',
 	async mounted() {
 		try {
-			const { data } = await zauApi.post('/discord/info', {
+			await zauApi.post('/discord/info', {
 				cid: this.user.data.cid,
 				code: this.$route.query.code,
 			});
 
-			if (data.ret_det.code === 200) {
-				this.toastSuccess('Discord account linked');
-			} else {
-				this.toastError(data.ret_det.message);
-			}
+			this.toastSuccess('Discord account linked');
 
 			if (this.user.data.isMem) {
 				this.$router.push('/dash');
@@ -35,8 +31,12 @@ export default {
 				this.$router.push('/');
 			}
 		} catch (e) {
-			console.error('error linking discord', e);
-			this.toastError('Something went wrong, please try again later');
+			if (e.response) {
+				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
+			} else {
+				console.error('error linking discord', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		}
 	},
 	computed: {

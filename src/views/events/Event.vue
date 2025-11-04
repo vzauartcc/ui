@@ -54,10 +54,10 @@ export default {
 		async getEvent() {
 			try {
 				const { data } = await zauApi.get(`/event/${this.$route.params.slug}`);
-				if (data.data === null) {
+				if (data === null) {
 					this.$router.push('/events');
 				} else {
-					this.event = data.data;
+					this.event = data;
 				}
 			} catch (e) {
 				console.error('error getting event details', e);

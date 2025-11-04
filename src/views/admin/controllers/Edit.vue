@@ -309,7 +309,7 @@ export default {
 		async getController() {
 			try {
 				const { data } = await zauApi.get(`/controller/${this.$route.params.cid}`);
-				this.controller = data.data;
+				this.controller = data;
 				this.form = {
 					...this.form,
 					fname: this.controller.fname,
@@ -327,10 +327,18 @@ export default {
 			}
 
 			try {
-				this.usedOi = (await zauApi.get(`/controller/oi`)).data.data;
+				const { data: ois } = await zauApi.get('/controller/oi');
+
+				this.usedOi = ois;
 			} catch (e) {
-				console.error('error getting taken operator initials', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error getting taken operator initials', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			}
 		},
 		checkOi(e) {
@@ -359,19 +367,21 @@ export default {
 				if (!this.oiAvail) {
 					this.toastError('Operating initials already in use');
 				} else {
-					const { data } = await zauApi.put(`/controller/${this.controller.cid}`, {
+					await zauApi.put(`/controller/${this.controller.cid}`, {
 						form: this.form,
 					});
 
-					if (data.ret_det.code === 200) {
-						this.toastSuccess('Controller updated');
-					} else {
-						this.toastError(data.ret_det.message);
-					}
+					this.toastSuccess('Controller updated');
 				}
 			} catch (e) {
-				console.error('error updating controller', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error updating controller', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}

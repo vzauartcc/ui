@@ -224,7 +224,7 @@ export default {
 		async getEventData() {
 			try {
 				const { data } = await zauApi.get(`/event/${this.$route.params.slug}/positions`);
-				this.event = data.data || { signups: [] };
+				this.event = data || { signups: [] };
 				this.$nextTick(() => {
 					this.initializeDynamicModals(); // Initialize dynamic modals after data loads
 				});
@@ -263,24 +263,23 @@ export default {
 		async notifyAssignments() {
 			try {
 				this.spinners.push('notify');
-				const { data } = await zauApi.put(`/event/${this.$route.params.slug}/notify`, {
+				await zauApi.put(`/event/${this.$route.params.slug}/notify`, {
 					assignment: this.event.positions,
 				});
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Controllers notified');
+				this.toastSuccess('Controllers notified');
 
-					await this.getEventData();
-					setTimeout(
-						() => M.Modal.getInstance(document.querySelector('#modal_notify')).close(),
-						200,
+				await this.getEventData();
+				setTimeout(() => M.Modal.getInstance(document.querySelector('#modal_notify')).close(), 200);
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
 					);
 				} else {
-					this.toastError(data.ret_det.message);
+					console.error('error notifying', e);
+					this.toastError('Something went wrong, please try again later');
 				}
-			} catch (e) {
-				console.error('error notifying', e);
-				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'notify');
 			}
@@ -288,25 +287,26 @@ export default {
 		async addSignup() {
 			try {
 				this.spinners.push('add');
-				const { data } = await zauApi.put(
-					`/event/${this.$route.params.slug}/mansignup/${this.cid}`,
-				);
-				if (data.ret_det.code === 200) {
-					this.cid = null;
-					this.toastSuccess('Sign-up manually added');
+				await zauApi.put(`/event/${this.$route.params.slug}/mansignup/${this.cid}`);
 
-					await this.getEventData();
-					M.FormSelect.init(document.querySelectorAll('select'), {});
-					setTimeout(
-						() => M.Modal.getInstance(document.querySelector('#modal_add_signup')).close(),
-						200,
+				this.cid = null;
+				this.toastSuccess('Sign-up manually added');
+
+				await this.getEventData();
+				M.FormSelect.init(document.querySelectorAll('select'), {});
+				setTimeout(
+					() => M.Modal.getInstance(document.querySelector('#modal_add_signup')).close(),
+					200,
+				);
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
 					);
 				} else {
-					this.toastError(data.ret_det.message);
+					console.error('error adding signup', e);
+					this.toastError('Something went wrong, please try again later');
 				}
-			} catch (e) {
-				console.error('error adding signup', e);
-				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'add');
 			}
@@ -314,25 +314,28 @@ export default {
 		async deleteSignup(cid, modalId) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zauApi.delete(`/event/${this.$route.params.slug}/mandelete/${cid}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Sign-up manually deleted');
-					await this.getEventData();
+				await zauApi.delete(`/event/${this.$route.params.slug}/mandelete/${cid}`);
 
-					// Close the specific modal
-					this.$nextTick(() => {
-						const modalElement = document.querySelector(`#modal_delete_${modalId}`);
-						if (modalElement) {
-							const modalInstance = M.Modal.getInstance(modalElement);
-							if (modalInstance) modalInstance.close();
-						}
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Sign-up manually deleted');
+				await this.getEventData();
+
+				// Close the specific modal
+				this.$nextTick(() => {
+					const modalElement = document.querySelector(`#modal_delete_${modalId}`);
+					if (modalElement) {
+						const modalInstance = M.Modal.getInstance(modalElement);
+						if (modalInstance) modalInstance.close();
+					}
+				});
 			} catch (e) {
-				console.error('error deleting signup', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting signup', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
@@ -344,21 +347,23 @@ export default {
 				const selectElement = this.$refs[`pos_${pos}`][0]; // Vue $refs returns an array for elements inside v-for
 				const selectedCid = selectElement.value;
 
-				const update = await zauApi.put(`/event/${this.$route.params.slug}/assign`, {
+				await zauApi.put(`/event/${this.$route.params.slug}/assign`, {
 					position: pos,
 					cid: selectedCid,
 				});
 
-				if (update.data.ret_det.code === 200) {
-					this.toastSuccess(`Position assigned successfully`);
-					await this.getEventData(); // Refresh event data
-					M.FormSelect.init(document.querySelectorAll('select'), {}); // Reinitialize dropdowns
-				} else {
-					this.toastError(update.data.ret_det.message);
-				}
+				this.toastSuccess(`Position assigned successfully`);
+				await this.getEventData(); // Refresh event data
+				M.FormSelect.init(document.querySelectorAll('select'), {}); // Reinitialize dropdowns
 			} catch (e) {
-				console.error('error assigning position', e);
-				this.toastError('An error occurred while assigning position');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error assigning position', e);
+					this.toastError('An error occurred while assigning position');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'assign');
 			}

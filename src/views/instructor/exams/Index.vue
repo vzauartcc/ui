@@ -131,7 +131,7 @@ export default {
 		async fetchExams() {
 			try {
 				const { data } = await zauApi.get('/exam/exams');
-				this.exams = data.data;
+				this.exams = data;
 			} catch (e) {
 				console.error('error getting exams', e);
 				this.toastError('Something went wrong, please try again later');

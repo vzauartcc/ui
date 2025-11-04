@@ -61,9 +61,9 @@ export default {
 						limit: this.limit,
 					},
 				});
-				this.unread = data.data.unread;
-				this.amount = data.data.amount;
-				this.notifications = data.data.notif;
+				this.unread = data.unread;
+				this.amount = data.amount;
+				this.notifications = data.notif;
 
 				if (this.unread > 0) {
 					this.$parent.unread = true;
@@ -84,7 +84,7 @@ export default {
 					},
 				});
 
-				this.notifications = this.notifications.concat(data.data.notif);
+				this.notifications = this.notifications.concat(data.notif);
 			} catch (e) {
 				console.error('error getting more notifications', e);
 				this.toastError('Something went wrong, please try again later');

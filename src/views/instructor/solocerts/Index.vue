@@ -151,13 +151,10 @@ export default {
 			try {
 				const { data } = await zauApi.get('/training/solo');
 				this.certs =
-					data.data.filter(
-						(c) => new Date(c.expires).getTime() >= new Date().setHours(0, 0, 0, 0),
-					) || [];
+					data.filter((c) => new Date(c.expires).getTime() >= new Date().setHours(0, 0, 0, 0)) ||
+					[];
 				this.old =
-					data.data.filter(
-						(c) => new Date(c.expires).getTime() < new Date().setHours(0, 0, 0, 0),
-					) || [];
+					data.filter((c) => new Date(c.expires).getTime() < new Date().setHours(0, 0, 0, 0)) || [];
 			} catch (e) {
 				console.error('error getting solo certs', e);
 				this.toastError(`Error fetching solo endorsements: ${e.message ? e.message : e}`);
@@ -167,13 +164,7 @@ export default {
 			try {
 				this.spinners.push('delete');
 
-				const { data } = await zauApi.delete(`/training/solo/${id}`);
-
-				if (data.ret_det.code !== 200) {
-					this.toastError(data.ret_det.message);
-				} else {
-					this.toastSuccess('Solo Endorsement deleted');
-				}
+				await zauApi.delete(`/training/solo/${id}`);
 
 				this.certs = [];
 				await this.getSoloCerts();
@@ -182,8 +173,14 @@ export default {
 					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
 				});
 			} catch (e) {
-				console.error('error deleting cert', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting cert', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

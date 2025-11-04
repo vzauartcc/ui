@@ -21,19 +21,24 @@ export default {
 	},
 	async mounted() {
 		try {
-			const { data } = await zauApi.post('/user/login', {
+			await zauApi.post('/user/login', {
 				code: this.$route.query.code,
 			});
-			if (data.ret_det.code === 200) {
-				this.getUser();
-			} else if (data.ret_det.code === 400 && data.ret_det.message.includes('[Authorize Data]')) {
-				this.toastError('Unable to process login, please authorize all requested VATSIM data.');
-			} else {
-				this.toastError('Something went wrong, please try again');
-			}
+
+			this.getUser();
 		} catch (e) {
-			console.error('error logging in', e);
-			this.toastError('Something went wrong, please try again later');
+			if (e.response) {
+				if (e.response.status === 400 && e.response.data.message.includes('[Authorize Data]')) {
+					this.toastError('Unable to process login, please authorize all requested VATSIM data.');
+				} else {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				}
+			} else {
+				console.error('error logging in', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		}
 		this.$router.push(localStorage.getItem('redirect') || '/');
 	},

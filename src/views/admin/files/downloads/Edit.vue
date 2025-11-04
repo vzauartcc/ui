@@ -79,7 +79,7 @@ export default {
 			try {
 				this.loading = true;
 				const { data } = await zauApi.get(`/file/downloads/${this.$route.params.id}`);
-				this.form = data.data;
+				this.form = data;
 				this.loading = false;
 			} catch (e) {
 				console.error('error getting download', e);
@@ -95,21 +95,23 @@ export default {
 				formData.append('description', this.form.description);
 				formData.append('download', this.$refs.download.files[0]);
 
-				const { data } = await zauApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
+				await zauApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
 				});
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Download updated');
-					this.$router.go(-1); // go back to the previous page
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Download updated');
+				this.$router.go(-1); // go back to the previous page
 			} catch (e) {
-				console.error('error updating download', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error updating download', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

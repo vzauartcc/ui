@@ -181,7 +181,7 @@ export default {
 		async getRequests() {
 			try {
 				const { data } = await zauApi.get(`/training/request/${this.$route.params.date}`);
-				this.requests = data.data;
+				this.requests = data;
 			} catch (e) {
 				console.error('error getting requests', e);
 				this.toastError('Something went wrong, please try again later');
@@ -190,20 +190,23 @@ export default {
 		async takeSession(i, id) {
 			try {
 				this.spinners.push('take');
-				const { data } = await zauApi.post(`/training/request/take/${id}`, {
+				await zauApi.post(`/training/request/take/${id}`, {
 					startTime: this.requests[i].startTime,
 					endTime: this.requests[i].endTime,
 					instructor: this.user.data._id,
 				});
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Training request taken');
-					this.$router.push('/ins/training/requests');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+
+				this.toastSuccess('Training request taken');
+				this.$router.push('/ins/training/requests');
 			} catch (e) {
-				console.error('error taking session', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error taking session', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'take');
 			}
@@ -211,17 +214,19 @@ export default {
 		async deleteRequest(id) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zauApi.delete(`/training/request/${id}`);
+				await zauApi.delete(`/training/request/${id}`);
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Training request deleted');
-					await this.getRequests();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Training request deleted');
+				await this.getRequests();
 			} catch (e) {
-				console.error('error deleting request', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting request', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

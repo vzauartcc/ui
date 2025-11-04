@@ -158,26 +158,25 @@ export default {
 					vaName: this.request.vaName,
 				};
 
-				const { data } = await zauApi.put(
-					`/event/staffingRequest/${this.$route.params.slug}`,
-					requestBody,
-				);
+				await zauApi.put(`/event/staffingRequest/${this.$route.params.slug}`, requestBody);
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Staffing request updated');
-					setTimeout(() => {
-						window.location.href = '/admin/events'; // change "/success" to the desired URL
-					}, 1000); // set the delay time in milliseconds
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Staffing request updated');
+				setTimeout(() => {
+					window.location.href = '/admin/events'; // change "/success" to the desired URL
+				}, 1000); // set the delay time in milliseconds
 
 				if (this.request.accepted) {
 					this.isButtonDisabled = true;
 				}
 			} catch (e) {
-				console.error('error updating staffing request', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error updating staffing request', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

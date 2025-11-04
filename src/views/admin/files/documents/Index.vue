@@ -112,7 +112,7 @@ export default {
 		async getDocuments() {
 			try {
 				const { data } = await zauApi.get('/file/documents');
-				this.documents = data.data;
+				this.documents = data;
 			} catch (e) {
 				console.error('error getting documents', e);
 				this.toastError('Something went wrong, please try again later');
@@ -146,17 +146,19 @@ export default {
 					}
 				}, 500);
 
-				const { data } = await deletePromise;
+				await deletePromise;
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Document successfully deleted');
-					await this.getDocuments();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Document successfully deleted');
+				await this.getDocuments();
 			} catch (e) {
-				console.error('error deleting download', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting download', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

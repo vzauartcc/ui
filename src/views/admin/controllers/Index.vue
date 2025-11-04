@@ -252,7 +252,7 @@ export default {
 		async getControllers() {
 			try {
 				const { data } = await zauApi.get('/controller');
-				this.controllers = data.data.home.concat(data.data.visiting);
+				this.controllers = data.home.concat(data.visiting);
 				this.controllers = this.controllers.filter((c) => c.member);
 				this.controllersFiltered = this.controllers;
 			} catch (e) {
@@ -323,19 +323,25 @@ export default {
 		},
 		async getExaminerCid() {
 			try {
-				const res = await zauApi.get(`/user`);
+				const { data } = await zauApi.get(`/user`);
 
-				return res.data.data.cid;
+				return data.cid;
 			} catch (e) {
-				console.error('error getting examiner', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error getting examiner', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			}
 		},
 
 		async removeController(cid) {
 			try {
 				this.toastInfo('Removing controller...');
-				const { data } = await zauApi.delete(`/controller/${cid}`, {
+				await zauApi.delete(`/controller/${cid}`, {
 					data: {
 						reason: this.reason,
 					},
@@ -343,18 +349,20 @@ export default {
 
 				this.reason = '';
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Controller removed from roster');
+				this.toastSuccess('Controller removed from roster');
 
-					this.$nextTick(() => {
-						M.Modal.getInstance(document.querySelector('.modal_delete')).close();
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
+				});
 			} catch (e) {
-				console.error('error removing controller', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error removing controller', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			}
 		},
 		filterControllers() {

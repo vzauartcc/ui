@@ -44,7 +44,7 @@ export default {
 		async getDocument() {
 			try {
 				const { data } = await zauApi.get(`/file/documents/${this.$route.params.slug}`);
-				this.document = data.data;
+				this.document = data;
 				this.setTitle(this.document.name);
 			} catch (e) {
 				console.error('error getting document', e);

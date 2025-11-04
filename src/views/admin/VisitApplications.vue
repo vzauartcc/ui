@@ -221,7 +221,7 @@ export default {
 		async getNewApplications() {
 			try {
 				const { data } = await zauApi.get('/controller/visit');
-				this.applications = data.data;
+				this.applications = data;
 				this.$nextTick(() => {
 					this.initModals();
 				});
@@ -247,16 +247,18 @@ export default {
 		async approveVisitor(cid) {
 			try {
 				this.spinners.push('approve');
-				const { data } = await zauApi.put(`/controller/visit/${cid}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Visiting application approved');
-					await this.getNewApplications();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.put(`/controller/visit/${cid}`);
+				this.toastSuccess('Visiting application approved');
+				await this.getNewApplications();
 			} catch (e) {
-				console.error('error approving application', e);
-				this.toastError('Something went wrong, please try again');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error approving application', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'approve');
 			}
@@ -264,21 +266,23 @@ export default {
 		async rejectVisitor(cid) {
 			try {
 				this.spinners.push('reject');
-				const { data } = await zauApi.delete(`/controller/visit/${cid}`, {
+				await zauApi.delete(`/controller/visit/${cid}`, {
 					data: {
 						reason: this.reason[cid],
 					},
 				});
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Visiting application rejected later');
-					await this.getNewApplications();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Visiting application rejected later');
+				await this.getNewApplications();
 			} catch (e) {
-				console.error('error rejecting application', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error rejecting application', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'reject');
 			}

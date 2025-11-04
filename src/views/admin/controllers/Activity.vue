@@ -234,7 +234,7 @@ export default {
 					},
 				});
 
-				this.report = reportData.data;
+				this.report = reportData;
 			} catch (e) {
 				console.error('error getting activity', e);
 				this.toastError('Something went wrong, please try again later');
@@ -281,7 +281,7 @@ export default {
 			try {
 				this.spinners.push('remove');
 				this.toastInfo('Removing controller...');
-				const { data } = await zauApi.delete(`/controller/${cid}`, {
+				await zauApi.delete(`/controller/${cid}`, {
 					data: {
 						reason: this.reason,
 					},
@@ -289,18 +289,20 @@ export default {
 
 				this.reason = '';
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Controller removed from roster');
+				this.toastSuccess('Controller removed from roster');
 
-					this.$nextTick(() => {
-						M.Modal.getInstance(document.querySelector('.modal_delete')).close();
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
+				});
 			} catch (e) {
-				console.error('error removing controller', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error removing controller', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'remove');
 			}

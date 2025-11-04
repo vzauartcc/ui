@@ -119,7 +119,7 @@ export default {
 		async getPositions() {
 			try {
 				const { data } = await zauApi.get(`/event/${this.$route.params.slug}/positions`);
-				this.event = data.data;
+				this.event = data;
 
 				if (this.event.positions !== null) {
 					this.positionCategories.enroute.positions = this.event.positions.filter((position) =>
@@ -141,20 +141,23 @@ export default {
 			try {
 				this.spinners.push('add');
 				const requests = this.chips.chipsData.map((chip) => chip.tag);
-				const { data } = await zauApi.put(`/event/${this.$route.params.slug}/signup`, { requests });
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Request submitted');
+				await zauApi.put(`/event/${this.$route.params.slug}/signup`, { requests });
 
-					await this.getPositions();
-					this.$nextTick(() => {
-						M.Modal.getInstance(document.querySelector('#assignment_modal')).close();
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Request submitted');
+
+				await this.getPositions();
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('#assignment_modal')).close();
+				});
 			} catch (e) {
-				console.error('error adding signup', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error adding signup', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'add');
 			}
@@ -165,17 +168,20 @@ export default {
 				while (this.chips.chipsData.length) {
 					this.chips.deleteChip(0);
 				}
-				const { data } = await zauApi.delete(`/event/${this.$route.params.slug}/signup`);
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Request deleted');
-					await this.getPositions();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.delete(`/event/${this.$route.params.slug}/signup`);
+
+				this.toastSuccess('Request deleted');
+				await this.getPositions();
 			} catch (e) {
-				console.error('error deleting signup', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting signup', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

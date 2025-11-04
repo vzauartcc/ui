@@ -81,23 +81,25 @@ export default {
 				formData.append('download', this.$refs.download.files[0]);
 				formData.append('author', this.user.data._id);
 
-				const { data } = await zauApi.post(`/file/downloads`, formData, {
+				await zauApi.post(`/file/downloads`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
 				});
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Download created');
+				this.toastSuccess('Download created');
 
-					document.getElementById('fileInput').value = '';
-					this.$router.push('/admin/files/downloads');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				document.getElementById('fileInput').value = '';
+				this.$router.push('/admin/files/downloads');
 			} catch (e) {
-				console.error('error creating download', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error creating download', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

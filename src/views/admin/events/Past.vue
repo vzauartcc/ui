@@ -125,8 +125,8 @@ export default {
 						limit: this.limit,
 					},
 				});
-				this.historicEvents = data.data.events;
-				this.eventAmount = data.data.amount;
+				this.historicEvents = data.events;
+				this.eventAmount = data.amount;
 			} catch (e) {
 				console.error('error getting historical events', e);
 				this.toastError('Something went wrong, please try again later');
@@ -149,16 +149,19 @@ export default {
 		async deleteEvent(slug) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zauApi.delete(`/event/${slug}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Event deleted');
-					await this.getHistoricEvents(); // Refresh event list
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.delete(`/event/${slug}`);
+
+				this.toastSuccess('Event deleted');
+				await this.getHistoricEvents(); // Refresh event list
 			} catch (e) {
-				console.error('error deleting event', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting event', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

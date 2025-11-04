@@ -355,37 +355,40 @@ router.beforeEach(async (to, from, next) => {
 	if (to.meta.loggedIn) {
 		try {
 			const { data: user } = await zauApi.get('/user');
-			if (user.ret_det.code === 200 && user.data.member === true) {
+			if (user.member === true) {
 				next();
 			} else {
 				next('/');
 			}
 		} catch (e) {
 			console.error('[router] error getting user', e);
+			next('/');
 		}
 	} else if (to.meta.isAdmin) {
 		// Route is an admin route.
 		try {
 			const { data: user } = await zauApi.get('/user');
-			if (user.ret_det.code === 200 && user.data.isStaff === true) {
+			if (user.isStaff === true) {
 				next();
 			} else {
 				next('/');
 			}
 		} catch (e) {
 			console.error('[router] error checking staff', e);
+			next('/');
 		}
 	} else if (to.meta.isIns) {
 		// Route is an admin route.
 		try {
 			const { data: user } = await zauApi.get('/user');
-			if (user.ret_det.code === 200 && user.data.isIns === true) {
+			if (user.isIns === true) {
 				next();
 			} else {
 				next('/');
 			}
 		} catch (e) {
 			console.error('[router] error checking instructor', e);
+			next('/');
 		}
 	} else {
 		next();

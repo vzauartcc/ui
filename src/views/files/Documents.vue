@@ -47,11 +47,11 @@ export default {
 			try {
 				const { data: fileData } = await zauApi.get('/file/documents');
 				this.documents = {
-					loa: fileData.data.filter((doc) => doc.category === 'loa'),
-					sop: fileData.data.filter((doc) => doc.category === 'sop'),
-					policy: fileData.data.filter((doc) => doc.category === 'policy'),
-					misc: fileData.data.filter((doc) => doc.category === 'misc'),
-					training: fileData.data.filter((doc) => doc.category === 'training'),
+					loa: fileData.filter((doc) => doc.category === 'loa'),
+					sop: fileData.filter((doc) => doc.category === 'sop'),
+					policy: fileData.filter((doc) => doc.category === 'policy'),
+					misc: fileData.filter((doc) => doc.category === 'misc'),
+					training: fileData.filter((doc) => doc.category === 'training'),
 				};
 			} catch (e) {
 				console.error('error getting documents', e);

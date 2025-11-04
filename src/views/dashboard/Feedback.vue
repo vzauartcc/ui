@@ -98,8 +98,8 @@ export default {
 						limit: this.limit,
 					},
 				});
-				this.feedback = data.data.feedback;
-				this.feedbackAmount = data.data.amount;
+				this.feedback = data.feedback;
+				this.feedbackAmount = data.amount;
 			} catch (e) {
 				console.error('error getting my feedback', e);
 				this.toastError('Something went wrong, please try again later');

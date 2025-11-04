@@ -161,7 +161,7 @@ export default {
 		async getUpcomingEvents() {
 			try {
 				const { data } = await zauApi.get('/event');
-				this.events = data.data;
+				this.events = data;
 			} catch (e) {
 				console.error('error getting upcoming events', e);
 				this.toastError('Something went wrong, please try again later');
@@ -185,16 +185,19 @@ export default {
 		async deleteEvent(slug) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zauApi.delete(`/event/${slug}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Event deleted');
-					this.getUpcomingEvents();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.delete(`/event/${slug}`);
+
+				this.toastSuccess('Event deleted');
+				this.getUpcomingEvents();
 			} catch (e) {
-				console.error('error deleting event', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting event', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
@@ -206,17 +209,23 @@ export default {
 		async submitForm(url) {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zauApi.post('/event/sendEvent', { url });
-				if (data.status === 200) {
+				const response = await zauApi.post('/event/sendEvent', { url });
+				if (response.status === 200) {
 					this.toastSuccess('Discord Embed Sent');
-				} else if (data.status === 201) {
+				} else if (response.status === 201) {
 					this.toastSuccess('Discord Embed Updated');
 				} else {
-					this.toastError(data.message);
+					this.toastError(response.data.message);
 				}
 			} catch (e) {
-				console.error('error sending event', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error sending event', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

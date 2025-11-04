@@ -63,7 +63,7 @@ export default {
 		async getUpcomingEvents() {
 			try {
 				const { data } = await zauApi.get('/event');
-				this.events = data.data;
+				this.events = data;
 			} catch (e) {
 				console.error('error getting upcoming events', e);
 				this.toastError('Something went wrong, please try again later');

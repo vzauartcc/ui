@@ -230,7 +230,7 @@ export default {
 		async fetchExamDetails() {
 			try {
 				const { data } = await zauApi.get(`/exam/exams/${this.examId}`);
-				this.populateForm(data.data);
+				this.populateForm(data);
 			} catch (e) {
 				console.error('error getting exam details', e);
 				this.toastError('Something went wrong, please try again later');

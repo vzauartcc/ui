@@ -111,7 +111,7 @@ export default {
 		async getSessionDetails() {
 			try {
 				const { data } = await zauApi.get(`/training/session/${this.$route.params.id}`);
-				this.session = data.data;
+				this.session = data;
 			} catch (e) {
 				console.error('error getting session details', e);
 				this.toastError('Something went wrong, please try again later');

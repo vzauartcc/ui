@@ -162,7 +162,7 @@ export default {
 		async getUnapproved() {
 			try {
 				const { data } = await zauApi.get('/feedback/unapproved');
-				this.unapproved = data.data;
+				this.unapproved = data;
 				this.$nextTick(() => {
 					this.initModals(); // Initialize modals after loading data
 				});
@@ -188,20 +188,23 @@ export default {
 		async approveFeedback(id) {
 			try {
 				this.spinners.push('approve');
-				const { data } = await zauApi.put(`/feedback/approve/${id}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Feedback approved');
-					await this.getUnapproved();
-					this.$refs.recentFeedback.getFeedback();
-					this.$nextTick(() => {
-						M.Modal.getInstance(document.querySelector('.modal_unapproved')).close();
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.put(`/feedback/approve/${id}`);
+
+				this.toastSuccess('Feedback approved');
+				await this.getUnapproved();
+				this.$refs.recentFeedback.getFeedback();
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_unapproved')).close();
+				});
 			} catch (e) {
-				console.error('error approving feedback', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error approving feedback', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'approve');
 			}
@@ -209,20 +212,23 @@ export default {
 		async rejectFeedback(id) {
 			try {
 				this.spinners.push('reject');
-				const { data } = await zauApi.put(`/feedback/reject/${id}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Feedback rejected');
-					await this.getUnapproved();
-					this.$refs.recentFeedback.getFeedback();
-					this.$nextTick(() => {
-						M.Modal.getInstance(document.querySelector('.modal_unapproved')).close();
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.put(`/feedback/reject/${id}`);
+
+				this.toastSuccess('Feedback rejected');
+				await this.getUnapproved();
+				this.$refs.recentFeedback.getFeedback();
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_unapproved')).close();
+				});
 			} catch (e) {
-				console.error('error rejecting feedback', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error rejecting feedback', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'reject');
 			}

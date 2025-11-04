@@ -44,8 +44,8 @@ export default {
 			try {
 				const { data: fileData } = await zauApi.get('/file/downloads');
 				this.downloads = {
-					ins: fileData.data.filter((file) => file.category === 'ins'),
-					insguides: fileData.data.filter((file) => file.category === 'insguides'),
+					ins: fileData.filter((file) => file.category === 'ins'),
+					insguides: fileData.filter((file) => file.category === 'insguides'),
 				};
 			} catch (e) {
 				console.error('error getting downloads', e);

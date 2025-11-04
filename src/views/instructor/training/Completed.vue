@@ -107,8 +107,8 @@ export default {
 					},
 				});
 
-				this.sessions = data.data.sessions;
-				this.sessionAmount = data.data.count;
+				this.sessions = data.sessions;
+				this.sessionAmount = data.count;
 			} catch (e) {
 				console.error('error getting sessions', e);
 				this.toastError('Something went wrong, please try again later');

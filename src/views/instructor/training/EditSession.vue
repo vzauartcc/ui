@@ -259,7 +259,7 @@ export default {
 		async getSessionDetails() {
 			try {
 				const { data } = await zauApi.get(`/training/session/${this.$route.params.id}`);
-				this.session = data.data;
+				this.session = data;
 			} catch (e) {
 				console.error('error getting session details', e);
 				this.toastError(`Error loading session data: ${e}`);
@@ -268,7 +268,7 @@ export default {
 		async saveForm() {
 			try {
 				this.spinners.push('save');
-				const { data } = await zauApi.put(`/training/session/save/${this.$route.params.id}`, {
+				await zauApi.put(`/training/session/save/${this.$route.params.id}`, {
 					position: this.session.position,
 					movements: this.session.movements,
 					progress: this.session.progress,
@@ -279,15 +279,18 @@ export default {
 					studentNotes: this.session.studentNotes,
 					insNotes: this.session.insNotes,
 				});
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes saved');
-					this.$router.push('/ins/training/sessions');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+
+				this.toastSuccess('Session notes saved');
+				this.$router.push('/ins/training/sessions');
 			} catch (e) {
-				console.error('error saving form', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error saving form', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'save');
 			}
@@ -295,19 +298,19 @@ export default {
 		async submitForm() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zauApi.put(
-					`/training/session/submit/${this.$route.params.id}`,
-					this.session,
-				);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes finalized');
-					this.$router.push('/ins/training/sessions');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.put(`/training/session/submit/${this.$route.params.id}`, this.session);
+
+				this.toastSuccess('Session notes finalized');
+				this.$router.push('/ins/training/sessions');
 			} catch (e) {
-				console.error('error submitting form', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error submitting form', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
