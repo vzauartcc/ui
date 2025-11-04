@@ -354,7 +354,7 @@ router.beforeEach(async (to, from, next) => {
 
 	if (to.meta.loggedIn) {
 		try {
-			const { data: user } = await zauApi.get('/user');
+			const { data: user } = await zauApi.get('/user/self');
 			if (user.member === true) {
 				next();
 			} else {
@@ -367,7 +367,7 @@ router.beforeEach(async (to, from, next) => {
 	} else if (to.meta.isAdmin) {
 		// Route is an admin route.
 		try {
-			const { data: user } = await zauApi.get('/user');
+			const { data: user } = await zauApi.get('/user/self');
 			if (user.isStaff === true) {
 				next();
 			} else {
@@ -380,7 +380,7 @@ router.beforeEach(async (to, from, next) => {
 	} else if (to.meta.isIns) {
 		// Route is an admin route.
 		try {
-			const { data: user } = await zauApi.get('/user');
+			const { data: user } = await zauApi.get('/user/self');
 			if (user.isIns === true) {
 				next();
 			} else {

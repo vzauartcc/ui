@@ -13,7 +13,7 @@ export default {
 		getUser: async ({ commit, state }) => {
 			if (!state.user.isLoggedIn) {
 				try {
-					const { data: user } = await zauApi.get('/user');
+					const { data: user } = await zauApi.get('/user/self');
 					commit('setUser', user);
 					commit('setLoggedIn', true);
 				} catch (e) {
