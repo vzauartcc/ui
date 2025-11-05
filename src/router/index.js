@@ -110,7 +110,7 @@ const routes = [
 	{
 		path: '/ins',
 		component: Instructor,
-		meta: { isIns: true },
+		meta: { isInstructor: true },
 		children: [
 			{
 				path: '',
@@ -377,11 +377,11 @@ router.beforeEach(async (to, from, next) => {
 			console.error('[router] error checking staff', e);
 			next('/');
 		}
-	} else if (to.meta.isIns) {
+	} else if (to.meta.isInstructor) {
 		// Route is an admin route.
 		try {
 			const { data: user } = await zauApi.get('/user/self');
-			if (user.isIns === true) {
+			if (user.isInstructor === true) {
 				next();
 			} else {
 				next('/');

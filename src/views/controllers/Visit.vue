@@ -37,7 +37,7 @@
 			</div>
 			<div v-else>
 				<br />
-				<div v-if="!user.data.isMem">
+				<div v-if="!user.data.isMember">
 					<div class="row row_no_margin" v-if="user.data">
 						<div class="input-field col s12 m6">
 							<input id="fname" type="text" :value="user.data.fname" disabled required />

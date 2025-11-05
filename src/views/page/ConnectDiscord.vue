@@ -25,7 +25,7 @@ export default {
 
 			this.toastSuccess('Discord account linked');
 
-			if (this.user.data.isMem) {
+			if (this.user.data.isMember) {
 				this.$router.push('/dash');
 			} else {
 				this.$router.push('/');

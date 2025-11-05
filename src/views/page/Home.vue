@@ -11,7 +11,7 @@
 					controllers, and will proivde a good challenge for any aspiring controllers. Join our
 					family today!
 				</p>
-				<div class="visit" v-if="!user.isLoggedIn || (!user.data.vis && !user.data.isMem)">
+				<div class="visit" v-if="!user.isLoggedIn || (!user.data.vis && !user.data.isMember)">
 					<p>If you would like to become a visitor, please click the button below.</p>
 					<router-link to="/controllers/visit" class="btn btn-waves">Become a Visitor</router-link>
 				</div>
@@ -25,9 +25,9 @@
 
 <script>
 import { mapState } from 'vuex';
-import WeatherInfo from '../partial/WeatherInfo.vue';
-import NewsSummary from '../partial/NewsSummary.vue';
 import EventSummary from '../partial/EventSummary.vue';
+import NewsSummary from '../partial/NewsSummary.vue';
+import WeatherInfo from '../partial/WeatherInfo.vue';
 
 export default {
 	name: 'Home',
