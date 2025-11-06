@@ -146,7 +146,7 @@ export default {
 					this.toastError('Something went wrong, please try again later');
 				}
 
-				if (!this.controller || !this.controller.isMember) this.$router.push('/404');
+				if (!this.controller || this.controller.member !== true) this.$router.push('/404');
 				this.loading = false;
 			} catch (e) {
 				console.error('error getting controller', e);
