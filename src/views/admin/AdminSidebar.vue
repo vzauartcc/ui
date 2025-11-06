@@ -69,6 +69,14 @@
 				Action Log
 				<div class="secondary-content"><i class="material-icons">pageview</i></div>
 			</router-link>
+			<router-link
+				to="/admin/users"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'wm'])"
+			>
+				Users
+				<div class="secondary-content"><i class="material-icons">people_outline</i></div>
+			</router-link>
 		</div>
 	</div>
 </template>

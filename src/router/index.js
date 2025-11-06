@@ -275,6 +275,10 @@ const routes = [
 				path: 'log',
 				component: () => import('../views/admin/log/Index.vue'),
 			},
+			{
+				path: 'users',
+				component: () => import('../views/admin/users/Index.vue'),
+			},
 		],
 	},
 	{
