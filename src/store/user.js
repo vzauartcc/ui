@@ -13,14 +13,9 @@ export default {
 		getUser: async ({ commit, state }) => {
 			if (!state.user.isLoggedIn) {
 				try {
-					const { data: user } = await zauApi.get('/user');
-					if (user.ret_det.code === 200) {
-						commit('setUser', user.data);
-						commit('setLoggedIn', true);
-					}
-					if (user.ret_det.code === 403) {
-						console.error(user.ret_det.message);
-					}
+					const { data: user } = await zauApi.get('/user/self');
+					commit('setUser', user);
+					commit('setLoggedIn', true);
 				} catch (e) {
 					console.error('[store] error getting user', e);
 				}

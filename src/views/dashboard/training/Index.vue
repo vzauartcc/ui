@@ -107,7 +107,7 @@ export default {
 		async getUpcomingSessions() {
 			try {
 				const { data } = await zauApi.get(`/training/request/upcoming`);
-				this.upcomingSessions = data.data;
+				this.upcomingSessions = data;
 			} catch (e) {
 				console.error('error getting upcoming requests', e);
 				this.toastError('Something went wrong, please try again later');
@@ -122,17 +122,19 @@ export default {
 		async deleteSession(id) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zauApi.delete(`/training/request/${id}`);
+				await zauApi.delete(`/training/request/${id}`);
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Training request deleted');
-					await this.getUpcomingSessions();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Training request deleted');
+				await this.getUpcomingSessions();
 			} catch (e) {
-				console.error('error deleting session', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting session', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

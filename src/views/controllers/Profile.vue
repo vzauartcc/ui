@@ -134,19 +134,19 @@ export default {
 			try {
 				this.loading = true;
 				const { data } = await zauApi.get(`/controller/${this.$route.params.cid}`);
-				if (data.ret_det.code === 200) {
-					this.controller = data.data;
-					try {
-						const { data: statsData } = await zauApi.get(
-							`/controller/stats/${this.$route.params.cid}`,
-						);
-						this.stats = statsData.data;
-					} catch (e) {
-						console.error('error getting controller stats', e);
-						this.toastError('Something went wrong, please try again later');
-					}
+
+				this.controller = data;
+				try {
+					const { data: statsData } = await zauApi.get(
+						`/controller/stats/${this.$route.params.cid}`,
+					);
+					this.stats = statsData;
+				} catch (e) {
+					console.error('error getting controller stats', e);
+					this.toastError('Something went wrong, please try again later');
 				}
-				if (!this.controller || !this.controller.isMem) this.$router.push('/404');
+
+				if (!this.controller || this.controller.member !== true) this.$router.push('/404');
 				this.loading = false;
 			} catch (e) {
 				console.error('error getting controller', e);

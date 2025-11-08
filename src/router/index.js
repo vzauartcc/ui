@@ -110,7 +110,7 @@ const routes = [
 	{
 		path: '/ins',
 		component: Instructor,
-		meta: { isIns: true },
+		meta: { isInstructor: true },
 		children: [
 			{
 				path: '',
@@ -275,6 +275,10 @@ const routes = [
 				path: 'log',
 				component: () => import('../views/admin/log/Index.vue'),
 			},
+			{
+				path: 'users',
+				component: () => import('../views/admin/users/Index.vue'),
+			},
 		],
 	},
 	{
@@ -354,38 +358,41 @@ router.beforeEach(async (to, from, next) => {
 
 	if (to.meta.loggedIn) {
 		try {
-			const { data: user } = await zauApi.get('/user');
-			if (user.ret_det.code === 200 && user.data.member === true) {
+			const { data: user } = await zauApi.get('/user/self');
+			if (user.member === true) {
 				next();
 			} else {
 				next('/');
 			}
 		} catch (e) {
 			console.error('[router] error getting user', e);
+			next('/');
 		}
 	} else if (to.meta.isAdmin) {
 		// Route is an admin route.
 		try {
-			const { data: user } = await zauApi.get('/user');
-			if (user.ret_det.code === 200 && user.data.isStaff === true) {
+			const { data: user } = await zauApi.get('/user/self');
+			if (user.isStaff === true) {
 				next();
 			} else {
 				next('/');
 			}
 		} catch (e) {
 			console.error('[router] error checking staff', e);
+			next('/');
 		}
-	} else if (to.meta.isIns) {
+	} else if (to.meta.isInstructor) {
 		// Route is an admin route.
 		try {
-			const { data: user } = await zauApi.get('/user');
-			if (user.ret_det.code === 200 && user.data.isIns === true) {
+			const { data: user } = await zauApi.get('/user/self');
+			if (user.isInstructor === true) {
 				next();
 			} else {
 				next('/');
 			}
 		} catch (e) {
 			console.error('[router] error checking instructor', e);
+			next('/');
 		}
 	} else {
 		next();

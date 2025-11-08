@@ -71,8 +71,8 @@ export default {
 						limit: this.limit,
 					},
 				});
-				this.historicEvents = data.data.events;
-				this.eventAmount = data.data.amount;
+				this.historicEvents = data.events;
+				this.eventAmount = data.amount;
 			} catch (e) {
 				console.error('error getting historical events', e);
 				this.toastError('Something went wrong, please try again later');

@@ -60,7 +60,7 @@ export default {
 		async getArticle() {
 			try {
 				const { data } = await zauApi.get(`/news/${this.$route.params.slug}`);
-				this.news = data.data;
+				this.news = data;
 			} catch (e) {
 				console.error('error getting article', e);
 				this.toastError('Something went wrong, please try again later');
@@ -70,18 +70,20 @@ export default {
 			try {
 				this.spinners.push('update');
 				this.news.content = this.editor.getMarkdown();
-				const { data } = await zauApi.put(`/news/${this.$route.params.slug}`, this.news);
+				await zauApi.put(`/news/${this.$route.params.slug}`, this.news);
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('News article updated');
+				this.toastSuccess('News article updated');
 
-					this.$router.push('/admin/news');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.$router.push('/admin/news');
 			} catch (e) {
-				console.error('error updating news', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error updating news', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}

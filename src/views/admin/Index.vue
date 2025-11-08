@@ -94,7 +94,7 @@ export default {
 		Chart.register(...registerables);
 		try {
 			const { data: statsData } = await zauApi.get('/stats/admin');
-			this.stats = statsData.data;
+			this.stats = statsData;
 			this.$nextTick(() => {
 				M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
 					margin: 0,

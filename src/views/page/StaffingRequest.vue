@@ -144,25 +144,27 @@ export default {
 		async submitRequest() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zauApi.post('/event/staffingRequest', this.request);
-				console.log(data);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Staffing Request sent');
-					document.getElementById('request').reset();
-					this.request = {
-						name: `${this.user.data.fname} ${this.user.data.lname}`,
-						email: this.user.data.email,
-						cid: this.user.data.cid,
-					};
-					this.$nextTick(() => {
-						M.updateTextFields();
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.post('/event/staffingRequest', this.request);
+
+				this.toastSuccess('Staffing Request sent');
+				document.getElementById('request').reset();
+				this.request = {
+					name: `${this.user.data.fname} ${this.user.data.lname}`,
+					email: this.user.data.email,
+					cid: this.user.data.cid,
+				};
+				this.$nextTick(() => {
+					M.updateTextFields();
+				});
 			} catch (e) {
-				console.error('error submitting request', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error submitting request', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

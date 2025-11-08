@@ -95,9 +95,9 @@ export default {
 					},
 				});
 
-				this.sessions = data.data.sessions;
-				this.sessionAmount = data.data.count;
-				this.controller = data.data.controller.fname + ' ' + data.data.controller.lname;
+				this.sessions = data.sessions;
+				this.sessionAmount = data.count;
+				this.controller = data.controller.fname + ' ' + data.controller.lname;
 			} catch (e) {
 				console.error('error getting sessions', e);
 				this.toastError('Something went wrong, please try again later');

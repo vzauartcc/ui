@@ -116,7 +116,7 @@ export default {
 	async mounted() {
 		try {
 			const { data } = await zauApi.get('/controller/staff');
-			this.staff = data.data;
+			this.staff = data;
 		} catch (e) {
 			console.error('error getting staff', e);
 			this.toastError('Something went wrong, please try again later');

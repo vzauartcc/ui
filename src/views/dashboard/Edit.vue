@@ -47,16 +47,18 @@ export default {
 		async updateProfile() {
 			try {
 				this.spinners.push('update');
-				const { data } = await zauApi.put('/user/profile', this.form);
+				await zauApi.put('/user/profile', this.form);
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Profile successfully updated');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Profile successfully updated');
 			} catch (e) {
-				console.error('error updating profile', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error updating profile', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}

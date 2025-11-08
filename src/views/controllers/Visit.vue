@@ -37,7 +37,7 @@
 			</div>
 			<div v-else>
 				<br />
-				<div v-if="!user.data.isMem">
+				<div v-if="!user.data.isMember">
 					<div class="row row_no_margin" v-if="user.data">
 						<div class="input-field col s12 m6">
 							<input id="fname" type="text" :value="user.data.fname" disabled required />
@@ -131,8 +131,8 @@ export default {
 		async checkOpenApplications() {
 			try {
 				const { data: statusData } = await zauApi.get('/controller/visit/status');
-				this.pendingApplication = !!statusData.data.count;
-				this.checks = statusData.data.status;
+				this.pendingApplication = !!statusData.count;
+				this.checks = statusData.status;
 
 				this.whyNot = [];
 				if (!this.checks.hasHome) {
@@ -171,19 +171,22 @@ export default {
 		async submitApplication() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zauApi.post('/controller/visit', {
+				await zauApi.post('/controller/visit', {
 					...this.form,
 					email: this.$refs.email.value,
 				});
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Visitor application submitted');
-					this.$router.push('/');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+
+				this.toastSuccess('Visitor application submitted');
+				this.$router.push('/');
 			} catch (e) {
-				console.error('error submitting application', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error submitting application', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

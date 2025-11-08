@@ -122,7 +122,7 @@ export default {
 		async getControllers() {
 			try {
 				const { data } = await zauApi.get('/feedback/controllers');
-				this.controllers = data.data.filter((c) => {
+				this.controllers = data.filter((c) => {
 					// Must be at least a S1, must be less than a C1, must not be a visitor
 					return c.rating > 1 && c.rating < 5 && c.vis === false;
 				});
@@ -134,23 +134,24 @@ export default {
 		async submitCert() {
 			this.spinners.push('submit');
 			try {
-				const { data } = await zauApi.post('/training/solo', {
+				await zauApi.post('/training/solo', {
 					student: this.form.cid,
 					position: this.form.position,
 					expirationDate: this.$refs.expirationDate.value,
 				});
 
-				if (data.ret_det.code !== 200) {
-					this.toastError(data.ret_det.message);
-					return;
-				} else {
-					this.toastSuccess('Solo Endorsement issued');
-				}
+				this.toastSuccess('Solo Endorsement issued');
 
 				this.$router.push('/ins/solo');
 			} catch (e) {
-				console.log('error submitting cert', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.log('error submitting cert', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

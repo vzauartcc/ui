@@ -128,21 +128,24 @@ export default {
 				if (!this.request.milestone) {
 					this.toastError('You must select a milestone');
 				} else {
-					const { data } = await zauApi.post('/training/request/new', {
+					await zauApi.post('/training/request/new', {
 						...this.request,
 						startTime: `${this.$refs.start_date.value}`,
 						endTime: `${this.$refs.end_date.value}`,
 					});
-					if (data.ret_det.code === 200) {
-						this.toastSuccess('Training session requested');
-						this.$router.push('/dash/training');
-					} else {
-						this.toastError(data.ret_det.message);
-					}
+
+					this.toastSuccess('Training session requested');
+					this.$router.push('/dash/training');
 				}
 			} catch (e) {
-				console.error('error creating request', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error creating request', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
@@ -150,7 +153,7 @@ export default {
 		async getTrainingMilestones() {
 			try {
 				const { data } = await zauApi.get(`/training/milestones`);
-				this.milestones = data.data.milestones;
+				this.milestones = data.milestones;
 			} catch (e) {
 				console.error('error getting milestones', e);
 				this.toastError('Something went wrong, please try again later');

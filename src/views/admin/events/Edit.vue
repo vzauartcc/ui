@@ -108,7 +108,7 @@ export default {
 		async getEvent() {
 			try {
 				const { data } = await zauApi.get(`/event/${this.$route.params.slug}`);
-				this.form = data.data;
+				this.form = data;
 				if (this.form.positions && this.form.positions.length != 0) {
 					this.form.positions = this.form.positions.map((p) => p.pos);
 				} else {
@@ -167,21 +167,23 @@ export default {
 					formData.append('banner', this.selectedFile); // ✅ Use selected file
 				}
 
-				const { data } = await zauApi.put(`/event/${this.$route.params.slug}`, formData, {
+				await zauApi.put(`/event/${this.$route.params.slug}`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
 				});
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Event updated');
-					this.$router.back();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Event updated');
+				this.$router.back();
 			} catch (e) {
-				console.error('error submitting event', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error submitting event', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

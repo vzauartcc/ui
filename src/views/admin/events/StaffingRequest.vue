@@ -128,8 +128,8 @@ export default {
 						limit: this.limit,
 					},
 				});
-				this.requests = data.data.requests;
-				this.requestAmount = data.data.amount;
+				this.requests = data.requests;
+				this.requestAmount = data.amount;
 			} catch (e) {
 				console.error('error getting staffing requests', e);
 				this.toastError('Something went wrong, please try again later');
@@ -152,16 +152,19 @@ export default {
 		async deleteStaffingRequest(_id) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zauApi.delete(`/event/staffingRequest/${_id}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Staffing Request deleted');
-					await this.getStaffingRequests();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				await zauApi.delete(`/event/staffingRequest/${_id}`);
+
+				this.toastSuccess('Staffing Request deleted');
+				await this.getStaffingRequests();
 			} catch (e) {
-				console.error('error deleting staffing request', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting staffing request', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

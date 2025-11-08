@@ -83,7 +83,7 @@ export default {
 		async getControllers() {
 			try {
 				const { data } = await zauApi.get('/feedback/controllers');
-				this.controllers = data.data;
+				this.controllers = data;
 			} catch (e) {
 				console.error('error getting controllers', e);
 				this.toastError('Something went wrong, please try again later');
@@ -92,22 +92,23 @@ export default {
 		async submitForm() {
 			try {
 				this.spinners.push('submit');
-				const { data } = await zauApi.post('/controller/absence', {
+				await zauApi.post('/controller/absence', {
 					...this.form,
 					expirationDate: `${this.$refs.expirationDate.value}T00:00:00.000Z`,
 				});
 
-				console.log(this.$refs.expirationDate.value);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Leave of Absence granted');
+				this.toastSuccess('Leave of Absence granted');
 
-					this.$router.push('/admin/absence');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.$router.push('/admin/absence');
 			} catch (e) {
-				console.error('error creating absence', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error creating absence', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

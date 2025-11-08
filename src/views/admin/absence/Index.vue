@@ -132,7 +132,7 @@ export default {
 		async getAbsences() {
 			try {
 				const { data } = await zauApi.get('/controller/absence');
-				this.absences = data.data;
+				this.absences = data;
 				this.$nextTick(() => {
 					this.initModals();
 				});
@@ -158,21 +158,20 @@ export default {
 		async deleteLoa(id) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zauApi.delete(`/controller/absence/${id}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Controller removed from LOA successfully');
+				await zauApi.delete(`/controller/absence/${id}`);
+				this.toastSuccess('Controller removed from LOA successfully');
 
-					setTimeout(
-						() => M.Modal.getInstance(document.querySelector('.modal_delete')).close(),
-						500,
-					);
-					await this.getAbsences();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				setTimeout(() => M.Modal.getInstance(document.querySelector('.modal_delete')).close(), 500);
+				await this.getAbsences();
 			} catch (e) {
-				console.error('error deleting absence', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting absence', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

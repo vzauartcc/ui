@@ -343,7 +343,7 @@ export default {
 		async getTrainingMilestones() {
 			try {
 				const { data } = await zauApi.get(`/training/milestones`);
-				this.milestones = data.data.milestones;
+				this.milestones = data.milestones;
 			} catch (e) {
 				console.error('error getting milestones', e);
 				this.toastError('Something went wrong, please try again later');
@@ -352,7 +352,7 @@ export default {
 		async getControllers() {
 			try {
 				const { data } = await zauApi.get('/feedback/controllers');
-				this.controllers = data.data;
+				this.controllers = data;
 			} catch (e) {
 				console.error('error getting controllers', e);
 				this.toastError('Something went wrong, please try again later');
@@ -366,7 +366,7 @@ export default {
 
 			this.spinners.push('save');
 			try {
-				const { data } = await zauApi.post(`/training/session/save`, {
+				await zauApi.post(`/training/session/save`, {
 					student: this.form.student,
 					milestone: this.form.milestone,
 					position: this.form.position,
@@ -379,15 +379,18 @@ export default {
 					studentNotes: this.form.studentNotes,
 					insNotes: this.form.insNotes,
 				});
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes saved');
-					this.$router.push('/ins/training/sessions');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+
+				this.toastSuccess('Session notes saved');
+				this.$router.push('/ins/training/sessions');
 			} catch (e) {
-				console.error('error saving form', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error saving form', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'save');
 			}
@@ -400,7 +403,7 @@ export default {
 
 			this.spinners.push('submit');
 			try {
-				const { data } = await zauApi.post(`/training/session/submit`, {
+				await zauApi.post(`/training/session/submit`, {
 					student: this.form.student,
 					milestone: this.form.milestone,
 					position: this.form.position,
@@ -413,15 +416,18 @@ export default {
 					studentNotes: this.form.studentNotes,
 					insNotes: this.form.insNotes,
 				});
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes saved');
-					this.$router.push('/ins/training/sessions');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+
+				this.toastSuccess('Session notes saved');
+				this.$router.push('/ins/training/sessions');
 			} catch (e) {
-				console.error('error submitting form', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error submitting form', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

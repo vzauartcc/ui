@@ -157,7 +157,7 @@ export default {
 		async getSessions() {
 			try {
 				const { data } = await zauApi.get(`/training/session/open`);
-				this.sessions = data.data;
+				this.sessions = data;
 			} catch (e) {
 				console.error('error getting open sessions', e);
 				this.toastError('Something went wrong, please try again later');

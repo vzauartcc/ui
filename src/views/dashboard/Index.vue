@@ -201,15 +201,18 @@ export default {
 			try {
 				this.spinners.push('generate');
 				const { data: tokenRet } = await zauApi.post('/user/idsToken');
-				if (tokenRet.ret_det.code === 200) {
-					this.toastSuccess('Token successfully generated');
-					this.token = tokenRet.data;
-				} else {
-					this.toastError(tokenRet.ret_det.message);
-				}
+
+				this.toastSuccess('Token successfully generated');
+				this.token = tokenRet;
 			} catch (e) {
-				console.error('error generating token', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error generating token', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'generate');
 			}
@@ -217,7 +220,7 @@ export default {
 		async getDiscordStatus() {
 			try {
 				const { data: discordData } = await zauApi.get('/discord/user');
-				this.discordConnected = discordData.data;
+				this.discordConnected = discordData;
 			} catch (e) {
 				console.error('error getting discord status', e);
 				this.toastError('Something went wrong, please try again later');
@@ -226,7 +229,7 @@ export default {
 		async getControllingSessions() {
 			try {
 				const { data: sessionData } = await zauApi.get('/user/sessions');
-				this.activityData = sessionData.data;
+				this.activityData = sessionData;
 			} catch (e) {
 				console.error('error getting sessions', e);
 				this.toastError('Something went wrong, please try again later');
@@ -246,16 +249,19 @@ export default {
 		async unlinkDiscord() {
 			try {
 				this.spinners.push('unlink');
-				const { data: unlinkData } = await zauApi.delete('/discord/user');
-				if (unlinkData.ret_det.code === 200) {
-					this.toastSuccess('Discord unlinked.');
-					await this.getDiscordStatus();
-				} else {
-					this.toastError(unlinkData.ret_det.message);
-				}
+				await zauApi.delete('/discord/user');
+
+				this.toastSuccess('Discord unlinked.');
+				await this.getDiscordStatus();
 			} catch (e) {
-				console.error('error unlinking discord', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error unlinking discord', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'unlink');
 			}

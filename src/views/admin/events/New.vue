@@ -116,21 +116,23 @@ export default {
 
 			try {
 				this.spinners.push('submit');
-				const { data: eventCreate } = await zauApi.post('/event', formData, {
+				await zauApi.post('/event', formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
 				});
 
-				if (eventCreate.ret_det.code !== 200) {
-					this.toastError(eventCreate.ret_det.message);
-				} else {
-					this.toastSuccess('Event created');
-					this.$router.push('/admin/events');
-				}
+				this.toastSuccess('Event created');
+				this.$router.push('/admin/events');
 			} catch (e) {
-				console.error('error creating event', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error creating event', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

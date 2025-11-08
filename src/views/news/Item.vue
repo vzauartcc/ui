@@ -45,7 +45,7 @@ export default {
 		async getArticle() {
 			try {
 				const { data } = await zauApi.get(`/news/${this.$route.params.slug}`);
-				this.news = data.data;
+				this.news = data;
 			} catch (e) {
 				console.error('error getting article', e);
 				this.toastError('Something went wrong, please try again later');

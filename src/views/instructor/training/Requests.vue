@@ -110,7 +110,7 @@ export default {
 					},
 				});
 
-				for (const request of data.data) {
+				for (const request of data) {
 					for (const date of this.dates) {
 						if (
 							date.date.slice(0, 10) ===

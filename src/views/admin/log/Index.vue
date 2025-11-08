@@ -63,8 +63,8 @@ export default {
 						limit: this.limit,
 					},
 				});
-				this.log = dossierData.data.dossier;
-				this.logAmount = dossierData.data.amount;
+				this.log = dossierData.dossier;
+				this.logAmount = dossierData.amount;
 				this.amountOfPages = Math.ceil(this.logAmount / this.limit);
 			} catch (e) {
 				console.error('error getting log', e);

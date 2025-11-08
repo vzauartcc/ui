@@ -237,7 +237,7 @@ export default {
 		async getControllers() {
 			try {
 				const { data } = await zauApi.get('/controller');
-				this.controllers = data.data.home.concat(data.data.visiting);
+				this.controllers = data.home.concat(data.visiting);
 				this.controllers = this.controllers.filter((c) => c.member);
 				this.controllersFiltered = this.controllers;
 			} catch (e) {
@@ -307,8 +307,8 @@ export default {
 		},
 		async getExaminerCid() {
 			try {
-				const res = await zauApi.get(`/user`);
-				return res.data.data.cid;
+				const { data } = await zauApi.get(`/user`);
+				return data.cid;
 			} catch (e) {
 				console.error('error getting examiner id', e);
 				this.toastError('Something went wrong, please try again later');

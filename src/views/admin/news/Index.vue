@@ -126,13 +126,12 @@ export default {
 						limit: this.limit,
 					},
 				});
-				if (data.ret_det.code === 200) {
-					this.newsItems = data.data;
-					this.newsAmount = data.amount;
-					this.$nextTick(() => {
-						this.initModals();
-					});
-				}
+
+				this.newsItems = data.news;
+				this.newsAmount = data.amount;
+				this.$nextTick(() => {
+					this.initModals();
+				});
 			} catch (e) {
 				console.error('error getting news', e);
 				this.toastError('Something went wrong, please try again later');
@@ -155,21 +154,21 @@ export default {
 		async deleteNews(slug) {
 			try {
 				this.spinners.push('delete');
-				const { data } = await zauApi.delete(`/news/${slug}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('News article deleted');
+				await zauApi.delete(`/news/${slug}`);
 
-					setTimeout(
-						() => M.Modal.getInstance(document.querySelector('.modal_delete')).close(),
-						500,
-					);
-					await this.getNews();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('News article deleted');
+
+				setTimeout(() => M.Modal.getInstance(document.querySelector('.modal_delete')).close(), 500);
+				await this.getNews();
 			} catch (e) {
-				console.error('error deleting news', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting news', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

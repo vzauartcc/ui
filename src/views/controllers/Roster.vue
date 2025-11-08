@@ -155,9 +155,7 @@ export default {
 		async getControllers() {
 			try {
 				const { data } = await zauApi.get('/controller');
-				this.controllers = data.data;
-				this.controllers.home = this.controllers.home.filter((c) => c.member);
-				this.controllers.visiting = this.controllers.visiting.filter((c) => c.member);
+				this.controllers = data;
 			} catch (e) {
 				console.error('error getting controllers', e);
 				this.toastError('Something went wrong, please try again later');

@@ -110,18 +110,20 @@ export default {
 
 				try {
 					this.spinners.push('add');
-					const { data: addData } = await zauApi.post('/file/documents', this.form);
+					await zauApi.post('/file/documents', this.form);
 
-					if (addData.ret_det.code === 200) {
-						this.toastSuccess('Document created');
+					this.toastSuccess('Document created');
 
-						this.$router.push('/admin/files/documents');
-					} else {
-						this.toastError(addData.ret_det.message);
-					}
+					this.$router.push('/admin/files/documents');
 				} catch (e) {
-					console.error('error creating document', e);
-					this.toastError('Something went wrong, please try again later');
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+					} else {
+						console.error('error creating document', e);
+						this.toastError('Something went wrong, please try again later');
+					}
 				} finally {
 					this.spinners = this.spinners.filter((s) => s !== 'add');
 				}
@@ -137,23 +139,25 @@ export default {
 
 				try {
 					this.spinners.push('add');
-					const { data } = await zauApi.post(`/file/documents`, formData, {
+					await zauApi.post(`/file/documents`, formData, {
 						headers: {
 							'Content-Type': 'multipart/form-data',
 						},
 					});
 
-					if (data.ret_det.code === 200) {
-						this.toastSuccess('File uploaded');
+					this.toastSuccess('File uploaded');
 
-						document.getElementById('fileInput').value = '';
-						this.$router.push('/admin/files/documents');
-					} else {
-						this.toastError(data.ret_det.message);
-					}
+					document.getElementById('fileInput').value = '';
+					this.$router.push('/admin/files/documents');
 				} catch (e) {
-					console.error('error uploading file', e);
-					this.toastError('Something went wrong, please try again later');
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+					} else {
+						console.error('error uploading file', e);
+						this.toastError('Something went wrong, please try again later');
+					}
 				} finally {
 					this.spinners = this.spinners.filter((s) => s !== 'add');
 				}

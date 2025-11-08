@@ -53,10 +53,9 @@ export default {
 						limit: this.limit,
 					},
 				});
-				if (data.ret_det.code === 200) {
-					this.newsItems = data.data.slice(0, 3);
-					this.newsAmount = data.amount;
-				}
+
+				this.newsItems = data.news.slice(0, 3);
+				this.newsAmount = data.amount;
 			} catch (e) {
 				console.error('error getting news', e);
 				this.toastError('Something went wrong, please try again later');

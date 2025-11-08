@@ -74,7 +74,7 @@ export default {
 	async mounted() {
 		try {
 			const { data: statsData } = await zauApi.get('/stats/ins');
-			this.stats = statsData.data;
+			this.stats = statsData;
 		} catch (e) {
 			console.error('error getting stats', e);
 			this.toastError('Something went wrong, please try again later');
