@@ -138,7 +138,7 @@
 							<textarea
 								id="studentNotes"
 								class="materialize-textarea"
-								data-length="3000"
+								data-length="10000"
 								v-model="session.studentNotes"
 							></textarea>
 							<label for="studentNotes" class="active"
@@ -155,7 +155,7 @@
 							<textarea
 								id="insNotes"
 								class="materialize-textarea"
-								data-length="3000"
+								data-length="10000"
 								v-model="session.insNotes"
 							></textarea>
 							<label for="insNotes" class="active"
