@@ -365,7 +365,9 @@ router.beforeEach(async (to, from, next) => {
 				next('/');
 			}
 		} catch (e) {
-			console.error('[router] error getting user', e);
+			if (!(e.status === 401 || e.status === 403)) {
+				console.error('[router] error getting user', e);
+			}
 			next('/');
 		}
 	} else if (to.meta.isAdmin) {
@@ -378,7 +380,9 @@ router.beforeEach(async (to, from, next) => {
 				next('/');
 			}
 		} catch (e) {
-			console.error('[router] error checking staff', e);
+			if (!(e.status === 401 || e.status === 403)) {
+				console.error('[router] error checking staff', e);
+			}
 			next('/');
 		}
 	} else if (to.meta.isInstructor) {
@@ -391,7 +395,10 @@ router.beforeEach(async (to, from, next) => {
 				next('/');
 			}
 		} catch (e) {
-			console.error('[router] error checking instructor', e);
+			if (!(e.status === 401 || e.status === 403)) {
+				console.error('[router] error checking instructor', e);
+			}
+
 			next('/');
 		}
 	} else {

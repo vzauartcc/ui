@@ -158,8 +158,10 @@ export default {
 					);
 				}
 			} catch (e) {
-				console.error('error checking applications', e);
-				this.toastError('Something went wrong, please try again later');
+				if (!(e.status === 401 || e.status === 403)) {
+					console.error('error checking applications', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 
 				this.checks = {
 					visiting: false,

@@ -29,8 +29,8 @@ import { mapState } from 'vuex';
 export default {
 	data() {
 		return {
+			spinners: [],
 			form: {
-				spinners: [],
 				bio: '',
 			},
 		};
