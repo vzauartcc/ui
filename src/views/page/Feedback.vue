@@ -96,7 +96,9 @@
 						</label>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="Send" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Send
+						</button>
 					</div>
 				</form>
 			</div>
@@ -105,15 +107,16 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'Feedback',
 	title: 'Leave Feedback',
 	data() {
 		return {
+			spinners: [],
 			feedback: {
 				name: '',
 				email: '',
@@ -143,12 +146,19 @@ export default {
 			window.location.href = vatsimAuthRedirectUrl;
 		},
 		async getControllers() {
-			const { data } = await zabApi.get('/feedback/controllers');
-			this.controllers = data.data;
+			try {
+				const { data } = await zauApi.get('/feedback/controllers');
+				this.controllers = data;
+			} catch (e) {
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async submitFeedback() {
-			const { data } = await zabApi.post('/feedback', this.feedback);
-			if (data.ret_det.code === 200) {
+			try {
+				this.spinners.push('submit');
+				await zauApi.post('/feedback', this.feedback);
+
 				this.toastSuccess('Feedback sent');
 				document.getElementById('feedback').reset();
 				this.feedback = {
@@ -160,7 +170,18 @@ export default {
 					M.textareaAutoResize(document.querySelector('textarea'));
 					M.updateTextFields();
 				});
-			} else this.toastError(data.ret_det.message);
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error submitting feedback', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
+			}
 		},
 	},
 	computed: {

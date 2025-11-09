@@ -163,7 +163,7 @@
 							<textarea
 								id="studentNotes"
 								class="materialize-textarea"
-								data-length="3000"
+								data-length="10000"
 								v-model="form.studentNotes"
 							></textarea>
 							<label for="studentNotes" class="active"
@@ -180,7 +180,7 @@
 							<textarea
 								id="insNotes"
 								class="materialize-textarea"
-								data-length="3000"
+								data-length="10000"
 								v-model="form.insNotes"
 							></textarea>
 							<label for="insNotes" class="active"
@@ -201,11 +201,9 @@
 								v-if="step === 3"
 								class="btn right"
 								@click="submitForm"
-								:disabled="!isCurrentPartValid || submitting"
+								:disabled="!isCurrentPartValid || spinners.length > 0"
 							>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
+								<span v-if="spinners.some((s) => s === 'submit')"> <SmallSpinner /> </span>
 								Submit to VATUSA
 							</button>
 							<button
@@ -213,11 +211,9 @@
 								v-if="step === 3"
 								class="btn-flat right"
 								@click="saveForm"
-								:disabled="!isCurrentPartValid || submitting"
+								:disabled="!isCurrentPartValid || spinners.length > 0"
 							>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
+								<span v-if="spinners.some((s) => s === 'save')"> <SmallSpinner /> </span>
 								Save
 							</button>
 							<button
@@ -241,7 +237,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { mapActions, mapState } from 'vuex';
@@ -251,7 +247,7 @@ export default {
 	title: 'Enter Session Notes',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			step: 1,
 			duration: 0,
 			controllers: null,
@@ -345,12 +341,22 @@ export default {
 	methods: {
 		...mapActions('user', ['getUser']),
 		async getTrainingMilestones() {
-			const { data } = await zabApi.get(`/training/milestones`);
-			this.milestones = data.data.milestones;
+			try {
+				const { data } = await zauApi.get(`/training/milestones`);
+				this.milestones = data.milestones;
+			} catch (e) {
+				console.error('error getting milestones', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async getControllers() {
-			const { data } = await zabApi.get('/feedback/controllers');
-			this.controllers = data.data;
+			try {
+				const { data } = await zauApi.get('/feedback/controllers');
+				this.controllers = data;
+			} catch (e) {
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async saveForm() {
 			if (new Date(this.form.startTime) > new Date(this.form.endTime)) {
@@ -358,9 +364,9 @@ export default {
 				return;
 			}
 
-			this.submitting = true;
+			this.spinners.push('save');
 			try {
-				const { data } = await zabApi.post(`/training/session/save`, {
+				await zauApi.post(`/training/session/save`, {
 					student: this.form.student,
 					milestone: this.form.milestone,
 					position: this.form.position,
@@ -373,16 +379,20 @@ export default {
 					studentNotes: this.form.studentNotes,
 					insNotes: this.form.insNotes,
 				});
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes saved');
-					this.$router.push('/ins/training/sessions');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+
+				this.toastSuccess('Session notes saved');
+				this.$router.push('/ins/training/sessions');
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error saving form', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'save');
 			}
 		},
 		async submitForm() {
@@ -391,9 +401,9 @@ export default {
 				return;
 			}
 
-			this.submitting = true;
+			this.spinners.push('submit');
 			try {
-				const { data } = await zabApi.post(`/training/session/submit`, {
+				await zauApi.post(`/training/session/submit`, {
 					student: this.form.student,
 					milestone: this.form.milestone,
 					position: this.form.position,
@@ -406,16 +416,20 @@ export default {
 					studentNotes: this.form.studentNotes,
 					insNotes: this.form.insNotes,
 				});
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes saved');
-					this.$router.push('/ins/training/sessions');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+
+				this.toastSuccess('Session notes saved');
+				this.$router.push('/ins/training/sessions');
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error submitting form', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

@@ -114,13 +114,16 @@
 							href="#!"
 							class="waves-effect waves-light btn"
 							@click.prevent="approveFeedback(feedback._id)"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'approve')"> <SmallSpinner /> </span
 							>Approve</a
 						>
 						<a
 							href="#!"
 							class="waves-effect waves-light btn-flat"
 							@click.prevent="rejectFeedback(feedback._id)"
-							>Reject</a
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'reject')"> <SmallSpinner /> </span>Reject</a
 						>
 					</div>
 				</div>
@@ -131,7 +134,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import RecentFeedback from './Recent.vue';
 
 export default {
@@ -139,6 +142,7 @@ export default {
 	title: 'Feedback',
 	data() {
 		return {
+			spinners: [],
 			unapproved: null,
 		};
 	},
@@ -156,11 +160,16 @@ export default {
 	},
 	methods: {
 		async getUnapproved() {
-			const { data } = await zabApi.get('/feedback/unapproved');
-			this.unapproved = data.data;
-			this.$nextTick(() => {
-				this.initModals(); // Initialize modals after loading data
-			});
+			try {
+				const { data } = await zauApi.get('/feedback/unapproved');
+				this.unapproved = data;
+				this.$nextTick(() => {
+					this.initModals(); // Initialize modals after loading data
+				});
+			} catch (e) {
+				console.error('error getting unapproved feedback', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index) {
 			const modal = document.getElementById(`modal_unapproved_${index}`);
@@ -178,36 +187,50 @@ export default {
 		},
 		async approveFeedback(id) {
 			try {
-				const { data } = await zabApi.put(`/feedback/approve/${id}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Feedback approved');
-					await this.getUnapproved();
-					this.$refs.recentFeedback.getFeedback();
-					this.$nextTick(() => {
-						M.Modal.getInstance(document.querySelector('.modal_unapproved')).close();
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.spinners.push('approve');
+				await zauApi.put(`/feedback/approve/${id}`);
+
+				this.toastSuccess('Feedback approved');
+				await this.getUnapproved();
+				this.$refs.recentFeedback.getFeedback();
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_unapproved')).close();
+				});
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error approving feedback', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'approve');
 			}
 		},
 		async rejectFeedback(id) {
 			try {
-				const { data } = await zabApi.put(`/feedback/reject/${id}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Feedback rejected');
-					await this.getUnapproved();
-					this.$refs.recentFeedback.getFeedback();
-					this.$nextTick(() => {
-						M.Modal.getInstance(document.querySelector('.modal_unapproved')).close();
-					});
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.spinners.push('reject');
+				await zauApi.put(`/feedback/reject/${id}`);
+
+				this.toastSuccess('Feedback rejected');
+				await this.getUnapproved();
+				this.$refs.recentFeedback.getFeedback();
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_unapproved')).close();
+				});
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error rejecting feedback', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'reject');
 			}
 		},
 		convertRating(rating) {

@@ -16,9 +16,9 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
-import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
+import { zauApi } from '@/helpers/axios.js';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
+import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 
 export default {
@@ -42,9 +42,14 @@ export default {
 	},
 	methods: {
 		async getDocument() {
-			const { data } = await zabApi.get(`/file/documents/${this.$route.params.slug}`);
-			this.document = data.data;
-			this.setTitle(this.document.name);
+			try {
+				const { data } = await zauApi.get(`/file/documents/${this.$route.params.slug}`);
+				this.document = data;
+				this.setTitle(this.document.name);
+			} catch (e) {
+				console.error('error getting document', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 	},
 };

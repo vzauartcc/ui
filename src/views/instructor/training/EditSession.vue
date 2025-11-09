@@ -138,7 +138,7 @@
 							<textarea
 								id="studentNotes"
 								class="materialize-textarea"
-								data-length="3000"
+								data-length="10000"
 								v-model="session.studentNotes"
 							></textarea>
 							<label for="studentNotes" class="active"
@@ -155,7 +155,7 @@
 							<textarea
 								id="insNotes"
 								class="materialize-textarea"
-								data-length="3000"
+								data-length="10000"
 								v-model="session.insNotes"
 							></textarea>
 							<label for="insNotes" class="active"
@@ -176,11 +176,9 @@
 								v-if="step === 3"
 								class="btn right"
 								@click="submitForm"
-								:disabled="!isCurrentPartValid || submitting"
+								:disabled="!isCurrentPartValid || spinners.length > 0"
 							>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
+								<span v-if="spinners.some((s) => s === 'submit')"> <SmallSpinner /> </span>
 								<span v-if="!session.vatusaId || session.vatusaId === 0">Submit to VATUSA</span>
 								<span v-else>Update</span>
 							</button>
@@ -189,11 +187,9 @@
 								v-if="step === 3 && (!session.vatusaId || session.vatusaId === 0)"
 								class="btn-flat right"
 								@click="saveForm"
-								:disabled="!isCurrentPartValid || submitting"
+								:disabled="!isCurrentPartValid || spinners.length > 0"
 							>
-								<span v-if="submitting">
-									<SmallSpinner />
-								</span>
+								<span v-if="spinners.some((s) => s === 'save')"> <SmallSpinner /> </span>
 								Save
 							</button>
 							<button
@@ -217,7 +213,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { nextTick } from 'vue';
 
 export default {
@@ -225,7 +221,7 @@ export default {
 	title: 'Enter Session Notes',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			session: null,
 			step: 1,
 			duration: 0,
@@ -262,17 +258,17 @@ export default {
 	methods: {
 		async getSessionDetails() {
 			try {
-				const { data } = await zabApi.get(`/training/session/${this.$route.params.id}`);
-				this.session = data.data;
+				const { data } = await zauApi.get(`/training/session/${this.$route.params.id}`);
+				this.session = data;
 			} catch (e) {
+				console.error('error getting session details', e);
 				this.toastError(`Error loading session data: ${e}`);
-				console.log(e);
 			}
 		},
 		async saveForm() {
 			try {
-				this.submitting = true;
-				const { data } = await zabApi.put(`/training/session/save/${this.$route.params.id}`, {
+				this.spinners.push('save');
+				await zauApi.put(`/training/session/save/${this.$route.params.id}`, {
 					position: this.session.position,
 					movements: this.session.movements,
 					progress: this.session.progress,
@@ -283,35 +279,40 @@ export default {
 					studentNotes: this.session.studentNotes,
 					insNotes: this.session.insNotes,
 				});
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes saved');
-					this.$router.push('/ins/training/sessions');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+
+				this.toastSuccess('Session notes saved');
+				this.$router.push('/ins/training/sessions');
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error saving form', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'save');
 			}
 		},
 		async submitForm() {
 			try {
-				this.submitting = true;
-				const { data } = await zabApi.put(
-					`/training/session/submit/${this.$route.params.id}`,
-					this.session,
-				);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Session notes finalized');
-					this.$router.push('/ins/training/sessions');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.spinners.push('submit');
+				await zauApi.put(`/training/session/submit/${this.$route.params.id}`, this.session);
+
+				this.toastSuccess('Session notes finalized');
+				this.$router.push('/ins/training/sessions');
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error submitting form', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 		formatHtmlDate(value) {

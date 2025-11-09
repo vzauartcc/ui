@@ -113,11 +113,9 @@
 							href="#"
 							@click.prevent="deleteCert(cert._id)"
 							class="btn waves-effect modal-close"
-							:class="{ disabled: submitting }"
+							:class="{ disabled: spinners.length > 0 }"
 						>
-							<span v-if="submitting">
-								<SmallSpinner />
-							</span>
+							<span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>
 							Delete</a
 						>
 						<a href="#" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
@@ -129,14 +127,14 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'SoloCerts',
 	title: 'Solo Endorsements',
 	data() {
 		return {
-			submitting: false,
+			spinners: [],
 			positions: ['ORD', 'CHI', 'MKE', 'MDW', 'FWA', 'RFD', 'MLI'],
 			certs: [],
 			old: [],
@@ -151,31 +149,22 @@ export default {
 	methods: {
 		async getSoloCerts() {
 			try {
-				const { data } = await zabApi.get('/training/solo');
+				const { data } = await zauApi.get('/training/solo');
 				this.certs =
-					data.data.filter(
-						(c) => new Date(c.expires).getTime() >= new Date().setHours(0, 0, 0, 0),
-					) || [];
+					data.filter((c) => new Date(c.expires).getTime() >= new Date().setHours(0, 0, 0, 0)) ||
+					[];
 				this.old =
-					data.data.filter(
-						(c) => new Date(c.expires).getTime() < new Date().setHours(0, 0, 0, 0),
-					) || [];
+					data.filter((c) => new Date(c.expires).getTime() < new Date().setHours(0, 0, 0, 0)) || [];
 			} catch (e) {
+				console.error('error getting solo certs', e);
 				this.toastError(`Error fetching solo endorsements: ${e.message ? e.message : e}`);
-				console.log(e);
 			}
 		},
 		async deleteCert(id) {
 			try {
-				this.submitting = true;
+				this.spinners.push('delete');
 
-				const { data } = await zabApi.delete(`/training/solo/${id}`);
-
-				if (data.ret_det.code !== 200) {
-					this.toastError(data.ret_det.message);
-				} else {
-					this.toastSuccess('Solo Endorsement deleted');
-				}
+				await zauApi.delete(`/training/solo/${id}`);
 
 				this.certs = [];
 				await this.getSoloCerts();
@@ -184,10 +173,16 @@ export default {
 					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
 				});
 			} catch (e) {
-				this.toastError(`Error deleting solo endorsement: ${e.message ? e.message : e}`);
-				this.toastError(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting cert', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			} finally {
-				this.submitting = false;
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		getName(user) {

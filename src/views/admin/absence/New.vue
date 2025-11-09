@@ -36,14 +36,16 @@
 					<label for="reason">Reason</label>
 				</div>
 				<div class="input-field col s12">
-					<input type="submit" class="btn right" value="Grant" />
+					<button type="submit" class="btn right" :disabled="spinners.length > 0">
+						<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Grant
+					</button>
 				</div>
 			</form>
 		</div>
 	</div>
 </template>
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -52,6 +54,7 @@ export default {
 	title: 'Grant Leave of Absence',
 	data() {
 		return {
+			spinners: [],
 			form: {
 				controller: 0,
 				reason: '',
@@ -78,26 +81,36 @@ export default {
 	},
 	methods: {
 		async getControllers() {
-			const { data } = await zabApi.get('/feedback/controllers');
-			this.controllers = data.data;
+			try {
+				const { data } = await zauApi.get('/feedback/controllers');
+				this.controllers = data;
+			} catch (e) {
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async submitForm() {
 			try {
-				const { data } = await zabApi.post('/controller/absence', {
+				this.spinners.push('submit');
+				await zauApi.post('/controller/absence', {
 					...this.form,
 					expirationDate: `${this.$refs.expirationDate.value}T00:00:00.000Z`,
 				});
 
-				console.log(this.$refs.expirationDate.value);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Leave of Absence granted');
+				this.toastSuccess('Leave of Absence granted');
 
-					this.$router.push('/admin/absence');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.$router.push('/admin/absence');
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error creating absence', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

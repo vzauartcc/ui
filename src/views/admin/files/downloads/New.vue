@@ -38,7 +38,9 @@
 						</div>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="create" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Create
+						</button>
 					</div>
 				</form>
 			</div>
@@ -47,14 +49,15 @@
 </template>
 
 <script>
+import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
-import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'NewDownload',
 	title: 'New Download',
 	data() {
 		return {
+			spinners: [],
 			form: {
 				name: '',
 				category: '',
@@ -69,6 +72,7 @@ export default {
 	methods: {
 		async submitForm() {
 			try {
+				this.spinners.push('submit');
 				this.toastInfo('Uploading...');
 				const formData = new FormData();
 				formData.append('name', this.form.name);
@@ -77,22 +81,27 @@ export default {
 				formData.append('download', this.$refs.download.files[0]);
 				formData.append('author', this.user.data._id);
 
-				const { data } = await zabApi.post(`/file/downloads`, formData, {
+				await zauApi.post(`/file/downloads`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
 				});
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Download created');
+				this.toastSuccess('Download created');
 
-					document.getElementById('fileInput').value = '';
-					this.$router.push('/admin/files/downloads');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				document.getElementById('fileInput').value = '';
+				this.$router.push('/admin/files/downloads');
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error creating download', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

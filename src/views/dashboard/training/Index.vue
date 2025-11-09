@@ -64,8 +64,12 @@
 						<p>This will remove the training session...</p>
 					</div>
 					<div class="modal-footer">
-						<a href="#" @click="deleteSession(session._id)" class="btn waves-effect modal-close"
-							>Delete</a
+						<a
+							href="#"
+							@click="deleteSession(session._id)"
+							class="btn waves-effect modal-close"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
 						>
 						<a href="#" class="btn-flat waves-effect modal-close">Cancel</a>
 					</div>
@@ -77,7 +81,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import PastSessions from './Past.vue';
 
 export default {
@@ -85,6 +89,7 @@ export default {
 	title: 'Training',
 	data() {
 		return {
+			spinners: [],
 			upcomingSessions: null,
 		};
 	},
@@ -100,8 +105,13 @@ export default {
 	},
 	methods: {
 		async getUpcomingSessions() {
-			const { data } = await zabApi.get(`/training/request/upcoming`);
-			this.upcomingSessions = data.data;
+			try {
+				const { data } = await zauApi.get(`/training/request/upcoming`);
+				this.upcomingSessions = data;
+			} catch (e) {
+				console.error('error getting upcoming requests', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(id) {
 			const modal = document.getElementById(`modal_delete_${id}`);
@@ -111,16 +121,22 @@ export default {
 		},
 		async deleteSession(id) {
 			try {
-				const { data } = await zabApi.delete(`/training/request/${id}`);
+				this.spinners.push('delete');
+				await zauApi.delete(`/training/request/${id}`);
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Training request deleted');
-					await this.getUpcomingSessions();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Training request deleted');
+				await this.getUpcomingSessions();
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting session', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 	},

@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'TrainingRequests',
@@ -104,13 +104,13 @@ export default {
 	methods: {
 		async getRequests() {
 			try {
-				const { data } = await zabApi.get('/training/request/open', {
+				const { data } = await zauApi.get('/training/request/open', {
 					params: {
 						period: 21, // 21 days from start of week
 					},
 				});
 
-				for (const request of data.data) {
+				for (const request of data) {
 					for (const date of this.dates) {
 						if (
 							date.date.slice(0, 10) ===
@@ -122,7 +122,8 @@ export default {
 				}
 				this.loading = false;
 			} catch (e) {
-				console.log(e);
+				console.error('error getting requests', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		calculateDates() {

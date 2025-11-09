@@ -55,7 +55,9 @@
 						</div>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="create" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'add')"> <SmallSpinner /> </span>Create
+						</button>
 					</div>
 				</form>
 			</div>
@@ -64,10 +66,10 @@
 </template>
 
 <script>
+import { zauApi } from '@/helpers/axios.js';
 import Editor from '@toast-ui/editor';
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'; // Merging cells for SOPs
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
-import { zabApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -75,6 +77,7 @@ export default {
 	title: 'New Document',
 	data() {
 		return {
+			spinners: [],
 			form: {
 				name: '',
 				category: '',
@@ -104,14 +107,25 @@ export default {
 		async addDocument() {
 			if (this.form.type === 'doc') {
 				this.form.content = this.editor.getMarkdown();
-				const { data: addData } = await zabApi.post('/file/documents', this.form);
 
-				if (addData.ret_det.code === 200) {
+				try {
+					this.spinners.push('add');
+					await zauApi.post('/file/documents', this.form);
+
 					this.toastSuccess('Document created');
 
 					this.$router.push('/admin/files/documents');
-				} else {
-					this.toastError(addData.ret_det.message);
+				} catch (e) {
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+					} else {
+						console.error('error creating document', e);
+						this.toastError('Something went wrong, please try again later');
+					}
+				} finally {
+					this.spinners = this.spinners.filter((s) => s !== 'add');
 				}
 			} else {
 				this.toastInfo('Uploading...');
@@ -123,19 +137,29 @@ export default {
 				formData.append('author', this.user.data._id);
 				formData.append('type', this.form.type);
 
-				const { data } = await zabApi.post(`/file/documents`, formData, {
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
-				});
+				try {
+					this.spinners.push('add');
+					await zauApi.post(`/file/documents`, formData, {
+						headers: {
+							'Content-Type': 'multipart/form-data',
+						},
+					});
 
-				if (data.ret_det.code === 200) {
 					this.toastSuccess('File uploaded');
 
 					document.getElementById('fileInput').value = '';
 					this.$router.push('/admin/files/documents');
-				} else {
-					this.toastError(data.ret_det.message);
+				} catch (e) {
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+					} else {
+						console.error('error uploading file', e);
+						this.toastError('Something went wrong, please try again later');
+					}
+				} finally {
+					this.spinners = this.spinners.filter((s) => s !== 'add');
 				}
 			}
 		},

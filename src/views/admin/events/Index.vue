@@ -90,7 +90,8 @@
 						href="#"
 						class="modal-close waves-effect waves-light btn"
 						@click.prevent="deleteEvent(event.url)"
-						>Delete</a
+						:class="{ disabled: spinners.length > 0 }"
+						><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
 					>
 					<a href="#" class="modal-close waves-effect waves-light btn-flat" @click.prevent
 						>Cancel</a
@@ -108,6 +109,8 @@
 								href="#"
 								class="modal-close waves-effect waves-light btn"
 								@click.prevent="submitForm(event.url)"
+								:class="{ disabled: spinners.length > 0 }"
+								><span v-if="spinners.some((s) => s === 'submit')"> <SmallSpinner /> </span
 								>Submit</a
 							>
 						</div>
@@ -124,7 +127,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import Past from './Past.vue';
 import StaffingRequest from './StaffingRequest.vue';
 
@@ -133,6 +136,7 @@ export default {
 	title: 'Events',
 	data() {
 		return {
+			spinners: [],
 			events: null,
 			historicEvents: null,
 			staffingRequests: null,
@@ -155,8 +159,13 @@ export default {
 	},
 	methods: {
 		async getUpcomingEvents() {
-			const { data } = await zabApi.get('/event');
-			this.events = data.data;
+			try {
+				const { data } = await zauApi.get('/event');
+				this.events = data;
+			} catch (e) {
+				console.error('error getting upcoming events', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index, type) {
 			const modalId = `modal_${type}_${index}`;
@@ -175,15 +184,22 @@ export default {
 		},
 		async deleteEvent(slug) {
 			try {
-				const { data } = await zabApi.delete(`/event/${slug}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Event deleted');
-					this.getUpcomingEvents();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.spinners.push('delete');
+				await zauApi.delete(`/event/${slug}`);
+
+				this.toastSuccess('Event deleted');
+				this.getUpcomingEvents();
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting event', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		async updateDropdown() {
@@ -192,17 +208,26 @@ export default {
 		},
 		async submitForm(url) {
 			try {
-				const { data } = await zabApi.post('/event/sendEvent', { url });
-				if (data.status === 200) {
+				this.spinners.push('submit');
+				const response = await zauApi.post('/event/sendEvent', { url });
+				if (response.status === 200) {
 					this.toastSuccess('Discord Embed Sent');
-				} else if (data.status === 201) {
+				} else if (response.status === 201) {
 					this.toastSuccess('Discord Embed Updated');
 				} else {
-					this.toastError(data.message);
+					this.toastError(response.data.message);
 				}
 			} catch (e) {
-				console.log(e);
-				this.toastError(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error sending event', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
 		},
 	},

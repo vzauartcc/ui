@@ -114,7 +114,7 @@
 									}}
 								</p>
 								<label for="60-days" class="active"
-									>Rostered Recently (60 days since added to a VATUSA subdivision)</label
+									>60 days since added to a VATUSA subdivision</label
 								>
 							</div>
 							<div class="input-field col s6">
@@ -144,7 +144,12 @@
 							class="waves-effect waves-light btn right"
 							@click.prevent="approveVisitor(app.application.cid)"
 							:style="app.statusChecks.visiting ? '' : 'background-color:red'"
-							>Approve</a
+							:class="{ disabled: spinners.length > 0 }"
+						>
+							<span v-if="spinners.some((s) => s === 'approve')">
+								<SmallSpinner />
+							</span>
+							Approve</a
 						>
 						<p v-if="app.statusChecks.visiting" class="left" style="color: green">
 							Meets VATUSA requirements
@@ -181,7 +186,12 @@
 							href="#"
 							class="waves-effect btn modal-close"
 							@click.prevent="rejectVisitor(app.application.cid)"
-							>Reject</a
+							:class="{ disabled: spinners.length > 0 }"
+						>
+							<span v-if="spinners.some((s) => s === 'reject')">
+								<SmallSpinner />
+							</span>
+							Reject</a
 						>
 						<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Cancel</a>
 					</div>
@@ -192,7 +202,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'VisitorApplications',
@@ -201,6 +211,7 @@ export default {
 		return {
 			applications: null,
 			reason: {},
+			spinners: [],
 		};
 	},
 	async mounted() {
@@ -209,13 +220,14 @@ export default {
 	methods: {
 		async getNewApplications() {
 			try {
-				const { data } = await zabApi.get('/controller/visit');
-				this.applications = data.data;
+				const { data } = await zauApi.get('/controller/visit');
+				this.applications = data;
 				this.$nextTick(() => {
 					this.initModals();
 				});
 			} catch (e) {
-				console.log(e);
+				console.error('error getting applications', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		openModal(cid) {
@@ -234,28 +246,45 @@ export default {
 		},
 		async approveVisitor(cid) {
 			try {
-				await zabApi.put(`/controller/visit/${cid}`);
+				this.spinners.push('approve');
+				await zauApi.put(`/controller/visit/${cid}`);
 				this.toastSuccess('Visiting application approved');
 				await this.getNewApplications();
 			} catch (e) {
-				console.log(e);
-				this.toastError('Something went wrong, please try again');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error approving application', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'approve');
 			}
 		},
 		async rejectVisitor(cid) {
 			try {
-				console.log(this.reason[cid]);
-				await zabApi.delete(`/controller/visit/${cid}`, {
+				this.spinners.push('reject');
+				await zauApi.delete(`/controller/visit/${cid}`, {
 					data: {
 						reason: this.reason[cid],
 					},
 				});
 
-				this.toastSuccess('Visiting application rejected');
+				this.toastSuccess('Visiting application rejected later');
 				await this.getNewApplications();
 			} catch (e) {
-				console.log(e);
-				this.toastError('Something went wrong, please try again');
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error rejecting application', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'reject');
 			}
 		},
 		openRejectModal(i) {

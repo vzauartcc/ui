@@ -79,7 +79,7 @@
 	</div>
 </template>
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import { Chart, registerables } from 'chart.js';
 
 export default {
@@ -92,75 +92,80 @@ export default {
 	},
 	async mounted() {
 		Chart.register(...registerables);
-		const { data: statsData } = await zabApi.get('/stats/admin');
-		this.stats = statsData.data;
-		this.$nextTick(() => {
-			M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-				margin: 0,
-			});
-			new Chart(this.$refs.feedback_chart, {
-				type: 'line',
-				data: {
-					labels: this.stats.feedback.map((f) => `${f.month} ${f.year}`),
-					datasets: [
-						{
-							label: 'Feedback Submitted',
-							data: this.stats.feedback.map((f) => f.total),
-							borderColor: '#FF0000',
-							tension: 0.3,
-						},
-					],
-				},
-				options: {
-					scales: {
-						y: {
-							beginAtZero: true,
+		try {
+			const { data: statsData } = await zauApi.get('/stats/admin');
+			this.stats = statsData;
+			this.$nextTick(() => {
+				M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+					margin: 0,
+				});
+				new Chart(this.$refs.feedback_chart, {
+					type: 'line',
+					data: {
+						labels: this.stats.feedback.map((f) => `${f.month} ${f.year}`),
+						datasets: [
+							{
+								label: 'Feedback Submitted',
+								data: this.stats.feedback.map((f) => f.total),
+								borderColor: '#FF0000',
+								tension: 0.3,
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: true,
+							},
 						},
 					},
-				},
-			});
-			new Chart(this.$refs.hours_chart, {
-				type: 'line',
-				data: {
-					labels: this.stats.hours.map((f) => `${f.month} ${f.year}`),
-					datasets: [
-						{
-							label: 'Total Hours',
-							data: this.stats.hours.map((h) => Math.round((h.total / 60 / 60) * 100) / 100),
-							borderColor: '#FF0000',
-							tension: 0.3,
-						},
-					],
-				},
-				options: {
-					scales: {
-						y: {
-							beginAtZero: true,
+				});
+				new Chart(this.$refs.hours_chart, {
+					type: 'line',
+					data: {
+						labels: this.stats.hours.map((f) => `${f.month} ${f.year}`),
+						datasets: [
+							{
+								label: 'Total Hours',
+								data: this.stats.hours.map((h) => Math.round((h.total / 60 / 60) * 100) / 100),
+								borderColor: '#FF0000',
+								tension: 0.3,
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: true,
+							},
 						},
 					},
-				},
-			});
-			new Chart(this.$refs.distb_chart, {
-				type: 'bar',
-				data: {
-					labels: this.stats.counts.byRating.map((f) => f.rating),
-					datasets: [
-						{
-							label: 'Number of Controllers',
-							data: this.stats.counts.byRating.map((f) => f.count),
-							backgroundColor: '#FF0000',
-						},
-					],
-				},
-				options: {
-					scales: {
-						y: {
-							beginAtZero: true,
+				});
+				new Chart(this.$refs.distb_chart, {
+					type: 'bar',
+					data: {
+						labels: this.stats.counts.byRating.map((f) => f.rating),
+						datasets: [
+							{
+								label: 'Number of Controllers',
+								data: this.stats.counts.byRating.map((f) => f.count),
+								backgroundColor: '#FF0000',
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: true,
+							},
 						},
 					},
-				},
+				});
 			});
-		});
+		} catch (e) {
+			console.error('error fetching stats', e);
+			this.toastError('Something went wrong, please try again later');
+		}
 	},
 	methods: {
 		sec2hms(secs) {

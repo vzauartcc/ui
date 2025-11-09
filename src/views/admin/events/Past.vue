@@ -70,7 +70,13 @@
 						</p>
 					</div>
 					<div class="modal-footer">
-						<a href="#" class="waves-effect btn" @click.prevent="deleteEvent(event.url)">Delete</a>
+						<a
+							href="#"
+							class="waves-effect btn"
+							@click.prevent="deleteEvent(event.url)"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
+						>
 						<a href="#" class="modal-close waves-effect btn-flat" @click.prevent>Cancel</a>
 					</div>
 				</div>
@@ -80,13 +86,14 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'HistoricEvents',
 	data() {
 		return {
+			spinners: [],
 			historicEvents: null,
 			eventAmount: 1,
 			page: 1,
@@ -111,14 +118,19 @@ export default {
 	},
 	methods: {
 		async getHistoricEvents() {
-			const { data } = await zabApi.get('/event/archive', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			this.historicEvents = data.data.events;
-			this.eventAmount = data.data.amount;
+			try {
+				const { data } = await zauApi.get('/event/archive', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				this.historicEvents = data.events;
+				this.eventAmount = data.amount;
+			} catch (e) {
+				console.error('error getting historical events', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index) {
 			const modal = document.getElementById(`modal_historic_${index}`);
@@ -136,15 +148,22 @@ export default {
 		},
 		async deleteEvent(slug) {
 			try {
-				const { data } = await zabApi.delete(`/event/${slug}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Event deleted');
-					await this.getHistoricEvents(); // Refresh event list
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.spinners.push('delete');
+				await zauApi.delete(`/event/${slug}`);
+
+				this.toastSuccess('Event deleted');
+				await this.getHistoricEvents(); // Refresh event list
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting event', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 	},

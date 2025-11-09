@@ -13,7 +13,9 @@
 						<div id="tui_editor"></div>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="create" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'create')"> <SmallSpinner /> </span>Create
+						</button>
 					</div>
 				</form>
 			</div>
@@ -22,16 +24,17 @@
 </template>
 
 <script>
+import { zauApi } from '@/helpers/axios.js';
 import Editor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
 import { mapState } from 'vuex';
-import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'NewNews',
 	title: 'Create News Article',
 	data() {
 		return {
+			spinners: [],
 			form: {
 				title: '',
 				content: '',
@@ -54,18 +57,28 @@ export default {
 	},
 	methods: {
 		async createNews() {
-			const { data } = await zabApi.post('/news', {
-				title: this.form.title,
-				content: this.editor.getMarkdown(),
-				createdBy: this.user.data.cid,
-			});
+			try {
+				this.spinners.push('create');
+				await zauApi.post('/news', {
+					title: this.form.title,
+					content: this.editor.getMarkdown(),
+					createdBy: this.user.data.cid,
+				});
 
-			if (data.ret_det.code === 200) {
 				this.toastSuccess('News article created');
 
 				this.$router.push('/admin/news');
-			} else {
-				this.toastError(data.ret_det.message);
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error creating news', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'create');
 			}
 		},
 	},

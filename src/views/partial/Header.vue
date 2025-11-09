@@ -137,26 +137,26 @@
 							>Login</a
 						>
 						<ul v-show="user.isLoggedIn" id="user-dropdown" class="dropdown-content">
-							<li v-if="user.isLoggedIn && user.data.isMem">
+							<li v-if="user.isLoggedIn && user.data.isMember">
 								<router-link to="/dash">Controller Dashboard</router-link>
 							</li>
 							<li v-else>
 								<router-link to="/controllers/visit">Become a Visitor</router-link>
 							</li>
 							<!--ADD THIS BACK ONCE IDS IS OPERATIONAL-->
-							<!--<li v-if="user.isLoggedIn && user.data.isMem"> 
+							<!--<li v-if="user.isLoggedIn && user.data.isMember">
               <a href="https://ids.zauartcc.org" target="_blank" rel="noopener noreferrer">IDS</a>
               </li>-->
 							<li
-								v-if="user.isLoggedIn && (user.data.isIns || user.data.isStaff)"
+								v-if="user.isLoggedIn && (user.data.isInstructor || user.data.isStaff)"
 								class="divider"
 							></li>
-							<li v-if="user.isLoggedIn && (user.data.isIns || user.data.isStaff)">
+							<li v-if="user.isLoggedIn && (user.data.isInstructor || user.data.isStaff)">
 								<a href="https://mail.zoho.com/" target="_blank" rel="noopener noreferrer"
 									>Webmail</a
 								>
 							</li>
-							<li v-if="user.isLoggedIn && user.data.isIns">
+							<li v-if="user.isLoggedIn && user.data.isInstructor">
 								<router-link to="/ins">Instructor Dashboard</router-link>
 							</li>
 							<li v-if="user.isLoggedIn && user.data.isStaff">
@@ -208,9 +208,9 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex';
-import Notifications from './Notifications.vue';
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
+import { mapActions, mapMutations, mapState } from 'vuex';
+import Notifications from './Notifications.vue';
 const folderPrefix = import.meta.env.VITE_FOLDER_PREFIX;
 
 export default {

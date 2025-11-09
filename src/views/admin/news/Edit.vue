@@ -16,7 +16,9 @@
 						<div id="tui_editor"></div>
 					</div>
 					<div class="input-field col s12">
-						<input type="submit" class="btn waves-effect waves-light right" value="Update" />
+						<button type="submit" class="btn right" :disabled="spinners.length > 0">
+							<span v-if="spinners.some((s) => s !== 'update')"> <SmallSpinner /> </span>Update
+						</button>
 					</div>
 				</form>
 			</div>
@@ -25,14 +27,15 @@
 </template>
 
 <script>
+import { zauApi } from '@/helpers/axios.js';
 import Editor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
-import { zabApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'EditNews',
 	data() {
 		return {
+			spinners: [],
 			news: null,
 		};
 	},
@@ -55,19 +58,34 @@ export default {
 	},
 	methods: {
 		async getArticle() {
-			const { data } = await zabApi.get(`/news/${this.$route.params.slug}`);
-			this.news = data.data;
+			try {
+				const { data } = await zauApi.get(`/news/${this.$route.params.slug}`);
+				this.news = data;
+			} catch (e) {
+				console.error('error getting article', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async updateNews() {
-			this.news.content = this.editor.getMarkdown();
-			const { data } = await zabApi.put(`/news/${this.$route.params.slug}`, this.news);
+			try {
+				this.spinners.push('update');
+				this.news.content = this.editor.getMarkdown();
+				await zauApi.put(`/news/${this.$route.params.slug}`, this.news);
 
-			if (data.ret_det.code === 200) {
 				this.toastSuccess('News article updated');
 
 				this.$router.push('/admin/news');
-			} else {
-				this.toastError(data.ret_det.message);
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error updating news', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}
 		},
 	},

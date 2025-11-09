@@ -47,13 +47,14 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'staffingRequests',
 	data() {
 		return {
+			spinners: [],
 			requests: null,
 			requestAmount: 1,
 			page: 1,
@@ -77,28 +78,40 @@ export default {
 	},
 	methods: {
 		async getStaffingRequests() {
-			const { data } = await zabApi.get('/event/staffingRequest', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			const now = new Date();
-			this.requests = data.data.requests.filter(
-				(request) => request.accepted && new Date(request.date) > now,
-			);
-			this.requestAmount = this.requests.length;
+			try {
+				const { data } = await zauApi.get('/event/staffingRequest', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				const now = new Date();
+				this.requests = data.requests.filter(
+					(request) => request.accepted && new Date(request.date) > now,
+				);
+				this.requestAmount = this.requests.length;
+			} catch (e) {
+				console.error('error getting staffing requests', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async deleteStaffingRequest(_id) {
 			try {
-				const { data } = await zabApi.delete(`/event/staffingRequest/${_id}`);
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Staffing Request deleted');
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.spinners.push('delete');
+				await zauApi.delete(`/event/staffingRequest/${_id}`);
+
+				this.toastSuccess('Staffing Request deleted');
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting staffing request', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		dtLong(dateString) {

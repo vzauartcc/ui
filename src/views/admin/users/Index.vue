@@ -3,14 +3,14 @@
 		<div class="card">
 			<div class="card-content">
 				<div class="row row_no_margin">
-					<span class="card-title col s12 m8">Controllers</span>
+					<span class="card-title col s12 m8">All Users</span>
 					<div class="input-field col s12 m4">
 						<input
 							autocomplete="off"
 							@keyup="filterControllers"
 							v-model="filter"
 							type="text"
-							placeholder="Search for a controller"
+							placeholder="Search for a user"
 						/>
 						<span class="helper-text right">Search by CID, name, or operating initials</span>
 					</div>
@@ -23,7 +23,7 @@
 				<table class="striped compact">
 					<thead class="controller_list_head">
 						<tr>
-							<th>Controller</th>
+							<th>User</th>
 							<th>CID</th>
 							<th class="options">Options</th>
 						</tr>
@@ -31,15 +31,19 @@
 					<tbody class="controller_list_row">
 						<tr v-for="controller in controllersFiltered" :key="controller.cid">
 							<td>
-								<i class="type_controller material-icons right">{{
-									controller.vis ? 'work' : 'home'
-								}}</i>
+								<i
+									class="type_controller material-icons right tooltipped"
+									:data-tooltip="
+										controller.member
+											? controller.vis
+												? 'Visiting Controller'
+												: 'Home Controller'
+											: 'Removed User'
+									"
+									>{{ controller.member ? (controller.vis ? 'work' : 'home') : 'logout' }}</i
+								>
 								<div class="name">
-									<router-link :to="`/controllers/${controller.cid}`"
-										>{{ controller.fname }} {{ controller.lname }} ({{
-											controller.oi
-										}})</router-link
-									>
+									{{ controller.fname }} {{ controller.lname }} ({{ controller.oi }})
 								</div>
 								<div class="rating">
 									{{ controller.ratingLong }}
@@ -53,20 +57,12 @@
 							<td class="options">
 								<router-link
 									data-position="top"
-									data-tooltip="Edit Controller"
+									data-tooltip="Edit User"
 									class="tooltipped"
 									:to="`/admin/controllers/${controller.cid}`"
 								>
 									<i class="material-icons">edit</i>
 								</router-link>
-								<a
-									:href="`#modal_delete_${controller.cid}`"
-									data-position="top"
-									data-tooltip="Remove Controller"
-									class="tooltipped modal-trigger"
-								>
-									<i class="material-icons red-text text-darken-2">delete</i>
-								</a>
 
 								<template
 									v-if="
@@ -84,7 +80,7 @@
 									<a
 										:href="`#modal_promote_${controller.cid}`"
 										data-position="top"
-										data-tooltip="Promote Controller"
+										data-tooltip="Promote User"
 										class="tooltipped modal-trigger"
 									>
 										<i class="material-icons green-text text-darken-2">arrow_upward</i>
@@ -101,11 +97,11 @@
 				<!-- Delete Modal -->
 				<div :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
 					<div class="modal-content">
-						<h4>Remove Controller?</h4>
+						<h4>Remove User?</h4>
 						<p>
 							This will remove <b>{{ controller.fname }} {{ controller.lname }}</b> from the Chicago
 							ARTCC. You must state a reason for removal below. Please note that this will delete
-							the controller from both the website and the VATUSA facility roster.
+							the user from both the website and the VATUSA facility roster.
 						</p>
 						<textarea
 							class="materialize-textarea"
@@ -251,9 +247,8 @@ export default {
 		},
 		async getControllers() {
 			try {
-				const { data } = await zauApi.get('/controller');
-				this.controllers = data.home.concat(data.visiting);
-				this.controllers = this.controllers.filter((c) => c.member);
+				const { data } = await zauApi.get('/user');
+				this.controllers = [...data.home, ...data.visiting, ...data.removed];
 				this.controllersFiltered = this.controllers;
 			} catch (e) {
 				console.error('error getting controllers', e);
@@ -393,8 +388,6 @@ export default {
 }
 
 .name {
-	color: $primary-color;
-
 	font-weight: 700;
 }
 .rating {

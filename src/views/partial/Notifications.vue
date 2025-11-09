@@ -25,18 +25,23 @@
 		</div>
 	</div>
 	<div class="controls">
-		<button class="left btn-flat waves-effect" @click="deleteAll">Delete All</button>
-		<button class="right btn-flat waves-effect" @click="readAll">Mark All as Read</button>
+		<button class="left btn-flat waves-effect" @click="deleteAll" :disabled="spinners.length > 0">
+			<span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete All
+		</button>
+		<button class="right btn-flat waves-effect" @click="readAll" :disabled="spinners.length > 0">
+			<span v-if="spinners.some((s) => s === 'read')"> <SmallSpinner /> </span>Mark All as Read
+		</button>
 	</div>
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Notifications',
 	data() {
 		return {
+			spinners: [],
 			notifications: null,
 			unread: 0,
 			amount: 0,
@@ -50,46 +55,54 @@ export default {
 	methods: {
 		async getNotifications() {
 			try {
-				const { data } = await zabApi.get(`/user/notifications`, {
+				const { data } = await zauApi.get(`/user/notifications`, {
 					params: {
 						page: this.page,
 						limit: this.limit,
 					},
 				});
-				this.unread = data.data.unread;
-				this.amount = data.data.amount;
-				this.notifications = data.data.notif;
+				this.unread = data.unread;
+				this.amount = data.amount;
+				this.notifications = data.notif;
 
 				if (this.unread > 0) {
 					this.$parent.unread = true;
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error getting notifications', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async getMoreNotifications() {
 			this.page += 1;
 
-			const { data } = await zabApi.get(`/user/notifications`, {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
+			try {
+				const { data } = await zauApi.get(`/user/notifications`, {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
 
-			this.notifications = this.notifications.concat(data.data.notif);
+				this.notifications = this.notifications.concat(data.notif);
+			} catch (e) {
+				console.error('error getting more notifications', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		async redirectTo(link, id) {
 			try {
-				await zabApi.put(`/user/notifications/read/${id}`);
+				await zauApi.put(`/user/notifications/read/${id}`);
 				this.$router.push(link);
 			} catch (e) {
-				console.log(e);
+				console.log('error redirecting', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async readAll() {
 			try {
-				await zabApi.put(`/user/notifications/read/all`);
+				this.spinners.push('read');
+				await zauApi.put(`/user/notifications/read/all`);
 				this.notifications.forEach((notif) => {
 					if (notif.read === false) {
 						notif.read = true;
@@ -97,13 +110,17 @@ export default {
 				});
 				this.$parent.unread = false;
 			} catch (e) {
-				console.log(e);
+				console.error('error reading all', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'read');
 			}
 		},
 		async deleteAll() {
 			try {
+				this.spinners.push('delete');
 				if (this.notifications.length > 0) {
-					await zabApi.delete(`/user/notifications`);
+					await zauApi.delete(`/user/notifications`);
 					this.notifications = [];
 					this.$parent.unread = false;
 					this.toastSuccess('Deleted all notifications successfully');
@@ -111,7 +128,10 @@ export default {
 					this.toastInfo('You have no notifications');
 				}
 			} catch (e) {
-				console.log(e);
+				console.error('error deleting all', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 	},

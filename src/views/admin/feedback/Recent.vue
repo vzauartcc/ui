@@ -127,8 +127,8 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
 import Pagination from '@/components/Pagination.vue';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	data() {
@@ -155,17 +155,22 @@ export default {
 	},
 	methods: {
 		async getFeedback() {
-			const { data } = await zabApi.get('/feedback', {
-				params: {
-					page: this.page,
-					limit: this.limit,
-				},
-			});
-			this.recentFeedback = data.data.feedback;
-			this.feedbackAmount = data.data.amount;
-			this.$nextTick(() => {
-				this.initModals();
-			});
+			try {
+				const { data } = await zauApi.get('/feedback', {
+					params: {
+						page: this.page,
+						limit: this.limit,
+					},
+				});
+				this.recentFeedback = data.feedback;
+				this.feedbackAmount = data.amount;
+				this.$nextTick(() => {
+					this.initModals();
+				});
+			} catch (e) {
+				console.error('error getting feedback', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index) {
 			const modal = document.getElementById(`modal_feedback_${index}`);

@@ -70,7 +70,8 @@
 							href="#"
 							class="waves-effect waves-light btn"
 							@click.prevent="deleteDownload(file._id, i)"
-							>Delete</a
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
 						>
 						<a href="#" class="modal-close waves-effect waves-light btn-flat" @click.prevent
 							>Cancel</a
@@ -83,13 +84,14 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 
 export default {
 	name: 'Downloads',
 	title: 'Downloads',
 	data() {
 		return {
+			spinners: [],
 			downloads: null,
 		};
 	},
@@ -106,8 +108,13 @@ export default {
 	},
 	methods: {
 		async getDownloads() {
-			const { data } = await zabApi.get('/file/downloads');
-			this.downloads = data.data;
+			try {
+				const { data } = await zauApi.get('/file/downloads');
+				this.downloads = data;
+			} catch (e) {
+				console.error('error getting downloads', e);
+				this.toastError('Something went wrong, please try again later');
+			}
 		},
 		openModal(index) {
 			const modal = document.getElementById(`modal_delete_${index}`);
@@ -130,7 +137,8 @@ export default {
 			}
 
 			try {
-				const deletePromise = zabApi.delete(`/file/downloads/${id}`);
+				this.spinners.push('delete');
+				const deletePromise = zauApi.delete(`/file/downloads/${id}`);
 
 				setTimeout(() => {
 					const modal = document.getElementById(modalId);
@@ -139,16 +147,21 @@ export default {
 					}
 				}, 500);
 
-				const { data } = await deletePromise;
+				await deletePromise;
 
-				if (data.ret_det.code === 200) {
-					this.toastSuccess('Download deleted');
-					await this.getDownloads();
-				} else {
-					this.toastError(data.ret_det.message);
-				}
+				this.toastSuccess('Download deleted');
+				await this.getDownloads();
 			} catch (e) {
-				console.log(e);
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error deleting download', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
 		convertCategory(cat) {

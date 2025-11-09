@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { zabApi } from '../helpers/axios';
+import { zauApi } from '../helpers/axios';
 import * as uriHelper from '../helpers/uriHelper';
 import Admin from '../views/layout/Admin.vue';
 import Dashboard from '../views/layout/ControllerDash.vue';
@@ -110,7 +110,7 @@ const routes = [
 	{
 		path: '/ins',
 		component: Instructor,
-		meta: { isIns: true },
+		meta: { isInstructor: true },
 		children: [
 			{
 				path: '',
@@ -275,6 +275,10 @@ const routes = [
 				path: 'log',
 				component: () => import('../views/admin/log/Index.vue'),
 			},
+			{
+				path: 'users',
+				component: () => import('../views/admin/users/Index.vue'),
+			},
 		],
 	},
 	{
@@ -353,26 +357,48 @@ router.beforeEach(async (to, from, next) => {
 	}
 
 	if (to.meta.loggedIn) {
-		const { data: user } = await zabApi.get('/user');
-		if (user.ret_det.code === 200 && user.data.member === true) {
-			next();
-		} else {
+		try {
+			const { data: user } = await zauApi.get('/user/self');
+			if (user.member === true) {
+				next();
+			} else {
+				next('/');
+			}
+		} catch (e) {
+			if (!(e.status === 401 || e.status === 403)) {
+				console.error('[router] error getting user', e);
+			}
 			next('/');
 		}
 	} else if (to.meta.isAdmin) {
 		// Route is an admin route.
-		const { data: user } = await zabApi.get('/user');
-		if (user.ret_det.code === 200 && user.data.isStaff === true) {
-			next();
-		} else {
+		try {
+			const { data: user } = await zauApi.get('/user/self');
+			if (user.isStaff === true) {
+				next();
+			} else {
+				next('/');
+			}
+		} catch (e) {
+			if (!(e.status === 401 || e.status === 403)) {
+				console.error('[router] error checking staff', e);
+			}
 			next('/');
 		}
-	} else if (to.meta.isIns) {
+	} else if (to.meta.isInstructor) {
 		// Route is an admin route.
-		const { data: user } = await zabApi.get('/user');
-		if (user.ret_det.code === 200 && user.data.isIns === true) {
-			next();
-		} else {
+		try {
+			const { data: user } = await zauApi.get('/user/self');
+			if (user.isInstructor === true) {
+				next();
+			} else {
+				next('/');
+			}
+		} catch (e) {
+			if (!(e.status === 401 || e.status === 403)) {
+				console.error('[router] error checking instructor', e);
+			}
+
 			next('/');
 		}
 	} else {

@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { zabApi } from '@/helpers/axios.js';
+import { zauApi } from '@/helpers/axios.js';
 import parse from 'metar-parser';
 
 export default {
@@ -405,11 +405,16 @@ export default {
 	methods: {
 		async getWeatherForAirports() {
 			for (const station of this.icao) {
-				const { data } = await zabApi.get(`/ids/stations/${station}`);
-				if (data.metar) {
-					this.stations[station].metar = data.metar;
-					this.stations[station].parsedMetar = parse(data.metar);
-					this.numStationsLoaded++;
+				try {
+					const { data } = await zauApi.get(`/ids/stations/${station}`);
+					if (data.metar) {
+						this.stations[station].metar = data.metar;
+						this.stations[station].parsedMetar = parse(data.metar);
+						this.numStationsLoaded++;
+					}
+				} catch (e) {
+					console.error('error getting', station, 'metar', e);
+					this.toastError('Something went wrong, please try again later');
 				}
 			}
 		},
