@@ -8,13 +8,19 @@
 			<div v-else>
 				<div class="hours_info">
 					<span v-if="user.data.rating === 1"
-						>You have observed for <b>{{ hoursCalc }}</b> and completed
-						{{ this.activityData.training.length }} training sessions this
-						{{ this.activityData.period.unit }}.
+						>You have observed for
+						<b :class="colorCalc(this.activityData.requirements.observer.seconds)">{{
+							hoursCalc
+						}}</b>
+						and completed
+						<b :class="colorSessions(this.activityData.requirements.observer.trainingSessions)">{{
+							this.activityData.trainings.length
+						}}</b>
+						training sessions this {{ this.activityData.period.unit }}.
 						<span
 							v-if="
 								this.calcSeconds >= this.activityData.requirements.observer.seconds ||
-								this.activityData.training.length >=
+								this.activityData.trainings.length >=
 									this.activityData.requirements.observer.trainingSessions
 							"
 							>You have met the observer activity requirements for this
@@ -24,7 +30,7 @@
 							>You need to observe for <b>{{ calcControlTime }}</b> or complete
 							<b>{{
 								this.activityData.requirements.observer.trainingSessions -
-								this.activityData.training.length
+								this.activityData.trainings.length
 							}}</b>
 							more training sessions by
 							<b>{{ new Date(this.activityData.period.endOfCurrent).toLocaleDateString() }}</b> to
@@ -32,7 +38,11 @@
 						>
 					</span>
 					<span v-else>
-						You have controlled for <b>{{ hoursCalc }}</b> this {{ this.activityData.period.unit }}.
+						You have controlled for
+						<b :class="colorCalc(this.activityData.requirements.controller.seconds)">{{
+							hoursCalc
+						}}</b>
+						this {{ this.activityData.period.unit }}.
 						<span v-if="isActive">
 							You are <b>Exempt</b> from hourly activity requirements at this time.
 						</span>
@@ -49,6 +59,7 @@
 						</span>
 					</span>
 				</div>
+				<br />
 				<span class="section_title"> External Integrations </span>
 				<div class="discord_connect">
 					<template v-if="discordConnected === false">
@@ -281,6 +292,20 @@ export default {
 				timeZone: 'UTC',
 			});
 		},
+		colorCalc(secs) {
+			if (this.calcSeconds >= secs) {
+				return 'hours-green';
+			}
+
+			return 'hours-red';
+		},
+		colorSessions(sessions) {
+			if (this.activityData.trainings.length >= sessions) {
+				return 'hours-green';
+			}
+
+			return 'hours-red';
+		},
 		...mapActions('user', ['getUser']),
 	},
 	computed: {
@@ -436,5 +461,12 @@ export default {
 	padding: 0 1em 1em 1em;
 	margin-top: -1em;
 	font-style: italic;
+}
+
+.hours-red {
+	color: red;
+}
+.hours-green {
+	color: green;
 }
 </style>
