@@ -25,7 +25,7 @@
 							<input
 								class="file-path validate"
 								type="text"
-								placeholder="Banner (.jpg .png or .gif, less than 6 MB)"
+								placeholder="Banner (.jpg .png or .gif, less than 30 MB)"
 							/>
 						</div>
 					</div>

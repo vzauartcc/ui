@@ -17,7 +17,9 @@ export default {
 					commit('setUser', user);
 					commit('setLoggedIn', true);
 				} catch (e) {
-					console.error('[store] error getting user', e);
+					if (e.status !== 401) {
+						console.error('[store] error getting user', e);
+					}
 				}
 			}
 			commit('setQuery', true);

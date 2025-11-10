@@ -12,20 +12,14 @@
 
 <script>
 import Spinner from '@/components/Spinner.vue';
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
-	async mounted() {
-		await this.getUser();
-	},
 	components: {
 		Spinner,
 	},
 	computed: {
 		...mapGetters('user', ['hasQueryCompleted']),
-	},
-	methods: {
-		...mapActions('user', ['getUser']),
 	},
 };
 </script>
