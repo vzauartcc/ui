@@ -44,6 +44,12 @@
 							<span v-if="spinners.some((s) => s !== 'submit')"> <SmallSpinner /> </span>Update
 						</button>
 					</div>
+					<div class="col s12" v-if="!upload.text.endsWith('ing')">
+						<div style="text-align: center">{{ upload.text }}</div>
+						<div class="progress" role="progressbar">
+							<div class="determinate" :style="barStyle" id="progress_bar"></div>
+						</div>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -52,6 +58,7 @@
 
 <script>
 import { zauApi } from '@/helpers/axios.js';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'EditDownload',
@@ -65,6 +72,11 @@ export default {
 				fileName: '',
 			},
 			loading: true,
+			upload: {
+				progress: 0,
+				text: 'Uploading',
+				timeout: null,
+			},
 		};
 	},
 	async mounted() {
@@ -95,11 +107,34 @@ export default {
 				formData.append('description', this.form.description);
 				formData.append('download', this.$refs.download.files[0]);
 
+				this.uploadText = `${this.uploadText} .`;
+				this.upload.timeout = setInterval(() => {
+					if (this.upload.text.length > 15) {
+						this.upload.text = this.upload.text.split(' ')[0];
+					}
+
+					this.upload.text = `${this.upload.text} .`;
+				}, 750);
+
 				await zauApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
+					onUploadProgress: (progressEvent) => {
+						const percent = (progressEvent.loaded / progressEvent.total) * 100;
+						this.uploadProgress = percent.toFixed(0);
+						if (percent > 99) {
+							// Switch to infinite progress bar
+							document
+								.getElementById('progress_bar')
+								.classList.replace('determinate', 'indeterminate');
+							this.upload.text = 'Saving .';
+						}
+					},
 				});
+
+				this.uploadProgress = 0;
+				this.uploadText = 'Uploading';
 
 				this.toastSuccess('Download updated');
 				this.$router.go(-1); // go back to the previous page
@@ -114,8 +149,28 @@ export default {
 				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
+
+				if (this.upload.timeout) {
+					clearInterval(this.upload.timeout);
+					this.upload.timeout = null;
+				}
+				this.upload.progress = 0;
+				this.upload.text = 'Uploading';
 			}
 		},
+	},
+	computed: {
+		...mapState('user', ['user']),
+		barStyle() {
+			return {
+				width: `${this.upload.progress}%`,
+			};
+		},
+	},
+	unmounted() {
+		if (this.upload.timeout) {
+			clearInterval(this.upload.timeout);
+		}
 	},
 };
 </script>
