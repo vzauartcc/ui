@@ -414,7 +414,8 @@ export default {
 					}
 				} catch (e) {
 					console.error('error getting', station, 'metar', e);
-					this.toastError('Something went wrong, please try again later');
+					// Don't show toast for these
+					// this.toastError('Something went wrong, please try again later');
 				}
 			}
 		},
