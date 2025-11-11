@@ -75,7 +75,7 @@
 					<div class="col s12" v-if="!upload.text.endsWith('ing')">
 						<div style="text-align: center">{{ upload.text }}</div>
 						<div class="progress" role="progressbar">
-							<div class="determinate" :style="barStyle" id="progress_bar"></div>
+							<div class="determinate" :style="barStyle"></div>
 						</div>
 					</div>
 				</form>
@@ -108,6 +108,7 @@ export default {
 				progress: 0,
 				text: 'Uploading',
 				timeout: null,
+				poll: null,
 			},
 		};
 	},
@@ -155,8 +156,11 @@ export default {
 				formData.append('type', this.form.type);
 				formData.append('content', this.form.content);
 
+				const uploadId = Date.now();
+
 				if (this.form.type === 'file') {
 					formData.append('download', this.$refs.download.files[0]);
+					formData.append('uploadId', uploadId);
 				}
 
 				this.uploadText = `${this.uploadText} .`;
@@ -168,26 +172,19 @@ export default {
 					this.upload.text = `${this.upload.text} .`;
 				}, 750);
 
-				await zauApi.put(`/file/documents/${this.form.slug}`, formData, {
+				const response = await zauApi.put(`/file/documents/${this.form.slug}`, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' },
 					onUploadProgress: (progressEvent) => {
 						const percent = (progressEvent.loaded / progressEvent.total) * 100;
-						this.uploadProgress = percent.toFixed(0);
-						if (percent > 99) {
-							// Switch to infinite progress bar
-							document
-								.getElementById('progress_bar')
-								.classList.replace('determinate', 'indeterminate');
-							this.upload.text = 'Saving .';
-						}
+						this.uploadProgress = (percent / 2).toFixed(0);
 					},
 				});
 
-				this.uploadText = 'Uploading';
-				this.uploadProgress = 0;
-
-				this.toastSuccess('Document updated');
-				this.$router.go(-1); // go back to the previous page
+				if (response.status === 202) {
+					this.pollS3(uploadId);
+				} else if (response.status === 200) {
+					this.stopUploadUi(true);
+				}
 			} catch (e) {
 				if (e.response) {
 					this.toastError(
@@ -197,16 +194,55 @@ export default {
 					console.error('error updating document', e);
 					this.toastError('Something went wrong, please try again later');
 				}
+
+				this.stopUploadUi(false);
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'update');
-
-				if (this.upload.timeout) {
-					clearInterval(this.upload.timeout);
-					this.upload.timeout = null;
-				}
-				this.upload.progress = 0;
-				this.upload.text = 'Uploading';
 			}
+		},
+		stopUploadUi(success) {
+			if (this.upload.timeout) {
+				clearInterval(this.upload.timeout);
+				this.upload.timeout = null;
+			}
+			this.upload.progress = 0;
+			this.upload.text = 'Uploading';
+
+			if (this.upload.poll) {
+				clearInterval(this.upload.poll);
+				this.upload.poll = null;
+			}
+
+			if (success === true) {
+				this.toastSuccess('Document updated');
+
+				setTimeout(() => {
+					this.$router.back();
+				}, 500);
+			}
+		},
+		pollS3(id) {
+			console.info('switching to s3 polling');
+			const start = Date.now();
+			this.upload.poll = setInterval(async () => {
+				if (Date.now() - start < 120_000) {
+					try {
+						const response = await zauApi.get('/file/checkStatus/' + id);
+						const { progress } = response.data;
+						if (progress >= 100) {
+							this.stopUploadUi(true);
+						} else if (progress < 0) {
+							this.stopUploadUi(false);
+						} else {
+							this.upload.progress = 50 + progress / 2;
+						}
+					} catch (e) {
+						console.error('error polling s3 upload status', e);
+					}
+				} else {
+					this.stopUploadUi(false);
+				}
+			}, 1000);
 		},
 	},
 	computed: {
@@ -220,6 +256,9 @@ export default {
 	unmounted() {
 		if (this.upload.timeout) {
 			clearInterval(this.upload.timeout);
+		}
+		if (this.upload.poll) {
+			clearInterval(this.upload.poll);
 		}
 	},
 };
