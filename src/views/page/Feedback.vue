@@ -2,7 +2,14 @@
 	<div class="card">
 		<div class="card-content">
 			<span class="card-title">Send Feedback</span>
-			<div class="loading_container" v-if="!controllers">
+			<div v-if="!user.isLoggedIn">
+				<p>
+					We welcome your feedback! To leave feedback for a controller, click the button below to
+					login and continue.<br />
+				</p>
+				<button class="btn btn-waves login_button" @click="login">Login with VATSIM</button>
+			</div>
+			<div class="loading_container" v-else-if="!controllers">
 				<Spinner />
 			</div>
 			<div v-else>
@@ -150,8 +157,10 @@ export default {
 				const { data } = await zauApi.get('/feedback/controllers');
 				this.controllers = data;
 			} catch (e) {
-				console.error('error getting controllers', e);
-				this.toastError('Something went wrong, please try again later');
+				if (e.status !== 403) {
+					console.error('error getting controllers', e);
+					this.toastError('Something went wrong, please try again later');
+				}
 			}
 		},
 		async submitFeedback() {
@@ -208,5 +217,11 @@ export default {
 input.valid[type='email']:not(.browser-default) {
 	border-bottom: 1px solid $primary-color;
 	box-shadow: 0 1px 0 0 $primary-color;
+}
+
+.login_button {
+	margin: 1em auto;
+	display: block;
+	width: 200px;
 }
 </style>
