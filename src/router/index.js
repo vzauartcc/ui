@@ -1,5 +1,5 @@
+import store from '@/store';
 import { createRouter, createWebHistory } from 'vue-router';
-import { zauApi } from '../helpers/axios';
 import * as uriHelper from '../helpers/uriHelper';
 import Admin from '../views/layout/Admin.vue';
 import Dashboard from '../views/layout/ControllerDash.vue';
@@ -356,49 +356,33 @@ router.beforeEach(async (to, from, next) => {
 		return false;
 	}
 
-	if (to.meta.loggedIn) {
+	const userModule = store.state.user;
+	if (!userModule.userQueryCompleted) {
 		try {
-			const { data: user } = await zauApi.get('/user/self');
-			if (user.member === true) {
-				next();
-			} else {
-				next('/');
-			}
+			await store.dispatch('user/getUser');
 		} catch (e) {
-			if (!(e.status === 401 || e.status === 403)) {
-				console.error('[router] error getting user', e);
-			}
+			console.error('[router] Initial user fetch failed', e);
 			next('/');
+			return;
 		}
-	} else if (to.meta.isAdmin) {
-		// Route is an admin route.
-		try {
-			const { data: user } = await zauApi.get('/user/self');
-			if (user.isStaff === true) {
-				next();
-			} else {
-				next('/');
-			}
-		} catch (e) {
-			if (!(e.status === 401 || e.status === 403)) {
-				console.error('[router] error checking staff', e);
-			}
-			next('/');
-		}
-	} else if (to.meta.isInstructor) {
-		// Route is an admin route.
-		try {
-			const { data: user } = await zauApi.get('/user/self');
-			if (user.isInstructor === true) {
-				next();
-			} else {
-				next('/');
-			}
-		} catch (e) {
-			if (!(e.status === 401 || e.status === 403)) {
-				console.error('[router] error checking instructor', e);
-			}
+	}
 
+	if (to.meta.loggedIn || to.meta.isAdmin || to.meta.isInstructor) {
+		const user = userModule.user.data;
+
+		if (userModule.user.isLoggedIn !== true) {
+			next('/');
+			return;
+		}
+
+		if (to.meta.isAdmin && user && user.isStaff === true) {
+			next();
+		} else if (to.meta.isInstructor && user && user.isInstructor === true) {
+			next();
+		} else if (to.meta.loggedIn && user && user.member === true) {
+			next();
+		} else {
+			console.error('You do not have permission to view this page');
 			next('/');
 		}
 	} else {

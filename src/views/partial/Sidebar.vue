@@ -134,14 +134,15 @@ export default {
 				'KUGN',
 			],
 			top: null,
+			interval: null,
 		};
 	},
 	async mounted() {
 		M.Tabs.init(document.querySelectorAll('.tabs'));
 		await this.getOnline();
-		setInterval(() => {
+		this.interval = setInterval(() => {
 			this.getOnline();
-		}, 60_000);
+		}, 30_000);
 	},
 	methods: {
 		async getOnline() {
@@ -196,6 +197,11 @@ export default {
 				return this.airports.includes(flight.dep) || this.airports.includes(flight.dest);
 			});
 		},
+	},
+	unmounted() {
+		if (this.interval) {
+			clearInterval(this.interval);
+		}
 	},
 };
 </script>

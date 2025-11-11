@@ -59,6 +59,12 @@
 							<span v-if="spinners.some((s) => s !== 'add')"> <SmallSpinner /> </span>Create
 						</button>
 					</div>
+					<div class="col s12" v-if="!upload.text.endsWith('ing')">
+						<div style="text-align: center">{{ upload.text }}</div>
+						<div class="progress" role="progressbar">
+							<div class="determinate" :style="barStyle"></div>
+						</div>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -86,6 +92,12 @@ export default {
 				type: '',
 			},
 			editor: null,
+			upload: {
+				progress: 0,
+				text: 'Uploading',
+				timeout: null,
+				poll: null,
+			},
 		};
 	},
 	async mounted() {
@@ -138,17 +150,33 @@ export default {
 				formData.append('type', this.form.type);
 
 				try {
+					const uploadId = Date.now();
+					formData.append('uploadId', uploadId);
+
 					this.spinners.push('add');
-					await zauApi.post(`/file/documents`, formData, {
-						headers: {
-							'Content-Type': 'multipart/form-data',
+
+					this.uploadText = `${this.uploadText} .`;
+					this.upload.timeout = setInterval(() => {
+						if (this.upload.text.length > 15) {
+							this.upload.text = this.upload.text.split(' ')[0];
+						}
+
+						this.upload.text = `${this.upload.text} .`;
+					}, 750);
+
+					const response = await zauApi.post(`/file/documents`, formData, {
+						onUploadProgress: (progressEvent) => {
+							console.log(progressEvent);
+							const percent = (progressEvent.loaded / progressEvent.total) * 100;
+							this.uploadProgress = (percent / 2).toFixed(0);
 						},
 					});
 
-					this.toastSuccess('File uploaded');
-
-					document.getElementById('fileInput').value = '';
-					this.$router.push('/admin/files/documents');
+					if (response.status === 202) {
+						this.pollS3(uploadId);
+					} else if (response.status === 201) {
+						this.stopUploadUi(true);
+					}
 				} catch (e) {
 					if (e.response) {
 						this.toastError(
@@ -158,14 +186,74 @@ export default {
 						console.error('error uploading file', e);
 						this.toastError('Something went wrong, please try again later');
 					}
+
+					this.stopUploadUi(false);
 				} finally {
 					this.spinners = this.spinners.filter((s) => s !== 'add');
 				}
 			}
 		},
+		stopUploadUi(success) {
+			if (this.upload.timeout) {
+				clearInterval(this.upload.timeout);
+				this.upload.timeout = null;
+			}
+			this.upload.progress = 0;
+			this.upload.text = 'Uploading';
+
+			if (this.upload.poll) {
+				clearInterval(this.upload.poll);
+				this.upload.poll = null;
+			}
+
+			if (success === true) {
+				this.toastSuccess('File uploaded');
+
+				setTimeout(() => {
+					document.getElementById('fileInput').value = '';
+					this.$router.push('/admin/files/documents');
+				}, 500);
+			}
+		},
+		pollS3(id) {
+			console.info('switching to s3 polling');
+			const start = Date.now();
+			this.upload.poll = setInterval(async () => {
+				if (Date.now() - start < 120_000) {
+					try {
+						const response = await zauApi.get('/file/checkStatus/' + id);
+						const { progress } = response.data;
+						if (progress >= 100) {
+							this.stopUploadUi(true);
+						} else if (progress < 0) {
+							this.stopUploadUi(false);
+						} else {
+							this.upload.progress = 50 + progress / 2;
+						}
+					} catch (e) {
+						console.error('error polling s3 upload status', e);
+					}
+				} else {
+					this.stopUploadUi(false);
+				}
+			}, 1000);
+		},
 	},
 	computed: {
 		...mapState('user', ['user']),
+		barStyle() {
+			return {
+				width: `${this.upload.progress}%`,
+			};
+		},
+	},
+	unmounted() {
+		if (this.upload.timeout) {
+			clearInterval(this.upload.timeout);
+		}
+		if (this.upload.poll) {
+			clearInterval(this.upload.poll);
+		}
 	},
 };
 </script>
