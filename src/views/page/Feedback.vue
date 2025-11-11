@@ -60,7 +60,7 @@
 								:value="controller.cid"
 								:key="controller.cid"
 							>
-								{{ controller.fname }} {{ controller.lname }}
+								[{{ controller.cid }}] {{ controller.fname }} {{ controller.lname }}
 							</option>
 						</select>
 						<label>Controller</label>

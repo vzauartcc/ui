@@ -22,10 +22,24 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
 	props: ['category'],
 	methods: {
-		getName: (user) => (user ? `${user.fname} ${user.lname}` : 'Available'),
+		getName(posUser) {
+			if (posUser) {
+				if (!this.user.data.isMember) {
+					return 'Unavailable';
+				}
+
+				return `${posUser.fname} ${posUser.lname}`;
+			}
+			return 'Available';
+		},
+	},
+	computed: {
+		...mapState('user', ['user']),
 	},
 };
 </script>
