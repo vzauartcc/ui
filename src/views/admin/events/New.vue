@@ -142,9 +142,6 @@ export default {
 				}, 750);
 
 				const response = await zauApi.post('/event', formData, {
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
 					onUploadProgress: (progressEvent) => {
 						const percent = (progressEvent.loaded / progressEvent.total) * 100;
 						this.uploadProgress = (percent / 2).toFixed(0);
