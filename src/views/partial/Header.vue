@@ -151,7 +151,7 @@
 								v-if="user.isLoggedIn && (user.data.isInstructor || user.data.isStaff)"
 								class="divider"
 							></li>
-							<li v-if="user.isLoggedIn && (user.data.isInstructor || user.data.isStaff)">
+							<li v-if="user.isLoggedIn && user.data.isStaff">
 								<a href="https://mail.zoho.com/" target="_blank" rel="noopener noreferrer"
 									>Webmail</a
 								>
