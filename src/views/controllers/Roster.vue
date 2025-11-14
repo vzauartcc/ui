@@ -21,7 +21,7 @@
 					<thead class="controller_list_head">
 						<tr>
 							<th class="name">Name</th>
-							<th class="certs">Certifications</th>
+							<th class="certs">Endorsements</th>
 						</tr>
 					</thead>
 					<tbody class="controller_list_row" v-if="controllers.home">
@@ -77,7 +77,7 @@
 					<thead class="controller_list_head">
 						<tr>
 							<th class="name">Name</th>
-							<th class="certs">Certifications</th>
+							<th class="certs">Endorsements</th>
 						</tr>
 					</thead>
 					<tbody class="controller_list_row" v-if="controllers.visiting">

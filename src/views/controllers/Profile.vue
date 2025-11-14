@@ -37,7 +37,7 @@
 								>
 									{{ role.name }}
 								</span>
-								<div v-if="controller.certifications.length" class="title">Certifications</div>
+								<div v-if="controller.certifications.length" class="title">Endorsements</div>
 								<span
 									v-for="cert in reduceControllerCerts(controller.certifications)"
 									:class="`cert cert_${cert.class}`"

@@ -52,7 +52,7 @@
 					</div>
 					<div class="input-field col s12">
 						<div id="certs_container">
-							<label for="minor_certs_container" class="active">Non-Tier Certifications:</label>
+							<label for="minor_certs_container" class="active">Unrestricted Positions:</label>
 							<div id="minor_certs_container" class="cert_container">
 								<span
 									id="gnd"
