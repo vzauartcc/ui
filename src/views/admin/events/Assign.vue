@@ -76,7 +76,6 @@
 									@change="assignPos(position._id)"
 									:ref="`pos_${position._id}`"
 									class="materialize-select"
-									:disabled="spinners.length > 0"
 								>
 									<option value="" :selected="!position.takenBy">Unassigned</option>
 									<option
