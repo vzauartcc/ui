@@ -110,7 +110,7 @@ const routes = [
 	{
 		path: '/ins',
 		component: Instructor,
-		meta: { isInstructor: true },
+		meta: { isTrainingStaff: true },
 		children: [
 			{
 				path: '',
@@ -367,7 +367,7 @@ router.beforeEach(async (to, from, next) => {
 		}
 	}
 
-	if (to.meta.loggedIn || to.meta.isAdmin || to.meta.isInstructor) {
+	if (to.meta.loggedIn || to.meta.isAdmin || to.meta.isTrainingStaff) {
 		const user = userModule.user.data;
 
 		if (userModule.user.isLoggedIn !== true) {
@@ -377,7 +377,7 @@ router.beforeEach(async (to, from, next) => {
 
 		if (to.meta.isAdmin && user && user.isStaff === true) {
 			next();
-		} else if (to.meta.isInstructor && user && user.isInstructor === true) {
+		} else if (to.meta.isTrainingStaff && user && user.isTrainingStaff === true) {
 			next();
 		} else if (to.meta.loggedIn && user && user.member === true) {
 			next();
