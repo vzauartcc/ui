@@ -16,11 +16,11 @@
 			<form id="update_controller" @submit.prevent="updateController" v-else>
 				<div class="row row_no_margin">
 					<div class="input-field col s6">
-						<input id="first_name" type="text" v-model="form.fname" required />
+						<input id="first_name" type="text" v-model="form.fname" required disabled />
 						<label for="first_name" class="active">First Name</label>
 					</div>
 					<div class="input-field col s6">
-						<input id="last_name" type="text" v-model="form.lname" required />
+						<input id="last_name" type="text" v-model="form.lname" required disabled />
 						<label for="last_name" class="active">Last Name</label>
 					</div>
 					<div class="input-field col s6">
@@ -32,7 +32,7 @@
 						<label for="rating" class="active">Rating</label>
 					</div>
 					<div class="input-field col s6">
-						<input id="email" type="email" v-model="form.email" />
+						<input id="email" type="email" v-model="form.email" disabled />
 						<label for="email" class="active">Email</label>
 					</div>
 					<div class="input-field col s6 input_oi">

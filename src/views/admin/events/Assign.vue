@@ -76,7 +76,6 @@
 									@change="assignPos(position._id)"
 									:ref="`pos_${position._id}`"
 									class="materialize-select"
-									:disabled="spinners.length > 0"
 								>
 									<option value="" :selected="!position.takenBy">Unassigned</option>
 									<option
@@ -263,7 +262,7 @@ export default {
 		async notifyAssignments() {
 			try {
 				this.spinners.push('notify');
-				await zauApi.put(`/event/${this.$route.params.slug}/notify`, {
+				await zauApi.patch(`/event/${this.$route.params.slug}/notify`, {
 					assignment: this.event.positions,
 				});
 
@@ -287,7 +286,7 @@ export default {
 		async addSignup() {
 			try {
 				this.spinners.push('add');
-				await zauApi.put(`/event/${this.$route.params.slug}/mansignup/${this.cid}`);
+				await zauApi.patch(`/event/${this.$route.params.slug}/mansignup/${this.cid}`);
 
 				this.cid = null;
 				this.toastSuccess('Sign-up manually added');
@@ -347,7 +346,7 @@ export default {
 				const selectElement = this.$refs[`pos_${pos}`][0]; // Vue $refs returns an array for elements inside v-for
 				const selectedCid = selectElement.value;
 
-				await zauApi.put(`/event/${this.$route.params.slug}/assign`, {
+				await zauApi.patch(`/event/${this.$route.params.slug}/assign`, {
 					position: pos,
 					cid: selectedCid,
 				});

@@ -70,7 +70,7 @@ export default {
 			try {
 				this.spinners.push('update');
 				this.news.content = this.editor.getMarkdown();
-				await zauApi.put(`/news/${this.$route.params.slug}`, this.news);
+				await zauApi.patch(`/news/${this.$route.params.slug}`, this.news);
 
 				this.toastSuccess('News article updated');
 

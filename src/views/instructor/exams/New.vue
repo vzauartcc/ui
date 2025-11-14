@@ -420,7 +420,7 @@ export default {
 			try {
 				this.spinners.push('submit');
 				// Example API call to save the exam
-				await zauApi.post('/exam/exams', examData);
+				await zauApi.post('/exam', examData);
 				// If successful, redirect to the exams index page
 				this.$router.push({ path: '/ins/exams' });
 				// Optionally, display a success message

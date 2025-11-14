@@ -247,8 +247,8 @@ export default {
 		async approveVisitor(cid) {
 			try {
 				this.spinners.push('approve');
-				await zauApi.put(`/controller/visit/${cid}`);
-				this.toastSuccess('Visiting application approved');
+				await zauApi.patch(`/controller/visit/${cid}`);
+				this.toastSuccess('Visiting application approved!');
 				await this.getNewApplications();
 			} catch (e) {
 				if (e.response) {

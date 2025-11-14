@@ -119,7 +119,7 @@ export default {
 					this.upload.text = `${this.upload.text} .`;
 				}, 750);
 
-				const response = await zauApi.put(`/file/downloads/${this.$route.params.id}`, formData, {
+				const response = await zauApi.patch(`/file/downloads/${this.$route.params.id}`, formData, {
 					onUploadProgress: (progressEvent) => {
 						const percent = (progressEvent.loaded / progressEvent.total) * 100;
 						this.uploadProgress = (percent / 2).toFixed(0);
