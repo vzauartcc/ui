@@ -27,7 +27,7 @@
 					You have been assigned a position. Contact the EC if you need to cancel.
 				</div>
 				<div v-else-if="requestedPositions" class="requested_pos">
-					You have requested<br />
+					You have requested:<br />
 					{{ currentUserRequests || 'No preference' }}<br />
 					<button
 						@click="deleteRequest()"
@@ -52,10 +52,12 @@
 					<p>
 						The positions for this event will be assigned by the events coordinator. Please indicate
 						up to three preferred positions below. If you do not have a preference, leave the field
-						empty. <br /><b>You must press enter after each callsign to add the preference!</b>
+						empty. <br /><br /><b style="color: red"
+							>You must press enter after each callsign to add the preference!</b
+						>
 					</p>
 					<p>
-						Please be advised that requests are just that — requests. The events coordinator may
+						Please be advised that requests are just that — requests. The Event Coordinator may
 						place you on any (or no) position depending on multiple factors.
 					</p>
 					<div class="chips chips-placeholder"></div>
@@ -141,7 +143,19 @@ export default {
 			try {
 				this.spinners.push('add');
 				const requests = this.chips.chipsData.map((chip) => chip.tag);
-				await zauApi.put(`/event/${this.$route.params.slug}/signup`, { requests });
+
+				const confirm =
+					requests.length === 0
+						? window.confirm(
+								'You have not entered any preferences. Are you sure you want to submit your request with no preference?',
+							)
+						: true;
+
+				if (!confirm) {
+					return;
+				}
+
+				await zauApi.patch(`/event/${this.$route.params.slug}/signup`, { requests });
 
 				this.toastSuccess('Request submitted');
 

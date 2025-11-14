@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import eslintConfigPrettier from '@vue/eslint-config-prettier';
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting';
 import pluginVue from 'eslint-plugin-vue';
 import { defineConfig, globalIgnores } from 'eslint/config';
@@ -39,4 +40,6 @@ export default defineConfig([
 			'vue/multi-word-component-names': 'off',
 		},
 	},
+
+	eslintConfigPrettier,
 ]);

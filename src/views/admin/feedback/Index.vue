@@ -188,7 +188,7 @@ export default {
 		async approveFeedback(id) {
 			try {
 				this.spinners.push('approve');
-				await zauApi.put(`/feedback/approve/${id}`);
+				await zauApi.patch(`/feedback/${id}/approve`);
 
 				this.toastSuccess('Feedback approved');
 				await this.getUnapproved();
@@ -212,7 +212,7 @@ export default {
 		async rejectFeedback(id) {
 			try {
 				this.spinners.push('reject');
-				await zauApi.put(`/feedback/reject/${id}`);
+				await zauApi.patch(`/feedback/${id}/reject`);
 
 				this.toastSuccess('Feedback rejected');
 				await this.getUnapproved();

@@ -47,7 +47,7 @@ export default {
 		async updateProfile() {
 			try {
 				this.spinners.push('update');
-				await zauApi.put('/user/profile', this.form);
+				await zauApi.patch('/user/profile', this.form);
 
 				this.toastSuccess('Profile successfully updated');
 			} catch (e) {

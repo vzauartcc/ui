@@ -148,7 +148,7 @@
               <a href="https://ids.zauartcc.org" target="_blank" rel="noopener noreferrer">IDS</a>
               </li>-->
 							<li
-								v-if="user.isLoggedIn && (user.data.isInstructor || user.data.isStaff)"
+								v-if="user.isLoggedIn && (user.data.isTrainingStaff || user.data.isStaff)"
 								class="divider"
 							></li>
 							<li v-if="user.isLoggedIn && user.data.isStaff">
@@ -156,7 +156,7 @@
 									>Webmail</a
 								>
 							</li>
-							<li v-if="user.isLoggedIn && user.data.isInstructor">
+							<li v-if="user.isLoggedIn && user.data.isTrainingStaff">
 								<router-link to="/ins">Instructor Dashboard</router-link>
 							</li>
 							<li v-if="user.isLoggedIn && user.data.isStaff">
@@ -211,7 +211,6 @@
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 import { mapActions, mapMutations, mapState } from 'vuex';
 import Notifications from './Notifications.vue';
-const folderPrefix = import.meta.env.VITE_FOLDER_PREFIX;
 
 export default {
 	data() {

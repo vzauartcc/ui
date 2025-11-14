@@ -180,7 +180,7 @@ export default {
 	methods: {
 		async getRequests() {
 			try {
-				const { data } = await zauApi.get(`/training/request/${this.$route.params.date}`);
+				const { data } = await zauApi.get(`/training/request/open/${this.$route.params.date}`);
 				this.requests = data;
 			} catch (e) {
 				console.error('error getting requests', e);
@@ -190,7 +190,7 @@ export default {
 		async takeSession(i, id) {
 			try {
 				this.spinners.push('take');
-				await zauApi.post(`/training/request/take/${id}`, {
+				await zauApi.post(`/training/request/${id}/take`, {
 					startTime: this.requests[i].startTime,
 					endTime: this.requests[i].endTime,
 					instructor: this.user.data._id,
