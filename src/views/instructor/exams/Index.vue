@@ -130,7 +130,7 @@ export default {
 	methods: {
 		async fetchExams() {
 			try {
-				const { data } = await zauApi.get('/exam/exams');
+				const { data } = await zauApi.get('/exam');
 				this.exams = data;
 			} catch (e) {
 				console.error('error getting exams', e);
@@ -153,7 +153,7 @@ export default {
 			if (!this.selectedExamId) return;
 			try {
 				this.spinners.push('delete');
-				await zauApi.delete(`/exam/exams/${this.selectedExamId}`);
+				await zauApi.delete(`/exam/${this.selectedExamId}`);
 				this.toastSuccess('Exam deleted successfully');
 				this.selectedExamId = null; // Reset selected exam ID
 				await this.fetchExams(); // Refresh the list
