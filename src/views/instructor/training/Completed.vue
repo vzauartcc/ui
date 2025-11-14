@@ -100,7 +100,7 @@ export default {
 	methods: {
 		async getSessions() {
 			try {
-				const { data } = await zauApi.get('/training/sessions', {
+				const { data } = await zauApi.get('/training/session', {
 					params: {
 						page: this.page,
 						limit: this.limit,

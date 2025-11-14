@@ -85,7 +85,7 @@ export default {
 	methods: {
 		async getPastSessions() {
 			try {
-				const { data } = await zauApi.get(`/training/sessions/past`, {
+				const { data } = await zauApi.get(`/training/session/past`, {
 					params: {
 						page: this.page,
 						limit: this.limit,

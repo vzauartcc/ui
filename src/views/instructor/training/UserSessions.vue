@@ -88,7 +88,7 @@ export default {
 	methods: {
 		async getSessions() {
 			try {
-				const { data } = await zauApi.get(`/training/sessions/${this.$route.params.cid}`, {
+				const { data } = await zauApi.get(`/training/session/by-user/${this.$route.params.cid}`, {
 					params: {
 						page: this.page,
 						limit: this.limit,

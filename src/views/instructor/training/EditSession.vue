@@ -268,7 +268,7 @@ export default {
 		async saveForm() {
 			try {
 				this.spinners.push('save');
-				await zauApi.put(`/training/session/save/${this.$route.params.id}`, {
+				await zauApi.patch(`/training/session/${this.$route.params.id}/save`, {
 					position: this.session.position,
 					movements: this.session.movements,
 					progress: this.session.progress,
@@ -298,7 +298,7 @@ export default {
 		async submitForm() {
 			try {
 				this.spinners.push('submit');
-				await zauApi.put(`/training/session/submit/${this.$route.params.id}`, this.session);
+				await zauApi.patch(`/training/session/${this.$route.params.id}/submit`, this.session);
 
 				this.toastSuccess('Session notes finalized');
 				this.$router.push('/ins/training/sessions');
