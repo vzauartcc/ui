@@ -253,42 +253,6 @@ td {
 	font-size: 0.85rem;
 	margin: 2px;
 	user-select: none;
-
-	&.cert_senior {
-		background: $cert_senior;
-	}
-
-	&.cert_junior {
-		background: $cert_junior;
-	}
-
-	&.cert_training {
-		background: $cert_training;
-	}
-
-	&.cert_center {
-		background-color: $secondary-color-dark;
-	}
-
-	&.cert_tier-1 {
-		background: $secondary-color;
-	}
-
-	&.cert_tier-2 {
-		background: $primary-color;
-	}
-
-	&.cert_non-tier {
-		background: $secondary-color-light;
-	}
-
-	&.cert_solon {
-		background: #ffa500;
-	}
-	&.cert_solom {
-		background: #ffe83e;
-		color: #000000;
-	}
 }
 
 .tooltipped {
