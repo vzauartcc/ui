@@ -8,7 +8,7 @@
 				<i class="material-icons">add</i>
 			</button>
 			<div class="card-title">
-				Position Assignments {{ event !== null ? `– ${event.name}` : '' }}
+				Position Assignments <b>{{ event !== null ? `– ${event.name}` : '' }}</b>
 			</div>
 		</div>
 		<div class="loading_container" v-if="event === null">
@@ -23,6 +23,7 @@
 					<thead class="signups_list_head">
 						<tr>
 							<th>Controller</th>
+							<th>Event Endorsements</th>
 							<th>Preferences</th>
 							<th class="options">Options</th>
 						</tr>
@@ -38,6 +39,17 @@
 									<br />
 								</router-link>
 								<span class="signup_rating">{{ signup.user.ratingLong }}</span>
+							</td>
+							<td class="certs">
+								<span
+									v-for="cert in signup.user.certifications
+										.filter((c) => c.class.includes('event') || c.class.includes('solo'))
+										.sort((a, b) => b.order - a.order)"
+									:key="cert.code"
+									:class="`cert cert_${cert.class}`"
+								>
+									{{ cert.name }}
+								</span>
 							</td>
 							<td>{{ signup.requests.join(', ') || 'None' }}</td>
 							<td class="options">
@@ -203,6 +215,7 @@ export default {
 	data() {
 		return {
 			spinners: [],
+			allCerts: {},
 			event: null,
 			cid: null,
 			selectedUser: null,
@@ -210,6 +223,7 @@ export default {
 		};
 	},
 	async mounted() {
+		await this.getCertifications();
 		await this.getEventData();
 		if (this.event && this.event.name) {
 			this.setTitle(`Position Assignments - ${this.event.name}`);
@@ -220,10 +234,30 @@ export default {
 		});
 	},
 	methods: {
+		async getCertifications() {
+			try {
+				const { data } = await zauApi.get('/controller/certifications');
+				data.forEach((c) => {
+					this.allCerts[c.code] = c;
+				});
+
+				console.log(this.allCerts);
+			} catch (e) {
+				console.error('error getting certifications', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+		},
 		async getEventData() {
 			try {
 				const { data } = await zauApi.get(`/event/${this.$route.params.slug}/positions`);
 				this.event = data || { signups: [] };
+				this.event.signups.forEach((s) => {
+					s.user.certCodes.forEach((c) => {
+						s.user.certifications.push(
+							this.allCerts[c] || { code: c, name: 'Unknown', class: 'Unknown' },
+						);
+					});
+				});
 				this.$nextTick(() => {
 					this.initializeDynamicModals(); // Initialize dynamic modals after data loads
 				});
@@ -442,5 +476,14 @@ export default {
 	.table_wrapper {
 		overflow: auto;
 	}
+}
+
+.cert {
+	display: inline-block;
+	padding: 0.25rem 0.4rem;
+	color: #fff;
+	font-size: 0.85rem;
+	margin: 2px;
+	user-select: none;
 }
 </style>
