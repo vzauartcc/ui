@@ -50,124 +50,83 @@
 							<i v-else class="material-icons red-text text-darken-1">remove_circle</i>
 						</div>
 					</div>
+					<div class="input-field col s6">
+						<label>
+							<input
+								type="checkbox"
+								name="vis"
+								class="active"
+								v-model="form.vis"
+								id="indeterminate-checkbox"
+								disabled
+							/>
+							<span>Visitor</span>
+						</label>
+						<label for="" class="active">Visiting status managed by roster-sync</label>
+						<br />
+					</div>
 					<div class="input-field col s12">
 						<div id="certs_container">
 							<label for="minor_certs_container" class="active">Unrestricted Positions:</label>
 							<div id="minor_certs_container" class="cert_container">
 								<span
-									id="gnd"
-									:class="{ active: form.certs.gnd }"
+									v-for="cert in allCerts.filter((x) => x.class === 'non-tier')"
+									:key="cert.code"
 									class="cert cert_minor"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
 									@click="toggleCert"
-									>GND/DEL</span
-								>
-								<span
-									id="twr"
-									:class="{ active: form.certs.twr }"
-									class="cert cert_minor"
-									@click="toggleCert"
-									>TWR</span
-								>
-								<span
-									id="app"
-									:class="{ active: form.certs.app }"
-									class="cert cert_minor"
-									@click="toggleCert"
-									>APP</span
-								>
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
 							</div>
 							<label for="chicago_certs_container" class="active">Tier 2 Endorsements:</label>
 							<div id="chicago_certs_container" class="cert_container">
 								<span
-									id="mdwgnd"
-									:class="{ active: form.certs.mdwgnd }"
+									v-for="cert in allCerts.filter((x) => x.class === 'tier-2')"
+									:key="cert.code"
 									class="cert cert_tier-2"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
 									@click="toggleCert"
-									>MDW_GND/DEL</span
-								>
-								<span
-									id="mdwtwr"
-									:class="{ active: form.certs.mdwtwr }"
-									class="cert cert_tier-2"
-									@click="toggleCert"
-									>MDW_TWR</span
-								>
-								<span
-									id="zaut2"
-									:class="{ active: form.certs.zaut2 }"
-									class="cert cert_tier-2"
-									@click="toggleCert"
-									>CHI_CTR</span
-								>
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
 							</div>
 							<label for="chicago_certs_container" class="active">Tier 1 Endorsements:</label>
 							<div id="chicago_certs_container" class="cert_container">
 								<span
-									id="ordgnd"
-									:class="{ active: form.certs.ordgnd }"
+									v-for="cert in allCerts.filter((x) => x.class === 'tier-1')"
+									:key="cert.code"
 									class="cert cert_tier-1"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
 									@click="toggleCert"
-									>ORD_GND/DEL</span
-								>
-								<span
-									id="ordtwr"
-									:class="{ active: form.certs.ordtwr }"
-									class="cert cert_tier-1"
-									@click="toggleCert"
-									>ORD_TWR</span
-								>
-								<span
-									id="ordapp"
-									:class="{ active: form.certs.ordapp }"
-									class="cert cert_tier-1"
-									@click="toggleCert"
-									>C90_APP</span
-								>
-								<span
-									id="zau"
-									:class="{ active: form.certs.zau }"
-									class="cert cert_center"
-									@click="toggleCert"
-									>CHI_CTR</span
-								>
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
 							</div>
+							<label for="event_certs_container" class="active">Event Endorsements:</label>
+							<div id="event_certs_container" class="cert_container">
+								<span
+									v-for="cert in allCerts.filter((x) => x.class.includes('event'))"
+									:key="cert.code"
+									class="cert"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
+									@click="toggleCert"
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
+							</div>
+							<hr />
 							<label for="solo_certs_container" class="active">Solo Endorsements:</label>
 							<div id="solo_certs_container" class="cert_container">
 								<span
-									id="apps"
-									:class="{ active: form.certs.apps }"
-									class="cert cert_solon"
+									v-for="cert in allCerts.filter((x) => x.class.includes('solo'))"
+									:key="cert.code"
+									class="cert"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
 									@click="toggleCert"
-									>APP</span
-								>
-								<span
-									id="ordgnds"
-									:class="{ active: form.certs.ordgnds }"
-									class="cert cert_solom"
-									@click="toggleCert"
-									>ORD_GND</span
-								>
-								<span
-									id="ordtwrs"
-									:class="{ active: form.certs.ordtwrs }"
-									class="cert cert_solom"
-									@click="toggleCert"
-									>ORD_TWR</span
-								>
-								<span
-									id="ordapps"
-									:class="{ active: form.certs.ordapps }"
-									class="cert cert_solom"
-									@click="toggleCert"
-									>C90_APP</span
-								>
-								<span
-									id="zaus"
-									:class="{ active: form.certs.zaus }"
-									class="cert cert_solom"
-									@click="toggleCert"
-									>CHI_CTR</span
-								>
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
 							</div>
 						</div>
 					</div>
@@ -175,71 +134,14 @@
 						<label for="roles" class="active">Roles</label>
 						<div id="roles_container">
 							<span
-								id="atm"
-								class="cert cert_senior"
-								:class="{ active: form.roles.atm }"
+								v-for="role in allRoles"
+								:key="role.code"
+								class="cert"
+								:class="[{ active: form.roles[role.code] === true }, `cert_${role.class}`]"
 								@click="toggleRole"
-								>ATM</span
-							>
-							<span
-								id="datm"
-								class="cert cert_senior"
-								:class="{ active: form.roles.datm }"
-								@click="toggleRole"
-								>DATM</span
-							>
-							<span
-								id="ta"
-								class="cert cert_senior"
-								:class="{ active: form.roles.ta }"
-								@click="toggleRole"
-								>TA</span
-							>
-							<span
-								id="ec"
-								class="cert cert_junior"
-								:class="{ active: form.roles.ec }"
-								@click="toggleRole"
-								>EC</span
-							>
-							<span
-								id="fe"
-								class="cert cert_junior"
-								:class="{ active: form.roles.fe }"
-								@click="toggleRole"
-								>FE</span
-							>
-							<span
-								id="wm"
-								class="cert cert_junior"
-								:class="{ active: form.roles.wm }"
-								@click="toggleRole"
-								>WM</span
-							>
-							<span
-								id="ins"
-								class="cert cert_training"
-								:class="{ active: form.roles.ins }"
-								@click="toggleRole"
-								>INS</span
-							>
-							<span
-								id="ia"
-								class="cert cert_training"
-								:class="{ active: form.roles.ia }"
-								@click="toggleRole"
-								>IA</span
-							>
-							<span
-								id="mtr"
-								class="cert cert_training"
-								:class="{ active: form.roles.mtr }"
-								@click="toggleRole"
-								>MTR</span
-							>
-							<span id="vis" class="cert cert_vis" :class="{ active: form.vis }" @click="toggleVis"
-								>VIS</span
-							>
+								:id="role.code"
+								>{{ role.code.toUpperCase() }}
+							</span>
 						</div>
 					</div>
 					<div class="input-field col s12">
@@ -264,50 +166,54 @@ export default {
 			usedOi: [],
 			oi: '',
 			oiAvail: true,
+			allCerts: [],
+			allRoles: [],
 			form: {
 				fname: '',
 				lname: '',
 				email: '',
 				oi: '',
 				vis: false,
-				certs: {
-					zau: false,
-					ordapp: false,
-					ordtwr: false,
-					ordgnd: false,
-					mdwtwr: false,
-					mdwgnd: false,
-					app: false,
-					twr: false,
-					gnd: false,
-					zaus: false,
-					zaut2: false,
-					ordapps: false,
-					ordtwrs: false,
-					ordgnds: false,
-					apps: false,
-				},
-				roles: {
-					atm: false,
-					datm: false,
-					ta: false,
-					ec: false,
-					fe: false,
-					wm: false,
-					ins: false,
-					mtr: false,
-					ia: false,
-				},
+				certs: {},
+				roles: {},
 			},
 		};
 	},
 	async mounted() {
+		await this.getCertifications();
+		await this.getRoles();
 		await this.getController();
 		this.setTitle(`Edit ${this.controller.fname + ' ' + this.controller.lname}`);
 	},
 	methods: {
+		async getCertifications() {
+			try {
+				const { data } = await zauApi.get('/controller/certifications');
+				this.allCerts = data.sort((a, b) => a.order - b.order);
+				data.forEach((c) => {
+					this.form.certs[c.code] = false;
+				});
+			} catch (e) {
+				console.error('error getting certifications', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+		},
+		async getRoles() {
+			try {
+				const { data } = await zauApi.get('/controller/role');
+
+				this.allRoles = data.sort((a, b) => a.order - b.order);
+				data.forEach((r) => {
+					this.form.roles[r.code] = false;
+				});
+			} catch (e) {
+				console.error('error getting roles', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+		},
 		async getController() {
 			try {
+				console.log(this.form.certs);
 				const { data } = await zauApi.get(`/controller/${this.$route.params.cid}`);
 				this.controller = data;
 				this.form = {
@@ -356,10 +262,6 @@ export default {
 		toggleRole: function (e) {
 			e.target.classList.toggle('active');
 			this.form.roles[e.target.id] = e.target.classList.contains('active');
-		},
-		toggleVis: function (e) {
-			e.target.classList.toggle('active');
-			this.form.vis = e.target.classList.contains('active');
 		},
 		async updateController() {
 			try {
@@ -449,7 +351,7 @@ export default {
 		}
 
 		&.cert_minor {
-			background: $secondary-color-light;
+			background: $cert_vis;
 			color: #fff;
 		}
 		&.cert_solom {
@@ -459,6 +361,21 @@ export default {
 
 		&.cert_solon {
 			background: #ffa500;
+			color: #fff;
+		}
+
+		&.cert_evento {
+			background-color: $secondary-color-light;
+			color: #fff;
+		}
+
+		&.cert_eventa {
+			background-color: $secondary-color-light;
+			color: #fff;
+		}
+
+		&.cert_eventc {
+			background-color: $secondary-color-light;
 			color: #fff;
 		}
 	}
