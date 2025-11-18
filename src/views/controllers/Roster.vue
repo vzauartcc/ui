@@ -16,6 +16,9 @@
 			<div class="card">
 				<div class="card-content">
 					<span class="card-title">Home Controllers</span>
+					<p style="font-size: smaller">
+						Event endorsements includes the day-to-day operations endorsement.
+					</p>
 				</div>
 				<table class="controller_list striped">
 					<thead class="controller_list_head">
@@ -72,6 +75,9 @@
 			<div class="card">
 				<div class="card-content">
 					<span class="card-title">Visiting Controllers</span>
+					<p style="font-size: smaller">
+						Event endorsements includes the day-to-day operations endorsement.
+					</p>
 				</div>
 				<table class="controller_list striped">
 					<thead class="controller_list_head">
@@ -169,40 +175,18 @@ export default {
 			if (!certs) return [];
 
 			// Step 1: Sort certs by the 'order' property
-			const sortedCerts = certs.sort((a, b) => (b.order || 0) - (a.order || 0));
+			const sorted = certs.sort((a, b) => (b.order || 0) - (a.order || 0));
 
-			// Step 2: Remove non-tier certs if a tier-1 cert exists for the same facility/type
-			const facilityMap = {}; // Track if a tier-1 or tier-2 cert exists for the same facility/type
-
-			return sortedCerts.filter((cert) => {
-				const facilityType = `${cert.facility}-${cert.type}`; // Facility + type (e.g., ORD-GND/DEL)
-
-				if (cert.class === 'tier-1') {
-					// If it's tier-1, store it and ensure only tier-1 and tier-2 certs are shown for this facility/type
-					facilityMap[facilityType] = 'tier-1';
-					return true; // Always show tier-1
-				}
-
-				if (cert.class === 'tier-2') {
-					// If a tier-1 cert exists for this facility/type, show only tier-1 and tier-2
-					if (facilityMap[facilityType] === 'tier-1') return true;
-					// Otherwise, allow tier-2 to be displayed
-					facilityMap[facilityType] = 'tier-2';
-					return true;
-				}
-
-				if (cert.class === 'non-tier') {
-					// Only display non-tier if no tier-1 cert exists for this facility/type
-					if (!facilityMap[facilityType]) {
-						facilityMap[facilityType] = 'non-tier';
-						return true;
+			// Step 2: Remove endorsements that are covered by a higher endorsement.
+			return sorted.filter((c) => {
+				let retval = true;
+				c.rolledInto.forEach((h) => {
+					if (sorted.some((x) => x.code === h)) {
+						retval = false;
 					}
-					// If a tier-1 cert exists, don't display non-tier
-					return false;
-				}
+				});
 
-				// For other cert types (e.g., solo), just include them
-				return true;
+				return retval;
 			});
 		},
 	},
