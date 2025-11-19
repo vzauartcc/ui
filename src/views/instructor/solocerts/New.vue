@@ -86,6 +86,14 @@ export default {
 			form: {
 				cid: '',
 				position: '',
+				expirationDate: new Date(
+					new Date().getUTCFullYear(),
+					new Date().getUTCMonth(),
+					new Date().getUTCDate() + 45,
+					0,
+					0,
+					0,
+				).toISOString(),
 			},
 			positions: ['ORD_GND', 'ORD_TWR', 'MKE_APP', 'CHI_APP', 'CHI_CTR'],
 		};
@@ -93,17 +101,22 @@ export default {
 	async mounted() {
 		await this.getControllers();
 
-		const today = new Date(new Date().toUTCString());
-		const future = new Date(new Date().toUTCString());
+		this.$nextTick(() => {
+			const shortest = new Date(new Date().toUTCString());
+			shortest.setUTCDate(shortest.getUTCDate() + 7);
+			const longest = new Date(new Date().toUTCString());
+			longest.setUTCDate(longest.getUTCDate() + 45);
 
-		flatpickr(this.$refs.expirationDate, {
-			enableTime: false,
-			minDate: new Date(today.setDate(today.getDate() + 1)),
-			maxDate: new Date(future.setDate(future.getDate() + 45)),
-			disableMobile: true,
-			dateFormat: 'Y-m-d',
-			altFormat: 'Y-m-d',
-			altInput: true,
+			flatpickr(this.$refs.expirationDate, {
+				enableTime: false,
+				minDate: shortest,
+				maxDate: longest,
+				disableMobile: true,
+				dateFormat: 'Z',
+				altFormat: 'Y-m-d',
+				altInput: true,
+				defaultDate: longest,
+			});
 		});
 
 		M.FormSelect.init(document.querySelectorAll('.materialize-select'), {});
@@ -114,7 +127,7 @@ export default {
 				!this.form.cid ||
 				!this.form.position ||
 				!/^[A-Z]{3}_[A-Z]{3}$/.test(this.form.position) ||
-				!this.form.expirationDate
+				!this.$refs.expirationDate.value
 			);
 		},
 	},
