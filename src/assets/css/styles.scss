@@ -251,3 +251,7 @@ select:not(.materialize-select):not(.browser-default) {
 .cert_eventc {
 	background: $secondary-color-light;
 }
+
+input[readonly].datepicker {
+	color: unset !important;
+}
