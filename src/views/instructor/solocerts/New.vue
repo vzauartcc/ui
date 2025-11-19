@@ -95,7 +95,7 @@ export default {
 					0,
 				).toISOString(),
 			},
-			positions: ['ORD_GND', 'ORD_TWR', 'MKE_APP', 'CHI_APP', 'CHI_CTR'],
+			positions: ['MKE_APP', 'CHI_CTR'],
 		};
 	},
 	async mounted() {
