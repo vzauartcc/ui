@@ -32,10 +32,6 @@
 						<label for="rating" class="active">Rating</label>
 					</div>
 					<div class="input-field col s6">
-						<input id="email" type="email" :value="form.email" disabled />
-						<label for="email" class="active">Email</label>
-					</div>
-					<div class="input-field col s6">
 						<input id="oi" type="text" :value="form.oi" maxlength="2" disabled />
 						<label for="oi" class="active">Operating Initials</label>
 					</div>
