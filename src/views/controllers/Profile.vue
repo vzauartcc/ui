@@ -37,9 +37,14 @@
 								>
 									{{ role.name }}
 								</span>
-								<div v-if="controller.certifications.length" class="title">Certifications</div>
-								<span
+								<div v-if="controller.certifications.length" class="title">Endorsements</div>
+								<!-- <span
 									v-for="cert in reduceControllerCerts(controller.certifications)"
+									:class="`cert cert_${cert.class}`"
+									:key="cert.id"
+								> -->
+								<span
+									v-for="cert in controller.certifications.sort((a, b) => b.order - a.order)"
 									:class="`cert cert_${cert.class}`"
 									:key="cert.id"
 								>
@@ -254,41 +259,6 @@ export default {
 
 	& + .title {
 		margin-top: 1em;
-	}
-
-	&.cert_senior {
-		background: $cert_senior;
-	}
-
-	&.cert_junior {
-		background: $cert_junior;
-	}
-
-	&.cert_training {
-		background: $cert_training;
-	}
-
-	&.cert_center {
-		background-color: $secondary-color-dark;
-	}
-
-	&.cert_tier-1 {
-		background: $secondary-color;
-	}
-
-	&.cert_tier-2 {
-		background: $primary-color;
-	}
-
-	&.cert_non-tier {
-		background: $secondary-color-light;
-	}
-	&.cert_solon {
-		background: #ffa500;
-	}
-	&.cert_solom {
-		background: #ffe83e;
-		color: #000000;
 	}
 }
 
