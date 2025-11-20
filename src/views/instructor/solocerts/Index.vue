@@ -50,6 +50,13 @@
 							{{ new Date(cert.expires).toLocaleDateString() }}
 						</td>
 						<td class="options">
+							<router-link
+								data-position="top"
+								data-tooltip="Extend Endorsement"
+								class="tooltipped"
+								:to="`/ins/solo/edit/${cert._id}`"
+								><i class="material-icons">edit</i></router-link
+							>
 							<a
 								href="#"
 								@click.prevent="openModal(cert.cid)"
@@ -106,7 +113,10 @@
 				<div :id="`modal_delete_${cert.cid}`" class="modal modal_delete">
 					<div class="modal-content">
 						<h4>Delete Solo Endorsement?</h4>
-						<p>This will remove the Solo Endorsement from VATUSA.</p>
+						<p>
+							Removal of a solo endorsement must meet the criteria defined in VATUSA DP002. This
+							will remove the Solo Endorsement from VATUSA.
+						</p>
 					</div>
 					<div class="modal-footer">
 						<a

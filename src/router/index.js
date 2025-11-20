@@ -149,6 +149,10 @@ const routes = [
 				component: () => import('../views/instructor/solocerts/New.vue'),
 			},
 			{
+				path: 'solo/edit/:id',
+				component: () => import('../views/instructor/solocerts/Edit.vue'),
+			},
+			{
 				path: 'training/requests',
 				component: () => import('../views/instructor/training/Requests.vue'),
 			},

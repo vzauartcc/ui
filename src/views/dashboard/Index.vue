@@ -263,7 +263,9 @@ export default {
 				await zauApi.delete('/discord/user');
 
 				this.toastSuccess('Discord unlinked.');
-				await this.getDiscordStatus();
+				setTimeout(() => {
+					this.getDiscordStatus();
+				}, 500);
 			} catch (e) {
 				if (e.response) {
 					this.toastError(
