@@ -301,14 +301,6 @@ export default {
 			dateFormat: 'Z',
 			altFormat: 'Y-m-d H:i',
 			altInput: true,
-			defaultDate: new Date(
-				today.getUTCFullYear(),
-				today.getUTCMonth(),
-				today.getUTCDate(),
-				today.getUTCHours(),
-				Math.ceil(today.getUTCMinutes() / 15) * 15,
-				0,
-			),
 		});
 
 		this.editor = new Editor({
@@ -407,8 +399,12 @@ export default {
 					progress: this.form.progress,
 					ots: this.form.ots,
 					location: this.form.location,
-					startTime: this.form.startTime,
-					endTime: this.form.endTime,
+					startTime: new Date(
+						new Date(this.form.startTime).getTime() - new Date().getTimezoneOffset() * 60 * 1000,
+					),
+					endTime: new Date(
+						new Date(this.form.endTime).getTime() - new Date().getTimezoneOffset() * 60 * 1000,
+					),
 					studentNotes: this.editor.getHTML(),
 					insNotes: this.form.insNotes,
 				});
@@ -449,8 +445,12 @@ export default {
 					progress: this.form.progress,
 					ots: this.form.ots,
 					location: this.form.location,
-					startTime: this.form.startTime,
-					endTime: this.form.endTime,
+					startTime: new Date(
+						new Date(this.form.startTime).getTime() - new Date().getTimezoneOffset() * 60 * 1000,
+					),
+					endTime: new Date(
+						new Date(this.form.endTime).getTime() - new Date().getTimezoneOffset() * 60 * 1000,
+					),
 					studentNotes: this.editor.getHTML(),
 					insNotes: this.form.insNotes,
 				});
