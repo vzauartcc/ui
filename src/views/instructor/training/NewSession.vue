@@ -160,12 +160,7 @@
 					</div>
 					<div class="row row_no_margin" v-show="step === 3">
 						<div class="input-field col s12">
-							<textarea
-								id="studentNotes"
-								class="materialize-textarea"
-								data-length="10000"
-								v-model="form.studentNotes"
-							></textarea>
+							<div id="tui_editor" style="margin-top: 1rem"></div>
 							<label for="studentNotes" class="active"
 								>Student Notes <span class="red-text">*</span>
 								<i
@@ -238,6 +233,8 @@
 
 <script>
 import { zauApi } from '@/helpers/axios.js';
+import Editor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { mapActions, mapState } from 'vuex';
@@ -256,6 +253,7 @@ export default {
 				student: 0,
 				ots: '0',
 			},
+			editor: null,
 		};
 	},
 	async mounted() {
@@ -312,6 +310,41 @@ export default {
 				0,
 			),
 		});
+
+		this.editor = new Editor({
+			el: document.querySelector('#tui_editor'),
+			height: '500px',
+			initialEditType: 'wysiwyg',
+			previewStyle: 'tab',
+			usageStatistics: false,
+			toolbarItems: [
+				// Each array defines where a divider would be placed
+				['heading', 'bold', 'italic'],
+				[
+					//   'strike',
+					// 'divider',
+					//   'hr',
+					//   'quote',
+					// 'divider',
+					'ul',
+					'ol',
+				],
+				[
+					//   'task',
+					//   'indent',
+					//   'outdent',
+					// 'divider',
+					'table',
+					'image',
+					'link',
+				],
+				[
+					// 'divider',
+					'code',
+					'codeblock',
+				],
+			],
+		});
 	},
 	computed: {
 		...mapState('user', ['user']),
@@ -332,7 +365,7 @@ export default {
 				case 2:
 					return !(this.form.movements < 0 || !this.form.location || !this.form.progress);
 				case 3:
-					return !!this.form.studentNotes;
+					return true;
 				default:
 					return false;
 			}
@@ -376,7 +409,7 @@ export default {
 					location: this.form.location,
 					startTime: this.form.startTime,
 					endTime: this.form.endTime,
-					studentNotes: this.form.studentNotes,
+					studentNotes: this.editor.getHTML(),
 					insNotes: this.form.insNotes,
 				});
 
@@ -396,6 +429,11 @@ export default {
 			}
 		},
 		async submitForm() {
+			if (this.editor.getMarkdown() === '') {
+				this.toastError('Student notes are required!');
+				return;
+			}
+
 			if (new Date(this.form.startTime) > new Date(this.form.endTime)) {
 				this.toastError(`Start Date must be before End Date`);
 				return;
@@ -413,7 +451,7 @@ export default {
 					location: this.form.location,
 					startTime: this.form.startTime,
 					endTime: this.form.endTime,
-					studentNotes: this.form.studentNotes,
+					studentNotes: this.editor.getHTML(),
 					insNotes: this.form.insNotes,
 				});
 
