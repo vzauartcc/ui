@@ -50,6 +50,13 @@
 							{{ new Date(cert.expires).toLocaleDateString() }}
 						</td>
 						<td class="options">
+							<router-link
+								data-position="top"
+								data-tooltip="Extend Endorsement"
+								class="tooltipped"
+								:to="`/ins/solo/edit/${cert._id}`"
+								><i class="material-icons">edit</i></router-link
+							>
 							<a
 								href="#"
 								@click.prevent="openModal(cert.cid)"
