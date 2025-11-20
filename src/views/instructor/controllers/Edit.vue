@@ -32,131 +32,71 @@
 						<label for="rating" class="active">Rating</label>
 					</div>
 					<div class="input-field col s6">
-						<input id="email" type="email" :value="form.email" disabled />
-						<label for="email" class="active">Email</label>
-					</div>
-					<div class="input-field col s6">
 						<input id="oi" type="text" :value="form.oi" maxlength="2" disabled />
 						<label for="oi" class="active">Operating Initials</label>
 					</div>
 					<div class="input-field col s12">
 						<div id="certs_container">
-							<label for="minor_certs_container" class="active">Non-Tier Certifications:</label>
+							<label for="minor_certs_container" class="active">Unrestricted Positions:</label>
 							<div id="minor_certs_container" class="cert_container">
 								<span
-									id="gnd"
-									:class="{ active: form.certs.gnd }"
+									v-for="cert in allCerts.filter((x) => x.class === 'non-tier')"
+									:key="cert.code"
 									class="cert cert_minor"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
 									@click="toggleCert"
-									>GND/DEL</span
-								>
-								<span
-									id="twr"
-									:class="{ active: form.certs.twr }"
-									class="cert cert_minor"
-									@click="toggleCert"
-									>TWR</span
-								>
-								<span
-									id="app"
-									:class="{ active: form.certs.app }"
-									class="cert cert_minor"
-									@click="toggleCert"
-									>APP</span
-								>
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
 							</div>
 							<label for="chicago_certs_container" class="active">Tier 2 Endorsements:</label>
 							<div id="chicago_certs_container" class="cert_container">
 								<span
-									id="mdwgnd"
-									:class="{ active: form.certs.mdwgnd }"
+									v-for="cert in allCerts.filter((x) => x.class === 'tier-2')"
+									:key="cert.code"
 									class="cert cert_tier-2"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
 									@click="toggleCert"
-									>MDW_GND/DEL</span
-								>
-								<span
-									id="mdwtwr"
-									:class="{ active: form.certs.mdwtwr }"
-									class="cert cert_tier-2"
-									@click="toggleCert"
-									>MDW_TWR</span
-								>
-								<span
-									id="zaut2"
-									:class="{ active: form.certs.zaut2 }"
-									class="cert cert_tier-2"
-									@click="toggleCert"
-									>CHI_CTR</span
-								>
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
 							</div>
 							<label for="chicago_certs_container" class="active">Tier 1 Endorsements:</label>
 							<div id="chicago_certs_container" class="cert_container">
 								<span
-									id="ordgnd"
-									:class="{ active: form.certs.ordgnd }"
+									v-for="cert in allCerts.filter((x) => x.class === 'tier-1')"
+									:key="cert.code"
 									class="cert cert_tier-1"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
 									@click="toggleCert"
-									>ORD_GND/DEL</span
-								>
-								<span
-									id="ordtwr"
-									:class="{ active: form.certs.ordtwr }"
-									class="cert cert_tier-1"
-									@click="toggleCert"
-									>ORD_TWR</span
-								>
-								<span
-									id="ordapp"
-									:class="{ active: form.certs.ordapp }"
-									class="cert cert_tier-1"
-									@click="toggleCert"
-									>C90_APP</span
-								>
-								<span
-									id="zau"
-									:class="{ active: form.certs.zau }"
-									class="cert cert_center"
-									@click="toggleCert"
-									>CHI_CTR</span
-								>
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
 							</div>
+							<label for="event_certs_container" class="active">Event Endorsements:</label>
+							<div id="event_certs_container" class="cert_container">
+								<span
+									v-for="cert in allCerts.filter((x) => x.class.includes('event'))"
+									:key="cert.code"
+									class="cert"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
+									@click="toggleCert"
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
+							</div>
+							<hr />
 							<label for="solo_certs_container" class="active">Solo Endorsements:</label>
 							<div id="solo_certs_container" class="cert_container">
 								<span
-									id="apps"
-									:class="{ active: form.certs.apps }"
-									class="cert cert_solon"
+									v-for="cert in allCerts.filter((x) => x.class.includes('solo'))"
+									:key="cert.code"
+									class="cert"
+									:class="[{ active: form.certs[cert.code] === true }, `cert_${cert.class}`]"
 									@click="toggleCert"
-									>APP</span
-								>
-								<span
-									id="ordgnds"
-									:class="{ active: form.certs.ordgnds }"
-									class="cert cert_solom"
-									@click="toggleCert"
-									>ORD_GND</span
-								>
-								<span
-									id="ordtwrs"
-									:class="{ active: form.certs.ordtwrs }"
-									class="cert cert_solom"
-									@click="toggleCert"
-									>ORD_TWR</span
-								>
-								<span
-									id="ordapps"
-									:class="{ active: form.certs.ordapps }"
-									class="cert cert_solom"
-									@click="toggleCert"
-									>C90_APP</span
-								>
-								<span
-									id="zaus"
-									:class="{ active: form.certs.zaus }"
-									class="cert cert_solom"
-									@click="toggleCert"
-									>CHI_CTR</span
-								>
+									:id="cert.code"
+									>{{ cert.name }}
+								</span>
 							</div>
 						</div>
 					</div>
@@ -182,33 +122,14 @@ export default {
 			usedOi: [],
 			oi: '',
 			oiAvail: true,
+			allCerts: [],
 			form: {
 				fname: '',
 				lname: '',
 				email: '',
 				oi: '',
 				vis: false,
-				certs: {
-					zau: false,
-					zaut2: false,
-					ordapp: false,
-					ordtwr: false,
-					ordgnd: false,
-					orddel: false,
-					app: false,
-					twr: false,
-					gnd: false,
-					del: false,
-					zaus: false,
-					ordapps: false,
-					ordtwrs: false,
-					ordgnds: false,
-					orddels: false,
-					apps: false,
-					twrs: false,
-					gnds: false,
-					dels: false,
-				},
+				certs: {},
 				roles: {
 					atm: false,
 					datm: false,
@@ -223,10 +144,23 @@ export default {
 		};
 	},
 	async mounted() {
+		await this.getCertifications();
 		await this.getController();
 		this.setTitle(`Edit ${this.controller.fname + ' ' + this.controller.lname}`);
 	},
 	methods: {
+		async getCertifications() {
+			try {
+				const { data } = await zauApi.get('/controller/certifications');
+				this.allCerts = data.sort((a, b) => a.order - b.order);
+				data.forEach((r) => {
+					this.form.roles[r.code] = false;
+				});
+			} catch (e) {
+				console.error('error getting certifications', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+		},
 		async getController() {
 			try {
 				const { data } = await zauApi.get(`/controller/${this.$route.params.cid}`);
@@ -345,6 +279,7 @@ export default {
 			background: $secondary-color-light;
 			color: #fff;
 		}
+
 		&.cert_solom {
 			background: #ffe83e;
 			color: #2f4f4f;
@@ -354,12 +289,22 @@ export default {
 			background: #ffa500;
 			color: #fff;
 		}
-	}
-}
 
-#certs_container,
-#roles_container {
-	margin-top: 5px;
+		&.cert_evento {
+			background-color: $secondary-color-light;
+			color: #fff;
+		}
+
+		&.cert_eventa {
+			background-color: $secondary-color-light;
+			color: #fff;
+		}
+
+		&.cert_eventc {
+			background-color: $secondary-color-light;
+			color: #fff;
+		}
+	}
 }
 
 .cert_container {

@@ -8,7 +8,7 @@
 			>
 				<div>
 					<p>
-						Showing controller activity in
+						Showing controller activity for
 						<strong>Q{{ currentQuarter }}, {{ chkDate2.getFullYear() }}</strong>
 					</p>
 				</div>
