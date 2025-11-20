@@ -23,13 +23,15 @@ export default {
 				code: this.$route.query.code,
 			});
 
-			this.toastSuccess('Discord account linked');
+			setTimeout(() => {
+				this.toastSuccess('Discord account linked');
 
-			if (this.user.data.isMember) {
-				this.$router.push('/dash');
-			} else {
-				this.$router.push('/');
-			}
+				if (this.user.data.isMember) {
+					this.$router.push('/dash');
+				} else {
+					this.$router.push('/');
+				}
+			}, 500);
 		} catch (e) {
 			if (e.response) {
 				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
