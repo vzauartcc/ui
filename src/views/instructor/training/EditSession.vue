@@ -135,12 +135,7 @@
 					</div>
 					<div class="row row_no_margin" v-show="step === 3">
 						<div class="input-field col s12">
-							<textarea
-								id="studentNotes"
-								class="materialize-textarea"
-								data-length="10000"
-								v-model="session.studentNotes"
-							></textarea>
+							<div id="tui_editor" style="margin-top: 1rem"></div>
 							<label for="studentNotes" class="active"
 								>Student Notes
 								<i
@@ -214,6 +209,8 @@
 
 <script>
 import { zauApi } from '@/helpers/axios.js';
+import Editor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
 import { nextTick } from 'vue';
 
 export default {
@@ -225,12 +222,12 @@ export default {
 			session: null,
 			step: 1,
 			duration: 0,
+			editor: null,
 		};
 	},
 	async mounted() {
 		await this.getSessionDetails();
 		await nextTick();
-		M.textareaAutoResize(document.getElementById('studentNotes'));
 		M.textareaAutoResize(document.getElementById('insNotes'));
 
 		this.setTimes();
@@ -240,6 +237,42 @@ export default {
 			margin: 0,
 		});
 		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
+
+		this.editor = new Editor({
+			el: document.querySelector('#tui_editor'),
+			height: '500px',
+			initialEditType: 'wysiwyg',
+			previewStyle: 'tab',
+			usageStatistics: false,
+			initialValue: this.session.studentNotes,
+			toolbarItems: [
+				// Each array defines where a divider would be placed
+				['heading', 'bold', 'italic'],
+				[
+					//   'strike',
+					// 'divider',
+					//   'hr',
+					//   'quote',
+					// 'divider',
+					'ul',
+					'ol',
+				],
+				[
+					//   'task',
+					//   'indent',
+					//   'outdent',
+					// 'divider',
+					'table',
+					'image',
+					'link',
+				],
+				[
+					// 'divider',
+					'code',
+					'codeblock',
+				],
+			],
+		});
 	},
 	computed: {
 		isCurrentPartValid() {
@@ -249,7 +282,7 @@ export default {
 				case 2:
 					return !(this.session.movements < 0 || !this.session.location || !this.session.progress);
 				case 3:
-					return !!this.session.studentNotes;
+					return true;
 				default:
 					return false;
 			}
@@ -276,7 +309,7 @@ export default {
 					location: this.session.location,
 					startTime: this.session.startTime,
 					endTime: this.session.endTime,
-					studentNotes: this.session.studentNotes,
+					studentNotes: this.editor.getHTML(),
 					insNotes: this.session.insNotes,
 				});
 
@@ -298,6 +331,7 @@ export default {
 		async submitForm() {
 			try {
 				this.spinners.push('submit');
+				this.session.studentNotes = this.editor.getHTML();
 				await zauApi.patch(`/training/session/${this.$route.params.id}/submit`, this.session);
 
 				this.toastSuccess('Session notes finalized');

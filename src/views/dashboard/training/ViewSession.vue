@@ -76,12 +76,7 @@
 						<label for="progress" class="active">Progress</label>
 					</div>
 					<div class="input-field col s12">
-						<textarea
-							class="materialize-textarea"
-							disabled
-							id="studentNotes"
-							:value="session.studentNotes || '–'"
-						></textarea>
+						<div v-html="session.studentNotes" id="studentNotes"></div>
 						<label for="studentNotes" class="active">Notes</label>
 					</div>
 				</div>
@@ -105,7 +100,6 @@ export default {
 	async mounted() {
 		await this.getSessionDetails();
 		M.FormSelect.init(document.querySelectorAll('select'), {});
-		M.textareaAutoResize(document.getElementById('studentNotes'));
 	},
 	methods: {
 		async getSessionDetails() {
@@ -141,5 +135,23 @@ textarea.materialize-textarea:disabled {
 	color: #333;
 	-webkit-text-fill-color: #333;
 	opacity: 1; /* required on iOS */
+}
+
+#studentNotes {
+	margin-top: 1rem;
+}
+
+#studentNotes :deep(li) {
+	list-style: initial;
+}
+
+#studentNotes :deep(ul) {
+	list-style-type: unset;
+	padding-left: 2rem !important;
+}
+
+#studentNotes :deep(ol) {
+	list-style-type: unset;
+	padding-left: 2rem !important;
 }
 </style>
