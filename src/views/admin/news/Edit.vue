@@ -53,6 +53,33 @@ export default {
 				previewStyle: 'tab',
 				usageStatistics: false,
 				initialValue: this.news.content,
+				toolbarItems: [
+					// Each array defines where a divider would be placed
+					['heading', 'bold', 'italic'],
+					[
+						//   'strike',
+						// 'divider',
+						'hr',
+						'quote',
+						// 'divider',
+						'ul',
+						'ol',
+					],
+					[
+						//   'task',
+						'indent',
+						'outdent',
+						// 'divider',
+						'table',
+						// 'image',
+						'link',
+					],
+					[
+						// 'divider',
+						'code',
+						'codeblock',
+					],
+				],
 			});
 		});
 	},
