@@ -4,6 +4,14 @@
 			<span class="card-title">Action Log</span>
 		</div>
 		<div class="actions_wrapper" v-if="log">
+			<div class="col s6">
+				<select class="materialize-select" name="actionType" id="actionType" v-model="selectedType">
+					<option v-for="(action, id) in actionTypes" :key="id" :value="id">
+						{{ action }}
+					</option>
+				</select>
+				<label for="actionType"></label>
+			</div>
 			<table class="striped highlight">
 				<thead>
 					<tr>
@@ -46,21 +54,37 @@ export default {
 			page: 1,
 			limit: 20,
 			amountOfPages: 0,
+			actionTypes: [],
+			selectedType: 0,
 		};
 	},
 	components: {
 		Pagination,
 	},
 	async mounted() {
+		await this.getLogTypes();
 		await this.getLog();
+
+		M.FormSelect.init(document.querySelectorAll('select'), {});
 	},
 	methods: {
+		async getLogTypes() {
+			try {
+				const { data } = await zauApi.get('/controller/log/types');
+
+				this.actionTypes = data;
+			} catch (e) {
+				console.error('error getting log types', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+		},
 		async getLog() {
 			try {
 				const { data: dossierData } = await zauApi.get('/controller/log', {
 					params: {
 						page: this.page,
 						limit: this.limit,
+						action: this.selectedType,
 					},
 				});
 				this.log = dossierData.dossier;
@@ -90,6 +114,10 @@ export default {
 	},
 	watch: {
 		page: async function () {
+			await this.getLog();
+		},
+		selectedType: async function () {
+			this.page = 1;
 			await this.getLog();
 		},
 	},
