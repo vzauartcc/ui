@@ -318,6 +318,10 @@ const routes = [
 				path: 'staffingrequest/:slug',
 				component: () => import('../views/dashboard/ViewStaffingRequest.vue'),
 			},
+			// {
+			// 	path: 'gdrp',
+			// 	component: () => import('../views/dashboard/GDRP.vue'),
+			// },
 		],
 	},
 	// {
