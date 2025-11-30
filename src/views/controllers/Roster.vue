@@ -17,7 +17,7 @@
 				<div class="card-content">
 					<span class="card-title">Home Controllers</span>
 					<p style="font-size: smaller">
-						Event endorsements includes the day-to-day operations endorsement.
+						Event endorsements include the day-to-day operations endorsement.
 					</p>
 				</div>
 				<table class="controller_list striped">
@@ -76,7 +76,7 @@
 				<div class="card-content">
 					<span class="card-title">Visiting Controllers</span>
 					<p style="font-size: smaller">
-						Event endorsements includes the day-to-day operations endorsement.
+						Event endorsements include the day-to-day operations endorsement.
 					</p>
 				</div>
 				<table class="controller_list striped">

@@ -17,6 +17,10 @@
 				Feedback
 				<div class="secondary-content"><i class="material-icons">feedback</i></div>
 			</router-link>
+			<!-- <router-link to="/dash/gdrp" class="collection-item">
+				GDRP
+				<div class="secondary-content"><i class="material-icons">policy</i></div>
+			</router-link> -->
 		</div>
 	</div>
 </template>

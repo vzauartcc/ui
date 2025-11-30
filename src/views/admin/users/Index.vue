@@ -64,6 +64,15 @@
 									<i class="material-icons">edit</i>
 								</router-link>
 
+								<a
+									:href="`#modal_gdrp_delete_${controller.cid}`"
+									data-position="top"
+									data-tooltip="Erase User"
+									class="tooltipped modal-trigger"
+								>
+									<i class="material-icons red-text text-darken-s">gpp_bad</i>
+								</a>
+
 								<template
 									v-if="
 										// disable promote button
@@ -94,6 +103,38 @@
 		</div>
 		<teleport to="body">
 			<div v-for="controller in controllersFiltered" :key="controller.cid">
+				<!-- GDRP Right to Erasure Modal -->
+				<div :id="`modal_gdrp_delete_${controller.cid}`" class="modal modal__gdrp_delete">
+					<div class="modal-content">
+						<h4>Erase user {{ controller.cid }}?</h4>
+						<p>
+							This will permanently remove <b>{{ controller.fname }} {{ controller.lname }}</b
+							>, and all their associated data, from the Chicago ARTCC. Documents, Downloads,
+							Events, and Training Sessions submitted as an instructor will be retained and
+							reassigned to a non-existent user.
+						</p>
+						<label for="deleteController" class="active"
+							>Enter <b>{{ controller.cid }}</b> to confirm erasure.</label
+						>
+						<input
+							type="text"
+							v-model="deleteUser"
+							id="deleteController"
+							placeholder="Confirm user's CID to permanently erase"
+						/>
+					</div>
+					<div class="modal-footer">
+						<a
+							href="#!"
+							@click.prevent="eraseController(controller.cid)"
+							class="btn waves-effect red"
+							:class="{ disabled: `${controller.cid}` !== deleteUser }"
+							>Permanently Erase</a
+						>
+						<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
+					</div>
+				</div>
+
 				<!-- Delete Modal -->
 				<div :id="`modal_delete_${controller.cid}`" class="modal modal_delete">
 					<div class="modal-content">
@@ -216,6 +257,7 @@ export default {
 			otsDate: {
 				date: null,
 			},
+			deleteUser: '',
 		};
 	},
 	async mounted() {
@@ -332,7 +374,6 @@ export default {
 				}
 			}
 		},
-
 		async removeController(cid) {
 			try {
 				this.toastInfo('Removing controller...');
@@ -358,6 +399,34 @@ export default {
 					console.error('error removing controller', e);
 					this.toastError('Something went wrong, please try again later');
 				}
+			}
+		},
+		async eraseController(cid) {
+			try {
+				if (`${this.deleteUser}` !== `${cid}`) {
+					return;
+				}
+
+				await zauApi.delete(`/user/gdrp/${cid}`);
+
+				this.toastSuccess('User erased from system');
+
+				await this.getControllers();
+
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_delete')).close();
+				});
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error erasing controller', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			} finally {
+				this.deleteUser = '';
 			}
 		},
 		filterControllers() {
