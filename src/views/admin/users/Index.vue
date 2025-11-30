@@ -106,19 +106,29 @@
 				<!-- GDRP Right to Erasure Modal -->
 				<div :id="`modal_gdrp_delete_${controller.cid}`" class="modal modal__gdrp_delete">
 					<div class="modal-content">
-						<h4>Erase user?</h4>
+						<h4>Erase user {{ controller.cid }}?</h4>
 						<p>
 							This will permanently remove <b>{{ controller.fname }} {{ controller.lname }}</b
 							>, and all their associated data, from the Chicago ARTCC. Documents, Downloads,
 							Events, and Training Sessions submitted as an instructor will be retained and
-							reassigned to a non-existant user.
+							reassigned to a non-existent user.
 						</p>
+						<label for="deleteController" class="active"
+							>Enter <b>{{ controller.cid }}</b> to confirm erasure.</label
+						>
+						<input
+							type="text"
+							v-model="deleteUser"
+							id="deleteController"
+							placeholder="Confirm user's CID to permanently erase"
+						/>
 					</div>
 					<div class="modal-footer">
 						<a
 							href="#!"
 							@click.prevent="eraseController(controller.cid)"
 							class="btn waves-effect red"
+							:class="{ disabled: `${controller.cid}` !== deleteUser }"
 							>Permanently Erase</a
 						>
 						<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
@@ -247,6 +257,7 @@ export default {
 			otsDate: {
 				date: null,
 			},
+			deleteUser: '',
 		};
 	},
 	async mounted() {
@@ -392,6 +403,10 @@ export default {
 		},
 		async eraseController(cid) {
 			try {
+				if (`${this.deleteUser}` !== `${cid}`) {
+					return;
+				}
+
 				await zauApi.delete(`/user/gdrp/${cid}`);
 
 				this.toastSuccess('User erased from system');
@@ -410,6 +425,8 @@ export default {
 					console.error('error erasing controller', e);
 					this.toastError('Something went wrong, please try again later');
 				}
+			} finally {
+				this.deleteUser = '';
 			}
 		},
 		filterControllers() {
