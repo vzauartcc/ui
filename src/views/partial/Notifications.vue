@@ -16,6 +16,7 @@
 				<div class="notif_unread" v-if="notification.read === false"></div>
 				<div :class="`notif_title ${notification.read ? '' : 'unread'}`">
 					{{ notification.title }}
+					<i class="material-icons notif_link" v-if="notification.link">launch</i>
 				</div>
 				<div class="notif_text" v-html="notification.content"></div>
 			</div>
@@ -93,7 +94,13 @@ export default {
 		async redirectTo(link, id) {
 			try {
 				await zauApi.put(`/user/notifications/read/${id}`);
-				this.$router.push(link);
+				if (link && link !== '') {
+					this.$router.push(link);
+				}
+				const c = this.notifications.find((x) => x._id === id);
+				if (c) {
+					c.read = true;
+				}
 			} catch (e) {
 				console.log('error redirecting', e);
 				this.toastError('Something went wrong, please try again later');
@@ -206,6 +213,14 @@ export default {
 			font-weight: 400;
 			padding-left: 1.1em;
 			padding-right: 0.25em;
+		}
+
+		.notif_link {
+			font-size: x-small;
+			display: inline-block;
+			margin-left: 0.1rem;
+			line-height: unset;
+			height: min-content;
 		}
 
 		.notif_unread {
