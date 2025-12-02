@@ -13,6 +13,10 @@
 				Training Sessions
 				<div class="secondary-content"><i class="material-icons">insert_invitation</i></div>
 			</router-link>
+			<router-link to="/dash/training/waitlist" class="collection-item">
+				Training Waitlist
+				<div class="secondary-content"><i class="material-icons">list_alt</i></div>
+			</router-link>
 			<router-link to="/dash/feedback" class="collection-item">
 				Feedback
 				<div class="secondary-content"><i class="material-icons">feedback</i></div>

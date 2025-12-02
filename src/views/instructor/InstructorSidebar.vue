@@ -21,6 +21,10 @@
 				Solo Endorsements
 				<div class="secondary-content"><i class="material-icons">streetview</i></div>
 			</router-link>
+			<router-link to="/dash/training/waitlist" class="collection-item">
+				Training Waitlist
+				<div class="secondary-content"><i class="material-icons">list_alt</i></div>
+			</router-link>
 			<router-link to="/ins/training/requests" class="collection-item">
 				Training Requests
 				<div class="secondary-content"><i class="material-icons">event</i></div>
