@@ -43,6 +43,16 @@ export default {
 			timeZone: 'UTC',
 		});
 	},
+	dShort(isoDate) {
+		// 1/2/2006
+		const d = new Date(isoDate);
+		return d.toLocaleString('en-US', {
+			month: 'numeric',
+			day: 'numeric',
+			year: 'numeric',
+			timeZone: 'UTC',
+		});
+	},
 	dtStandard(isoDate) {
 		// 2006-01-02, 15:04
 		const d = new Date(isoDate);

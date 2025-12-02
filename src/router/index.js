@@ -315,6 +315,14 @@ const routes = [
 				component: () => import('../views/dashboard/training/ViewSession.vue'),
 			},
 			{
+				path: 'training/waitlist',
+				component: () => import('../views/dashboard/training/waitlist/Index.vue'),
+			},
+			{
+				path: 'training/waitlist/new',
+				component: () => import('../views/dashboard/training/waitlist/New.vue'),
+			},
+			{
 				path: 'staffingrequest/:slug',
 				component: () => import('../views/dashboard/ViewStaffingRequest.vue'),
 			},
