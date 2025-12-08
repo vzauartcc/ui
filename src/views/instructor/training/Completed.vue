@@ -52,7 +52,10 @@
 								data-position="top"
 								data-tooltip="Enter Notes"
 								class="tooltipped"
-								v-if="session.ots === 0 || session.ots === 3"
+								v-if="
+									(session.ots === 0 || session.ots === 3) &&
+									(user.data.isSeniorStaff || session.instructorCid === user.data.cid)
+								"
 							>
 								<i class="material-icons">edit</i>
 							</router-link>
@@ -75,6 +78,7 @@
 <script>
 import Pagination from '@/components/Pagination.vue';
 import { zauApi } from '@/helpers/axios.js';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'CompletedSessions',
@@ -122,6 +126,9 @@ export default {
 				margin: 0,
 			});
 		},
+	},
+	computed: {
+		...mapState('user', ['user']),
 	},
 };
 </script>
