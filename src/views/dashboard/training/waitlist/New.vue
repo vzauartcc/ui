@@ -68,22 +68,6 @@
 							<label>Availability <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s12" v-if="!user.data.isSeniorStaff">
-							<select v-model="consolidation" required class="materialize-select">
-								<option value="Yes">Yes</option>
-								<option value="No">No</option>
-								<option value="NA">N/A</option>
-							</select>
-							<label
-								>Consolidation of Learning Acknowledgement
-								<i
-									class="material-icons tooltipped"
-									data-position="right"
-									data-tooltip="I have completed the Consolidation of Learning specified in the policy (if applicable)"
-									>help</i
-								></label
-							>
-						</div>
-						<div class="input-field col s12" v-if="!user.data.isSeniorStaff">
 							<select v-model="academy" required class="materialize-select">
 								<option value="Yes">Yes</option>
 								<option value="No">No</option>
@@ -153,7 +137,6 @@ export default {
 				availability: [],
 			},
 			ack: false,
-			consolidation: '',
 			academy: '',
 			milestones: [],
 			controllers: [],
@@ -241,13 +224,9 @@ export default {
 			return !(
 				this.request.certification === '' ||
 				this.request.availability.length === 0 ||
-				(this.user.data.isSeniorStaff && this.request.studentCid === 0) ||
+				(this.user.data.isSeniorStaff && this.request.student === 0) ||
 				(!this.user.data.isSeniorStaff &&
-					(this.ack === false ||
-						this.consolidation === '' ||
-						this.consolidation === 'No' ||
-						this.academy === '' ||
-						this.academy === 'No'))
+					(this.ack === false || this.academy === '' || this.academy === 'No'))
 			);
 		},
 		filteredMilestones() {
