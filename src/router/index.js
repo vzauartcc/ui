@@ -95,6 +95,10 @@ const routes = [
 				path: '/staffingrequest',
 				component: () => import('../views/page/StaffingRequest.vue'),
 			},
+			{
+				path: '/split',
+				component: () => import('../views/page/Split.vue'),
+			},
 		],
 	},
 	{
@@ -222,6 +226,10 @@ const routes = [
 			{
 				path: 'events/editRequest/:slug',
 				component: () => import('../views/admin/events/EditStaffingRequest.vue'),
+			},
+			{
+				path: 'events/split',
+				component: () => import('../views/admin/events/Split.vue'),
 			},
 			{
 				path: 'news',

@@ -106,6 +106,9 @@
 					<li>
 						<router-link to="/staffingRequest">REQUEST STAFFING</router-link>
 					</li>
+					<li>
+						<router-link to="/split">CENTER SPLIT MAP</router-link>
+					</li>
 				</ul>
 				<router-link to="#" data-target="mobile-menu" class="sidenav-trigger"
 					><i class="material-icons">menu</i></router-link
@@ -202,6 +205,9 @@
 			</li>
 			<li>
 				<router-link class="sidenav-close" to="/staffingRequest">REQUEST STAFFING</router-link>
+			</li>
+			<li>
+				<router-link class="sidenav-close" to="/split">CENTER SPLIT MAP</router-link>
 			</li>
 		</ul>
 	</header>
