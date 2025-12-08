@@ -59,6 +59,15 @@
 							>
 								<i class="material-icons">edit</i>
 							</router-link>
+							<a
+								href="#"
+								@click.prevent="openDelete(session._id)"
+								data-position="top"
+								data-tooltip="Delete Training Session"
+								class="tooltipped"
+								v-if="user.data.isSeniorStaff"
+								><i class="material-icons red-text text-darken-2">delete</i></a
+							>
 						</td>
 					</tr>
 				</tbody>
@@ -73,6 +82,72 @@
 			/>
 		</div>
 	</div>
+	<teleport to="body">
+		<template v-if="user.data.isSeniorStaff">
+			<div v-for="session in sessions" :key="`modal_session_delete_${session._id}`">
+				<div :id="`modal_session_delete_${session._id}`" class="modal modal_session_delete">
+					<div class="modal-content">
+						<div class="modal_title">Delete Training Session?</div>
+						<p>
+							This will <b>permanently</b> delete the training session, including any notes entered.
+						</p>
+						<p>
+							<b
+								>This <span class="red-text">will not remove</span> the training session from
+								VATUSA!!</b
+							>
+						</p>
+						<hr />
+						<p>Session Details</p>
+						<label>Student</label>
+						<input
+							type="text"
+							class="col s12"
+							readonly
+							disabled
+							:value="`${session.student.fname} ${session.student.lname}`"
+						/>
+						<label>Instructor</label>
+						<input
+							type="text"
+							class="col s12"
+							readonly
+							disabled
+							:value="`${session.instructor.fname} ${session.instructor.lname}`"
+						/>
+						<label>Start Time</label>
+						<input
+							type="text"
+							class="col s12"
+							readonly
+							disabled
+							:value="dtShort(session.startTime)"
+						/>
+						<label>End Time</label>
+						<input
+							type="text"
+							class="col s12"
+							readonly
+							disabled
+							:value="dtShort(session.endTime)"
+						/>
+					</div>
+					<div class="modal-footer">
+						<a
+							href="#"
+							@click.prevent="deleteSession(session._id)"
+							class="btn waves-effect modal-close red"
+							:class="{ disabled: spinners.length > 0 }"
+						>
+							<span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>
+							Delete</a
+						>
+						<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
+					</div>
+				</div>
+			</div>
+		</template>
+	</teleport>
 </template>
 
 <script>
@@ -84,6 +159,7 @@ export default {
 	name: 'CompletedSessions',
 	data() {
 		return {
+			spinners: [],
 			sessions: null,
 			sessionAmount: 0,
 			page: 1,
@@ -97,8 +173,11 @@ export default {
 	async mounted() {
 		await this.getSessions();
 		this.amountOfPages = Math.ceil(this.sessionAmount / this.limit);
-		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-			margin: 0,
+		this.$nextTick(() => {
+			M.Modal.init(document.querySelectorAll('.modal'), { preventScrolling: false });
+			M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+				margin: 0,
+			});
 		});
 	},
 	methods: {
@@ -116,6 +195,31 @@ export default {
 			} catch (e) {
 				console.error('error getting sessions', e);
 				this.toastError('Something went wrong, please try again later');
+			}
+		},
+		openDelete(i) {
+			this.$nextTick(() => {
+				const modal = document.getElementById(`modal_session_delete_${i}`);
+				if (modal) {
+					M.Modal.init(modal, { preventScrolling: false }).open();
+				}
+			});
+		},
+		async deleteSession(id) {
+			try {
+				this.spinners.push('delete');
+				await zauApi.delete(`/training/session/${id}`);
+
+				this.sessions = [];
+				await this.getSessions();
+			} catch (e) {
+				console.error('error deleting session', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'delete');
+				this.$nextTick(() => {
+					M.Modal.getInstance(document.querySelector('.modal_session_delete')).close();
+				});
 			}
 		},
 	},
@@ -146,5 +250,20 @@ export default {
 
 .session_wrapper {
 	overflow: auto;
+}
+
+.modal_title {
+	font-size: 1.8em;
+	margin-bottom: 0.5em;
+}
+
+.modal_session {
+	.row {
+		.input-field p {
+			line-break: normal;
+			hyphens: auto;
+			margin: 0.33em 0 0 0;
+		}
+	}
 }
 </style>

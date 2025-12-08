@@ -19,9 +19,9 @@ export default {
 		})}z`;
 	},
 	dtFull(isoDate) {
-		// Monday, January 2, 2006, 15:04:05
+		// Monday, January 2, 2006, 15:04:05z
 		const d = new Date(isoDate);
-		return d.toLocaleString('en-US', {
+		return `${d.toLocaleString('en-US', {
 			weekday: 'long',
 			month: 'long',
 			day: 'numeric',
@@ -31,7 +31,20 @@ export default {
 			minute: '2-digit',
 			second: '2-digit',
 			hourCycle: 'h23',
-		});
+		})}z`;
+	},
+	dtShort(isoDate) {
+		// 1/2/2006 15:04z
+		const d = new Date(isoDate);
+		return `${d.toLocaleString('en-US', {
+			month: 'numeric',
+			day: 'numeric',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			hourCycle: 'h23',
+			timeZone: 'UTC',
+		})}z`;
 	},
 	dLong(isoDate) {
 		// January 2, 2006

@@ -115,7 +115,7 @@
 						<a
 							href="#"
 							@click.prevent="deleteSession(session._id)"
-							class="btn waves-effect modal-close"
+							class="btn waves-effect modal-close red"
 							:class="{ disabled: spinners.length > 0 }"
 						>
 							<span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>
