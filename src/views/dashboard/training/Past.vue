@@ -99,6 +99,11 @@ export default {
 			}
 		},
 	},
+	watch: {
+		page: async function () {
+			await this.getPastSessions();
+		},
+	},
 };
 </script>
 
