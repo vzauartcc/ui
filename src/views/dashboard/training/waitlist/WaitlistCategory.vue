@@ -22,7 +22,7 @@
 						<td>
 							<span v-if="cat === 'all'">Waitlist Date</span><span v-else>Assigned Date</span>
 						</td>
-						<td>Availability</td>
+						<td v-if="user.data.isTrainingStaff">Availability</td>
 						<td class="options" v-if="user.data.isSeniorStaff">Options</td>
 					</tr>
 				</thead>
@@ -43,7 +43,11 @@
 							><span v-else-if="value.assignedDate">{{ dShort(value.assignedDate) }}</span>
 							<span v-else>On Waitlist</span>
 						</td>
-						<td :data-tooltip="value.availability.join(', ')" class="tooltipped">
+						<td
+							:data-tooltip="value.availability.join(', ')"
+							class="tooltipped"
+							v-if="user.data.isTrainingStaff"
+						>
 							{{ reduceAvailability(value.availability) }}
 						</td>
 						<td class="options" v-if="user.data.isSeniorStaff">
@@ -74,16 +78,16 @@
 				<i v-if="assignedPercentage === '100'" class="material-icons green-text">celebration</i>
 			</p>
 			<p>Average Wait: {{ averageWaitTime }} days</p>
-			<p v-if="oldest && user.data.isInstructor">
+			<p v-if="oldest && user.data.isTrainingStaff">
 				Longest Wait: {{ oldest.student.fname }} {{ oldest.student.lname }} ({{
 					((Date.now() - new Date(oldest.createdAt).getTime()) / (1000 * 60 * 60 * 24)).toFixed(0)
 				}}
 				days)
 			</p>
-			<p v-if="user.data.isInstructor">
+			<p v-if="user.data.isTrainingStaff">
 				Average Instructor Load: {{ averageInstructorLoad }} students
 			</p>
-			<p v-if="busiestInstructor && user.data.isInstructor">
+			<p v-if="busiestInstructor && user.data.isTrainingStaff">
 				Busiest Instructor: {{ ins.find((i) => i.cid === busiestInstructor)?.fname || 'A former' }}
 				{{ ins.find((i) => i.cid === busiestInstructor)?.lname || 'Instructor' }} ({{
 					docs.all.filter((x) => x.instructorCid === busiestInstructor).length
