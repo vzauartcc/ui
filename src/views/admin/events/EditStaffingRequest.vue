@@ -45,7 +45,18 @@
 							id="DateLocal"
 							type="text"
 							class="date"
-							v-model="request.date"
+							:value="
+								new Date(request.date)
+									.toLocaleString('en-US', {
+										month: '2-digit',
+										day: '2-digit',
+										year: 'numeric',
+										hour: '2-digit',
+										minute: '2-digit',
+										hourCycle: 'h23',
+									})
+									.replaceAll(',', '')
+							"
 							required
 							disabled
 						/>
@@ -111,7 +122,7 @@ export default {
 		async getStaffingRequest() {
 			try {
 				const { data } = await zauApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
-				this.request = data.staffingRequest;
+				this.request = data;
 
 				if (this.request.accepted) {
 					this.isButtonDisabled = true;

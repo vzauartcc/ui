@@ -62,7 +62,7 @@ export default {
 				if (data.staffingRequest === null) {
 					this.$router.push('/dash');
 				} else {
-					this.request = data.staffingRequest;
+					this.request = data;
 				}
 			} catch (e) {
 				console.error('error getting staffing request', e);
