@@ -17,19 +17,22 @@
 				<thead>
 					<tr>
 						<td>Student</td>
-						<td>Student Rating</td>
 						<td>Instructor</td>
 						<td>Milestone</td>
 						<td>
 							<span v-if="cat === 'all'">Waitlist Date</span><span v-else>Assigned Date</span>
 						</td>
+						<td>Availability</td>
 						<td class="options" v-if="user.data.isSeniorStaff">Options</td>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="value in docs[k]" :key="value._id">
-						<td>{{ value.student.fname }} {{ value.student.lname }}</td>
-						<td>{{ getShortRating(+value.student.rating) }}</td>
+						<td>
+							{{ value.student.fname }} {{ value.student.lname }} ({{
+								getShortRating(+value.student.rating)
+							}})
+						</td>
 						<td>
 							<span v-if="+value.instructorCid === -1">Unassigned</span
 							><span v-else>{{ value.instructor.fname }} {{ value.instructor.lname }}</span>
@@ -39,6 +42,9 @@
 							<span v-if="cat === 'all'">{{ dShort(value.createdAt) }}</span
 							><span v-else-if="value.assignedDate">{{ dShort(value.assignedDate) }}</span>
 							<span v-else>On Waitlist</span>
+						</td>
+						<td :data-tooltip="value.availability.join(', ')" class="tooltipped">
+							{{ reduceAvailability(value.availability) }}
 						</td>
 						<td class="options" v-if="user.data.isSeniorStaff">
 							<a
@@ -104,6 +110,7 @@ export default {
 	},
 	async mounted() {
 		M.FormSelect.init(document.querySelectorAll('select'), {});
+		console.log(this.ins);
 	},
 	methods: {
 		openDelete(id) {
@@ -115,6 +122,42 @@ export default {
 		getShortRating(idx) {
 			return getRatingShort(idx);
 		},
+		reduceAvailability(ary) {
+			let retval = [...ary];
+			if (
+				ary.includes('Weekday Afternoons') &&
+				ary.includes('Weekday Mornings') &&
+				ary.includes('Weekday Nights')
+			) {
+				retval = [...retval.filter((u) => !u.includes('Weekday')), 'Weekday Anytime'];
+			}
+
+			if (
+				ary.includes('Weekend Afternoons') &&
+				ary.includes('Weekend Mornings') &&
+				ary.includes('Weekend Nights')
+			) {
+				retval = [...retval.filter((u) => !u.includes('Weekend')), 'Weekend Anytime'];
+			}
+
+			if (ary.includes('Weekend Mornings') && ary.includes('Weekday Mornings')) {
+				retval = [...retval.filter((u) => !u.includes('Mornings')), 'Mornings'];
+			}
+
+			if (ary.includes('Weekend Afternoons') && ary.includes('Weekday Afternoons')) {
+				retval = [...retval.filter((u) => !u.includes('Afternoons')), 'Afternoons'];
+			}
+
+			if (ary.includes('Weekend Nights') && ary.includes('Weekday Nights')) {
+				retval = [...retval.filter((u) => !u.includes('Nights')), 'Nights'];
+			}
+
+			if (retval.filter((x) => x.includes('Anytime')).length > 1) {
+				retval = ['Anytime'];
+			}
+
+			return retval.join(', ');
+		},
 	},
 	computed: {
 		...mapState('user', ['user']),
@@ -123,7 +166,7 @@ export default {
 
 			return this.docs
 				.filter((w) => w.instructorCid === -1)
-				.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+				.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 		},
 		assignedPercentage() {
 			if (!this.docs || this.docs.all.length === 0) {
@@ -139,7 +182,7 @@ export default {
 
 			return this.docs.all
 				.filter((w) => w.instructorCid === -1)
-				.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0];
+				.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0];
 		},
 		busiestCertCode() {
 			const allDocs = this.docs.all;
