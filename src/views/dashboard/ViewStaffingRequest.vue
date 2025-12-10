@@ -59,10 +59,10 @@ export default {
 		async getStaffingRequest() {
 			try {
 				const { data } = await zauApi.get(`/event/staffingRequest/${this.$route.params.slug}`);
-				if (data.staffingRequest === null) {
+				if (data === null) {
 					this.$router.push('/dash');
 				} else {
-					this.request = data.staffingRequest;
+					this.request = data;
 				}
 			} catch (e) {
 				console.error('error getting staffing request', e);
