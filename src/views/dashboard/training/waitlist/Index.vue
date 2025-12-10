@@ -117,6 +117,26 @@
 										</select>
 										<label>Milestone</label>
 									</div>
+									<div class="input-field col s12">
+										<select
+											v-model="edit.availability"
+											multiple
+											required
+											class="materialize-select"
+										>
+											<option value="Weekday Mornings">Weekday Mornings</option>
+											<option value="Weekday Afternoons">
+												Weekday Afternoons / Early Evenings
+											</option>
+											<option value="Weekday Nights">Weekday Nights</option>
+											<option value="Weekend Mornings">Weekend Mornings</option>
+											<option value="Weekend Afternoons">
+												Weekend Afternoons / Early Evenings
+											</option>
+											<option value="Weekend Nights">Weekend Nights</option>
+										</select>
+										<label>Availability <span class="red-text">*</span></label>
+									</div>
 								</form>
 							</div>
 							<div class="modal-footer">
