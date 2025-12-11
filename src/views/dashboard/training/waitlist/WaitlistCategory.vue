@@ -114,7 +114,6 @@ export default {
 	},
 	async mounted() {
 		M.FormSelect.init(document.querySelectorAll('select'), {});
-		console.log(this.ins);
 	},
 	methods: {
 		openDelete(id) {

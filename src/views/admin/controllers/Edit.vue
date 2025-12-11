@@ -213,7 +213,6 @@ export default {
 		},
 		async getController() {
 			try {
-				console.log(this.form.certs);
 				const { data } = await zauApi.get(`/controller/${this.$route.params.cid}`);
 				this.controller = data;
 				this.form = {
