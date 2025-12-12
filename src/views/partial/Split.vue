@@ -43,11 +43,7 @@
 					</LIcon>
 				</LMarker>
 
-				<LGeoJson
-					v-if="showPmmKubbsSplit && pmmBorder"
-					:geojson="pmmBorder"
-					:options="testOptions"
-				/>
+				<LGeoJson v-if="showPmmKubbsSplit" :geojson="pmmBorder" :options="testOptions" />
 
 				<LMarker v-if="showPmmKubbsSplit && pmmKubbsLabel" :lat-lng="staticCorridorCoords.pmmKubbs">
 					<LIcon :icon-anchor="[0, 0]" className="">
@@ -94,11 +90,7 @@
 					</LIcon>
 				</LMarker>
 
-				<LGeoJson
-					v-if="showPmmKubbsSplit && pmmBorder"
-					:geojson="pmmBorder"
-					:options="testOptions"
-				/>
+				<LGeoJson v-if="showPmmKubbsSplit" :geojson="pmmBorder" :options="testOptions" />
 
 				<LMarker v-if="showPmmKubbsSplit && pmmKubbsLabel" :lat-lng="staticCorridorCoords.pmmKubbs">
 					<LIcon :icon-anchor="[0, 0]" className="">
@@ -182,9 +174,9 @@ export default {
 
 			// Coordinates for static labels
 			staticCorridorCoords: {
-				iowCorridor: [42.142026, -90.919368],
+				iowCorridor: [42.182026, -90.919368],
 				bdfSplit: [41.1, -90.4],
-				bvtCorridor: [41.375229, -88.283288],
+				bvtCorridor: [41.375229, -88.363288],
 				eonLow: [41.120992, -88.302134],
 				pmmKubbs: [42.77505, -86.045098],
 			},
@@ -215,23 +207,31 @@ export default {
 		this.fetchSectorsData();
 	},
 	computed: {
+		// Generates the style and handler for each layer
 		testOptions() {
 			return {
 				style: this.getSectorStyle,
 				onEachFeature: this.onEachFeature,
 			};
 		},
+		// Determines where labels are to be placed
 		labeledPositions() {
 			const labeled = [];
 
 			const findFeature = (features, sectorId) => {
 				if (!features) return null;
-				return features.find((f) => String(f.properties.id) === sectorId);
+				return features.find(
+					(f) => String(f.properties.id) === sectorId && f.properties.labelAnchor,
+				);
+			};
+
+			const nonCorridors = (mySet) => {
+				return new Set([...mySet].filter((y) => y !== '6' && y !== '9'));
 			};
 
 			for (const pos of this.positions.values()) {
 				if (pos.ownedHi.size > 0) {
-					const firstSectorId = pos.ownedHi.values().next().value;
+					const firstSectorId = nonCorridors(pos.ownedHi).values().next().value;
 					const feature = findFeature(this.rawHiSectors.features, firstSectorId);
 
 					if (feature && feature.properties.labelAnchor) {
@@ -264,10 +264,12 @@ export default {
 					}
 				}
 			}
+
 			return labeled;
 		},
 	},
 	methods: {
+		// Load data from API
 		async fetchSectorsData() {
 			this.isLoading = true;
 			try {
@@ -292,6 +294,7 @@ export default {
 				this.isLoading = false;
 			}
 		},
+		// Kickoff the rendering
 		initializePositionsAndProcessOwnership() {
 			if (this.positionsData && this.positionsData.length > 0) {
 				this.initializePositionsMap();
@@ -318,14 +321,9 @@ export default {
 				return;
 			}
 
-			// Pass the received prop data directly to applyOwnership
 			this.applyOwnership(this.ownershipData);
 		},
-
-		/**
-		 * Determines the style for each GeoJSON sector feature.
-		 * Assumes the backend has added a property like `ownerColor` to the feature's properties.
-		 */
+		// Determines the style for each GeoJSON sector feature.
 		getSectorStyle(feature) {
 			const fillColor = feature.properties.ownerColor || '#808080';
 
@@ -338,9 +336,7 @@ export default {
 			};
 		},
 
-		/**
-		 * Renders the border lines (ZAU, Neighbor, Interior).
-		 */
+		// Renders the border lines (ZAU, Neighbor, Interior).
 		drawBorders(feature) {
 			switch (feature.properties.borderType) {
 				case 'ZAU':
@@ -364,7 +360,7 @@ export default {
 					return {};
 			}
 		},
-
+		// Applied to each layer of the LMap
 		onEachFeature(feature, layer) {
 			// Set the layer style here because the style option apparently doesn't work
 			if (feature.properties.borderType) {
@@ -373,8 +369,7 @@ export default {
 				layer.setStyle(this.getSectorStyle(feature));
 			}
 		},
-
-		// OWNERSHIP STUFF
+		// Adds owned sectors to owner map
 		applyOwnership(ownershipMap) {
 			this.positions.forEach((p) => {
 				p.ownedHi.clear();
@@ -408,7 +403,7 @@ export default {
 
 			this.updateSectorColors();
 		},
-
+		// Applies fillColor to polygon layers based on owner
 		updateSectorColors() {
 			// Function to clone GeoJSON, inject ownerColor, and return new data
 			const processSectors = (rawSectors, level) => {
@@ -437,6 +432,49 @@ export default {
 					feature.properties.ownerColor = ownerColor;
 					feature.properties.isOwned = isOwned;
 				});
+
+				// Color mixing for overlapping ownership
+				if (level === 'hi') {
+					newSectors.features.forEach((feature) => {
+						if (feature.properties.name === 'IOW Corridor') {
+							feature.properties.ownerColor = this.averageColors(
+								newSectors.features.find((x) => x.properties.name === 'IOWA CITY').properties
+									.ownerColor,
+								newSectors.features.find((x) => x.properties.name === 'COTON').properties
+									.ownerColor,
+							);
+						}
+
+						if (feature.properties.name === 'BOILER CLIMB CORRIDOR') {
+							feature.properties.ownerColor = this.averageColors(
+								newSectors.features.find((x) => x.properties.name === 'BOILER').properties
+									.ownerColor,
+								newSectors.features.find((x) => x.properties.name === 'GIPPER').properties
+									.ownerColor,
+							);
+						}
+
+						if (feature.properties.name === 'BRADFORD') {
+							feature.properties.ownerColor = this.averageColors(
+								newSectors.features.find((x) => x.properties.name === 'BRADFORD').properties
+									.ownerColor,
+								newSectors.features.find((x) => x.properties.name === 'IOWA CITY').properties
+									.ownerColor,
+							);
+						}
+					});
+				} else {
+					newSectors.features.forEach((feature) => {
+						if (feature.properties.name === 'PEOTONE') {
+							feature.properties.ownerColor = this.averageColors(
+								newSectors.features.find((x) => x.properties.name === 'PEOTONE').properties
+									.ownerColor,
+								newSectors.features.find((x) => x.properties.name === 'PLANO').properties
+									.ownerColor,
+							);
+						}
+					});
+				}
 				return newSectors;
 			};
 
@@ -444,6 +482,7 @@ export default {
 			this.hiSectorData = { ...processSectors(this.rawHiSectors, 'hi') };
 			this.loSectorData = { ...processSectors(this.rawLoSectors, 'lo') };
 		},
+		// Apply a CSS class to the label based on if it special airspace or not
 		getLabelClass(position) {
 			let className = 'pos-label-base';
 
@@ -459,6 +498,7 @@ export default {
 
 			return className;
 		},
+		// Get the average owner color for overlapping airspace
 		averageColors(colorA, colorB) {
 			const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
 			const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
@@ -473,7 +513,7 @@ export default {
 				.padStart(2, '0');
 			return '#' + r + g + b;
 		},
-
+		// Gets the name of the owner of a sector and the default color of the owner
 		getOwner(sectorFeature) {
 			// Input is a GeoJSON feature from hiSectorData/loSectorData
 			let id = String(sectorFeature.properties.id);
@@ -490,7 +530,7 @@ export default {
 
 			return { name: 'N/A', color: '#808080' };
 		},
-
+		// Displays corridor labels and handles showing interior boundaries
 		checkSpecialSectors() {
 			if (!this.hiSectorData || !this.loSectorData) return;
 
@@ -538,7 +578,7 @@ export default {
 				this.iowCorridorLabel = null; // Hide label
 			} else {
 				this.iowCorridorLabel = {
-					text: `${this.getOwner(layerIOW).name} FL240 - FL290 <br /> ${this.getOwner(layerCOTON).name} FL330+`,
+					text: `${this.getOwner(layerIOW).name} FL240 - FL329 <br /> ${this.getOwner(layerCOTON).name} FL330+`,
 					colorA: getFillColor(layerCOTON),
 					colorB: getFillColor(layerIOW),
 					fillColor: this.averageColors(getFillColor(layerCOTON), getFillColor(layerIOW)),

@@ -1,6 +1,8 @@
 <template>
 	<div class="card">
-		<div v-if="apiPositions.length === 0" class="loading_container"><Spinner /></div>
+		<div v-if="apiPositions.length === 0 || sectors.high.length === 0" class="loading_container">
+			<Spinner />
+		</div>
 		<div v-else class="row row_no_margin">
 			<div class="col s12 row">
 				<div class="red white-text strong center" v-if="hasUnsavedChanges">CHANGES PENDING</div>
@@ -51,7 +53,9 @@
 								</thead>
 								<tbody>
 									<tr
-										v-for="sector in sectors.high.features"
+										v-for="sector in sectors.high.features.filter(
+											(f) => !f.properties.name.toLowerCase().includes('corridor'),
+										)"
 										:key="sector.properties.id"
 										class="s12 row"
 									>
@@ -179,6 +183,20 @@ export default {
 				this.activePositions = [];
 				this.activePositions.push(data.positions.find((x) => x.id === 35));
 
+				Object.keys(data.ownership.high).forEach((d) => {
+					const sector = data.ownership.high[d];
+					if (!this.activePositions.some((y) => y.id === Number(sector))) {
+						this.activePositions.push(data.positions.find((x) => x.id === Number(sector)));
+					}
+				});
+
+				Object.keys(data.ownership.low).forEach((d) => {
+					const sector = data.ownership.low[d];
+					if (!this.activePositions.some((y) => y.id === Number(sector))) {
+						this.activePositions.push(data.positions.find((x) => x.id === Number(sector)));
+					}
+				});
+
 				Object.assign(this.sectorOwnership.high, data.ownership.high);
 				Object.assign(this.sectorOwnership.low, data.ownership.low);
 
@@ -222,6 +240,11 @@ export default {
 		async saveSplit() {
 			try {
 				this.spinners.push('save');
+
+				// Assign corridors to those who logically owns them
+				this.sectorOwnership.high[6] = `${this.sectorOwnership.high[8]}`;
+				this.sectorOwnership.high[9] = `${this.sectorOwnership.high[1]}`;
+
 				const { data } = await zauApi.put('/split/ownership', this.sectorOwnership);
 
 				Object.assign(this.sectorOwnership.high, data.high);
