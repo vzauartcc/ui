@@ -1,5 +1,6 @@
 <template>
-	<div class="card">
+	<div v-if="!hiSectorData"><Spinner /></div>
+	<div class="card" v-else>
 		<div class="map-container">
 			<h2 class="card-title">High Altitude Sectors</h2>
 			<span>FL240 & Above</span>
@@ -10,6 +11,7 @@
 				:options="mapOptions"
 				class="leaflet-map-hi"
 				style="height: 500px"
+				ref="highMap"
 			>
 				<LGeoJson
 					v-if="hiSectorData && hiSectorData.features.length"
@@ -67,6 +69,7 @@
 				:options="mapOptions"
 				class="leaflet-map-lo"
 				style="height: 500px"
+				ref="lowMap"
 			>
 				<LGeoJson v-if="loSectorData" :geojson="loSectorData" :options="testOptions" />
 
@@ -202,9 +205,9 @@ export default {
 			deep: true,
 		},
 	},
-	created() {
+	async mounted() {
 		// Start fetching data as soon as the component instance is created
-		this.fetchSectorsData();
+		await this.fetchSectorsData();
 	},
 	computed: {
 		// Generates the style and handler for each layer
@@ -269,6 +272,16 @@ export default {
 		},
 	},
 	methods: {
+		invalidateMaps() {
+			this.$nextTick(() => {
+				if (this.$refs.lowMap.leafletObject) {
+					this.$refs.lowMap.leafletObject.invalidateSize(true);
+				}
+				if (this.$refs.highMap.leafletObject) {
+					this.$refs.highMap.leafletObject.invalidateSize(true);
+				}
+			});
+		},
 		// Load data from API
 		async fetchSectorsData() {
 			this.isLoading = true;

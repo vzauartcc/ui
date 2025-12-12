@@ -161,7 +161,11 @@
 							<div v-else class="green white-text strong center">LIVE SPLIT</div>
 						</div>
 					</div>
-					<MapComponent :positionsData="apiPositions" :ownershipData="sectorOwnership" />
+					<MapComponent
+						:positionsData="apiPositions"
+						:ownershipData="sectorOwnership"
+						ref="childComponent"
+					/>
 				</div>
 			</div>
 		</div>
@@ -452,9 +456,17 @@ export default {
 		await this.fetchGeojson();
 
 		M.FormSelect.init(document.querySelectorAll('.materialize-select'), {});
-		M.Tabs.init(document.querySelectorAll('.tabs'), {});
+		M.Tabs.init(document.querySelectorAll('.tabs'), {
+			onShow: this.handleTabShow,
+		});
 	},
 	methods: {
+		handleTabShow(newContentElement) {
+			// Fix maps not showing properly due to tabbing
+			if (newContentElement.id === 'ownership') {
+				this.$refs.childComponent.invalidateMaps();
+			}
+		},
 		async fetchInitialData() {
 			try {
 				const { data } = await zauApi.get('/split/ownership');
