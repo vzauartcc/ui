@@ -314,7 +314,7 @@ export default {
 					}
 				})
 				.catch((error) => {
-					console.log(error);
+					console.error(error);
 					this.toastError('Something went wrong, please try again later');
 				})
 				.finally(() => {

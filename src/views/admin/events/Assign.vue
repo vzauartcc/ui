@@ -240,8 +240,6 @@ export default {
 				data.forEach((c) => {
 					this.allCerts[c.code] = c;
 				});
-
-				console.log(this.allCerts);
 			} catch (e) {
 				console.error('error getting certifications', e);
 				this.toastError('Something went wrong, please try again later');

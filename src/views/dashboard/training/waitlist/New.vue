@@ -230,7 +230,7 @@ export default {
 			);
 		},
 		filteredMilestones() {
-			if (this.user.data.isSeniorStaff) {
+			if (this.user.data.isSeniorStaff || this.user.data.certifications.length === 0) {
 				return this.milestones;
 			}
 

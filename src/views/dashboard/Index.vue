@@ -111,11 +111,7 @@
 			<Spinner />
 		</div>
 		<p
-			v-else-if="
-				activityData &&
-				activityData.controllingSessions &&
-				activityData.controllingSessions.length === 0
-			"
+			v-else-if="activityData && activityData.sessions && activityData.sessions.length === 0"
 			class="no_sessions"
 		>
 			There are no recent connections to display
@@ -131,7 +127,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="session in activityData.controllingSessions" :key="session.timeStart">
+					<tr v-for="session in activityData.sessions" :key="session.timeStart">
 						<td>{{ session.position }}</td>
 						<td>{{ dtLong(session.timeStart) }}</td>
 						<td>{{ dtLong(session.timeEnd) }}</td>
@@ -160,40 +156,6 @@ export default {
 	data() {
 		return {
 			spinners: [],
-			approvedAirports: [
-				'ARR',
-				'AZO',
-				'BTL',
-				'CID',
-				'CMI',
-				'DBQ',
-				'DEC',
-				'DPA',
-				'EKM',
-				'ENW',
-				'FWA',
-				'GRR',
-				'GUS',
-				'GYY',
-				'JVL',
-				'LAF',
-				'LOT',
-				'MDW',
-				'MKE',
-				'MKG',
-				'MLI',
-				'MSN',
-				'MWC',
-				'ORD',
-				'OSH',
-				'PWK',
-				'RAC',
-				'RFD',
-				'SBN',
-				'UES',
-				'UGN',
-				'VOK',
-			],
 			token: '',
 			discordConnected: false,
 			activityData: null,

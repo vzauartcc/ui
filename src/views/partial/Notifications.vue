@@ -102,7 +102,7 @@ export default {
 					c.read = true;
 				}
 			} catch (e) {
-				console.log('error redirecting', e);
+				console.error('error redirecting', e);
 				this.toastError('Something went wrong, please try again later');
 			}
 		},

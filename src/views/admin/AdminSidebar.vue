@@ -38,6 +38,14 @@
 				<div class="secondary-content"><i class="material-icons">event</i></div>
 			</router-link>
 			<router-link
+				to="/admin/events/split"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'ta', 'ec', 'wm'])"
+			>
+				Split Map
+				<div class="secondary-content"><i class="material-icons">alt_route</i></div>
+			</router-link>
+			<router-link
 				to="/admin/feedback"
 				class="collection-item"
 				v-if="requiresAuth(['atm', 'datm', 'ta', 'wm'])"

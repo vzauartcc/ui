@@ -162,7 +162,7 @@ export default {
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
 				} else {
-					console.log('error submitting cert', e);
+					console.error('error submitting cert', e);
 					this.toastError('Something went wrong, please try again later');
 				}
 			} finally {

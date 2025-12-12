@@ -47,7 +47,7 @@ app
 		},
 		created() {
 			setInterval(() => {
-				this.footerTime = `${this.dtFull(new Date())}z`;
+				this.footerTime = `${this.dtFull(new Date())}`;
 			}, 1000);
 		},
 	})

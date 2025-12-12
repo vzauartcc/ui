@@ -179,7 +179,6 @@ export default {
 				this.form.issued = `${issued.getUTCFullYear()}-${('00' + (issued.getUTCMonth() + 1)).slice(-2)}-${('00' + issued.getUTCDate()).slice(-2)}`;
 
 				this.$nextTick(() => {
-					console.log('tick');
 					const shortest = new Date(new Date(data.createdAt).toUTCString());
 					shortest.setUTCDate(shortest.getUTCDate() + 52);
 					const longest = new Date(new Date(data.createdAt).toUTCString());
@@ -218,7 +217,7 @@ export default {
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
 				} else {
-					console.log('error submitting cert', e);
+					console.error('error submitting cert', e);
 					this.toastError('Something went wrong, please try again later');
 				}
 			} finally {
