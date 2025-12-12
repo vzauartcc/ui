@@ -12,14 +12,13 @@
 				class="leaflet-map-hi"
 				style="height: 500px"
 				ref="highMap"
+				@ready="mapReady"
 			>
 				<LGeoJson
 					v-if="hiSectorData && hiSectorData.features.length"
 					:geojson="hiSectorData"
 					:options="testOptions"
 				/>
-
-				<LGeoJson v-if="zauHiBorders" :geojson="zauHiBorders" :options="testOptions" />
 
 				<div v-for="pos in labeledPositions" :key="pos.displayId">
 					<LMarker :lat-lng="[pos.lat, pos.lng]" v-if="pos.mapLevel && pos.mapLevel === 'hi'">
@@ -45,8 +44,6 @@
 					</LIcon>
 				</LMarker>
 
-				<LGeoJson v-if="showPmmKubbsSplit" :geojson="pmmBorder" :options="testOptions" />
-
 				<LMarker v-if="showPmmKubbsSplit && pmmKubbsLabel" :lat-lng="staticCorridorCoords.pmmKubbs">
 					<LIcon :icon-anchor="[0, 0]" className="">
 						<div class="spec-label" v-html="pmmKubbsLabel.pmmText"></div>
@@ -58,6 +55,10 @@
 						<div class="spec-label" v-html="bdfSplitLabel.text"></div>
 					</LIcon>
 				</LMarker>
+
+				<LGeoJson v-if="zauHiBorders" :geojson="zauHiBorders" :options="testOptions" />
+
+				<LGeoJson v-if="showPmmKubbsSplit" :geojson="pmmBorder" :options="testOptions" />
 			</LMap>
 
 			<h2 class="card-title">Low Altitude Sectors</h2>
@@ -70,10 +71,9 @@
 				class="leaflet-map-lo"
 				style="height: 500px"
 				ref="lowMap"
+				@ready="mapReady"
 			>
 				<LGeoJson v-if="loSectorData" :geojson="loSectorData" :options="testOptions" />
-
-				<LGeoJson v-if="zauLoBorders" :geojson="zauLoBorders" :options="testOptions" />
 
 				<div v-for="pos in labeledPositions" :key="pos.displayId">
 					<LMarker :lat-lng="[pos.lat, pos.lng]" v-if="pos.mapLevel && pos.mapLevel === 'lo'">
@@ -93,13 +93,15 @@
 					</LIcon>
 				</LMarker>
 
-				<LGeoJson v-if="showPmmKubbsSplit" :geojson="pmmBorder" :options="testOptions" />
-
 				<LMarker v-if="showPmmKubbsSplit && pmmKubbsLabel" :lat-lng="staticCorridorCoords.pmmKubbs">
 					<LIcon :icon-anchor="[0, 0]" className="">
 						<div class="spec-label" v-html="pmmKubbsLabel.kubbsText"></div>
 					</LIcon>
 				</LMarker>
+
+				<LGeoJson v-if="zauLoBorders" :geojson="zauLoBorders" :options="testOptions" />
+
+				<LGeoJson v-if="showPmmKubbsSplit" :geojson="pmmBorder" :options="testOptions" />
 			</LMap>
 		</div>
 	</div>
@@ -272,6 +274,12 @@ export default {
 		},
 	},
 	methods: {
+		mapReady(obj) {
+			if (obj) {
+				obj.createPane('bordersPane');
+				obj.getPane('bordersPane').style.zIndex = 499;
+			}
+		},
 		invalidateMaps() {
 			this.$nextTick(() => {
 				if (this.$refs.lowMap.leafletObject) {
@@ -356,11 +364,13 @@ export default {
 					return {
 						color: '#e4002b',
 						weight: 5,
+						pane: 'bordersPane',
 					};
 				case 'Neighbor':
 					return {
 						color: '#000000',
 						weight: 2,
+						pane: 'bordersPane',
 					};
 				case 'InteriorBoundary':
 					return {
@@ -368,6 +378,7 @@ export default {
 						dashArray: 8,
 						dashOffset: 8,
 						opacity: 0.8,
+						pane: 'bordersPane',
 					};
 				default:
 					return {};
