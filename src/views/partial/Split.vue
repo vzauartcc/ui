@@ -701,5 +701,6 @@ export default {
 	font-weight: bold;
 	font-size: 20px;
 	line-height: 1;
+	width: min-content;
 }
 </style>

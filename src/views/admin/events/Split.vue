@@ -11,9 +11,30 @@
 				<ul class="tabs">
 					<li class="tab col s6"><a class="active" href="#activePositions">Active Positions</a></li>
 					<li class="tab col s6"><a href="#ownership">Sector Ownership</a></li>
+					<li class="tab col s6"><a href="#common">Standard Event Splits</a></li>
 				</ul>
 			</div>
 			<div class="tabs_content">
+				<div id="common" class="card-content">
+					<div class="col s12 row"><p>Quickly apply a split preset from the options below.</p></div>
+					<div class="row col s12" v-for="group in quickSplits" :key="group.group">
+						<div class="card-title">{{ group.group }}</div>
+						<div class="row" v-for="split in group.splits" :key="split.name">
+							<a
+								href="#"
+								@click.prevent="doQuickSplit(split)"
+								class="btn waves-effect green col s2"
+								:class="{ disabled: spinners.length > 0 }"
+							>
+								<span v-if="spinners.some((s) => s === 'save')"> <SmallSpinner /> </span>
+								Activate Split</a
+							>
+							<div class="col s10" style="margin-top: 0.5em">
+								<b>{{ split.name }}</b> ({{ split.description }})
+							</div>
+						</div>
+					</div>
+				</div>
 				<div id="activePositions" class="card-content">
 					<div class="col s12 row">
 						<p>
@@ -164,6 +185,266 @@ export default {
 			loading: true,
 			sectors: { high: [], low: [] },
 			activePositions: [],
+			quickSplits: [
+				{
+					group: '2-Way',
+					splits: [
+						{
+							name: 'Plan 2A N/S',
+							description: 'N: 60 BAE, S: 35 BEARZ',
+							high: {
+								5: 35, // FWA
+								0: 60, // PMM
+								1: 35, // BOILER
+								2: 35, // BDF
+								3: 60, // BADGER
+								4: 35, // GIJ
+								7: 60, // COTON
+								8: 35, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 35, // PLANO
+								1: 60, // HARLY
+								2: 60, // DBQ
+								3: 60, // LNR
+								4: 60, // FARMM
+								5: 35, // MALTA
+								6: 35, // EON
+								9: 35, // BRL
+								10: 60, // KUBBS
+								11: 35, // CRIBB
+							},
+						},
+						{
+							name: 'Plan 2B E/W',
+							description: 'E: 35 BEARZ, W: 75 COTON',
+							high: {
+								5: 35, // FWA
+								0: 35, // PMM
+								1: 35, // BOILER
+								2: 75, // BDF
+								3: 75, // BADGER
+								4: 35, // GIJ
+								7: 75, // COTON
+								8: 75, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 75, // PLANO
+								1: 75, // HARLY
+								2: 75, // DBQ
+								3: 75, // LNR
+								4: 75, // FARMM
+								5: 75, // MALTA
+								6: 35, // EON
+								9: 75, // BRL
+								10: 35, // KUBBS
+								11: 35, // CRIBB
+							},
+						},
+						{
+							name: 'Plan 2C Hi/Lo',
+							description: 'Hi: 89 GIJ, Lo: 35 LO',
+							high: {
+								5: 89, // FWA
+								0: 89, // PMM
+								1: 89, // BOILER
+								2: 89, // BDF
+								3: 89, // BADGER
+								4: 89, // GIJ
+								7: 89, // COTON
+								8: 89, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 35, // PLANO
+								1: 35, // HARLY
+								2: 35, // DBQ
+								3: 35, // LNR
+								4: 35, // FARMM
+								5: 35, // MALTA
+								6: 35, // EON
+								9: 35, // BRL
+								10: 35, // KUBBS
+								11: 35, // CRIBB
+							},
+						},
+						{
+							name: 'Plan 2D: MSP CrossFire',
+							description: 'W/SW: 75 COTON, E/NE: 35 BEARZ',
+							high: {
+								5: 35, // FWA
+								0: 35, // PMM
+								1: 75, // BOILER
+								2: 75, // BDF
+								3: 35, // BADGER
+								4: 35, // GIJ
+								7: 75, // COTON
+								8: 75, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 75, // PLANO
+								1: 35, // HARLY
+								2: 75, // DBQ
+								3: 35, // LNR
+								4: 75, // FARMM
+								5: 75, // MALTA
+								6: 75, // EON
+								9: 75, // BRL
+								10: 35, // KUBBS
+								11: 35, // CRIBB
+							},
+						},
+					],
+				},
+				{
+					group: '3-Way',
+					splits: [
+						{
+							name: 'Plan 3A',
+							description: 'W: 75 COTON, N: 60 BAE, SE: 35 BEARZ',
+							high: {
+								5: 35, // FWA
+								0: 60, // PMM
+								1: 35, // BOILER
+								2: 75, // BDF
+								3: 60, // BADGER
+								4: 35, // GIJ
+								7: 75, // COTON
+								8: 75, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 75, // PLANO
+								1: 60, // HARLY
+								2: 60, // DBQ
+								3: 60, // LNR
+								4: 75, // FARMM
+								5: 75, // MALTA
+								6: 35, // EON
+								9: 75, // BRL
+								10: 60, // KUBBS
+								11: 35, // CRIBB
+							},
+						},
+						{
+							name: 'Plan 3B East',
+							description: 'W: 75 COTON, N: 60 BAE, SE: 35 BEARZ',
+							high: {
+								5: 35, // FWA
+								0: 60, // PMM
+								1: 75, // BOILER
+								2: 75, // BDF
+								3: 60, // BADGER
+								4: 35, // GIJ
+								7: 75, // COTON
+								8: 75, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 75, // PLANO
+								1: 60, // HARLY
+								2: 60, // DBQ
+								3: 60, // LNR
+								4: 75, // FARMM
+								5: 75, // MALTA
+								6: 75, // EON
+								9: 75, // BRL
+								10: 60, // KUBBS
+								11: 35, // CRIBB
+							},
+						},
+					],
+				},
+				{
+					group: '4-Way',
+					splits: [
+						{
+							name: 'Plan 4A: Standard',
+							description: 'N: 60 BAE, SE: 35 BEARZ, SW: 46 BVT, W: 75 COTON',
+							high: {
+								5: 35, // FWA
+								0: 60, // PMM
+								1: 46, // BOILER
+								2: 46, // BDF
+								3: 60, // BADGER
+								4: 35, // GIJ
+								7: 75, // COTON
+								8: 75, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 46, // PLANO
+								1: 60, // HARLY
+								2: 60, // DBQ
+								3: 60, // LNR
+								4: 75, // FARMM
+								5: 75, // MALTA
+								6: 46, // EON
+								9: 46, // BRL
+								10: 60, // KUBBS
+								11: 35, // CRIBB
+							},
+						},
+						{
+							name: 'Plan 4B',
+							description: 'NW: 60 BAE, NW: 89 GIJ, SE: 35 BEARZ, S/SW: 46 BVT',
+							high: {
+								5: 35, // FWA
+								0: 89, // PMM
+								1: 46, // BOILER
+								2: 46, // BDF
+								3: 60, // BADGER
+								4: 89, // GIJ
+								7: 60, // COTON
+								8: 46, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 46, // PLANO
+								1: 60, // HARLY
+								2: 60, // DBQ
+								3: 60, // LNR
+								4: 60, // FARMM
+								5: 60, // MALTA
+								6: 46, // EON
+								9: 46, // BRL
+								10: 89, // KUBBS
+								11: 89, // CRIBB
+							},
+						},
+						{
+							name: 'Plan 4C: Iso-COTON',
+							description: 'N/NE: 60 BAE, E/SE: 35 BEARZ, S/SW: 94 IOW, NW: 75 COTON',
+							high: {
+								5: 35, // FWA
+								0: 60, // PMM
+								1: 94, // BOILER
+								2: 94, // BDF
+								3: 60, // BADGER
+								4: 35, // GIJ
+								7: 75, // COTON
+								8: 94, // IOW
+							},
+							low: {
+								7: 35, // BEARZ
+								0: 94, // PLANO
+								1: 60, // HARLY
+								2: 60, // DBQ
+								3: 60, // LNR
+								4: 75, // FARMM
+								5: 94, // MALTA
+								6: 94, // EON
+								9: 94, // BRL
+								10: 60, // KUBBS
+								11: 35, // CRIBB
+							},
+						},
+					],
+				},
+			],
 		};
 	},
 	async mounted() {
@@ -180,22 +461,7 @@ export default {
 
 				this.apiPositions = data.positions.sort((a, b) => a.id - b.id);
 
-				this.activePositions = [];
-				this.activePositions.push(data.positions.find((x) => x.id === 35));
-
-				Object.keys(data.ownership.high).forEach((d) => {
-					const sector = data.ownership.high[d];
-					if (!this.activePositions.some((y) => y.id === Number(sector))) {
-						this.activePositions.push(data.positions.find((x) => x.id === Number(sector)));
-					}
-				});
-
-				Object.keys(data.ownership.low).forEach((d) => {
-					const sector = data.ownership.low[d];
-					if (!this.activePositions.some((y) => y.id === Number(sector))) {
-						this.activePositions.push(data.positions.find((x) => x.id === Number(sector)));
-					}
-				});
+				this.calculateOpenPositions(data.ownership);
 
 				Object.assign(this.sectorOwnership.high, data.ownership.high);
 				Object.assign(this.sectorOwnership.low, data.ownership.low);
@@ -208,6 +474,24 @@ export default {
 			} finally {
 				this.loading = false;
 			}
+		},
+		calculateOpenPositions(ownership) {
+			this.activePositions = [];
+			this.activePositions.push(this.apiPositions.find((x) => x.id === 35));
+
+			Object.keys(ownership.high).forEach((d) => {
+				const sector = ownership.high[d];
+				if (!this.activePositions.some((y) => y.id === Number(sector))) {
+					this.activePositions.push(this.apiPositions.find((x) => x.id === Number(sector)));
+				}
+			});
+
+			Object.keys(ownership.low).forEach((d) => {
+				const sector = ownership.low[d];
+				if (!this.activePositions.some((y) => y.id === Number(sector))) {
+					this.activePositions.push(this.apiPositions.find((x) => x.id === Number(sector)));
+				}
+			});
 		},
 		async fetchGeojson() {
 			try {
@@ -246,6 +530,8 @@ export default {
 				this.sectorOwnership.high[9] = `${this.sectorOwnership.high[1]}`;
 
 				const { data } = await zauApi.put('/split/ownership', this.sectorOwnership);
+
+				this.calculateOpenPositions(data);
 
 				Object.assign(this.sectorOwnership.high, data.high);
 				Object.assign(this.sectorOwnership.low, data.low);
@@ -287,6 +573,16 @@ export default {
 					this.apiPositions.find((x) => x.id === id),
 				];
 			}
+		},
+		async doQuickSplit(split) {
+			Object.keys(split.high).forEach((k) => {
+				this.sectorOwnership.high[k] = split.high[k];
+			});
+			Object.keys(split.low).forEach((k) => {
+				this.sectorOwnership.low[k] = split.low[k];
+			});
+
+			await this.saveSplit();
 		},
 	},
 	computed: {
