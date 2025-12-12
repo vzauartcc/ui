@@ -465,7 +465,7 @@ export default {
 					});
 				} else {
 					newSectors.features.forEach((feature) => {
-						if (feature.properties.name === 'PEOTONE') {
+						if (feature.properties.name === 'LOW EON') {
 							feature.properties.ownerColor = this.averageColors(
 								newSectors.features.find((x) => x.properties.name === 'PEOTONE').properties
 									.ownerColor,
