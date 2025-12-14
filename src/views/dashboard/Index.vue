@@ -284,14 +284,8 @@ export default {
 		calcSeconds() {
 			let seconds = 0;
 			for (const session of this.activityData.sessions) {
-				if (
-					Math.abs(new Date().getTime() - new Date(session.timeEnd).getTime()) /
-						(1000 * 60 * 60 * 24) <
-					31
-				) {
-					const newSeconds = (new Date(session.timeEnd) - new Date(session.timeStart)) / 1000;
-					seconds += newSeconds;
-				}
+				const newSeconds = (new Date(session.timeEnd) - new Date(session.timeStart)) / 1000;
+				seconds += newSeconds;
 			}
 			return seconds;
 		},
