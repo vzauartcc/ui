@@ -242,6 +242,7 @@ export default {
 			el: document.querySelector('#tui_editor'),
 			height: '500px',
 			initialEditType: 'wysiwyg',
+			hideModeSwitch: true,
 			previewStyle: 'tab',
 			usageStatistics: false,
 			initialValue: this.session.studentNotes,
