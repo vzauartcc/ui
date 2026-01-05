@@ -25,9 +25,34 @@
 			"automerge": false
 		},
 		{
-			"description": "Group minor and patch updates together, but do not automerge",
+			"description": "Group minor and patch updates together for Vue core components, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "all minor and patch updates",
+			"groupName": "vue core minor and patch updates",
+			"matchPackagePatterns": ["^vue", "vite-plugin-vue"],
+			"automerge": false
+		},
+		{
+			"description": "Group minor and patch updates together for Leaflet, but do not automerge",
+			"matchUpdateTypes": ["minor", "patch"],
+			"groupName": "maps/geospatial minor and patch updates",
+			"matchPackagePatterns": ["^@indoorequal", "^@vue-leaflet"],
+			"matchPackageNames": ["maplibre-gl", "leaflet", "metar-parser"],
+			"automerge": false
+		},
+		{
+			"description": "Group minor and patch updates together for UI components, but do not automerge",
+			"matchUpdateTypes": ["minor", "patch"],
+			"groupName": "ui minor and patch updates",
+			"matchPackageNames": ["flatpickr", "materialize-css", "chart.js"],
+			"matchPackagePatterns": ["^@toast-ui", "vue-flatpickr"],
+			"automerge": false
+		},
+		{
+			"description": "Group minor and patch updates together for tooling and linting, but do not automerge",
+			"matchUpdateTypes": ["minor", "patch"],
+			"groupName": "tooling/lint minor and patch updates",
+			"matchPackageNames": ["eslint", "prettier", "sass", "vite", "globals"],
+			"matchPackagePatterns": ["^@eslint", "^@vue/eslint-config"],
 			"automerge": false
 		},
 		{
