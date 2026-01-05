@@ -28,9 +28,6 @@
 			"description": "Group minor and patch updates together, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
 			"groupName": "all minor and patch updates",
-			"group": {
-				"limit": 7
-			},
 			"automerge": false
 		},
 		{
