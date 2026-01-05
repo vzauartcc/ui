@@ -65,7 +65,7 @@
 								data-position="top"
 								data-tooltip="Delete Training Session"
 								class="tooltipped"
-								v-if="user.data.isSeniorStaff"
+								v-if="user.data.isSeniorStaff && (session.ots === 0 || session.ots === 3)"
 								><i class="material-icons red-text text-darken-2">delete</i></a
 							>
 						</td>
