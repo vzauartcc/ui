@@ -307,6 +307,7 @@ export default {
 			el: document.querySelector('#tui_editor'),
 			height: '500px',
 			initialEditType: 'wysiwyg',
+			hideModeSwitch: true,
 			previewStyle: 'tab',
 			usageStatistics: false,
 			toolbarItems: [
@@ -425,7 +426,7 @@ export default {
 			}
 		},
 		async submitForm() {
-			if (this.editor.getMarkdown() === '') {
+			if (this.editor.getMarkdown().trim() === '') {
 				this.toastError('Student notes are required!');
 				return;
 			}
@@ -436,6 +437,7 @@ export default {
 			}
 
 			this.spinners.push('submit');
+
 			try {
 				await zauApi.post(`/training/session/submit`, {
 					student: this.form.student,
