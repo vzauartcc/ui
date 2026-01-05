@@ -34,7 +34,7 @@
 		{
 			"description": "Group minor and patch updates together for Leaflet, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "maps/geospatial minor and patch updates",
+			"groupName": "maps-geospatial minor and patch updates",
 			"matchPackagePatterns": ["^@indoorequal", "^@vue-leaflet"],
 			"matchPackageNames": ["maplibre-gl", "leaflet", "metar-parser"],
 			"automerge": false
@@ -50,7 +50,7 @@
 		{
 			"description": "Group minor and patch updates together for tooling and linting, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "tooling/lint minor and patch updates",
+			"groupName": "tooling-lint minor and patch updates",
 			"matchPackageNames": ["eslint", "prettier", "sass", "vite", "globals"],
 			"matchPackagePatterns": ["^@eslint", "^@vue/eslint-config"],
 			"automerge": false
