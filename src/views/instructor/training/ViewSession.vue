@@ -58,7 +58,7 @@
 						<input type="text" :value="session.position" disabled id="position" />
 						<label for="position" class="active">Position</label>
 					</div>
-					<div class="input-field col s12 m4">
+					<div class="input-field col s12 m3">
 						<input
 							type="text"
 							:value="`${session.movements || 'Not Specified'}`"
@@ -67,13 +67,17 @@
 						/>
 						<label for="movements" class="active">Movements</label>
 					</div>
-					<div class="input-field col s12 m4">
+					<div class="input-field col s12 m3">
 						<input type="text" :value="formatLocation(session.location)" disabled id="location" />
 						<label for="location" class="active">Location</label>
 					</div>
-					<div class="input-field col s12 m4">
+					<div class="input-field col s12 m3">
 						<input type="text" :value="formatProgress(session.progress)" disabled id="progress" />
 						<label for="progress" class="active">Progress</label>
+					</div>
+					<div class="input-field col s12 m3">
+						<input type="text" :value="formatOts(session.ots)" disabled id="ots" />
+						<label for="ots" class="active">OTS</label>
 					</div>
 					<div class="input-field col s12">
 						<div v-html="session.studentNotes" id="studentNotes"></div>
@@ -123,6 +127,7 @@ export default {
 		},
 		formatLocation(location) {
 			const locations = ['Classroom', 'Live Network', 'Sweatbox'];
+
 			return locations[location];
 		},
 		formatProgress(progress) {
@@ -133,7 +138,13 @@ export default {
 				'Great Progress',
 				'Exceptional Progress',
 			];
+
 			return options[progress - 1];
+		},
+		formatOts(ots) {
+			const options = ['No OTS', 'OTS Pass', 'OTS Fail', 'Recommended for OTS'];
+
+			return options[ots];
 		},
 	},
 };
