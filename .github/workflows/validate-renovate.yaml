@@ -1,0 +1,26 @@
+name: Renovate Config Validator
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # Only run on renovate changes
+    paths:
+      - 'renovate.json'
+      - 'renovate.json5'
+      - '.github/renovate.json'
+      - '.github/renovate.json5'
+
+jobs:
+  Validate-Renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+        with:
+          node-version: '24'
+
+      - name: Run Renovate Validator
+        run: npx --yes --package renovate -- renovate-config-validator
