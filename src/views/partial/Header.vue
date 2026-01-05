@@ -45,11 +45,6 @@
 								>
 							</li>
 							<li>
-								<a href="https://map.vatsim.net/" target="_blank" rel="noopener noreferrer"
-									>VATSIM Map</a
-								>
-							</li>
-							<li>
 								<a href="https://skyvector.com/" target="_blank" rel="noopener noreferrer"
 									>SkyVector</a
 								>
@@ -63,10 +58,14 @@
 								>
 							</li>
 							<li>
-								<a href="https://datis.clowd.io/" target="_blank" rel="noopener noreferrer"
-									>DATIS</a
+								<a href="https://www.airnav.com/" target="_blank" rel="noopener noreferrer"
+									>AirNav</a
 								>
 							</li>
+							<li>
+								<a href="https://atis.info/" target="_blank" rel="noopener noreferrer">DATIS</a>
+							</li>
+							<li class="divider"></li>
 							<li>
 								<a href="https://www.vatsim.net/" target="_blank" rel="noopener noreferrer"
 									>VATSIM Home</a
@@ -78,12 +77,12 @@
 								>
 							</li>
 							<li>
-								<a href="https://www.airnav.com/" target="_blank" rel="noopener noreferrer"
-									>AirNav</a
+								<a href="https://map.vatsim.net/" target="_blank" rel="noopener noreferrer"
+									>VATSIM Map</a
 								>
 							</li>
 							<li>
-								<a href="https://www.virtualnas.net/" target="_blank" rel="noopener noreferrer"
+								<a href="https://www.vnas.vatsim.net/" target="_blank" rel="noopener noreferrer"
 									>vNAS</a
 								>
 							</li>
