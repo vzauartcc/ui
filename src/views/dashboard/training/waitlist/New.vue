@@ -238,8 +238,9 @@ export default {
 			return this.milestones.filter(
 				(m) =>
 					!this.user.data.certCodes.includes(m.code) &&
-					([...this.user.data.certifications].sort((a, b) => b.order - a.order)[0].order || 0) <
-						m.order,
+					([...this.user.data.certifications]
+						.filter((x) => !x.class.includes('event'))
+						.sort((a, b) => b.order - a.order)[0].order || 0) < m.order,
 			);
 		},
 		...mapState('user', ['user']),
