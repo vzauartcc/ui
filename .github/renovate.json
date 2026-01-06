@@ -62,6 +62,12 @@
 			"automerge": false
 		},
 		{
+			"description": "Group all remaining minor and patch updates together, but do not automerge",
+			"matchUpdateTypes": ["minor", "patch"],
+			"groupName": "minor and patch updates",
+			"automerge": false
+		},
+		{
 			"description": "Don't group major updates",
 			"matchUpdateTypes": ["major"],
 			"groupName": null
