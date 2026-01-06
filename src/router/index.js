@@ -334,6 +334,10 @@ const routes = [
 				path: 'staffingrequest/:slug',
 				component: () => import('../views/dashboard/ViewStaffingRequest.vue'),
 			},
+			{
+				path: 'available-operating-initials',
+				component: () => import('../views/dashboard/AvailableOperatingInitials.vue'),
+			},
 			// {
 			// 	path: 'gdrp',
 			// 	component: () => import('../views/dashboard/GDRP.vue'),

@@ -51,8 +51,14 @@
 			"description": "Group minor and patch updates together for tooling and linting, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
 			"groupName": "tooling-lint minor and patch updates",
-			"matchPackageNames": ["eslint", "prettier", "sass", "vite", "globals"],
-			"matchPackagePatterns": ["^@eslint", "^@vue/eslint-config"],
+			"matchPackageNames": ["prettier", "sass", "vite", "globals"],
+			"matchPackagePatterns": ["^@eslint", "^@vue/eslint-config", "^eslint"],
+			"automerge": false
+		},
+		{
+			"description": "Group all remaining minor and patch updates together, but do not automerge",
+			"matchUpdateTypes": ["minor", "patch"],
+			"groupName": "minor and patch updates",
 			"automerge": false
 		},
 		{

@@ -23,4 +23,4 @@ jobs:
           node-version: '24'
 
       - name: Run Renovate Validator
-        run: npx --yes --package renovate -- renovate-config-validator
+        run: npx --yes --package renovate -- renovate-config-validator > /dev/null

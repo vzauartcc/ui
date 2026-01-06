@@ -21,6 +21,10 @@
 				Feedback
 				<div class="secondary-content"><i class="material-icons">feedback</i></div>
 			</router-link>
+			<router-link to="/dash/available-operating-initials" class="collection-item">
+				Available Operating Initials
+				<div class="secondary-content"><i class="material-icons">sensor_occupied</i></div>
+			</router-link>
 			<!-- <router-link to="/dash/gdrp" class="collection-item">
 				GDRP
 				<div class="secondary-content"><i class="material-icons">policy</i></div>
