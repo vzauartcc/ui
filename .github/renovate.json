@@ -52,7 +52,7 @@
 			"matchUpdateTypes": ["minor", "patch"],
 			"groupName": "tooling-lint minor and patch updates",
 			"matchPackageNames": ["eslint", "prettier", "sass", "vite", "globals"],
-			"matchPackagePatterns": ["^@eslint", "^@vue/eslint-config"],
+			"matchPackagePatterns": ["^@eslint", "^@vue/eslint-config", "^eslint"],
 			"automerge": false
 		},
 		{
