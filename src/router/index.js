@@ -145,6 +145,10 @@ const routes = [
 				component: () => import('../views/instructor/exams/New.vue'),
 			},
 			{
+				path: 'milestones',
+				component: () => import('../views/instructor/Milestones.vue'),
+			},
+			{
 				path: 'solo',
 				component: () => import('../views/instructor/solocerts/Index.vue'),
 			},
