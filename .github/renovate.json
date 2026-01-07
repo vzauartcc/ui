@@ -13,14 +13,12 @@
 			"matchManagers": ["github-actions"],
 			"matchUpdateTypes": ["minor", "patch", "digest"],
 			"groupName": "all minor and patch github action updates",
-			"automerge": false,
-			"enabled": true
+			"automerge": false
 		},
 		{
 			"description": "Allow major updates for GitHub Actions (override global block) and keep them separate",
 			"matchManagers": ["github-actions"],
 			"matchUpdateTypes": ["major"],
-			"enabled": true,
 			"groupName": null,
 			"automerge": false
 		},
@@ -59,12 +57,6 @@
 			"groupName": "tooling-lint minor and patch updates",
 			"matchPackageNames": ["prettier", "sass", "vite", "globals"],
 			"matchPackagePatterns": ["^@eslint", "^@vue/eslint-config", "^eslint"],
-			"automerge": false
-		},
-		{
-			"description": "Group all remaining minor and patch updates together, but do not automerge",
-			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "minor and patch updates",
 			"automerge": false
 		},
 		{
