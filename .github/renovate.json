@@ -13,14 +13,12 @@
 			"matchManagers": ["github-actions"],
 			"matchUpdateTypes": ["minor", "patch", "digest"],
 			"groupName": "all minor and patch github action updates",
-			"automerge": false,
-			"enabled": true
+			"automerge": false
 		},
 		{
 			"description": "Allow major updates for GitHub Actions (override global block) and keep them separate",
 			"matchManagers": ["github-actions"],
 			"matchUpdateTypes": ["major"],
-			"enabled": true,
 			"groupName": null,
 			"automerge": false
 		},

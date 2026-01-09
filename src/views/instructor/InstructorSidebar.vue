@@ -13,6 +13,14 @@
 				Exam Center
 				<div class="secondary-content"><i class="material-icons">checklist</i></div>
 			</router-link>
+			<router-link
+				to="/ins/milestones"
+				class="collection-item"
+				v-if="hasRole(['atm', 'datm', 'ta', 'ia'])"
+			>
+				Training Milestones
+				<div class="secondary-content"><i class="material-icons">stairs</i></div>
+			</router-link>
 			<router-link to="/ins/files/downloads" class="collection-item">
 				Instructor Downloads
 				<div class="secondary-content"><i class="material-icons">download</i></div>
