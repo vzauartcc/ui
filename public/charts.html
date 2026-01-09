@@ -829,7 +829,20 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
 					...configuration.Delta,
 				];
 
-				const response = await fetch(`http://localhost:3000/charts?apt=${allAirports.join(',')}`);
+				let host = '';
+				switch (window.location.hostname) {
+					case 'zauartcc.org':
+						host = 'https://api.zauartcc.org';
+						break;
+					case 'https://staging.zauartcc.org':
+						host = 'https://devapi.zauartcc.org';
+						break;
+					default:
+						host = 'http://localhost:3000';
+						break;
+				}
+
+				const response = await fetch(`${host}/charts?apt=${allAirports.join(',')}`);
 				const data = await response.json();
 
 				document.getElementById('loading').classList.add('hidden');
