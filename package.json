@@ -17,7 +17,8 @@
 		"lint": "eslint . --fix",
 		"format": "prettier --write src/",
 		"start:dev": "doppler run -p ui -c dev -- npm run dev",
-		"start:ryan": "npm run start:dev"
+		"start:ryan": "npm run start:dev",
+		"test:renovate": "npx --yes --package renovate -- renovate-config-validator"
 	},
 	"dependencies": {
 		"@indoorequal/vue-maplibre-gl": "^8.4.2",

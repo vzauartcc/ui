@@ -1,4 +1,4 @@
-const ratingsShort = [
+export const ratingsShort = [
 	'Unknown',
 	'OBS',
 	'S1',
@@ -14,7 +14,7 @@ const ratingsShort = [
 	'ADM',
 ];
 
-const ratingsLong = [
+export const ratingsLong = [
 	'Unknown',
 	'Observer',
 	'Student',

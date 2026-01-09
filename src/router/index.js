@@ -145,6 +145,10 @@ const routes = [
 				component: () => import('../views/instructor/exams/New.vue'),
 			},
 			{
+				path: 'milestones',
+				component: () => import('../views/instructor/Milestones.vue'),
+			},
+			{
 				path: 'solo',
 				component: () => import('../views/instructor/solocerts/Index.vue'),
 			},
@@ -333,6 +337,10 @@ const routes = [
 			{
 				path: 'staffingrequest/:slug',
 				component: () => import('../views/dashboard/ViewStaffingRequest.vue'),
+			},
+			{
+				path: 'available-operating-initials',
+				component: () => import('../views/dashboard/AvailableOperatingInitials.vue'),
 			},
 			// {
 			// 	path: 'gdrp',

@@ -369,7 +369,7 @@ export default {
 		async getTrainingMilestones() {
 			try {
 				const { data } = await zauApi.get(`/training/milestones`);
-				this.milestones = data.milestones;
+				this.milestones = data.milestones.sort((a, b) => a.order - b.order);
 			} catch (e) {
 				console.error('error getting milestones', e);
 				this.toastError('Something went wrong, please try again later');
