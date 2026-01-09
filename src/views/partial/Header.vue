@@ -45,6 +45,14 @@
 								>
 							</li>
 							<li>
+								<a
+									:href="window.location.protocol + '//' + window.location.host + '/charts.html'"
+									target="_blank"
+									rel="noopener noreferrer"
+									>ZAU Charts (Backup link)</a
+								>
+							</li>
+							<li>
 								<a href="https://skyvector.com/" target="_blank" rel="noopener noreferrer"
 									>SkyVector</a
 								>
@@ -223,6 +231,7 @@ export default {
 			folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
 			number: 0,
 			unread: false,
+			window: window,
 		};
 	},
 	components: {
