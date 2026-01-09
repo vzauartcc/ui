@@ -45,6 +45,11 @@
 								>
 							</li>
 							<li>
+								<a href="https://zauartcc.org/charts.html" target="_blank" rel="noopener noreferrer"
+									>ZAU Charts (Backup link)</a
+								>
+							</li>
+							<li>
 								<a href="https://skyvector.com/" target="_blank" rel="noopener noreferrer"
 									>SkyVector</a
 								>
