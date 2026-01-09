@@ -45,7 +45,10 @@
 								>
 							</li>
 							<li>
-								<a href="https://zauartcc.org/charts.html" target="_blank" rel="noopener noreferrer"
+								<a
+									:href="window.location.protocol + '//' + window.location.host + '/charts.html'"
+									target="_blank"
+									rel="noopener noreferrer"
 									>ZAU Charts (Backup link)</a
 								>
 							</li>
@@ -228,6 +231,7 @@ export default {
 			folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
 			number: 0,
 			unread: false,
+			window: window,
 		};
 	},
 	components: {
