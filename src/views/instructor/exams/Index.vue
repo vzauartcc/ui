@@ -31,7 +31,7 @@
 								<th>Title</th>
 								<th class="center-align">Created By</th>
 								<th class="center-align">Milestone</th>
-								<th class="center-align">Questions</th>
+								<th class="center-align">Questions {{ isExamEditor ? '(Active / Total)' : '' }}</th>
 								<th class="center-align">Active</th>
 								<th class="center-align">Options</th>
 							</tr>
@@ -48,7 +48,10 @@
 									{{ exam.user.fname + ' ' + exam.user.lname }}
 								</td>
 								<td class="center-align">{{ exam.certification.name }}</td>
-								<td class="center-align">{{ exam.questionsCount }}</td>
+								<td class="center-align">
+									{{ exam.questions.filter((e) => e.isActive).length }}
+									{{ isExamEditor ? `/ ${exam.questions.length}` : '' }}
+								</td>
 								<td class="center-align">
 									<div class="switch">
 										<label>
@@ -68,6 +71,7 @@
 										class="blue-text tooltipped"
 										data-position="top"
 										data-tooltip="Assign Exam"
+										v-if="exam.isActive"
 									>
 										<i class="material-icons">person_add</i>
 									</a>
@@ -77,6 +81,7 @@
 										class="tooltipped"
 										data-position="top"
 										data-tooltip="Edit Exam"
+										v-if="isExamEditor"
 									>
 										<i class="material-icons">edit</i>
 									</a>
@@ -86,6 +91,7 @@
 										class="red-text modal-trigger tooltipped"
 										data-position="top"
 										data-tooltip="Delete Exam"
+										v-if="isExamEditor"
 									>
 										<i class="material-icons">delete</i>
 									</a>
@@ -158,6 +164,7 @@
 
 <script>
 import { zauApi } from '@/helpers/axios.js';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'ExamCenter',
@@ -169,6 +176,7 @@ export default {
 			controllers: [],
 			controller: 0,
 			selectedExamId: null,
+			examEditors: ['atm', 'datm', 'ta', 'ia'],
 		};
 	},
 	async created() {
@@ -305,6 +313,13 @@ export default {
 					margin: 0,
 				});
 			});
+		},
+	},
+	computed: {
+		...mapState('user', ['user']),
+
+		isExamEditor() {
+			return this.user.data.roleCodes.some((rc) => this.examEditors.includes(rc));
 		},
 	},
 };
