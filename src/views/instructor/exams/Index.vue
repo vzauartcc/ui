@@ -30,14 +30,14 @@
 							<tr>
 								<th>Title</th>
 								<th class="center-align">Created By</th>
-								<th class="center-align">Questions/Test</th>
-								<th class="center-align">Question Pool</th>
-								<th class="center-align">Duration</th>
+								<th class="center-align">Milestone</th>
+								<th class="center-align">Questions</th>
+								<th class="center-align">Active</th>
 								<th class="center-align">Options</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="exam in exams" :key="exam.id">
+							<tr v-for="exam in exams" :key="exam._id">
 								<td
 									:class="{ tooltipped: shouldShowTooltip(exam.title) }"
 									:data-tooltip="shouldShowTooltip(exam.title) ? exam.title : ''"
@@ -45,21 +45,50 @@
 									{{ truncateExamName(exam.title, 20).text }}
 								</td>
 								<td class="center-align">
-									{{ exam.createdBy.fname + ' ' + exam.createdBy.lname }}
+									{{ exam.user.fname + ' ' + exam.user.lname }}
 								</td>
-								<td class="center-align">{{ exam.questionSubsetSize }}</td>
+								<td class="center-align">{{ exam.certification.name }}</td>
 								<td class="center-align">{{ exam.questionsCount }}</td>
-								<td class="center-align">{{ exam.timeLimit }}</td>
 								<td class="center-align">
-									<button @click="editExam(exam._id)" class="btn waves-effect waves-light">
+									<div class="switch">
+										<label>
+											<input
+												type="checkbox"
+												@change="toggleActive(exam._id)"
+												:checked="exam.isActive"
+											/>
+											<span class="lever"></span>
+										</label>
+									</div>
+								</td>
+								<td class="center-align">
+									<a
+										href="#"
+										@click="prepareAssign(exam._id)"
+										class="blue-text tooltipped"
+										data-position="top"
+										data-tooltip="Assign Exam"
+									>
+										<i class="material-icons">person_add</i>
+									</a>
+									<a
+										href="#"
+										@click="editExam(exam._id)"
+										class="tooltipped"
+										data-position="top"
+										data-tooltip="Edit Exam"
+									>
 										<i class="material-icons">edit</i>
-									</button>
-									<button
+									</a>
+									<a
+										href="#"
 										@click="prepareDelete(exam._id)"
-										class="btn red waves-effect waves-light modal-trigger"
+										class="red-text modal-trigger tooltipped"
+										data-position="top"
+										data-tooltip="Delete Exam"
 									>
 										<i class="material-icons">delete</i>
-									</button>
+									</a>
 								</td>
 							</tr>
 						</tbody>
@@ -67,28 +96,63 @@
 				</div>
 			</div>
 		</div>
-		<!-- Delete Confirmation Modal -->
-		<div id="deleteExamModal" class="modal">
-			<div class="modal-content">
-				<h4>Confirm Removal</h4>
-				<p>Are you sure you want to remove this exam?</p>
+		<teleport to="body">
+			<div v-for="exam in exams" :key="`modal_${exam._id}`">
+				<!-- Assign Modal -->
+				<div :id="`modal_assign_${exam._id}`" class="modal modal_assign">
+					<div class="modal-content">
+						<div class="modal_title">Assign Exam</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s12 m6">
+							<select class="materialize-select" v-model="controller" required>
+								<option value="" disabled selected>Select a controller</option>
+								<option
+									v-for="controller in controllers"
+									:value="controller.cid"
+									:key="controller.cid"
+								>
+									{{ controller.fname }} {{ controller.lname }}
+								</option>
+							</select>
+							<label>Controller</label>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<a href="#!" class="waves-effect btn-flat modal-close" @click.prevent="controller = 0"
+							>Close</a
+						>
+						<a
+							href="#!"
+							class="btn blue white-text waves-effect modal-close"
+							@click.prevent="assignExam(exam._id)"
+							>Assign</a
+						>
+					</div>
+				</div>
+
+				<!-- Delete Modal -->
+				<div :id="`modal_delete_${exam._id}`" class="modal modal_delete">
+					<div class="modal-content">
+						<h4>Delete Exam?</h4>
+						<p>
+							This will delete the exam
+							<strong>{{ exam.title }}</strong>
+						</p>
+					</div>
+					<div class="modal-footer">
+						<a
+							href="#!"
+							@click.prevent="confirmDelete(exam._id)"
+							class="btn waves-effect modal-close"
+							:class="{ disabled: spinners.length > 0 }"
+							><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Delete</a
+						>
+						<a href="#!" class="btn-flat waves-effect modal-close" @click.prevent>Cancel</a>
+					</div>
+				</div>
 			</div>
-			<div class="modal-footer">
-				<a
-					href="javascript:void(0);"
-					class="modal-close waves-effect waves-red btn-flat"
-					@click="cancelDelete"
-					>Cancel</a
-				>
-				<a
-					href="javascript:void(0);"
-					class="modal-close waves-effect waves-green btn-flat"
-					@click="confirmDelete"
-					:class="{ disabled: spinners.length > 0 }"
-					><span v-if="spinners.some((s) => s === 'delete')"> <SmallSpinner /> </span>Confirm</a
-				>
-			</div>
-		</div>
+		</teleport>
 	</div>
 </template>
 
@@ -101,31 +165,26 @@ export default {
 	data() {
 		return {
 			spinners: [],
-			exams: [], // This will hold your exams data
-			selectedExamId: null, // ID of the exam to be deleted
+			exams: [],
+			controllers: [],
+			controller: 0,
+			selectedExamId: null,
 		};
 	},
 	async created() {
 		await this.fetchExams();
+		await this.fetchControllers();
+
 		M.Modal.init(document.querySelectorAll('.modal'), {
 			preventScrolling: false,
 		});
+		M.FormSelect.init(document.querySelectorAll('.materialize-select'), {});
 	},
 	mounted() {
 		this.initializeTooltips();
-		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-			margin: 0,
-		});
 	},
 	updated() {
 		this.initializeTooltips();
-	},
-	watch: {
-		selectedExamId(newVal) {
-			if (newVal !== null) {
-				this.openDeleteModal();
-			}
-		},
 	},
 	methods: {
 		async fetchExams() {
@@ -137,17 +196,52 @@ export default {
 				this.toastError('Something went wrong, please try again later');
 			}
 		},
+		async fetchControllers() {
+			try {
+				const { data } = await zauApi.get('/feedback/controllers');
+				this.controllers = data;
+			} catch (e) {
+				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+		},
 		editExam(id) {
-			// Navigate to the exam edit page using Vue Router
 			this.$router.push(`/ins/exams/${id}`);
+		},
+		prepareAssign(id) {
+			const modal = document.getElementById(`modal_assign_${id}`);
+			if (modal) {
+				M.Modal.getInstance(modal).open();
+			}
 		},
 		prepareDelete(id) {
 			this.selectedExamId = id;
+			const modal = document.getElementById(`modal_delete_${id}`);
+			if (modal) {
+				M.Modal.getInstance(modal).open();
+			}
 		},
 		cancelDelete() {
-			this.selectedExamId = null; // Reset on cancel
-			// Optionally reinitialize or ensure the modal can be opened again if needed
-			// this.initModal(); // Uncomment this line if reinitialization is necessary
+			this.selectedExamId = null;
+		},
+		async assignExam(id) {
+			if (this.controller === 0) return;
+
+			try {
+				this.spinners.push('assign');
+
+				await zauApi.post(`/exam/${id}`, {
+					student: this.controller,
+				});
+
+				this.controller = 0;
+				this.spinners = this.spinners.filter((s) => s !== 'assign');
+			} catch (e) {
+				console.error('error assigning exam', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'assign');
+			}
 		},
 		async confirmDelete() {
 			if (!this.selectedExamId) return;
@@ -155,8 +249,8 @@ export default {
 				this.spinners.push('delete');
 				await zauApi.delete(`/exam/${this.selectedExamId}`);
 				this.toastSuccess('Exam deleted successfully');
-				this.selectedExamId = null; // Reset selected exam ID
-				await this.fetchExams(); // Refresh the list
+				this.selectedExamId = null;
+				await this.fetchExams();
 			} catch (e) {
 				console.error('error deleting exams', e);
 				this.toastError('Something went wrong, please try again later');
@@ -164,18 +258,41 @@ export default {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
 		},
-		openDeleteModal() {
-			const instance = M.Modal.getInstance(document.getElementById('deleteExamModal'));
-			if (instance) {
-				instance.open();
+		async toggleActive(id) {
+			try {
+				const examId = this.exams.findIndex((e) => e._id === id);
+
+				if (examId === -1) {
+					throw new Error('Exam not found');
+				}
+				this.spinners.push('toggle');
+
+				const exam = this.exams[examId];
+
+				const { data } = await zauApi.patch(`/exam/${id}`, {
+					title: exam.title,
+					description: exam.description,
+					questions: exam.questions,
+					isActive: !exam.isActive,
+					certCode: exam.certCode,
+				});
+
+				this.exams[examId] = data.exam;
+
+				this.toastSuccess('Exam updated successfully!');
+				this.spinners = this.spinners.filter((s) => s !== 'toggle');
+			} catch (e) {
+				console.error('error toggling exam', e);
+				this.toastError('Something went wrong, please try again later');
+			} finally {
+				this.spinners = this.spinners.filter((s) => s !== 'toggle');
 			}
 		},
-
 		truncateExamName(title, maxLength = 20) {
 			if (title && title.length > maxLength) {
 				return { text: title.substring(0, maxLength) + '...', truncated: true };
 			}
-			return { text: title, truncated: false }; // Return original if within limit or empty
+			return { text: title, truncated: false };
 		},
 
 		shouldShowTooltip(title, maxLength = 20) {
@@ -183,11 +300,9 @@ export default {
 		},
 
 		initializeTooltips() {
-			// Ensures the DOM has updated before initializing tooltips
 			this.$nextTick(() => {
 				M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
 					margin: 0,
-					// You can add other tooltip options here
 				});
 			});
 		},
@@ -223,5 +338,9 @@ export default {
 	padding: 0 1em 1em 1em;
 	margin-top: -1em;
 	font-style: italic;
+}
+
+.modal_assign {
+	height: 75vh;
 }
 </style>
