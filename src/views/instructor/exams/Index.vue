@@ -238,8 +238,8 @@ export default {
 			try {
 				this.spinners.push('assign');
 
-				await zauApi.post(`/exam/${id}`, {
-					student: this.controller,
+				await zauApi.post(`/exam/attempt/${id}/assign`, {
+					cid: this.controller,
 				});
 
 				this.controller = 0;
