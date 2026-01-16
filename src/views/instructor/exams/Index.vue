@@ -238,7 +238,7 @@ export default {
 			try {
 				this.spinners.push('assign');
 
-				await zauApi.post(`/exam/attempt/${id}/assign`, {
+				await zauApi.post(`/exam/${id}/assign`, {
 					cid: this.controller,
 				});
 
