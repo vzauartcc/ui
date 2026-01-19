@@ -333,7 +333,17 @@ export default {
 			try {
 				this.spinners.push('submit');
 				this.session.studentNotes = this.editor.getHTML();
-				await zauApi.patch(`/training/session/${this.$route.params.id}/submit`, this.session);
+				await zauApi.patch(`/training/session/${this.$route.params.id}/submit`, {
+					position: this.session.position,
+					movements: this.session.movements,
+					progress: this.session.progress,
+					ots: this.session.ots,
+					location: this.session.location,
+					startTime: this.session.startTime,
+					endTime: this.session.endTime,
+					studentNotes: this.editor.getHTML(),
+					insNotes: this.session.insNotes,
+				});
 
 				this.toastSuccess('Session notes finalized');
 				this.$router.push('/ins/training/sessions');
