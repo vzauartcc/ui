@@ -7,7 +7,7 @@
 					<strong>{{ attempt.exam.title }}</strong>
 				</div>
 				<div class="stepper">
-					<template v-for="(question, idx) in attempt.questionOrder" :key="idx">
+					<template v-for="(_, idx) in attempt.questionOrder" :key="idx">
 						<div class="step" :class="{ active: step === idx }">
 							<span
 								v-if="attempt.responses[idx] && attempt.responses[idx].selectedOptions.length > 0"
@@ -58,13 +58,13 @@
 								:class="{ disabled: isSubmitDisabled }"
 								>Submit</a
 							>
-							<a
+							<!-- <a
 								href="#"
 								class="col right btn waves-effect blue timepicker-span-hours"
 								@click.prevent="saveQuestion"
 								:class="{ disabled: isUnchanged() }"
 								>Save</a
-							>
+							> -->
 							<a
 								href="#"
 								class="col right btn-flat"
@@ -133,7 +133,7 @@ export default {
 
 				await zauApi.post(`/exam/attempt/${this.$route.params.attemptId}/submit`, {});
 
-				this.$route.push('/dash/training/exams');
+				this.$router.push('/dash/training/exams');
 			} catch (e) {
 				console.error('error submitting attempt', e);
 				this.toastError('Something went wrong, please try again later');
