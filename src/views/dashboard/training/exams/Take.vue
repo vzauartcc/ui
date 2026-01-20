@@ -60,6 +60,13 @@
 							>
 							<a
 								href="#"
+								class="col right btn waves-effect blue timepicker-span-hours"
+								@click.prevent="saveQuestion"
+								:class="{ disabled: isUnchanged() }"
+								>Save</a
+							>
+							<a
+								href="#"
 								class="col right btn-flat"
 								@click.prevent="nextQuestion"
 								v-if="step < attempt.questionOrder.length - 1"
@@ -141,6 +148,17 @@ export default {
 			} catch (e) {
 				console.error('error saving question response', e);
 				this.toastError('Error saving question response. Response was not logged');
+			}
+		},
+		saveQuestion() {
+			if (!this.isUnchanged()) {
+				this.saveResponse(
+					this.answeringQuestion.id + '',
+					JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
+					Date.now() - (this.answeringQuestion.startTime + 0),
+				);
+
+				this.answeringQuestion.startTime = Date.now();
 			}
 		},
 		nextQuestion() {
