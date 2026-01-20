@@ -193,7 +193,6 @@ export default {
 			});
 		},
 		addQuestion() {
-			// Check if the question text is empty
 			if (!this.newQuestion.text.trim()) {
 				this.toastError('Please fill in the question.');
 				return;
@@ -225,8 +224,8 @@ export default {
 			}
 
 			if (this.newQuestion.isEdit >= 0) {
-				this.questions[this.newQuestion.isEdit].text = this.newQuestion.text;
-				this.questions[this.newQuestion.isEdit].options = this.newQuestion.options;
+				this.exam.questions[this.newQuestion.isEdit].text = this.newQuestion.text;
+				this.exam.questions[this.newQuestion.isEdit].options = this.newQuestion.options;
 			} else {
 				this.exam.questions.push({
 					text: this.newQuestion.text,
