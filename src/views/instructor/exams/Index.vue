@@ -130,7 +130,7 @@
 						>
 						<a
 							href="#!"
-							class="btn blue white-text waves-effect modal-close"
+							class="btn blue white-text waves-effect"
 							@click.prevent="assignExam(exam._id)"
 							>Assign</a
 						>
@@ -244,9 +244,16 @@ export default {
 
 				this.controller = 0;
 				this.spinners = this.spinners.filter((s) => s !== 'assign');
+
+				const modal = document.getElementById(`modal_assign_${id}`);
+				if (modal) {
+					M.Modal.getInstance(modal).close();
+				}
+
+				this.toastSuccess('Exam Assigned!');
 			} catch (e) {
 				console.error('error assigning exam', e);
-				this.toastError('Something went wrong, please try again later');
+				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'assign');
 			}
