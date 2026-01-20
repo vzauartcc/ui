@@ -94,6 +94,8 @@ export default {
 		};
 	},
 	async mounted() {
+		window.addEventListener('beforeunload', this.preventNav);
+
 		await this.getAttempt();
 	},
 	methods: {
@@ -191,6 +193,13 @@ export default {
 
 			return s1.every((val, index) => val === s2[index]);
 		},
+		preventNav(event) {
+			if (this.isUnchanged()) return;
+
+			event.preventDefault();
+			// Chrome requires returnValue to be set
+			event.returnValue = '';
+		},
 	},
 	computed: {
 		isSubmitDisabled() {
@@ -209,6 +218,21 @@ export default {
 			const sortedB = [...this.responses].sort();
 			return !sortedA.every((val, index) => val === sortedB[index]);
 		},
+	},
+	beforeRouteLeave(to, from, next) {
+		if (!this.isUnchanged()) {
+			const answer = window.confirm('Wait! You have unsaved changes. Do you really want to leave?');
+			if (answer) {
+				next(); // Proceed to the next route
+			} else {
+				next(false); // Cancel the navigation
+			}
+		} else {
+			next();
+		}
+	},
+	beforeUnmount() {
+		window.removeEventListener('beforeunload', this.preventNav);
 	},
 };
 </script>
