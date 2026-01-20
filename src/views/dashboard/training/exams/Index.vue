@@ -26,7 +26,11 @@
 								<th>Milestone</th>
 								<th>Questions (Remaining)</th>
 								<th>Active</th>
-								<th>Options</th>
+								<th>
+									{{
+										attempts.filter((a) => a.status !== 'completed').length > 0 ? 'Take Exam' : ''
+									}}
+								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -57,11 +61,10 @@
 										:to="'/dash/training/exams/' + attempt._id"
 										class="tooltipped"
 										data-position="top"
-										:data-tooltip="attempt.status === 'completed' ? 'View Attempt' : 'Take Exam'"
+										data-tooltip="Take Exam"
+										v-if="attempt.status !== 'completed'"
 									>
-										<i class="material-icons">{{
-											attempt.status === 'completed' ? 'search' : 'login'
-										}}</i>
+										<i class="material-icons">login</i>
 									</router-link>
 								</td>
 							</tr>
@@ -133,7 +136,7 @@ export default {
 				case 'in_progress':
 					return 'In Progress';
 				case 'completed':
-					return `Completed (${attempt.totalScore} / ${attempt.questionOrder.length})`;
+					return `Completed (${attempt.totalScore}% | ${attempt.responses.filter((r) => r.isCorrect === true).length}/${attempt.questionOrder.length})`;
 				default:
 					return 'Pending';
 			}
