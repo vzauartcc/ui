@@ -48,7 +48,7 @@
 									</div>
 								</div>
 							</div>
-							<label>Select all correct answers</label>
+							<label v-if="question.multiCorrect">Select all correct answers</label>
 						</div>
 						<div class="row">
 							<a
@@ -110,6 +110,10 @@ export default {
 			try {
 				const { data } = await zauApi.get(`/exam/attempt/${this.$route.params.attemptId}`);
 
+				if (data.status === 'completed') {
+					return this.$router.push('/dash/training/exams');
+				}
+
 				this.attempt = data;
 				this.loadResponses();
 			} catch (e) {
@@ -127,7 +131,9 @@ export default {
 					);
 				}
 
-				await zauApi.patch(`/exam/attempt/${this.$route.params.attemptId}/submit`, {});
+				await zauApi.post(`/exam/attempt/${this.$route.params.attemptId}/submit`, {});
+
+				this.$route.push('/dash/training/exams');
 			} catch (e) {
 				console.error('error submitting attempt', e);
 				this.toastError('Something went wrong, please try again later');
@@ -158,7 +164,7 @@ export default {
 					Date.now() - (this.answeringQuestion.startTime + 0),
 				);
 
-				this.answeringQuestion.startTime = Date.now();
+				this.loadResponses();
 			}
 		},
 		nextQuestion() {
@@ -232,8 +238,8 @@ export default {
 				return true;
 			}
 
-			const sortedA = [...this.attempt.questionOrder].sort();
-			const sortedB = [...this.responses].sort();
+			const sortedA = [...this.attempt.questionOrder].map((v) => v._id).sort();
+			const sortedB = [...this.attempt.responses].map((v) => v.questionId).sort();
 			return !sortedA.every((val, index) => val === sortedB[index]);
 		},
 	},
