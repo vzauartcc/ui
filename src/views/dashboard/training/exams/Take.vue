@@ -192,18 +192,21 @@ export default {
 			this.loadResponses();
 		},
 		loadResponses() {
-			if (this.attempt.responses[this.step]) {
-				this.answeringQuestion.selectedOptions = JSON.parse(
-					JSON.stringify(this.attempt.responses[this.step].selectedOptions),
-				);
-				this.answeringQuestion.dirty = JSON.parse(
-					JSON.stringify(this.attempt.responses[this.step].selectedOptions),
-				);
+			const newQId = this.attempt.questionOrder[this.step]._id;
+			if (!newQId) {
+				this.toastError('Something went wrong, please try again later');
+				return;
+			}
+
+			const resp = this.attempt.responses.find((r) => r.questionId === newQId);
+			if (resp) {
+				this.answeringQuestion.selectedOptions = JSON.parse(JSON.stringify(resp.selectedOptions));
+				this.answeringQuestion.dirty = JSON.parse(JSON.stringify(resp.selectedOptions));
 			} else {
 				this.answeringQuestion.selectedOptions = [];
 				this.answeringQuestion.dirty = [];
 			}
-			this.answeringQuestion.id = this.attempt.questionOrder[this.step]._id;
+			this.answeringQuestion.id = newQId;
 			this.answeringQuestion.startTime = Date.now();
 		},
 		isUnchanged() {
