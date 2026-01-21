@@ -8,13 +8,24 @@
 				</div>
 				<div class="stepper">
 					<template v-for="(_, idx) in attempt.questionOrder" :key="idx">
-						<div class="step" :class="{ active: step === idx }">
+						<a
+							href="#"
+							class="step tooltipped"
+							@click.prevent="jumpTo(idx)"
+							:class="{ active: step === idx }"
+							data-position="top"
+							:data-tooltip="`Go to question ${idx + 1}`"
+						>
 							<span
-								v-if="attempt.responses[idx] && attempt.responses[idx].selectedOptions.length > 0"
+								v-if="
+									attempt.responses[idx] &&
+									attempt.responses[idx].selectedOptions.length > 0 &&
+									idx !== step
+								"
 								><i class="material-icons green-me" style="margin-left: -1px">check</i></span
 							>
 							<span v-else>{{ (idx + 1).toString() }}</span>
-						</div>
+						</a>
 					</template>
 				</div>
 
@@ -56,15 +67,9 @@
 								class="col right btn waves-effect red"
 								@click.prevent="submitAttempt"
 								:class="{ disabled: isSubmitDisabled }"
+								v-if="!isSubmitDisabled"
 								>Submit</a
 							>
-							<!-- <a
-								href="#"
-								class="col right btn waves-effect blue timepicker-span-hours"
-								@click.prevent="saveQuestion"
-								:class="{ disabled: isUnchanged() }"
-								>Save</a
-							> -->
 							<a
 								href="#"
 								class="col right btn-flat"
@@ -104,6 +109,10 @@ export default {
 		window.addEventListener('beforeunload', this.preventNav);
 
 		await this.getAttempt();
+
+		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+			margin: 0,
+		});
 	},
 	methods: {
 		async getAttempt() {
@@ -123,7 +132,7 @@ export default {
 		},
 		async submitAttempt() {
 			try {
-				if (!this.isUnchanged()) {
+				if (!this.isChanged()) {
 					await this.saveResponse(
 						this.answeringQuestion.id + '',
 						JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
@@ -157,7 +166,7 @@ export default {
 			}
 		},
 		async saveQuestion() {
-			if (!this.isUnchanged()) {
+			if (!this.isChanged()) {
 				await this.saveResponse(
 					this.answeringQuestion.id + '',
 					JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
@@ -168,7 +177,7 @@ export default {
 			}
 		},
 		async nextQuestion() {
-			if (!this.isUnchanged()) {
+			if (!this.isChanged()) {
 				await this.saveResponse(
 					this.answeringQuestion.id + '',
 					JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
@@ -180,7 +189,7 @@ export default {
 			this.loadResponses();
 		},
 		async prevQuestion() {
-			if (!this.isUnchanged()) {
+			if (!this.isChanged()) {
 				await this.saveResponse(
 					this.answeringQuestion.id + '',
 					JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
@@ -189,6 +198,18 @@ export default {
 			}
 
 			this.step--;
+			this.loadResponses();
+		},
+		async jumpTo(idx) {
+			if (!this.isChanged()) {
+				await this.saveResponse(
+					this.answeringQuestion.id + '',
+					JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
+					Date.now() - (this.answeringQuestion.startTime + 0),
+				);
+			}
+
+			this.step = idx;
 			this.loadResponses();
 		},
 		loadResponses() {
@@ -209,7 +230,7 @@ export default {
 			this.answeringQuestion.id = newQId;
 			this.answeringQuestion.startTime = Date.now();
 		},
-		isUnchanged() {
+		isChanged() {
 			const a = this.answeringQuestion.dirty;
 			const b = this.answeringQuestion.selectedOptions;
 
@@ -221,7 +242,7 @@ export default {
 			return s1.every((val, index) => val === s2[index]);
 		},
 		preventNav(event) {
-			if (this.isUnchanged()) return;
+			if (this.isChanged()) return;
 
 			event.preventDefault();
 			// Chrome requires returnValue to be set
@@ -233,7 +254,7 @@ export default {
 			if (this.attempt.responses.length !== this.attempt.questionOrder.length) {
 				if (
 					Math.abs(this.attempt.responses.length - this.attempt.questionOrder.length) == 1 &&
-					!this.isUnchanged()
+					!this.isChanged()
 				) {
 					return false;
 				}
@@ -247,10 +268,10 @@ export default {
 		},
 	},
 	beforeRouteLeave(to, from, next) {
-		if (!this.isUnchanged()) {
+		if (!this.isChanged()) {
 			const answer = window.confirm('Wait! You have unsaved changes. Do you really want to leave?');
 			if (answer) {
-				next(); // Proceed to the next route
+				next();
 			} else {
 				next(false); // Cancel the navigation
 			}
