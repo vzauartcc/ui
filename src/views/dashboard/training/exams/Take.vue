@@ -156,9 +156,9 @@ export default {
 				this.toastError('Error saving question response. Response was not logged');
 			}
 		},
-		saveQuestion() {
+		async saveQuestion() {
 			if (!this.isUnchanged()) {
-				this.saveResponse(
+				await this.saveResponse(
 					this.answeringQuestion.id + '',
 					JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
 					Date.now() - (this.answeringQuestion.startTime + 0),
@@ -167,9 +167,9 @@ export default {
 				this.loadResponses();
 			}
 		},
-		nextQuestion() {
+		async nextQuestion() {
 			if (!this.isUnchanged()) {
-				this.saveResponse(
+				await this.saveResponse(
 					this.answeringQuestion.id + '',
 					JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
 					Date.now() - (this.answeringQuestion.startTime + 0),
@@ -179,9 +179,9 @@ export default {
 			this.step++;
 			this.loadResponses();
 		},
-		prevQuestion() {
+		async prevQuestion() {
 			if (!this.isUnchanged()) {
-				this.saveResponse(
+				await this.saveResponse(
 					this.answeringQuestion.id + '',
 					JSON.parse(JSON.stringify(this.answeringQuestion.selectedOptions)),
 					Date.now() - (this.answeringQuestion.startTime + 0),
