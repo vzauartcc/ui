@@ -25,7 +25,7 @@
 								<th>Title</th>
 								<th>Milestone</th>
 								<th>Questions (Remaining)</th>
-								<th>Active</th>
+								<th>Status</th>
 								<th>
 									{{
 										attempts.filter((a) => a.status !== 'completed').length > 0 ? 'Take Exam' : ''
@@ -52,7 +52,8 @@
 								<td>{{ attempt.exam.certification.name }}</td>
 								<td>
 									{{ attempt.questionOrder.length }} ({{
-										attempt.questionOrder.length - attempt.responses.length
+										attempt.questionOrder.length -
+										attempt.responses.filter((r) => r.selectedOptions?.length !== 0).length
 									}})
 								</td>
 								<td>{{ getExamStatus(attempt) }}</td>
@@ -132,13 +133,17 @@ export default {
 		},
 
 		getExamStatus(attempt) {
+			const today = new Date();
+			const assignedDate = new Date(attempt.createdAt);
+			const expiresDate = new Date(attempt.createdAt);
+			expiresDate.setDate(assignedDate.getDate() + 31);
 			switch (attempt.status) {
 				case 'in_progress':
-					return 'In Progress';
+					return `In Progress (${Math.floor((expiresDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))} days remaining)`;
 				case 'completed':
-					return `Completed (${attempt.totalScore}% | ${attempt.responses.filter((r) => r.isCorrect === true).length}/${attempt.questionOrder.length})`;
+					return `Completed (${attempt.grade}%)`;
 				default:
-					return 'Pending';
+					return `Pending (${Math.floor((expiresDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))} days remaining)`;
 			}
 		},
 
