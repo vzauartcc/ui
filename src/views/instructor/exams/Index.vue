@@ -180,24 +180,21 @@
 										<td>{{ attempt.attemptNumber }}</td>
 										<td>{{ dShort(new Date(attempt.createdAt)) }}</td>
 										<td>
-											{{
-												attempt.status === 'completed'
-													? `${attempt.totalScore}%`
-													: attempt.status === 'not_started'
-														? 'Not Started'
-														: 'In Progress'
-											}}
+											<span v-if="attempt.status === 'completed'">{{ attempt.grade }}%</span>
+											<span v-else-if="attempt.status === 'timed_out'">Expired</span>
+											<span v-else-if="attempt.status === 'in_progress'">In Progress</span>
+											<span v-else>Not Started</span>
 										</td>
 										<td>
 											<router-link
 												:to="'/ins/exams/attempt/' + attempt._id"
-												v-if="attempt.status === 'completed'"
+												v-if="attempt.isComplete"
 											>
 												<i class="material-icons">search</i>
 											</router-link>
 											<a
 												href="#"
-												v-if="attempt.status !== 'completed'"
+												v-if="!attempt.isComplete"
 												@click.prevent="deleteAttempt(attempt._id)"
 												data-tooltip="Delete Attempt"
 												data-position="top"
@@ -430,6 +427,7 @@ export default {
 				}
 
 				this.toastSuccess('Exam Assigned!');
+				this.controller = 0;
 			} catch (e) {
 				console.error('error assigning exam', e);
 				this.toastError(e.response.data.message || 'Something went wrong, please try again later');

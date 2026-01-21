@@ -119,7 +119,7 @@ export default {
 			try {
 				const { data } = await zauApi.get(`/exam/attempt/${this.$route.params.attemptId}`);
 
-				if (data.status === 'completed') {
+				if (data.isComplete) {
 					return this.$router.push('/dash/training/exams');
 				}
 

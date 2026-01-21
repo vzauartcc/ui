@@ -10,7 +10,9 @@
 					<div class="card col s12">
 						<div class="card-content">
 							<strong class="card-title green-text" v-if="attempt.passed === true">Passed</strong>
-							<strong class="card-title red-text" v-else>Failed</strong>
+							<strong class="card-title red-text" v-else
+								>Failed <span v-if="attempt.status === 'timed_out'">(Timed Out)</span></strong
+							>
 							<table class="table">
 								<tbody>
 									<tr>
@@ -24,12 +26,16 @@
 									<tr>
 										<td class="bdr">Total Score</td>
 										<td class="bdr">
-											{{ attempt.totalScore }} / {{ attempt.questionOrder.length }}
+											{{ attempt.totalScore }} / {{ attempt.questionOrder.length }} pts
+											<span v-if="attempt.status === 'timed_out'"> (Attempt timed out)</span>
 										</td>
 									</tr>
 									<tr>
 										<td class="bdr">Grade</td>
-										<td class="bdr">{{ attempt.grade }}%</td>
+										<td class="bdr">
+											{{ attempt.grade }}%
+											<span v-if="attempt.status === 'timed_out'"> (Attempted timed out)</span>
+										</td>
 									</tr>
 									<tr>
 										<td class="bdr">Assigned Date</td>
@@ -37,11 +43,15 @@
 									</tr>
 									<tr>
 										<td class="bdr">Start Time</td>
-										<td class="bdr">{{ dtShort(new Date(attempt.startTime)) }}</td>
+										<td class="bdr">
+											{{ attempt.startTime ? dtShort(new Date(attempt.startTime)) : '' }}
+										</td>
 									</tr>
 									<tr>
 										<td class="bdr">Completed Time</td>
-										<td class="bdr">{{ dtShort(new Date(attempt.endTime)) }}</td>
+										<td class="bdr">
+											{{ attempt.status === 'timed_out' ? '' : dtShort(new Date(attempt.endTime)) }}
+										</td>
 									</tr>
 									<tr>
 										<td class="bdr">Time Spent</td>
@@ -64,7 +74,7 @@
 					</a>
 				</div>
 				<div class="card-content">
-					<div class="card col s12">
+					<div class="card col s12 grey lighten-1">
 						<div class="card-content">
 							<div class="card-title">Answer Key</div>
 							<div class="row green lighten-4">
@@ -76,13 +86,12 @@
 						</div>
 					</div>
 				</div>
-				<div
-					v-for="response in attempt.responses"
-					:key="response.questionId"
-					ref="responseItems"
-					class="card-content"
-				>
-					<div class="card col s12" :id="`response-${response.questionId}`">
+				<div v-for="response in attempt.responses" :key="response.questionId" class="card-content">
+					<div
+						class="card col s12 response-item"
+						:id="`response-${response.questionId}`"
+						ref="responseItems"
+					>
 						<div class="card-content">
 							<div class="card-title">{{ questionsById[response.questionId].text }}</div>
 							<template
@@ -167,7 +176,14 @@ export default {
 		scrollToSection(index) {
 			const element = this.$refs.responseItems[index];
 			if (element) {
-				element.scrollIntoView({ behavior: 'smooth' });
+				const topPos = element.getBoundingClientRect().top;
+
+				const totalScroll = topPos + window.pageYOffset;
+
+				window.scrollTo({
+					top: totalScroll,
+					behavior: 'smooth',
+				});
 			}
 		},
 		attemptHHMMSS(inMs) {

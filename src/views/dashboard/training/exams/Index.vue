@@ -27,9 +27,7 @@
 								<th>Questions (Remaining)</th>
 								<th>Status</th>
 								<th>
-									{{
-										attempts.filter((a) => a.status !== 'completed').length > 0 ? 'Take Exam' : ''
-									}}
+									{{ attempts.filter((a) => a.isComplete).length > 0 ? 'Take Exam' : '' }}
 								</th>
 							</tr>
 						</thead>
@@ -39,8 +37,8 @@
 								:key="attempt._id"
 								class="lighten-3"
 								:class="{
-									green: attempt.status === 'completed' && attempt.passed === true,
-									red: attempt.status === 'completed' && attempt.passed === false,
+									green: attempt.passed === true,
+									red: attempt.passed === false,
 								}"
 							>
 								<td
@@ -63,7 +61,7 @@
 										class="tooltipped"
 										data-position="top"
 										data-tooltip="Take Exam"
-										v-if="attempt.status !== 'completed'"
+										v-if="!attempt.isComplete"
 									>
 										<i class="material-icons">login</i>
 									</router-link>
@@ -110,6 +108,7 @@ export default {
 			try {
 				const { data } = await zauApi.get(`/exam/attempt/by-user/${this.user.data.cid}`);
 				const complete = data.filter((a) => a.status === 'completed');
+				const timedout = data.filter((a) => a.status === 'timed_out');
 				const working = data.filter((a) => a.status === 'in_progress');
 				const backlog = data.filter((a) => a.status === 'not_started');
 				this.attempts = [
@@ -117,6 +116,9 @@ export default {
 						(a, b) => new Date(a.createdAt).getTime() + new Date(b.createdAt).getTime(),
 					),
 					...complete.sort(
+						(a, b) => new Date(a.updatedAt).getTime() + new Date(b.updatedAt).getTime(),
+					),
+					...timedout.sort(
 						(a, b) => new Date(a.updatedAt).getTime() + new Date(b.updatedAt).getTime(),
 					),
 				];
@@ -142,6 +144,8 @@ export default {
 					return `In Progress (${Math.floor((expiresDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))} days remaining)`;
 				case 'completed':
 					return `Completed (${attempt.grade}%)`;
+				case 'timed_out':
+					return `Expired`;
 				default:
 					return `Pending (${Math.floor((expiresDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))} days remaining)`;
 			}
