@@ -106,48 +106,62 @@
 					</div>
 
 					<div id="attempts">
+						<div class="row">
+							<div class="col s4">
+								<select
+									class="materialize-select"
+									name="exam"
+									id="examId"
+									v-model="attemptSelectedExam"
+								>
+									<option value="">All Exams</option>
+									<option
+										v-for="(exam, id) in availableExams"
+										:key="`exam-${id}`"
+										:value="exam._id"
+									>
+										{{ exam.title }}
+									</option>
+								</select>
+								<label for="examId"></label>
+							</div>
+							<div class="col s4">
+								<select
+									class="materialize-select"
+									name="student"
+									id="studentId"
+									v-model="attemptSelectedUser"
+								>
+									<option value="0">All Students</option>
+									<option
+										v-for="(user, id) in availableStudents"
+										:key="`user-${id}`"
+										:value="user.cid"
+									>
+										{{ user.fname }} {{ user.lname }}
+									</option>
+								</select>
+								<label for="studentId"></label>
+							</div>
+							<div class="col s4">
+								<select
+									class="materialize-select"
+									name="status"
+									id="statusId"
+									v-model="attemptSelectedStatus"
+								>
+									<option value="">All Attempts</option>
+									<option value="pending">Not Started</option>
+									<option value="in_progress">In Progress</option>
+									<option value="completed">Completed</option>
+								</select>
+								<label for="statusId"></label>
+							</div>
+						</div>
 						<div v-if="attempts.length === 0">
 							<p class="no_exams">There are no attempts to display</p>
 						</div>
 						<div v-else>
-							<div class="row">
-								<div class="col s6">
-									<select
-										class="materialize-select"
-										name="exam"
-										id="examId"
-										v-model="attemptSelectedExam"
-									>
-										<option value="">All Exams</option>
-										<option
-											v-for="(exam, id) in availableExams"
-											:key="`exam-${id}`"
-											:value="exam._id"
-										>
-											{{ exam.title }}
-										</option>
-									</select>
-									<label for="examId"></label>
-								</div>
-								<div class="col s6">
-									<select
-										class="materialize-select"
-										name="student"
-										id="studentId"
-										v-model="attemptSelectedUser"
-									>
-										<option value="0">All Students</option>
-										<option
-											v-for="(user, id) in availableStudents"
-											:key="`user-${id}`"
-											:value="user.cid"
-										>
-											{{ user.fname }} {{ user.lname }}
-										</option>
-									</select>
-									<label for="studentId"></label>
-								</div>
-							</div>
 							<table class="table">
 								<thead>
 									<tr>
@@ -185,6 +199,9 @@
 												href="#"
 												v-if="attempt.status !== 'completed'"
 												@click.prevent="deleteAttempt(attempt._id)"
+												data-tooltip="Delete Attempt"
+												data-position="top"
+												class="tooltipped"
 												><i class="material-icons red-text">delete</i></a
 											>
 										</td>
@@ -288,6 +305,7 @@ export default {
 			attemptLimit: 20,
 			attemptSelectedExam: '',
 			attemptSelectedUser: 0,
+			attemptSelectedStatus: '',
 			availableExams: [],
 			availableStudents: [],
 			attemptAmount: 0,
@@ -345,6 +363,7 @@ export default {
 						limit: this.limit,
 						user: this.attemptSelectedUser,
 						exam: this.attemptSelectedExam,
+						status: this.attemptSelectedStatus,
 					},
 				});
 
@@ -508,6 +527,10 @@ export default {
 			await this.fetchAttempts();
 		},
 		attemptSelectedUser: async function () {
+			this.attemptPage = 1;
+			await this.fetchAttempts();
+		},
+		attemptSelectedStatus: async function () {
 			this.attemptPage = 1;
 			await this.fetchAttempts();
 		},
