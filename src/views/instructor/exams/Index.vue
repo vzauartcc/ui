@@ -1,113 +1,218 @@
 <template>
-	<div class="card home_intro">
-		<div class="card-content">
-			<!-- Always show Exam Center title -->
-			<div class="row">
-				<div class="col s10">
-					<span class="card-title">Exam Center</span>
+	<div class="card">
+		<div class="loading_container" v-if="!exams"><Spinner /></div>
+		<div class="row row_no_margin" v-else>
+			<div class="card-content">
+				<span class="card-title">Exam Center</span>
+
+				<div class="row col s12">
+					<ul class="tabs">
+						<li class="tab col s6"><a href="#exams" class="active">Exams</a></li>
+						<li class="tab col s6"><a href="#attempts">Attempts</a></li>
+					</ul>
 				</div>
-				<!-- Conditionally show the Create button if exams have been fetched -->
-				<div class="col s2 right-align" v-if="exams">
-					<router-link to="/ins/exams/new" class="btn new_event_button">Create</router-link>
-				</div>
-			</div>
 
-			<!-- Show spinner while loading -->
-			<div v-if="!exams" class="center-align">
-				<Spinner />
-			</div>
+				<div class="tabs_content">
+					<div id="exams" class="">
+						<div class="row col s12" v-if="exams">
+							<router-link to="/ins/exams/new" class="btn">Create Exam</router-link>
+						</div>
 
-			<!-- Show no exams message if exams array is empty -->
-			<div v-if="exams && exams.length === 0" class="left-align">
-				<p class="no_exams">There are no exams to display</p>
-			</div>
+						<div v-if="exams && exams.length === 0" class="row col s12">
+							<p class="no_exams">There are no exams to display</p>
+						</div>
 
-			<!-- Show table if exams array is not empty -->
-			<div v-if="exams && exams.length > 0">
-				<div class="card-body">
-					<table class="table">
-						<thead>
-							<tr>
-								<th>Title</th>
-								<th class="center-align">Created By</th>
-								<th class="center-align">Milestone</th>
-								<th class="center-align">Questions {{ isExamEditor ? '(Active / Total)' : '' }}</th>
-								<th class="center-align">Active</th>
-								<th class="center-align">Options</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="exam in exams" :key="exam._id">
-								<td
-									:class="{ tooltipped: shouldShowTooltip(exam.title) }"
-									:data-tooltip="shouldShowTooltip(exam.title) ? exam.title : ''"
-								>
-									{{ truncateExamName(exam.title, 20).text }}
-								</td>
-								<td class="center-align">
-									{{ exam.user.fname + ' ' + exam.user.lname }}
-								</td>
-								<td class="center-align">{{ exam.certification.name }}</td>
-								<td class="center-align">
-									{{ exam.questions.filter((e) => e.isActive).length }}
-									{{ isExamEditor ? `/ ${exam.questions.length}` : '' }}
-								</td>
-								<td class="center-align">
-									<div class="switch">
-										<label>
-											<input
-												type="checkbox"
-												@change="toggleActive(exam._id)"
-												:checked="exam.isActive"
-											/>
-											<span class="lever"></span>
-										</label>
-									</div>
-								</td>
-								<td class="center-align">
-									<a
-										href="#"
-										@click="prepareAssign(exam._id)"
-										class="blue-text tooltipped"
-										data-position="top"
-										data-tooltip="Assign Exam"
-										v-if="exam.isActive"
+						<div v-else>
+							<div class="">
+								<table class="table">
+									<thead>
+										<tr>
+											<th>Title</th>
+											<th class="center-align">Created By</th>
+											<th class="center-align">Milestone</th>
+											<th class="center-align">
+												Questions {{ isExamEditor ? '(Active / Total)' : '' }}
+											</th>
+											<th class="center-align">Active</th>
+											<th class="center-align">Options</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="exam in exams" :key="exam._id">
+											<td
+												:class="{ tooltipped: shouldShowTooltip(exam.title) }"
+												:data-tooltip="shouldShowTooltip(exam.title) ? exam.title : ''"
+											>
+												{{ truncateExamName(exam.title, 20).text }}
+											</td>
+											<td class="center-align">
+												{{ exam.user.fname + ' ' + exam.user.lname }}
+											</td>
+											<td class="center-align">{{ exam.certification.name }}</td>
+											<td class="center-align">
+												{{ exam.questions.filter((e) => e.isActive).length }}
+												{{ isExamEditor ? `/ ${exam.questions.length}` : '' }}
+											</td>
+											<td class="center-align">
+												<div class="switch">
+													<label>
+														<input
+															type="checkbox"
+															@change="toggleActive(exam._id)"
+															:checked="exam.isActive"
+															:disabled="!isExamEditor"
+														/>
+														<span class="lever"></span>
+													</label>
+												</div>
+											</td>
+											<td class="center-align">
+												<a
+													href="#"
+													@click="prepareAssign(exam._id)"
+													class="blue-text tooltipped"
+													data-position="top"
+													data-tooltip="Assign Exam"
+													v-if="exam.isActive"
+												>
+													<i class="material-icons">person_add</i>
+												</a>
+												<a
+													href="#"
+													@click="editExam(exam._id)"
+													class="tooltipped"
+													data-position="top"
+													data-tooltip="Edit Exam"
+													v-if="isExamEditor"
+												>
+													<i class="material-icons">edit</i>
+												</a>
+												<a
+													href="#"
+													@click="prepareDelete(exam._id)"
+													class="red-text modal-trigger tooltipped"
+													data-position="top"
+													data-tooltip="Delete Exam"
+													v-if="isExamEditor"
+												>
+													<i class="material-icons">delete</i>
+												</a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div id="attempts">
+						<div v-if="attempts.length === 0">
+							<p class="no_exams">There are no attempts to display</p>
+						</div>
+						<div v-else>
+							<div class="row">
+								<div class="col s6">
+									<select
+										class="materialize-select"
+										name="exam"
+										id="examId"
+										v-model="attemptSelectedExam"
 									>
-										<i class="material-icons">person_add</i>
-									</a>
-									<a
-										href="#"
-										@click="editExam(exam._id)"
-										class="tooltipped"
-										data-position="top"
-										data-tooltip="Edit Exam"
-										v-if="isExamEditor"
+										<option value="">All Exams</option>
+										<option
+											v-for="(exam, id) in availableExams"
+											:key="`exam-${id}`"
+											:value="exam._id"
+										>
+											{{ exam.title }}
+										</option>
+									</select>
+									<label for="examId"></label>
+								</div>
+								<div class="col s6">
+									<select
+										class="materialize-select"
+										name="student"
+										id="studentId"
+										v-model="attemptSelectedUser"
 									>
-										<i class="material-icons">edit</i>
-									</a>
-									<a
-										href="#"
-										@click="prepareDelete(exam._id)"
-										class="red-text modal-trigger tooltipped"
-										data-position="top"
-										data-tooltip="Delete Exam"
-										v-if="isExamEditor"
-									>
-										<i class="material-icons">delete</i>
-									</a>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+										<option value="0">All Students</option>
+										<option
+											v-for="(user, id) in availableStudents"
+											:key="`user-${id}`"
+											:value="user.cid"
+										>
+											{{ user.fname }} {{ user.lname }}
+										</option>
+									</select>
+									<label for="studentId"></label>
+								</div>
+							</div>
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Student</th>
+										<th>Exam</th>
+										<th>Attempt #</th>
+										<th>Assigned Date</th>
+										<th>Score</th>
+										<th>Options</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="attempt in attempts" :key="attempt._id">
+										<td>{{ attempt.user.fname }} {{ attempt.user.lname }}</td>
+										<td>{{ attempt.exam.title }}</td>
+										<td>{{ attempt.attemptNumber }}</td>
+										<td>{{ dShort(new Date(attempt.createdAt)) }}</td>
+										<td>
+											{{
+												attempt.status === 'completed'
+													? `${attempt.totalScore}%`
+													: attempt.status === 'not_started'
+														? 'Not Started'
+														: 'In Progress'
+											}}
+										</td>
+										<td>
+											<router-link
+												:to="'/ins/exams/attempt/' + attempt._id"
+												v-if="attempt.status === 'completed'"
+											>
+												<i class="material-icons">search</i>
+											</router-link>
+											<a
+												href="#"
+												v-if="attempt.status !== 'completed'"
+												@click.prevent="deleteAttempt(attempt._id)"
+												><i class="material-icons red-text">delete</i></a
+											>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div v-if="attempts.length > 0">
+								<Pagination
+									:amount="attemptAmount"
+									:page="attemptPage"
+									:limit="attemptLimit"
+									:amountOfPages="attemptPages"
+								/>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
+
 		<teleport to="body">
 			<div v-for="exam in exams" :key="`modal_${exam._id}`">
 				<!-- Assign Modal -->
 				<div :id="`modal_assign_${exam._id}`" class="modal modal_assign">
 					<div class="modal-content">
-						<div class="modal_title">Assign Exam</div>
+						<div class="modal_title">
+							Assign Exam: <strong>{{ exam.title }}</strong>
+						</div>
 					</div>
 					<div class="row">
 						<div class="input-field col s12 m6">
@@ -163,6 +268,7 @@
 </template>
 
 <script>
+import Pagination from '@/components/Pagination.vue';
 import { zauApi } from '@/helpers/axios.js';
 import { mapState } from 'vuex';
 
@@ -172,21 +278,39 @@ export default {
 	data() {
 		return {
 			spinners: [],
-			exams: [],
+			exams: null,
 			controllers: [],
+			attempts: [],
 			controller: 0,
 			selectedExamId: null,
 			examEditors: ['atm', 'datm', 'ta', 'ia'],
+			attemptPage: 1,
+			attemptLimit: 20,
+			attemptSelectedExam: '',
+			attemptSelectedUser: 0,
+			availableExams: [],
+			availableStudents: [],
+			attemptAmount: 0,
+			attemptPages: 0,
 		};
+	},
+	components: {
+		Pagination,
 	},
 	async created() {
 		await this.fetchExams();
 		await this.fetchControllers();
+		await this.fetchAttempts();
 
 		M.Modal.init(document.querySelectorAll('.modal'), {
 			preventScrolling: false,
 		});
+
 		M.FormSelect.init(document.querySelectorAll('.materialize-select'), {});
+
+		M.Tabs.init(document.querySelectorAll('.tabs'), {
+			onShow: this.handleTabShow,
+		});
 	},
 	mounted() {
 		this.initializeTooltips();
@@ -210,6 +334,42 @@ export default {
 				this.controllers = data;
 			} catch (e) {
 				console.error('error getting controllers', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+		},
+		async fetchAttempts() {
+			try {
+				const { data } = await zauApi.get('/exam/attempt', {
+					params: {
+						page: this.attemptPage,
+						limit: this.limit,
+						user: this.attemptSelectedUser,
+						exam: this.attemptSelectedExam,
+					},
+				});
+
+				this.attempts = data.attempts;
+
+				this.attemptAmount = data.amount;
+				this.attemptPages = Math.ceil(this.attemptAmount / this.limit);
+
+				const uniqueExams = new Map();
+				const uniqueUsers = new Map();
+
+				for (const attempt of data.attempts) {
+					if (!uniqueExams.has(attempt.examId)) {
+						uniqueExams.set(attempt.examId, attempt.exam);
+					}
+
+					if (!uniqueUsers.has(attempt.student)) {
+						uniqueUsers.set(attempt.student, attempt.user);
+					}
+				}
+
+				this.availableExams = Array.from(uniqueExams.values());
+				this.availableStudents = Array.from(uniqueUsers.values());
+			} catch (e) {
+				console.error('error getting attempts', e);
 				this.toastError('Something went wrong, please try again later');
 			}
 		},
@@ -321,12 +481,35 @@ export default {
 				});
 			});
 		},
+		async deleteAttempt(id) {
+			try {
+				await zauApi.delete('/exam/attempt/' + id);
+
+				await this.fetchAttempts();
+			} catch (e) {
+				console.error('error deleting attempt', e);
+				this.toastError('Something went wrong, please try again later');
+			}
+		},
 	},
 	computed: {
 		...mapState('user', ['user']),
 
 		isExamEditor() {
 			return this.user.data.roleCodes.some((rc) => this.examEditors.includes(rc));
+		},
+	},
+	watch: {
+		page: async function () {
+			await this.fetchAttempts();
+		},
+		attemptSelectedExam: async function () {
+			this.attemptPage = 1;
+			await this.fetchAttempts();
+		},
+		attemptSelectedUser: async function () {
+			this.attemptPage = 1;
+			await this.fetchAttempts();
 		},
 	},
 };
@@ -358,7 +541,6 @@ export default {
 
 .no_exams {
 	padding: 0 1em 1em 1em;
-	margin-top: -1em;
 	font-style: italic;
 }
 

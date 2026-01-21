@@ -137,6 +137,10 @@ const routes = [
 				component: () => import('../views/instructor/exams/Index.vue'),
 			},
 			{
+				path: 'exams/attempt/:attemptId',
+				component: () => import('../views/instructor/exams/ViewAttempt.vue'),
+			},
+			{
 				path: 'exams/:examId',
 				component: () => import('../views/instructor/exams/Edit.vue'),
 			},

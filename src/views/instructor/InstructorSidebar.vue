@@ -13,11 +13,7 @@
 				Exam Center
 				<div class="secondary-content"><i class="material-icons">quiz</i></div>
 			</router-link>
-			<router-link
-				to="/ins/milestones"
-				class="collection-item"
-				v-if="hasRole(['atm', 'datm', 'ta', 'ia'])"
-			>
+			<router-link to="/ins/milestones" class="collection-item">
 				Training Milestones
 				<div class="secondary-content"><i class="material-icons">stairs</i></div>
 			</router-link>
