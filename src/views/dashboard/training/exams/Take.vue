@@ -127,7 +127,7 @@ export default {
 				this.loadResponses();
 			} catch (e) {
 				console.error('error getting attempt', e);
-				this.toastError('Something went wrong, please try again later');
+				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
 			}
 		},
 		async submitAttempt() {
@@ -145,7 +145,7 @@ export default {
 				this.$router.push('/dash/training/exams');
 			} catch (e) {
 				console.error('error submitting attempt', e);
-				this.toastError('Something went wrong, please try again later');
+				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
@@ -162,7 +162,7 @@ export default {
 				this.loadResponses();
 			} catch (e) {
 				console.error('error saving question response', e);
-				this.toastError('Error saving question response. Response was not logged');
+				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
 			}
 		},
 		async saveQuestion() {
