@@ -58,9 +58,6 @@
 								<td>
 									<router-link
 										:to="'/dash/training/exams/' + attempt._id"
-										class="tooltipped"
-										data-position="top"
-										data-tooltip="Take Exam"
 										v-if="!attempt.isComplete"
 									>
 										<i class="material-icons">login</i>
