@@ -44,16 +44,17 @@
 							<tr v-for="(question, idx) in exam.questions" :key="idx">
 								<td>{{ question.text }}</td>
 								<td>
-									<label>
-										<input
-											type="checkbox"
-											name=""
-											class="active"
-											v-model="question.isActive"
-											id="indeterminate-checkbox"
-										/>
-										<span></span>
-									</label>
+									<div class="switch s12 col">
+										<label>
+											<input
+												type="checkbox"
+												@change="toggleActive(idx)"
+												class="col"
+												:checked="question.isActive"
+											/>
+											<span class="lever"></span>
+										</label>
+									</div>
 								</td>
 								<td class="options">
 									<a href="#" class="col s1" @click.prevent="editQuestion(idx)"
@@ -256,6 +257,10 @@ export default {
 			}
 
 			this.newQuestion.options = newOptions;
+		},
+
+		toggleActive(idx) {
+			this.exam.questions[idx].isActive = !this.exam.questions[idx].isActive;
 		},
 
 		editQuestion(index) {
