@@ -83,7 +83,15 @@
 				</div>
 				<div class="row">
 					<div class="input-field col s12">
-						<input type="text" name="questionText" id="questionText" v-model="newQuestion.text" />
+						<textarea
+							class="materialize-textarea"
+							name="questionText"
+							id="questionText"
+							v-model="newQuestion.text"
+							maxlength="400"
+							data-length="400"
+							rows="3"
+						></textarea>
 						<label for="questionText" class="active">Question</label>
 					</div>
 				</div>
@@ -114,7 +122,13 @@
 						</label>
 					</div>
 					<div class="s10 col">
-						<input type="text" v-model="option.text" />
+						<input
+							type="text"
+							v-model="option.text"
+							maxlength="100"
+							data-length="100"
+							class="option-text"
+						/>
 					</div>
 					<a href="#" class="col s1 red-text" @click.prevent="removeOption(idx)"
 						><i class="material-icons">delete_forever</i></a
@@ -160,6 +174,8 @@ export default {
 		await this.getMilestones();
 
 		M.FormSelect.init(document.querySelectorAll('select'), {});
+		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
+		M.CharacterCounter.init(document.querySelectorAll('input[type="text"]'), {});
 	},
 	computed: {
 		isFormValid() {
@@ -265,12 +281,20 @@ export default {
 
 		addOption() {
 			this.newQuestion.options.push({ text: '', isCorrect: false });
+
+			this.$nextTick(() => {
+				M.CharacterCounter.init(document.querySelectorAll('input[type="text"].option-text'), {});
+			});
 		},
 		setTrueFalse() {
 			this.newQuestion.options = [
 				{ text: 'True', isCorrect: false },
 				{ text: 'False', isCorrect: false },
 			];
+
+			this.$nextTick(() => {
+				M.CharacterCounter.init(document.querySelectorAll('input[type="text"].option-text'), {});
+			});
 		},
 
 		removeOption(index) {

@@ -86,45 +86,69 @@
 	<teleport to="body">
 		<div id="modal_question_edit" class="modal modal_question_edit">
 			<div class="modal-content">
-				<div class="modal-title" v-if="newQuestion.isEdit >= 0">Edit Question</div>
-				<div class="modal_title" v-else>Create Question</div>
+				<div class="row">
+					<div class="modal-title" v-if="newQuestion.isEdit >= 0">Edit Question</div>
+					<div class="modal_title" v-else>Create Question</div>
+				</div>
 				<div class="row">
 					<div class="input-field col s12">
-						<input type="text" name="questionText" id="questionText" v-model="newQuestion.text" />
+						<textarea
+							class="materialize-textarea"
+							name="questionText"
+							id="questionText"
+							v-model="newQuestion.text"
+							maxlength="400"
+							data-length="400"
+							rows="3"
+						></textarea>
 						<label for="questionText" class="active">Question</label>
 					</div>
 				</div>
-				<div class="row col mb-2">
-					<a href="#" class="btn" @click.prevent="addOption">Add option</a>
-					<div class="row">
-						<div class="row">
-							<p class="col s1">Correct</p>
-							<p class="col">Answer</p>
+				<div class="row mb-2">
+					<div class="row col s12">
+						<div class="col">
+							<a href="#" class="btn" @click.prevent="addOption">Add option</a>
 						</div>
-						<div class="row" v-for="(option, idx) in newQuestion.options" :key="idx">
-							<div class="col s1">
-								<label>
-									<input
-										type="checkbox"
-										class="active"
-										v-model="option.isCorrect"
-										id="indeterminate-checkbox"
-									/>
-									<span></span>
-								</label>
-							</div>
-							<div class="s10 col">
-								<input type="text" v-model="option.text" />
-							</div>
-							<a href="#" class="col s1 red-text" @click.prevent="removeOption(idx)"
-								><i class="material-icons">delete_forever</i></a
-							>
+						<div class="col">
+							<a href="#" class="btn red" @click.prevent="setTrueFalse">True/False</a>
 						</div>
 					</div>
 				</div>
+				<div class="row">
+					<p class="col s1">Correct</p>
+					<p class="col">Answer</p>
+				</div>
+				<div class="row" v-for="(option, idx) in newQuestion.options" :key="idx">
+					<div class="col s1">
+						<label>
+							<input
+								type="checkbox"
+								class="active"
+								v-model="option.isCorrect"
+								id="indeterminate-checkbox"
+							/>
+							<span></span>
+						</label>
+					</div>
+					<div class="s10 col">
+						<input
+							type="text"
+							v-model="option.text"
+							maxlength="100"
+							data-length="100"
+							class="option-text"
+						/>
+					</div>
+					<a href="#" class="col s1 red-text" @click.prevent="removeOption(idx)"
+						><i class="material-icons">delete_forever</i></a
+					>
+				</div>
 			</div>
 			<div class="modal-footer">
-				<a href="#" @click.prevent="addQuestion" class="btn waves-effect"> Save</a>
+				<a href="#" @click.prevent="addQuestion(true)" class="blue left btn waves-effect"
+					>Save + Create Another</a
+				>
+				<a href="#" @click.prevent="addQuestion(false)" class="btn waves-effect">Save</a>
 				<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
 			</div>
 		</div>
@@ -187,10 +211,14 @@ export default {
 			spinners: [],
 			milestones: null,
 			exam: null,
-			questions: [],
 			newQuestion: {
 				text: '',
-				options: [{ text: '', isCorrect: false }],
+				options: [
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+				],
 				isEdit: -1,
 			},
 		};
@@ -200,6 +228,8 @@ export default {
 		await this.getExam();
 
 		M.FormSelect.init(document.querySelectorAll('select'), {});
+		M.CharacterCounter.init(document.querySelectorAll('input[type="text"]'), {});
+		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
 	},
 	computed: {
 		isFormValid() {
@@ -234,7 +264,12 @@ export default {
 		createQuestion() {
 			this.newQuestion = {
 				text: '',
-				options: [{ text: '', isCorrect: false }],
+				options: [
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+				],
 				isEdit: -1,
 			};
 
@@ -248,7 +283,7 @@ export default {
 				}
 			});
 		},
-		addQuestion() {
+		addQuestion(createAnother) {
 			if (!this.newQuestion.text.trim()) {
 				this.toastError('Please fill in the question.');
 				return;
@@ -296,11 +331,27 @@ export default {
 				isEdit: -1,
 			};
 
-			M.Modal.getInstance(document.getElementById('modal_question_edit')).close();
+			if (createAnother === false) {
+				M.Modal.getInstance(document.getElementById('modal_question_edit')).close();
+			}
 		},
 
 		addOption() {
 			this.newQuestion.options.push({ text: '', isCorrect: false });
+
+			this.$nextTick(() => {
+				M.CharacterCounter.init(document.querySelectorAll('input[type="text"].option-text'), {});
+			});
+		},
+		setTrueFalse() {
+			this.newQuestion.options = [
+				{ text: 'True', isCorrect: false },
+				{ text: 'False', isCorrect: false },
+			];
+
+			this.$nextTick(() => {
+				M.CharacterCounter.init(document.querySelectorAll('input[type="text"].option-text'), {});
+			});
 		},
 
 		removeOption(index) {
