@@ -19,7 +19,7 @@
 							>
 						</div>
 						<div class="input-field col s4">
-							<select v-model="exam.certCode" required class="materialize-select">
+							<select v-model="exam.certCode" required class="materialize-select" disabled>
 								<option value="" disabled selected>Select a milestone</option>
 								<option
 									v-for="milestone in milestones"
@@ -34,7 +34,9 @@
 					</div>
 					<div class="row">
 						<h6 class="col s10">Questions</h6>
-						<a href="#" class="btn right col s2" @click.prevent="createQuestion">New Question</a>
+						<a href="#" class="btn right col s2 blue" @click.prevent="createQuestion"
+							>New Question</a
+						>
 						<table>
 							<thead>
 								<tr>
@@ -59,19 +61,23 @@
 									</div>
 								</td>
 								<td class="options">
-									<a
-										href="#"
-										class="col s1"
-										@click.prevent="editQuestion(idx)"
-										v-if="!(question._id && question._id !== '')"
-										><i class="material-icons">edit</i></a
-									>
+									<span v-if="!(question._id && question._id !== '')">
+										<a href="#" class="col s1" @click.prevent="editQuestion(idx)"
+											><i class="material-icons">edit</i></a
+										>
+										<a href="#" class="col s1" @click.prevent="deleteQuestion(idx)">
+											<i class="material-icons red-text">delete_forever</i>
+										</a>
+									</span>
 									<a href="#" class="col s1" @click.prevent="viewQuestion(idx)" v-else>
 										<i class="material-icons">search</i>
 									</a>
 								</td>
 							</tr>
 						</table>
+						<a href="#" class="btn right col s2 input-field blue" @click.prevent="createQuestion"
+							>New Question</a
+						>
 					</div>
 					<div class="row">
 						<button type="submit" class="btn right" :disabled="spinners.length > 0 || !isFormValid">
@@ -375,6 +381,16 @@ export default {
 			this.newQuestion.options = [...this.exam.questions[index].options];
 
 			this.openQuestionModal();
+		},
+		deleteQuestion(index) {
+			const retval = [];
+			for (let i = 0; i < this.exam.questions.length; i++) {
+				if (i !== index) {
+					retval.push(this.exam.questions[i]);
+				}
+			}
+
+			this.exam.questions = retval;
 		},
 		viewQuestion(index) {
 			this.newQuestion.text = this.exam.questions[index].text;
