@@ -3,18 +3,20 @@
 	<div class="create-exam-container" v-else>
 		<div class="card">
 			<div class="card-content">
-				<div class="card-title col s12">
-					<span class="card-title">Edit Exam</span>
-				</div>
+				<span class="card-title">Edit Exam</span>
 				<form @submit.prevent="submitExam">
 					<div class="row">
-						<div class="input-field col s6">
-							<input type="text" name="title" id="title" v-model="exam.title" />
-							<label for="title" class="active">Exam Name</label>
+						<div class="col s6">
+							<div class="input-field">
+								<input type="text" name="title" id="title" v-model="exam.title" />
+								<label for="title" class="active">Exam Name <span class="red-text">*</span></label>
+							</div>
 						</div>
 						<div class="input-field col s12">
 							<input type="text" name="description" id="description" v-model="exam.description" />
-							<label for="description" class="active">Exam Description</label>
+							<label for="description" class="active"
+								>Exam Description <span class="red-text">*</span></label
+							>
 						</div>
 						<div class="input-field col s4">
 							<select v-model="exam.certCode" required class="materialize-select">
@@ -57,9 +59,16 @@
 									</div>
 								</td>
 								<td class="options">
-									<a href="#" class="col s1" @click.prevent="editQuestion(idx)"
+									<a
+										href="#"
+										class="col s1"
+										@click.prevent="editQuestion(idx)"
+										v-if="!(question._id && question._id !== '')"
 										><i class="material-icons">edit</i></a
 									>
+									<a href="#" class="col s1" @click.prevent="viewQuestion(idx)" v-else>
+										<i class="material-icons">search</i>
+									</a>
 								</td>
 							</tr>
 						</table>
@@ -75,7 +84,7 @@
 	</div>
 
 	<teleport to="body">
-		<div id="modal_question" class="modal modal_question">
+		<div id="modal_question_edit" class="modal modal_question_edit">
 			<div class="modal-content">
 				<div class="modal-title" v-if="newQuestion.isEdit >= 0">Edit Question</div>
 				<div class="modal_title" v-else>Create Question</div>
@@ -120,6 +129,53 @@
 			</div>
 		</div>
 	</teleport>
+
+	<teleport to="body">
+		<div id="modal_question_view" class="modal modal_question_view">
+			<div class="modal-content">
+				<div class="row">
+					<div class="input-field col s12">
+						<input
+							type="text"
+							name="questionText"
+							id="questionText"
+							v-model="newQuestion.text"
+							disabled
+						/>
+						<label for="questionText" class="active">Question</label>
+					</div>
+				</div>
+				<div class="row mb-2">
+					<div class="row">
+						<div class="row">
+							<p class="col s1">Correct</p>
+							<p class="col">Answer</p>
+						</div>
+						<div class="row" v-for="(option, idx) in newQuestion.options" :key="idx">
+							<div class="col s1">
+								<label>
+									<input
+										type="checkbox"
+										class="active"
+										v-model="option.isCorrect"
+										id="indeterminate-checkbox"
+										disabled=""
+									/>
+									<span></span>
+								</label>
+							</div>
+							<div class="s10 col">
+								<input type="text" v-model="option.text" disabled="" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
+			</div>
+		</div>
+	</teleport>
 </template>
 
 <script>
@@ -158,7 +214,6 @@ export default {
 		async getExam() {
 			try {
 				const { data } = await zauApi.get(`/exam/${this.$route.params.examId}`);
-				console.log(data);
 				this.exam = data;
 			} catch (e) {
 				console.error('error getting exam', e);
@@ -187,7 +242,7 @@ export default {
 		},
 		openQuestionModal() {
 			this.$nextTick(() => {
-				const modal = document.getElementById(`modal_question`);
+				const modal = document.getElementById(`modal_question_edit`);
 				if (modal) {
 					M.Modal.init(modal, { preventScrolling: false }).open();
 				}
@@ -241,7 +296,7 @@ export default {
 				isEdit: -1,
 			};
 
-			M.Modal.getInstance(document.getElementById('modal_question')).close();
+			M.Modal.getInstance(document.getElementById('modal_question_edit')).close();
 		},
 
 		addOption() {
@@ -269,6 +324,20 @@ export default {
 			this.newQuestion.options = [...this.exam.questions[index].options];
 
 			this.openQuestionModal();
+		},
+		viewQuestion(index) {
+			this.newQuestion.text = this.exam.questions[index].text;
+			this.newQuestion.options = [...this.exam.questions[index].options];
+
+			this.$nextTick(() => {
+				const modal = document.getElementById(`modal_question_view`);
+				if (modal) {
+					M.Modal.init(modal, { preventScrolling: false }).open();
+				} else {
+					console.error('unable to find view question modal');
+					this.toastError('Something went wrong, please try again later');
+				}
+			});
 		},
 
 		async submitExam() {
