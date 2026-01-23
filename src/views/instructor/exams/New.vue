@@ -7,11 +7,24 @@
 				<form @submit.prevent="submitExam">
 					<div class="row">
 						<div class="input-field col s6">
-							<input type="text" name="title" id="title" v-model="examName" />
+							<input
+								type="text"
+								name="title"
+								id="title"
+								v-model="examName"
+								maxlength="100"
+								data-length="100"
+							/>
 							<label for="title" class="active">Exam Name <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s12">
-							<input type="text" name="description" id="description" v-model="examDescription" />
+							<textarea
+								name="description"
+								id="descripton"
+								v-model="examDescription"
+								maxlength="1000"
+								data-length="1000"
+							></textarea>
 							<label for="description">Exam Description <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s4">
@@ -361,7 +374,7 @@ export default {
 				this.toastSuccess('Exam submitted successfully');
 			} catch (e) {
 				console.error('error submitting exam', e);
-				this.toastError('Something went wrong, please try again later');
+				this.toastError(e.resposne.data.message || 'Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

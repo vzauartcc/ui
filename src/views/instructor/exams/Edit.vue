@@ -8,12 +8,25 @@
 					<div class="row">
 						<div class="col s6">
 							<div class="input-field">
-								<input type="text" name="title" id="title" v-model="exam.title" />
+								<input
+									type="text"
+									name="title"
+									id="title"
+									v-model="exam.title"
+									maxlength="100"
+									data-length="100"
+								/>
 								<label for="title" class="active">Exam Name <span class="red-text">*</span></label>
 							</div>
 						</div>
 						<div class="input-field col s12">
-							<input type="text" name="description" id="description" v-model="exam.description" />
+							<textarea
+								name="description"
+								id="description"
+								v-model="exam.description"
+								maxlength="1000"
+								data-length="1000"
+							></textarea>
 							<label for="description" class="active"
 								>Exam Description <span class="red-text">*</span></label
 							>
@@ -442,7 +455,7 @@ export default {
 				this.toastSuccess('Exam updated successfully');
 			} catch (e) {
 				console.error('error submitting exam', e);
-				this.toastError('Something went wrong, please try again later');
+				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
