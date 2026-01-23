@@ -115,7 +115,10 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<a href="#" @click.prevent="addQuestion" class="btn waves-effect"> Save</a>
+				<a href="#" @click.prevent="addQuestion(true)" class="blue left btn waves-effect"
+					>Save + Create Another</a
+				>
+				<a href="#" @click.prevent="addQuestion(false)" class="btn waves-effect">Save</a>
 				<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
 			</div>
 		</div>
@@ -184,7 +187,7 @@ export default {
 				}
 			});
 		},
-		addQuestion() {
+		addQuestion(createAnother) {
 			// Check if the question text is empty
 			if (!this.newQuestion.text.trim()) {
 				this.toastError('Please fill in the question.');
@@ -233,7 +236,9 @@ export default {
 				isEdit: -1,
 			};
 
-			M.Modal.getInstance(document.getElementById('modal_question')).close();
+			if (createAnother === false) {
+				M.Modal.getInstance(document.getElementById('modal_question')).close();
+			}
 		},
 
 		addOption() {
