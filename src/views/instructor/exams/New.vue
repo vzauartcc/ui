@@ -3,18 +3,16 @@
 	<div class="create-exam-container" v-else>
 		<div class="card">
 			<div class="card-content">
-				<div class="card-title col s12">
-					<span class="card-title">Create Exam</span>
-				</div>
+				<span class="card-title">Create Exam</span>
 				<form @submit.prevent="submitExam">
 					<div class="row">
 						<div class="input-field col s6">
 							<input type="text" name="title" id="title" v-model="examName" />
-							<label for="title" class="active">Exam Name</label>
+							<label for="title" class="active">Exam Name <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s12">
 							<input type="text" name="description" id="description" v-model="examDescription" />
-							<label for="description">Exam Description</label>
+							<label for="description">Exam Description <span class="red-text">*</span></label>
 						</div>
 						<div class="input-field col s4">
 							<select v-model="milestone" required class="materialize-select">

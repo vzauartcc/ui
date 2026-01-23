@@ -1,218 +1,212 @@
 <template>
 	<div class="card">
 		<div class="loading_container" v-if="!exams"><Spinner /></div>
-		<div class="row row_no_margin" v-else>
-			<div class="card-content">
-				<span class="card-title">Exam Center</span>
+		<div class="card-content">
+			<span class="card-title">Exam Center</span>
 
-				<div class="row col s12">
-					<ul class="tabs">
-						<li class="tab col s6"><a href="#exams" class="active">Exams</a></li>
-						<li class="tab col s6"><a href="#attempts">Attempts</a></li>
-					</ul>
-				</div>
+			<div class="row col s12">
+				<ul class="tabs">
+					<li class="tab col s6"><a href="#exams" class="active">Exams</a></li>
+					<li class="tab col s6"><a href="#attempts">Attempts</a></li>
+				</ul>
+			</div>
 
-				<div class="tabs_content">
-					<div id="exams" class="">
-						<div class="row col s12" v-if="exams">
-							<router-link to="/ins/exams/new" class="btn">Create Exam</router-link>
-						</div>
-
-						<div v-if="exams && exams.length === 0" class="row col s12">
-							<p class="no_exams">There are no exams to display</p>
-						</div>
-
-						<div v-else>
-							<div class="">
-								<table class="table">
-									<thead>
-										<tr>
-											<th>Title</th>
-											<th class="center-align">Created By</th>
-											<th class="center-align">Milestone</th>
-											<th class="center-align">
-												Questions {{ isExamEditor ? '(Active / Total)' : '' }}
-											</th>
-											<th class="center-align">Active</th>
-											<th class="center-align">Options</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr v-for="exam in exams" :key="exam._id">
-											<td
-												:class="{ tooltipped: shouldShowTooltip(exam.title) }"
-												:data-tooltip="shouldShowTooltip(exam.title) ? exam.title : ''"
-											>
-												{{ truncateExamName(exam.title, 20).text }}
-											</td>
-											<td class="center-align">
-												{{ exam.user.fname + ' ' + exam.user.lname }}
-											</td>
-											<td class="center-align">{{ exam.certification.name }}</td>
-											<td class="center-align">
-												{{ exam.questions.filter((e) => e.isActive).length }}
-												{{ isExamEditor ? `/ ${exam.questions.length}` : '' }}
-											</td>
-											<td class="center-align">
-												<div class="switch">
-													<label>
-														<input
-															type="checkbox"
-															@change="toggleActive(exam._id)"
-															:checked="exam.isActive"
-															:disabled="!isExamEditor"
-														/>
-														<span class="lever"></span>
-													</label>
-												</div>
-											</td>
-											<td class="center-align">
-												<a
-													href="#"
-													@click="prepareAssign(exam._id)"
-													class="blue-text tooltipped"
-													data-position="top"
-													data-tooltip="Assign Exam"
-													v-if="exam.isActive"
-												>
-													<i class="material-icons">person_add</i>
-												</a>
-												<a
-													href="#"
-													@click="editExam(exam._id)"
-													class="tooltipped"
-													data-position="top"
-													data-tooltip="Edit Exam"
-													v-if="isExamEditor"
-												>
-													<i class="material-icons">edit</i>
-												</a>
-												<a
-													href="#"
-													@click="prepareDelete(exam._id)"
-													class="red-text modal-trigger tooltipped"
-													data-position="top"
-													data-tooltip="Delete Exam"
-													v-if="isExamEditor"
-												>
-													<i class="material-icons">delete</i>
-												</a>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</div>
+			<div class="tabs_content">
+				<div id="exams" class="">
+					<div class="row col s12" v-if="exams">
+						<router-link to="/ins/exams/new" class="btn">Create Exam</router-link>
 					</div>
 
-					<div id="attempts">
-						<div class="row">
-							<div class="col s4">
-								<select
-									class="materialize-select"
-									name="exam"
-									id="examId"
-									v-model="attemptSelectedExam"
-								>
-									<option value="">All Exams</option>
-									<option
-										v-for="(exam, id) in availableExams"
-										:key="`exam-${id}`"
-										:value="exam._id"
-									>
-										{{ exam.title }}
-									</option>
-								</select>
-								<label for="examId"></label>
-							</div>
-							<div class="col s4">
-								<select
-									class="materialize-select"
-									name="student"
-									id="studentId"
-									v-model="attemptSelectedUser"
-								>
-									<option value="0">All Students</option>
-									<option
-										v-for="(user, id) in availableStudents"
-										:key="`user-${id}`"
-										:value="user.cid"
-									>
-										{{ user.fname }} {{ user.lname }}
-									</option>
-								</select>
-								<label for="studentId"></label>
-							</div>
-							<div class="col s4">
-								<select
-									class="materialize-select"
-									name="status"
-									id="statusId"
-									v-model="attemptSelectedStatus"
-								>
-									<option value="">All Attempts</option>
-									<option value="pending">Not Started</option>
-									<option value="in_progress">In Progress</option>
-									<option value="completed">Completed</option>
-								</select>
-								<label for="statusId"></label>
-							</div>
-						</div>
-						<div v-if="attempts.length === 0">
-							<p class="no_exams">There are no attempts to display</p>
-						</div>
-						<div v-else>
+					<div v-if="exams && exams.length === 0" class="row col s12">
+						<p class="no_exams">There are no exams to display</p>
+					</div>
+
+					<div v-else>
+						<div class="">
 							<table class="table">
 								<thead>
 									<tr>
-										<th>Student</th>
-										<th>Exam</th>
-										<th>Attempt #</th>
-										<th>Assigned Date</th>
-										<th>Score</th>
-										<th>Options</th>
+										<th>Title</th>
+										<th class="center-align">Created By</th>
+										<th class="center-align">Milestone</th>
+										<th class="center-align">
+											Questions {{ isExamEditor ? '(Active / Total)' : '' }}
+										</th>
+										<th class="center-align">Active</th>
+										<th class="center-align">Options</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="attempt in attempts" :key="attempt._id">
-										<td>{{ attempt.user.fname }} {{ attempt.user.lname }}</td>
-										<td>{{ attempt.exam.title }}</td>
-										<td>{{ attempt.attemptNumber }}</td>
-										<td>{{ dShort(new Date(attempt.createdAt)) }}</td>
-										<td>
-											<span v-if="attempt.status === 'completed'">{{ attempt.grade }}%</span>
-											<span v-else-if="attempt.status === 'timed_out'">Expired</span>
-											<span v-else-if="attempt.status === 'in_progress'">In Progress</span>
-											<span v-else>Not Started</span>
+									<tr v-for="exam in exams" :key="exam._id">
+										<td
+											:class="{ tooltipped: shouldShowTooltip(exam.title) }"
+											:data-tooltip="shouldShowTooltip(exam.title) ? exam.title : ''"
+										>
+											{{ truncateExamName(exam.title, 20).text }}
 										</td>
-										<td>
-											<router-link
-												:to="'/ins/exams/attempt/' + attempt._id"
-												v-if="attempt.isComplete"
-											>
-												<i class="material-icons">search</i>
-											</router-link>
+										<td class="center-align">
+											{{ exam.user.fname + ' ' + exam.user.lname }}
+										</td>
+										<td class="center-align">{{ exam.certification.name }}</td>
+										<td class="center-align">
+											{{ exam.questions.filter((e) => e.isActive).length }}
+											{{ isExamEditor ? `/ ${exam.questions.length}` : '' }}
+										</td>
+										<td class="center-align">
+											<div class="switch">
+												<label>
+													<input
+														type="checkbox"
+														@change="toggleActive(exam._id)"
+														:checked="exam.isActive"
+														:disabled="!isExamEditor"
+													/>
+													<span class="lever"></span>
+												</label>
+											</div>
+										</td>
+										<td class="center-align">
 											<a
 												href="#"
-												v-if="!attempt.isComplete"
-												@click.prevent="deleteAttempt(attempt._id)"
-												data-tooltip="Delete Attempt"
+												@click="prepareAssign(exam._id)"
+												class="blue-text tooltipped"
 												data-position="top"
-												class="tooltipped"
-												><i class="material-icons red-text">delete</i></a
+												data-tooltip="Assign Exam"
+												v-if="exam.isActive"
 											>
+												<i class="material-icons">person_add</i>
+											</a>
+											<a
+												href="#"
+												@click="editExam(exam._id)"
+												class="tooltipped"
+												data-position="top"
+												data-tooltip="Edit Exam"
+												v-if="isExamEditor"
+											>
+												<i class="material-icons">edit</i>
+											</a>
+											<a
+												href="#"
+												@click="prepareDelete(exam._id)"
+												class="red-text modal-trigger tooltipped"
+												data-position="top"
+												data-tooltip="Delete Exam"
+												v-if="isExamEditor"
+											>
+												<i class="material-icons">delete</i>
+											</a>
 										</td>
 									</tr>
 								</tbody>
 							</table>
-							<div v-if="attempts.length > 0">
-								<Pagination
-									:amount="attemptAmount"
-									:page="attemptPage"
-									:limit="attemptLimit"
-									:amountOfPages="attemptPages"
-								/>
-							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="attempts">
+					<div class="row">
+						<div class="col s4">
+							<select
+								class="materialize-select"
+								name="exam"
+								id="examId"
+								v-model="attemptSelectedExam"
+							>
+								<option value="">All Exams</option>
+								<option v-for="(exam, id) in availableExams" :key="`exam-${id}`" :value="exam._id">
+									{{ exam.title }}
+								</option>
+							</select>
+							<label for="examId"></label>
+						</div>
+						<div class="col s4">
+							<select
+								class="materialize-select"
+								name="student"
+								id="studentId"
+								v-model="attemptSelectedUser"
+							>
+								<option value="0">All Students</option>
+								<option
+									v-for="(user, id) in availableStudents"
+									:key="`user-${id}`"
+									:value="user.cid"
+								>
+									{{ user.fname }} {{ user.lname }}
+								</option>
+							</select>
+							<label for="studentId"></label>
+						</div>
+						<div class="col s4">
+							<select
+								class="materialize-select"
+								name="status"
+								id="statusId"
+								v-model="attemptSelectedStatus"
+							>
+								<option value="">All Attempts</option>
+								<option value="pending">Not Started</option>
+								<option value="in_progress">In Progress</option>
+								<option value="completed">Completed</option>
+							</select>
+							<label for="statusId"></label>
+						</div>
+					</div>
+					<div v-if="attempts.length === 0">
+						<p class="no_exams">There are no attempts to display</p>
+					</div>
+					<div v-else>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Student</th>
+									<th>Exam</th>
+									<th>Attempt #</th>
+									<th>Assigned Date</th>
+									<th>Score</th>
+									<th>Options</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="attempt in attempts" :key="attempt._id">
+									<td>{{ attempt.user.fname }} {{ attempt.user.lname }}</td>
+									<td>{{ attempt.exam.title }}</td>
+									<td>{{ attempt.attemptNumber }}</td>
+									<td>{{ dShort(new Date(attempt.createdAt)) }}</td>
+									<td>
+										<span v-if="attempt.status === 'completed'">{{ attempt.grade }}%</span>
+										<span v-else-if="attempt.status === 'timed_out'">Expired</span>
+										<span v-else-if="attempt.status === 'in_progress'">In Progress</span>
+										<span v-else>Not Started</span>
+									</td>
+									<td>
+										<router-link
+											:to="'/ins/exams/attempt/' + attempt._id"
+											v-if="attempt.isComplete"
+										>
+											<i class="material-icons">search</i>
+										</router-link>
+										<a
+											href="#"
+											v-if="!attempt.isComplete"
+											@click.prevent="deleteAttempt(attempt._id)"
+											data-tooltip="Delete Attempt"
+											data-position="top"
+											class="tooltipped"
+											><i class="material-icons red-text">delete</i></a
+										>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div v-if="attempts.length > 0">
+							<Pagination
+								:amount="attemptAmount"
+								:page="attemptPage"
+								:limit="attemptLimit"
+								:amountOfPages="attemptPages"
+							/>
 						</div>
 					</div>
 				</div>
