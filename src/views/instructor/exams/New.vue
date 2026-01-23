@@ -77,41 +77,48 @@
 	<teleport to="body">
 		<div id="modal_question" class="modal modal_question">
 			<div class="modal-content">
-				<div class="modal-title" v-if="newQuestion.isEdit >= 0">Edit Question</div>
-				<div class="modal_title" v-else>Create Question</div>
+				<div class="row">
+					<div class="modal-title" v-if="newQuestion.isEdit >= 0">Edit Question</div>
+					<div class="modal_title" v-else>Create Question</div>
+				</div>
 				<div class="row">
 					<div class="input-field col s12">
 						<input type="text" name="questionText" id="questionText" v-model="newQuestion.text" />
 						<label for="questionText" class="active">Question</label>
 					</div>
 				</div>
-				<div class="row col mb-2">
-					<a href="#" class="btn" @click.prevent="addOption">Add option</a>
-					<div class="row">
-						<div class="row">
-							<p class="col s1">Correct</p>
-							<p class="col">Answer</p>
+				<div class="row mb-2">
+					<div class="row col s12">
+						<div class="col">
+							<a href="#" class="btn" @click.prevent="addOption">Add option</a>
 						</div>
-						<div class="row" v-for="(option, idx) in newQuestion.options" :key="idx">
-							<div class="col s1">
-								<label>
-									<input
-										type="checkbox"
-										class="active"
-										v-model="option.isCorrect"
-										id="indeterminate-checkbox"
-									/>
-									<span></span>
-								</label>
-							</div>
-							<div class="s10 col">
-								<input type="text" v-model="option.text" />
-							</div>
-							<a href="#" class="col s1 red-text" @click.prevent="removeOption(idx)"
-								><i class="material-icons">delete_forever</i></a
-							>
+						<div class="col">
+							<a href="#" class="btn red" @click.prevent="setTrueFalse">True/False</a>
 						</div>
 					</div>
+				</div>
+				<div class="row">
+					<p class="col s1">Correct</p>
+					<p class="col">Answer</p>
+				</div>
+				<div class="row" v-for="(option, idx) in newQuestion.options" :key="idx">
+					<div class="col s1">
+						<label>
+							<input
+								type="checkbox"
+								class="active"
+								v-model="option.isCorrect"
+								id="indeterminate-checkbox"
+							/>
+							<span></span>
+						</label>
+					</div>
+					<div class="s10 col">
+						<input type="text" v-model="option.text" />
+					</div>
+					<a href="#" class="col s1 red-text" @click.prevent="removeOption(idx)"
+						><i class="material-icons">delete_forever</i></a
+					>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -138,7 +145,12 @@ export default {
 			examDescription: '',
 			newQuestion: {
 				text: '',
-				options: [{ text: '', isCorrect: false }],
+				options: [
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+				],
 				isEdit: -1,
 			},
 			questions: [],
@@ -173,7 +185,12 @@ export default {
 		createQuestion() {
 			this.newQuestion = {
 				text: '',
-				options: [{ text: '', isCorrect: false }],
+				options: [
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+				],
 				isEdit: -1,
 			};
 
@@ -232,7 +249,12 @@ export default {
 
 			this.newQuestion = {
 				text: '',
-				options: [{ text: '', isCorrect: false }],
+				options: [
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+				],
 				isEdit: -1,
 			};
 
@@ -243,6 +265,12 @@ export default {
 
 		addOption() {
 			this.newQuestion.options.push({ text: '', isCorrect: false });
+		},
+		setTrueFalse() {
+			this.newQuestion.options = [
+				{ text: 'True', isCorrect: false },
+				{ text: 'False', isCorrect: false },
+			];
 		},
 
 		removeOption(index) {
