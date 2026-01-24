@@ -17,6 +17,10 @@
 				Training Waitlist
 				<div class="secondary-content"><i class="material-icons">list_alt</i></div>
 			</router-link>
+			<router-link to="/dash/training/exams" class="collection-item">
+				Exam Center
+				<div class="secondary-content"><i class="material-icons">quiz</i></div>
+			</router-link>
 			<router-link to="/dash/feedback" class="collection-item">
 				Feedback
 				<div class="secondary-content"><i class="material-icons">feedback</i></div>
