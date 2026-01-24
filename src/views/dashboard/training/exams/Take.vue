@@ -43,16 +43,29 @@
 							<div v-for="option in question.options" :key="option._id" class="col s12">
 								<div class="row">
 									<div class="col s1">
-										<label>
-											<input
-												type="checkbox"
-												class="active"
-												v-model="answeringQuestion.selectedOptions"
-												:value="option._id"
-												id="indeterminate-checkbox"
-											/>
-											<span></span>
-										</label>
+										<div v-if="question.multiCorrect">
+											<label>
+												<input
+													type="checkbox"
+													class="active"
+													v-model="answeringQuestion.selectedOptions"
+													:value="option._id"
+													id="indeterminate-checkbox"
+												/>
+												<span></span>
+											</label>
+										</div>
+										<div v-else>
+											<label>
+												<input
+													type="radio"
+													v-model="answeringQuestion.selectedOptions[0]"
+													:value="option._id"
+													class="with-gap"
+												/>
+												<span></span>
+											</label>
+										</div>
 									</div>
 									<div class="col s11">
 										{{ option.text }}
@@ -86,6 +99,7 @@
 			</div>
 		</div>
 	</div>
+	{{ answeringQuestion.selectedOptions }}
 </template>
 
 <script>
@@ -98,8 +112,8 @@ export default {
 			attempt: null,
 			answeringQuestion: {
 				id: '',
-				selectedOptions: [],
-				dirty: [],
+				selectedOptions: [null],
+				dirty: [null],
 				startTime: 0,
 			},
 			step: 0,
@@ -154,7 +168,7 @@ export default {
 			try {
 				const { data } = await zauApi.patch(`/exam/attempt/${this.$route.params.attemptId}`, {
 					questionId: id,
-					selectedOptions: options,
+					selectedOptions: options.filter((o) => o !== null && o !== ''),
 					timeSpent: spent,
 				});
 
@@ -224,8 +238,8 @@ export default {
 				this.answeringQuestion.selectedOptions = JSON.parse(JSON.stringify(resp.selectedOptions));
 				this.answeringQuestion.dirty = JSON.parse(JSON.stringify(resp.selectedOptions));
 			} else {
-				this.answeringQuestion.selectedOptions = [];
-				this.answeringQuestion.dirty = [];
+				this.answeringQuestion.selectedOptions = [null];
+				this.answeringQuestion.dirty = [null];
 			}
 			this.answeringQuestion.id = newQId;
 			this.answeringQuestion.startTime = Date.now();
