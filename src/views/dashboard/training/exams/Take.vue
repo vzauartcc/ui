@@ -72,9 +72,11 @@
 									</div>
 								</div>
 							</div>
-							<label v-if="question.multiCorrect">Select all correct answers</label>
 						</div>
 						<div class="row">
+							<div class="col s4">
+								<label v-if="question.multiCorrect">Select all correct answers</label>
+							</div>
 							<a
 								href="#"
 								class="col right btn waves-effect red"
@@ -99,7 +101,6 @@
 			</div>
 		</div>
 	</div>
-	{{ answeringQuestion.selectedOptions }}
 </template>
 
 <script>
@@ -160,6 +161,13 @@ export default {
 			} catch (e) {
 				console.error('error submitting attempt', e);
 				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
+
+				if (Array.isArray(e.response.data.unanswered)) {
+					console.log(e.response.data.unanswered);
+					this.exam.responses = this.exam.responses.filter(
+						(r) => !e.response.data.unanswered.includes(r.questionId),
+					);
+				}
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
