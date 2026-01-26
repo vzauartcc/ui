@@ -169,7 +169,17 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="attempt in attempts" :key="attempt._id">
+								<tr
+									v-for="attempt in attempts"
+									:key="attempt._id"
+									class="lighten-3"
+									:class="{
+										green: attempt.status === 'completed' && attempt.passed === true,
+										red: attempt.status === 'completed' && attempt.passed === false,
+										'blue-grey': attempt.status === 'timed_out',
+										yellow: attempt.status === 'in_progress',
+									}"
+								>
 									<td>{{ attempt.user.fname }} {{ attempt.user.lname }}</td>
 									<td>{{ attempt.exam.title }}</td>
 									<td>{{ attempt.attemptNumber }}</td>
