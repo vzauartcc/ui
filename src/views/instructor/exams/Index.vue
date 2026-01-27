@@ -27,7 +27,7 @@
 								<thead>
 									<tr>
 										<th>Title</th>
-										<th class="center-align">Created By</th>
+										<th class="center-align">Modified By</th>
 										<th class="center-align">Milestone</th>
 										<th class="center-align">
 											Questions {{ isExamEditor ? '(Active / Total)' : '' }}
