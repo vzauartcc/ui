@@ -137,6 +137,10 @@ const routes = [
 				component: () => import('../views/instructor/exams/Index.vue'),
 			},
 			{
+				path: 'exams/attempt/:attemptId',
+				component: () => import('../views/instructor/exams/ViewAttempt.vue'),
+			},
+			{
 				path: 'exams/:examId',
 				component: () => import('../views/instructor/exams/Edit.vue'),
 			},
@@ -333,6 +337,14 @@ const routes = [
 			{
 				path: 'training/waitlist/new',
 				component: () => import('../views/dashboard/training/waitlist/New.vue'),
+			},
+			{
+				path: 'training/exams',
+				component: () => import('../views/dashboard/training/exams/Index.vue'),
+			},
+			{
+				path: 'training/exams/:attemptId',
+				component: () => import('../views/dashboard/training/exams/Take.vue'),
 			},
 			{
 				path: 'staffingrequest/:slug',
