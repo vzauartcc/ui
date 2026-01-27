@@ -9,7 +9,7 @@
 				Controllers
 				<div class="secondary-content"><i class="material-icons">people</i></div>
 			</router-link>
-			<router-link to="/ins/exams" class="collection-item" v-if="hasRole(['atm', 'datm', 'ta'])">
+			<router-link to="/ins/exams" class="collection-item">
 				Exam Center
 				<div class="secondary-content"><i class="material-icons">quiz</i></div>
 			</router-link>
