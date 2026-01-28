@@ -51,6 +51,13 @@
 							{{ reduceAvailability(value.availability) }}
 						</td>
 						<td class="options" v-if="user.data.isSeniorStaff">
+							<i
+								class="material-icons tooltipped"
+								:data-tooltip="value.notes"
+								data-position="top"
+								v-if="value.notes && value.notes.trim() !== ''"
+								>notes</i
+							>
 							<a
 								href="#"
 								@click.prevent="openEdit(value._id)"

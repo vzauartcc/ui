@@ -137,6 +137,10 @@
 										</select>
 										<label>Availability <span class="red-text">*</span></label>
 									</div>
+									<div class="input-field col s12">
+										<input type="text" name="notes" id="notes" v-model="edit.notes" />
+										<label for="notes">Notes (Optional)</label>
+									</div>
 								</form>
 							</div>
 							<div class="modal-footer">

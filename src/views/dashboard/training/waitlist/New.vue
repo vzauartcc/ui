@@ -103,6 +103,10 @@
 								>
 							</label>
 						</div>
+						<div class="input-field col s12" v-if="user.data.isSeniorStaff">
+							<input type="text" name="notes" id="notes" v-model="request.notes" />
+							<label for="notes">Notes (Optional)</label>
+						</div>
 						<div class="submit_request">
 							<button
 								type="submit"
@@ -135,6 +139,7 @@ export default {
 				instructor: -1,
 				certification: '',
 				availability: [],
+				notes: [],
 			},
 			ack: false,
 			academy: '',
