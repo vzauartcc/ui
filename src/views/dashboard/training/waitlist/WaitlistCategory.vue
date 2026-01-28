@@ -7,8 +7,8 @@
 					Students for {{ ins.find((x) => x.cid === +k).fname }}
 					{{ ins.find((x) => x.cid === +k).lname }} ({{ docs[k].length }})
 				</div>
-				<div v-else-if="certs.find((c) => c.code === k)">
-					Students for {{ certs.find((c) => c.code === k).name }} ({{ docs[k].length }})
+				<div v-else-if="certs.find((c) => c.certCode === k)">
+					Students for {{ certs.find((c) => c.certCode === k).name }} ({{ docs[k].length }})
 				</div>
 				<div v-else>Students on Waitlist ({{ docs[k].length }})</div>
 			</div>
@@ -95,7 +95,7 @@
 				students)
 			</p>
 			<p v-if="busiestCertCode">
-				Busiest milestone: {{ certs.find((c) => c.code === busiestCertCode).name }} ({{
+				Busiest milestone: {{ certs.find((c) => c.certCode === busiestCertCode).name }} ({{
 					docs.all.filter((x) => x.certCode === busiestCertCode).length
 				}}
 				students)

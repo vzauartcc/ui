@@ -234,8 +234,10 @@ export default {
 		},
 		async getCertifications() {
 			try {
-				const { data } = await zauApi.get('/controller/certifications');
-				this.certifications = data;
+				const { data } = await zauApi.get('/training/milestones');
+				this.certifications = data.milestones
+					.filter((m) => m.type === 'waitlist' && m.isActive === true)
+					.sort((a, b) => a.order - b.order);
 			} catch (e) {
 				console.error('error getting certifications', e);
 				this.toastError('Something went wrong, please try again later');
@@ -322,15 +324,14 @@ export default {
 	computed: {
 		...mapState('user', ['user']),
 		filteredMilestones() {
-			const initial = this.certifications
-				.filter((c) => !c.class.includes('solo') && c.order > 2)
-				.sort((a, b) => a.order - b.order);
+			const initial = [...this.certifications].sort((a, b) => a.order - b.order);
 			if (this.edit.student.certifications.length < 1) return initial;
 
 			const highest =
 				[...this.edit.student.certifications]
 					.filter((x) => !x.class.includes('solo'))
 					.sort((a, b) => b.order - a.order)[0].order || 0;
+
 			return initial.filter((c) => c.order > highest);
 		},
 	},

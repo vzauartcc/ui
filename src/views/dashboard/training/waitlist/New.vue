@@ -183,9 +183,9 @@ export default {
 		},
 		async getTrainingMilestones() {
 			try {
-				const { data } = await zauApi.get(`/controller/certifications`);
-				this.milestones = data
-					.filter((x) => x.order > 2 && !x.class.includes('solo'))
+				const { data } = await zauApi.get(`/training/milestones`);
+				this.milestones = data.milestones
+					.filter((x) => x.type === 'waitlist' && x.isActive === true)
 					.sort((a, b) => a.order - b.order);
 			} catch (e) {
 				console.error('error getting certifications', e);
@@ -234,14 +234,10 @@ export default {
 				return this.milestones;
 			}
 
-			// Get the user's highest cert and filter out any certs less than that cert.
-			return this.milestones.filter(
-				(m) =>
-					!this.user.data.certCodes.includes(m.code) &&
-					([...this.user.data.certifications]
-						.filter((x) => !x.class.includes('event'))
-						.sort((a, b) => b.order - a.order)[0].order || 0) < m.order,
-			);
+			// Get the user's highest cert and filter out any certs not obtained.
+			const retval = this.milestones.filter((m) => !this.user.data.certCodes.includes(m.code));
+
+			return retval;
 		},
 		...mapState('user', ['user']),
 	},
