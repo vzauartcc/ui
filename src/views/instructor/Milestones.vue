@@ -273,7 +273,7 @@ export default {
 
 				this.endorsements = data;
 
-				this.ratings = ratingsShort.filter((_v, idx) => idx > 0 && idx < 6);
+				this.ratings = ratingsShort.filter((_v, idx) => idx >= 0 && idx < 6);
 			} catch (e) {
 				this.toastError('Something went wrong, please try again later');
 				console.error('error getting endorsements', e);
