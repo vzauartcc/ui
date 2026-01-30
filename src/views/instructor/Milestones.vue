@@ -10,56 +10,78 @@
 					<div class="col s4"><span class="btn right" @click.prevent="createModal">New</span></div>
 				</div>
 				<div class="row">
-					<table>
-						<thead>
-							<tr>
-								<td>Code</td>
-								<td>Milestone Name</td>
-								<td>Associated Endorsement</td>
-								<td>Associated Rating</td>
-								<td>Active</td>
-								<td class="options">Options</td>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="milestone in milestones" :key="milestone._id">
-								<td>{{ milestone.code }}</td>
-								<td>{{ milestone.name }}</td>
-								<td>{{ getEndorsementByCode(milestone.certCode) }}</td>
-								<td>{{ getRating(milestone.rating) }}</td>
-								<td>{{ milestone.isActive ? 'Yes' : 'No' }}</td>
-								<td class="options">
-									<a
-										href="#"
-										@click.prevent="moveMilestoneUp(milestone._id)"
-										data-position="top"
-										data-tooltip="Move Milestone Up"
-										class="tooltipped"
-										v-show="spinners.length === 0"
-										><i class="material-icons">expand_less</i></a
-									>
-									<a
-										href="#"
-										@click.prevent="moveMilestoneDown(milestone._id)"
-										data-position="top"
-										data-tooltip="Move Milestone Down"
-										class="tooltipped"
-										v-show="spinners.length === 0"
-										><i class="material-icons">expand_more</i></a
-									>
-									<a
-										href="#"
-										@click.prevent="openEdit(milestone)"
-										data-position="top"
-										data-tooltip="Edit Milestone"
-										class="tooltipped"
-										style="font-size: 0.8em"
-										><i class="material-icons">edit</i></a
-									>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<ul class="tabs">
+						<li
+							v-for="(milestoneType, idx) in Object.keys(milestones)"
+							:key="`tabs-${milestoneType}`"
+							class="tab"
+							:class="{ active: idx === 0 }"
+						>
+							<a :href="`#${milestoneType}`"
+								>{{ milestoneType.charAt(0).toUpperCase()
+								}}{{ milestoneType.slice(1) }} Milestones</a
+							>
+						</li>
+					</ul>
+				</div>
+				<div class="tabs_content">
+					<div
+						class="row"
+						v-for="milestoneType in Object.keys(milestones)"
+						:key="`body-${milestoneType}`"
+						:id="milestoneType"
+					>
+						<table>
+							<thead>
+								<tr>
+									<td>Code</td>
+									<td>Milestone Name</td>
+									<td>Associated Endorsement</td>
+									<td>Associated Rating</td>
+									<td>Active</td>
+									<td class="options">Options</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(milestone, idx) in milestones[milestoneType]" :key="milestone._id">
+									<td>{{ milestone.code }}</td>
+									<td>{{ milestone.name }}</td>
+									<td>{{ getEndorsementByCode(milestone.certCode) }}</td>
+									<td>{{ getRating(milestone.rating) }}</td>
+									<td>{{ milestone.isActive ? 'Yes' : 'No' }}</td>
+									<td class="options">
+										<a
+											href="#"
+											@click.prevent="moveMilestoneUp(milestone._id, milestoneType)"
+											data-position="top"
+											data-tooltip="Move Milestone Up"
+											class="tooltipped"
+											v-show="spinners.length === 0 && idx > 0"
+											><i class="material-icons">expand_less</i></a
+										>
+										<a
+											href="#"
+											@click.prevent="moveMilestoneDown(milestone._id, milestoneType)"
+											data-position="top"
+											data-tooltip="Move Milestone Down"
+											class="tooltipped"
+											v-show="spinners.length === 0 && idx < milestones[milestoneType].length - 1"
+											><i class="material-icons">expand_more</i></a
+										>
+										<a
+											href="#"
+											@click.prevent="openEdit(milestone)"
+											data-position="top"
+											data-tooltip="Edit Milestone"
+											class="tooltipped"
+											style="font-size: 0.8em"
+											><i class="material-icons">edit</i></a
+										>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 
@@ -76,20 +98,34 @@
 									v-model="milestoneData.code"
 									placeholder="GC1"
 									maxlength="4"
+									:disabled="milestoneData.id !== ''"
 								/>
 								<label for="code" class="active"
 									>Short Code (4 chars max)
 									<i
 										class="material-icons tooltipped"
 										data-position="right"
-										data-tooltip="Short code must be unique"
+										data-tooltip="Short code must be unique, cannot be modified"
 										>help</i
-									></label
-								>
+									>
+								</label>
 							</div>
 							<div class="input-field col s12">
 								<input id="name" name="name" v-model="milestoneData.name" />
 								<label for="name" class="active">Name</label>
+							</div>
+							<div class="input-field col s12">
+								<select
+									name="milestoneType"
+									id="milestoneType"
+									v-model="milestoneData.type"
+									class="materialize-select"
+								>
+									<option v-for="mt in milestoneTypes" :value="mt" :key="mt">
+										{{ mt.charAt(0).toUpperCase() }}{{ mt.slice(1) }}
+									</option>
+								</select>
+								<label for="milestoneType">Milestone Type</label>
 							</div>
 							<div class="input-field col s12">
 								<select
@@ -143,7 +179,7 @@
 						<span v-if="spinners.length > 0"><SmallSpinner /></span>
 						<a
 							href="#"
-							class="btn waves-effect modal-close right"
+							class="btn waves-effect right"
 							@click.prevent="createMilestone"
 							v-if="milestoneData.id === ''"
 							:class="{ disabled: spinners.length > 0 }"
@@ -151,7 +187,7 @@
 						>
 						<a
 							href="#"
-							class="btn waves-effect modal-close right"
+							class="btn waves-effect right"
 							@click.prevent="updateMilestone"
 							:class="{ disabled: spinners.length > 0 }"
 							v-else
@@ -173,7 +209,7 @@ export default {
 	title: 'Manage Milestones',
 	data() {
 		return {
-			milestones: null,
+			milestones: {},
 			endorsements: [],
 			milestoneData: {
 				id: '',
@@ -182,7 +218,9 @@ export default {
 				name: '',
 				rating: '',
 				isActive: true,
+				type: '',
 			},
+			milestoneTypes: [],
 			ratings: [],
 			spinners: [],
 		};
@@ -191,14 +229,18 @@ export default {
 		await this.getMilestones();
 		await this.getEndorsements();
 
-		M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-			margin: 0,
-		});
-
 		this.$nextTick(() => {
+			M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+				margin: 0,
+			});
+
 			const modals = document.querySelectorAll('.modal');
 			M.Modal.init(modals, {
 				preventScrolling: false,
+			});
+
+			M.Tabs.init(document.querySelectorAll('.tabs'), {
+				onShow: this.handleTabShow,
 			});
 		});
 	},
@@ -207,7 +249,19 @@ export default {
 			try {
 				const { data } = await zauApi.get('/training/milestones');
 
-				this.milestones = data.milestones.sort((a, b) => a.order - b.order);
+				this.milestones = {};
+				data.milestones.forEach((m) => {
+					if (Array.isArray(this.milestones[m.type])) {
+						this.milestones[m.type].push(m);
+					} else {
+						this.milestones[m.type] = [m];
+					}
+				});
+
+				Object.keys(this.milestones).forEach((mt) => {
+					this.milestones[mt] = this.milestones[mt].sort((a, b) => a.order - b.order);
+				});
+				this.milestoneTypes = data.milestoneTypes;
 			} catch (e) {
 				this.toastError('Something went wrong, please try again later');
 				console.error('error getting milestones', e);
@@ -246,6 +300,7 @@ export default {
 				rating: milestone.rating,
 				isActive: milestone.isActive,
 				id: milestone._id,
+				type: milestone.type,
 			};
 
 			this.openModal();
@@ -258,22 +313,23 @@ export default {
 				name: '',
 				rating: 0,
 				isActive: true,
+				type: '',
 			};
 
 			this.openModal();
 		},
-		moveMilestoneDown(id) {
+		moveMilestoneDown(id, milestoneType) {
 			const retval = [];
 
-			for (let i = 0; i < this.milestones.length; i++) {
-				const el = this.milestones[i];
-				if (i === this.milestones.length - 1 && el._id === id) {
+			for (let i = 0; i < this.milestones[milestoneType].length; i++) {
+				const el = this.milestones[milestoneType][i];
+				if (i === this.milestones[milestoneType].length - 1 && el._id === id) {
 					return;
 				}
 
 				if (el._id === id) {
-					retval.push(this.milestones[i + 1]);
-					retval.push(this.milestones[i]);
+					retval.push(this.milestones[milestoneType][i + 1]);
+					retval.push(this.milestones[milestoneType][i]);
 					i++;
 				} else {
 					retval.push(el);
@@ -282,18 +338,18 @@ export default {
 
 			this.updateOrder(retval);
 		},
-		moveMilestoneUp(id) {
-			const retval = new Array(this.milestones.length);
+		moveMilestoneUp(id, milestoneType) {
+			const retval = new Array(this.milestones[milestoneType].length);
 
-			for (let i = this.milestones.length - 1; i >= 0; i--) {
-				const el = this.milestones[i];
+			for (let i = this.milestones[milestoneType].length - 1; i >= 0; i--) {
+				const el = this.milestones[milestoneType][i];
 				if (i === 0 && el._id === id) {
 					return;
 				}
 
 				if (el._id === id) {
-					retval[i] = this.milestones[i - 1];
-					retval[i - 1] = this.milestones[i];
+					retval[i] = this.milestones[milestoneType][i - 1];
+					retval[i - 1] = this.milestones[milestoneType][i];
 					i--;
 				} else {
 					retval[i] = el;
@@ -310,9 +366,15 @@ export default {
 					certCode: this.milestoneData.certCode.toLowerCase(),
 					rating: this.milestoneData.rating,
 					name: this.milestoneData.name,
+					type: this.milestoneData.type,
 				});
 
 				await this.getMilestones();
+
+				const modal = document.getElementById('create');
+				if (modal) {
+					M.Modal.getInstance(modal).close();
+				}
 			} catch (e) {
 				this.toastError('Something went wrong, please try again later');
 				console.error('error creating milestone', e);
@@ -329,9 +391,14 @@ export default {
 					rating: this.milestoneData.rating,
 					name: this.milestoneData.name,
 					isActive: this.milestoneData.isActive,
+					type: this.milestoneData.type,
 				});
 
 				await this.getMilestones();
+				const modal = document.getElementById('create');
+				if (modal) {
+					M.Modal.getInstance(modal).close();
+				}
 			} catch (e) {
 				this.toastError('Something went wrong, please try again later');
 				console.error(e);

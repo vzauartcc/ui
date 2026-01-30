@@ -26,6 +26,7 @@
 								v-model="exam.description"
 								maxlength="1000"
 								data-length="1000"
+								class="materialize-textarea"
 							></textarea>
 							<label for="description" class="active"
 								>Exam Description <span class="red-text">*</span></label
@@ -249,6 +250,7 @@ export default {
 		M.FormSelect.init(document.querySelectorAll('select'), {});
 		M.CharacterCounter.init(document.querySelectorAll('input[type="text"]'), {});
 		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
+		M.textareaAutoResize(document.querySelector('textarea'));
 	},
 	computed: {
 		isFormValid() {
@@ -263,7 +265,10 @@ export default {
 		async getExam() {
 			try {
 				const { data } = await zauApi.get(`/exam/${this.$route.params.examId}`);
-				this.exam = data;
+				this.exam = {
+					...data,
+					questions: data.questions.sort((a) => (a.isActive ? -1 : 1)),
+				};
 			} catch (e) {
 				console.error('error getting exam', e);
 				this.toastError('Something went wrong, please try again later');
