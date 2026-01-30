@@ -26,6 +26,7 @@
 								v-model="exam.description"
 								maxlength="1000"
 								data-length="1000"
+								class="materialize-textarea"
 							></textarea>
 							<label for="description" class="active"
 								>Exam Description <span class="red-text">*</span></label
@@ -74,16 +75,23 @@
 									</div>
 								</td>
 								<td class="options">
-									<span v-if="!(question._id && question._id !== '')">
-										<a href="#" class="col s1" @click.prevent="editQuestion(idx)"
-											><i class="material-icons">edit</i></a
-										>
-										<a href="#" class="col s1" @click.prevent="deleteQuestion(idx)">
-											<i class="material-icons red-text">delete_forever</i>
-										</a>
-									</span>
-									<a href="#" class="col s1" @click.prevent="viewQuestion(idx)" v-else>
-										<i class="material-icons">search</i>
+									<a
+										href="#"
+										class="tooltipped"
+										@click.prevent="editQuestion(idx)"
+										data-position="top"
+										data-tooltip="Edit Question"
+										><i class="material-icons">edit</i></a
+									>
+									<a
+										href="#"
+										class="tooltipped"
+										@click.prevent="deleteQuestion(idx)"
+										data-position="top"
+										data-tooltip="Delete Question"
+										v-if="!(question._id && question._id !== '')"
+									>
+										<i class="material-icons red-text">delete_forever</i>
 									</a>
 								</td>
 							</tr>
@@ -172,53 +180,6 @@
 			</div>
 		</div>
 	</teleport>
-
-	<teleport to="body">
-		<div id="modal_question_view" class="modal modal_question_view">
-			<div class="modal-content">
-				<div class="row">
-					<div class="input-field col s12">
-						<input
-							type="text"
-							name="questionText"
-							id="questionText"
-							v-model="newQuestion.text"
-							disabled
-						/>
-						<label for="questionText" class="active">Question</label>
-					</div>
-				</div>
-				<div class="row mb-2">
-					<div class="row">
-						<div class="row">
-							<p class="col s1">Correct</p>
-							<p class="col">Answer</p>
-						</div>
-						<div class="row" v-for="(option, idx) in newQuestion.options" :key="idx">
-							<div class="col s1">
-								<label>
-									<input
-										type="checkbox"
-										class="active"
-										v-model="option.isCorrect"
-										id="indeterminate-checkbox"
-										disabled=""
-									/>
-									<span></span>
-								</label>
-							</div>
-							<div class="s10 col">
-								<input type="text" v-model="option.text" disabled="" />
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<a href="#" class="waves-effect btn-flat modal-close" @click.prevent>Close</a>
-			</div>
-		</div>
-	</teleport>
 </template>
 
 <script>
@@ -246,9 +207,11 @@ export default {
 		await this.getMilestones();
 		await this.getExam();
 
+		this.loadTooltips();
 		M.FormSelect.init(document.querySelectorAll('select'), {});
 		M.CharacterCounter.init(document.querySelectorAll('input[type="text"]'), {});
 		M.CharacterCounter.init(document.querySelectorAll('textarea'), {});
+		M.textareaAutoResize(document.querySelector('textarea'));
 	},
 	computed: {
 		isFormValid() {
@@ -260,10 +223,18 @@ export default {
 		},
 	},
 	methods: {
+		loadTooltips() {
+			this.$nextTick(() => {
+				M.Tooltip.init(document.querySelectorAll('.tooltipped'), { margin: 0 });
+			});
+		},
 		async getExam() {
 			try {
 				const { data } = await zauApi.get(`/exam/${this.$route.params.examId}`);
-				this.exam = data;
+				this.exam = {
+					...data,
+					questions: data.questions.sort((a) => (a.isActive ? -1 : 1)),
+				};
 			} catch (e) {
 				console.error('error getting exam', e);
 				this.toastError('Something went wrong, please try again later');
@@ -352,6 +323,7 @@ export default {
 
 			if (createAnother === false) {
 				M.Modal.getInstance(document.getElementById('modal_question_edit')).close();
+				this.loadTooltips();
 			}
 		},
 
@@ -404,20 +376,6 @@ export default {
 			}
 
 			this.exam.questions = retval;
-		},
-		viewQuestion(index) {
-			this.newQuestion.text = this.exam.questions[index].text;
-			this.newQuestion.options = [...this.exam.questions[index].options];
-
-			this.$nextTick(() => {
-				const modal = document.getElementById(`modal_question_view`);
-				if (modal) {
-					M.Modal.init(modal, { preventScrolling: false }).open();
-				} else {
-					console.error('unable to find view question modal');
-					this.toastError('Something went wrong, please try again later');
-				}
-			});
 		},
 
 		async submitExam() {

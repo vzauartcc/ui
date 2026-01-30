@@ -7,8 +7,8 @@
 					Students for {{ ins.find((x) => x.cid === +k).fname }}
 					{{ ins.find((x) => x.cid === +k).lname }} ({{ docs[k].length }})
 				</div>
-				<div v-else-if="certs.find((c) => c.code === k)">
-					Students for {{ certs.find((c) => c.code === k).name }} ({{ docs[k].length }})
+				<div v-else-if="certs.find((c) => c.certCode === k)">
+					Students for {{ certs.find((c) => c.certCode === k).name }} ({{ docs[k].length }})
 				</div>
 				<div v-else>Students on Waitlist ({{ docs[k].length }})</div>
 			</div>
@@ -51,6 +51,13 @@
 							{{ reduceAvailability(value.availability) }}
 						</td>
 						<td class="options" v-if="user.data.isSeniorStaff">
+							<i
+								class="material-icons tooltipped"
+								:data-tooltip="value.notes"
+								data-position="top"
+								v-if="value.notes && value.notes.trim() !== ''"
+								>notes</i
+							>
 							<a
 								href="#"
 								@click.prevent="openEdit(value._id)"
@@ -95,7 +102,7 @@
 				students)
 			</p>
 			<p v-if="busiestCertCode">
-				Busiest milestone: {{ certs.find((c) => c.code === busiestCertCode).name }} ({{
+				Busiest milestone: {{ certs.find((c) => c.certCode === busiestCertCode).name }} ({{
 					docs.all.filter((x) => x.certCode === busiestCertCode).length
 				}}
 				students)
