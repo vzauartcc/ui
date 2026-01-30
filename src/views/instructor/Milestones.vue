@@ -98,16 +98,17 @@
 									v-model="milestoneData.code"
 									placeholder="GC1"
 									maxlength="4"
+									:disabled="milestoneData.id !== ''"
 								/>
 								<label for="code" class="active"
 									>Short Code (4 chars max)
 									<i
 										class="material-icons tooltipped"
 										data-position="right"
-										data-tooltip="Short code must be unique"
+										data-tooltip="Short code must be unique, cannot be modified"
 										>help</i
-									></label
-								>
+									>
+								</label>
 							</div>
 							<div class="input-field col s12">
 								<input id="name" name="name" v-model="milestoneData.name" />
