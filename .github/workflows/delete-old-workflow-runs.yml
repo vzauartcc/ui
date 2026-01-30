@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@0073229620e676f1b9d933b31b2b53df8b5915ef # v2
+        uses: Mattraks/delete-workflow-runs@bd2822c9d98065c9766fb1f4bbc32325c47de4fb # v2
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
