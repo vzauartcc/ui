@@ -1,6 +1,10 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["config:recommended", ":disableMajorUpdates", "helpers:pinGitHubActionDigests"],
+	"extends": [
+		"config:recommended",
+		":disableMajorUpdates",
+		"helpers:pinGitHubActionDigests"
+	],
 	"timezone": "America/Chicago",
 	"schedule": ["* 10-18 * * *"],
 	"dependencyDashboard": true,
@@ -32,31 +36,48 @@
 			"description": "Group minor and patch updates together for Vue core components, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
 			"groupName": "vue core minor and patch updates",
-			"matchPackagePatterns": ["^vue", "vite-plugin-vue"],
-			"automerge": false
+			"automerge": false,
+			"matchPackageNames": ["/^vue/", "/vite-plugin-vue/"]
 		},
 		{
 			"description": "Group minor and patch updates together for Leaflet, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
 			"groupName": "maps-geospatial minor and patch updates",
-			"matchPackagePatterns": ["^@indoorequal", "^@vue-leaflet"],
-			"matchPackageNames": ["maplibre-gl", "leaflet", "metar-parser"],
+			"matchPackageNames": [
+				"maplibre-gl",
+				"leaflet",
+				"metar-parser",
+				"/^@indoorequal/",
+				"/^@vue-leaflet/"
+			],
 			"automerge": false
 		},
 		{
 			"description": "Group minor and patch updates together for UI components, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
 			"groupName": "ui minor and patch updates",
-			"matchPackageNames": ["flatpickr", "materialize-css", "chart.js"],
-			"matchPackagePatterns": ["^@toast-ui", "vue-flatpickr"],
+			"matchPackageNames": [
+				"flatpickr",
+				"materialize-css",
+				"chart.js",
+				"/^@toast-ui/",
+				"/vue-flatpickr/"
+			],
 			"automerge": false
 		},
 		{
 			"description": "Group minor and patch updates together for tooling and linting, but do not automerge",
 			"matchUpdateTypes": ["minor", "patch"],
 			"groupName": "tooling-lint minor and patch updates",
-			"matchPackageNames": ["prettier", "sass", "vite", "globals"],
-			"matchPackagePatterns": ["^@eslint", "^@vue/eslint-config", "^eslint"],
+			"matchPackageNames": [
+				"prettier",
+				"sass",
+				"vite",
+				"globals",
+				"/^@eslint/",
+				"/^@vue/eslint-config/",
+				"/^eslint/"
+			],
 			"automerge": false
 		},
 		{
