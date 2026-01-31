@@ -358,6 +358,16 @@ export default {
 				return;
 			}
 
+			if (this.questions.some((q) => q.text.length > 400)) {
+				this.toastError('Question text must be less than 400 characters');
+				return;
+			}
+
+			if (this.questions.some((q) => q.options.some((o) => o.text.length > 100))) {
+				this.toastError('Option text must be less than 100 characters');
+				return;
+			}
+
 			// Prepare the exam data for submission
 			const examData = {
 				title: this.examName,
