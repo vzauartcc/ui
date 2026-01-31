@@ -80,8 +80,11 @@
 							<div class="row green lighten-4">
 								<i class="material-icons">check</i> Correct answer selected
 							</div>
+							<div class="row correctAnswer">
+								<div style="margin-left: 1.75em">Correct answer <strong>not</strong> selected</div>
+							</div>
 							<div class="row red lighten-4">
-								<i class="material-icons">close</i> Correct answer <strong>not</strong> selected
+								<i class="material-icons">close</i> Incorrect answer selected
 							</div>
 						</div>
 					</div>
@@ -102,7 +105,9 @@
 									class="row lighten-4"
 									:class="{
 										green: option.isCorrect && response.selectedOptions.includes(option._id),
-										red: option.isCorrect && !response.selectedOptions.includes(option._id),
+										red: !option.isCorrect && response.selectedOptions.includes(option._id),
+										correctAnswer:
+											option.isCorrect && !response.selectedOptions.includes(option._id),
 									}"
 								>
 									<div class="col s1">
@@ -113,7 +118,7 @@
 										>
 										<i
 											class="material-icons"
-											v-if="option.isCorrect && !response.selectedOptions.includes(option._id)"
+											v-if="!option.isCorrect && response.selectedOptions.includes(option._id)"
 											>close</i
 										>
 									</div>
@@ -226,5 +231,9 @@ export default {
 .col.bdr {
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
+}
+
+.correctAnswer {
+	border: 1px solid lightgreen;
 }
 </style>
