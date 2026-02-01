@@ -94,6 +94,13 @@ export default {
 				this.pastSessions = data.sessions;
 				this.sessionAmount = data.count;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting past sessions', e);
 				this.toastError('Something went wrong, please try again later');
 			}

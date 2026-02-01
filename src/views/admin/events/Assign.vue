@@ -241,6 +241,13 @@ export default {
 					this.allCerts[c.code] = c;
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting certifications', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -260,6 +267,13 @@ export default {
 					this.initializeDynamicModals(); // Initialize dynamic modals after data loads
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting event positions', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -307,10 +321,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error notifying', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error notifying', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'notify');
 			}
@@ -334,10 +349,10 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error adding signup', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+				console.error('error adding signup', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'add');
 			}
@@ -363,10 +378,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error deleting signup', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error deleting signup', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

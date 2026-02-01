@@ -128,6 +128,13 @@ export default {
 				this.historicEvents = data.events;
 				this.eventAmount = data.amount;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting historical events', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -158,10 +165,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error deleting event', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error deleting event', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}

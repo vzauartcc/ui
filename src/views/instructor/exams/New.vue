@@ -207,6 +207,13 @@ export default {
 					.filter((m) => !m.class.includes('solo'))
 					.sort((a, b) => a.order - b.order);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				this.toastError('Something went wrong, please try again later');
 				console.error('error getting milestones', e);
 			}

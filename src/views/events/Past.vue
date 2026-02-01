@@ -74,6 +74,13 @@ export default {
 				this.historicEvents = data.events;
 				this.eventAmount = data.amount;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting historical events', e);
 				this.toastError('Something went wrong, please try again later');
 			}

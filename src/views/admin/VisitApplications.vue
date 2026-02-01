@@ -226,6 +226,13 @@ export default {
 					this.initModals();
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting applications', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -256,6 +263,13 @@ export default {
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
 				} else {
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+						return;
+					}
+
 					console.error('error approving application', e);
 					this.toastError('Something went wrong, please try again later');
 				}
@@ -279,10 +293,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error rejecting application', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error rejecting application', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'reject');
 			}

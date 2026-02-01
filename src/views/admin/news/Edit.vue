@@ -89,6 +89,13 @@ export default {
 				const { data } = await zauApi.get(`/news/${this.$route.params.slug}`);
 				this.news = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting article', e);
 				this.toastError('Something went wrong, please try again later');
 			}

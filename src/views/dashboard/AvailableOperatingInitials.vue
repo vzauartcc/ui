@@ -40,6 +40,13 @@ export default {
 
 				this.avail = combinations.filter((x) => !data.includes(x));
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				this.toastError('Something went wrong, please try again later');
 
 				console.error(e);

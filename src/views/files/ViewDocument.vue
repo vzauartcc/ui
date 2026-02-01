@@ -47,6 +47,13 @@ export default {
 				this.document = data;
 				this.setTitle(this.document.name);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting document', e);
 				this.toastError('Something went wrong, please try again later');
 			}

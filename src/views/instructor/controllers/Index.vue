@@ -241,6 +241,13 @@ export default {
 				this.controllers = this.controllers.filter((c) => c.member);
 				this.controllersFiltered = this.controllers;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting controllers', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -310,6 +317,13 @@ export default {
 				const { data } = await zauApi.get(`/user`);
 				return data.cid;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting examiner id', e);
 				this.toastError('Something went wrong, please try again later');
 			}

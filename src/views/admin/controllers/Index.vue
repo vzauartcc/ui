@@ -256,6 +256,13 @@ export default {
 				this.controllers = this.controllers.filter((c) => c.member);
 				this.controllersFiltered = this.controllers;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting controllers', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -315,6 +322,13 @@ export default {
 				})
 				.catch((error) => {
 					console.error(error);
+					if (error.response) {
+						this.toastError(
+							error.response.data.message || 'Something went wrong, please try again later',
+						);
+						return;
+					}
+
 					this.toastError('Something went wrong, please try again later');
 				})
 				.finally(() => {
@@ -331,10 +345,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error getting examiner', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error getting examiner', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 
@@ -359,10 +374,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error removing controller', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error removing controller', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		filterControllers() {

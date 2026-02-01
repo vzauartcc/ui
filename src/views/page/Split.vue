@@ -38,8 +38,15 @@ export default {
 
 				this.apiPositions = data.positions;
 				this.sectorOwnership = data.ownership;
-			} catch (error) {
-				console.error('Error fetching map configuration data', error);
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
+				console.error('Error fetching map configuration data', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.loading = false;

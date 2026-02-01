@@ -309,6 +309,13 @@ export default {
 
 				this.initializePositionsAndProcessOwnership();
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('Critical error during map data fetching:', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {

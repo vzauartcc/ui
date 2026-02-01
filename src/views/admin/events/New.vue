@@ -158,10 +158,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error creating event', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error creating event', e);
+				this.toastError('Something went wrong, please try again later');
 
 				this.stopUploadUi(false);
 			} finally {

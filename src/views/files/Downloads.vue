@@ -46,6 +46,13 @@ export default {
 					sector: fileData.filter((file) => file.category === 'sectorFiles'),
 				};
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting downloads', e);
 				this.toastError('Something went wrong, please try again later');
 			}

@@ -121,6 +121,13 @@ export default {
 				const { data } = await zauApi.get(`/training/session/${this.$route.params.id}`);
 				this.session = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting session details', e);
 				this.toastError('Something went wrong, please try again later');
 			}

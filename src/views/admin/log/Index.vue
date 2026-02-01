@@ -74,6 +74,13 @@ export default {
 
 				this.actionTypes = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting log types', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -91,6 +98,13 @@ export default {
 				this.logAmount = dossierData.amount;
 				this.amountOfPages = Math.ceil(this.logAmount / this.limit);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting log', e);
 				this.toastError('Something went wrong, please try again later');
 			}

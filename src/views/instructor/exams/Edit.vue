@@ -236,6 +236,13 @@ export default {
 					questions: data.questions.sort((a) => (a.isActive ? -1 : 1)),
 				};
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting exam', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -247,6 +254,13 @@ export default {
 					.filter((m) => !m.class.includes('solo'))
 					.sort((a, b) => a.order - b.order);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				this.toastError('Something went wrong, please try again later');
 				console.error('error getting milestones', e);
 			}
@@ -422,8 +436,15 @@ export default {
 
 				this.toastSuccess('Exam updated successfully');
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error submitting exam', e);
-				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

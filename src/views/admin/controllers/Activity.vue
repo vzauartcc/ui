@@ -236,6 +236,13 @@ export default {
 
 				this.report = reportData;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting activity', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -299,10 +306,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error removing controller', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error removing controller', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'remove');
 			}

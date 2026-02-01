@@ -159,6 +159,13 @@ export default {
 					});
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting event', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -212,10 +219,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error submitting event', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error submitting event', e);
+				this.toastError('Something went wrong, please try again later');
 
 				this.stopUploadUi(false);
 			} finally {

@@ -109,6 +109,13 @@ export default {
 				const { data } = await zauApi.get(`/training/request/upcoming`);
 				this.upcomingSessions = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting upcoming requests', e);
 				this.toastError('Something went wrong, please try again later');
 			}

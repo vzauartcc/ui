@@ -263,6 +263,13 @@ export default {
 				});
 				this.milestoneTypes = data.milestoneTypes;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				this.toastError('Something went wrong, please try again later');
 				console.error('error getting milestones', e);
 			}
@@ -275,6 +282,13 @@ export default {
 
 				this.ratings = ratingsShort.filter((_v, idx) => idx >= 0 && idx < 6);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				this.toastError('Something went wrong, please try again later');
 				console.error('error getting endorsements', e);
 			}
@@ -376,6 +390,13 @@ export default {
 					M.Modal.getInstance(modal).close();
 				}
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				this.toastError('Something went wrong, please try again later');
 				console.error('error creating milestone', e);
 			} finally {
@@ -400,6 +421,13 @@ export default {
 					M.Modal.getInstance(modal).close();
 				}
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				this.toastError('Something went wrong, please try again later');
 				console.error(e);
 			} finally {
@@ -417,6 +445,13 @@ export default {
 
 				await this.getMilestones();
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				this.toastError('Something went wrong, please try again later');
 				console.error('error ordering milestones', e);
 			} finally {

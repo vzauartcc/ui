@@ -293,6 +293,13 @@ export default {
 				this.controllers = [...data.home, ...data.visiting, ...data.removed];
 				this.controllersFiltered = this.controllers;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting controllers', e);
 				this.toastError('Something went wrong, please try again later');
 			}

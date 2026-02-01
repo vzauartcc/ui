@@ -157,6 +157,13 @@ export default {
 					.filter((m) => m.type === 'session')
 					.sort((a, b) => a.order - b.order);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting milestones', e);
 				this.toastError('Something went wrong, please try again later');
 			}

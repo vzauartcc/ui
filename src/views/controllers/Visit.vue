@@ -158,6 +158,13 @@ export default {
 					);
 				}
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				if (!(e.status === 401 || e.status === 403)) {
 					console.error('error checking applications', e);
 					this.toastError('Something went wrong, please try again later');

@@ -137,6 +137,13 @@ export default {
 					this.initModals();
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting absences', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -168,10 +175,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error deleting absence', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error deleting absence', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
