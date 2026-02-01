@@ -135,6 +135,13 @@ export default {
 					);
 				}
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting positions', e);
 				this.toastError('Something went wrong, please try again later');
 			}

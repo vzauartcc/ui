@@ -157,6 +157,13 @@ export default {
 					this.form.roles[r.code] = false;
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting certifications', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -180,6 +187,13 @@ export default {
 					const { data: ois } = await zauApi.get('/controller/oi');
 					this.usedOi = ois;
 				} catch (e) {
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+						return;
+					}
+
 					console.error('error getting used operating initials', e);
 					this.toastError('Something went wrong, please try again later');
 				}

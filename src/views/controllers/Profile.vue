@@ -147,6 +147,13 @@ export default {
 					);
 					this.stats = statsData;
 				} catch (e) {
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+						return;
+					}
+
 					console.error('error getting controller stats', e);
 					this.toastError('Something went wrong, please try again later');
 				}
@@ -154,6 +161,13 @@ export default {
 				if (!this.controller || this.controller.member !== true) this.$router.push('/404');
 				this.loading = false;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting controller', e);
 				this.toastError('Something went wrong, please try again later');
 			}

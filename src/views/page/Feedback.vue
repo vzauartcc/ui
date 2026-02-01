@@ -158,6 +158,13 @@ export default {
 				this.controllers = data;
 			} catch (e) {
 				if (e.status !== 403) {
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+						return;
+					}
+
 					console.error('error getting controllers', e);
 					this.toastError('Something went wrong, please try again later');
 				}

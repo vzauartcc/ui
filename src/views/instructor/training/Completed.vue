@@ -193,6 +193,13 @@ export default {
 				this.sessions = data.sessions;
 				this.sessionAmount = data.count;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting sessions', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -213,6 +220,13 @@ export default {
 				this.sessions = [];
 				await this.getSessions();
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error deleting session', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {

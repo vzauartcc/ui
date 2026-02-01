@@ -141,8 +141,15 @@ export default {
 				this.attempt = data;
 				this.loadResponses();
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting attempt', e);
-				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async submitAttempt() {
@@ -160,14 +167,19 @@ export default {
 				this.$router.push('/dash/training/exams');
 			} catch (e) {
 				console.error('error submitting attempt', e);
-				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
 
 				if (Array.isArray(e.response.data.unanswered)) {
 					console.log(e.response.data.unanswered);
 					this.exam.responses = this.exam.responses.filter(
 						(r) => !e.response.data.unanswered.includes(r.questionId),
 					);
+				} else if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
 				}
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}
@@ -183,8 +195,14 @@ export default {
 				this.attempt.responses = data.responses;
 				this.loadResponses();
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
 				console.error('error saving question response', e);
-				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		async saveQuestion() {

@@ -114,6 +114,13 @@ export default {
 				const { data } = await zauApi.get('/file/documents');
 				this.documents = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting documents', e);
 				this.toastError('Something went wrong, please try again later');
 			}

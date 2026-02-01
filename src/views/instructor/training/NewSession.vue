@@ -373,6 +373,13 @@ export default {
 					.filter((m) => m.type === 'session')
 					.sort((a, b) => a.order - b.order);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting milestones', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -382,6 +389,13 @@ export default {
 				const { data } = await zauApi.get('/feedback/controllers');
 				this.controllers = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting controllers', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -420,6 +434,13 @@ export default {
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
 				} else {
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+						return;
+					}
+
 					console.error('error saving form', e);
 					this.toastError('Something went wrong, please try again later');
 				}
@@ -467,6 +488,13 @@ export default {
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
 				} else {
+					if (e.response) {
+						this.toastError(
+							e.response.data.message || 'Something went wrong, please try again later',
+						);
+						return;
+					}
+
 					console.error('error submitting form', e);
 					this.toastError('Something went wrong, please try again later');
 				}

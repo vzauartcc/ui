@@ -60,6 +60,13 @@ export default {
 					this.event = data;
 				}
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting event details', e);
 				this.toastError('Something went wrong, please try again later');
 			}

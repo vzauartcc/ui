@@ -91,6 +91,13 @@ export default {
 				);
 				this.requestAmount = this.requests.length;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting staffing requests', e);
 				this.toastError('Something went wrong, please try again later');
 			}

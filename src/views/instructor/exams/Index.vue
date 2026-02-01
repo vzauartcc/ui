@@ -303,7 +303,7 @@ export default {
 			selectedExamId: null,
 			examEditors: ['atm', 'datm', 'ta', 'ia'],
 			attemptPage: 1,
-			attemptLimit: 20,
+			attemptLimit: 10,
 			attemptSelectedExam: '',
 			attemptSelectedUser: 0,
 			attemptSelectedStatus: '',
@@ -343,6 +343,13 @@ export default {
 				const { data } = await zauApi.get('/exam');
 				this.exams = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting exams', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -352,6 +359,13 @@ export default {
 				const { data } = await zauApi.get('/feedback/controllers');
 				this.controllers = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting controllers', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -389,6 +403,13 @@ export default {
 				this.availableExams = Array.from(uniqueExams.values());
 				this.availableStudents = Array.from(uniqueUsers.values());
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting attempts', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -433,8 +454,15 @@ export default {
 				this.toastSuccess('Exam Assigned!');
 				this.controller = 0;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error assigning exam', e);
-				this.toastError(e.response.data.message || 'Something went wrong, please try again later');
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'assign');
 			}
@@ -448,6 +476,13 @@ export default {
 				this.selectedExamId = null;
 				await this.fetchExams();
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error deleting exams', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {
@@ -478,6 +513,13 @@ export default {
 				this.toastSuccess('Exam updated successfully!');
 				this.spinners = this.spinners.filter((s) => s !== 'toggle');
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error toggling exam', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {
@@ -508,6 +550,13 @@ export default {
 
 				await this.fetchAttempts();
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error deleting attempt', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -521,7 +570,7 @@ export default {
 		},
 	},
 	watch: {
-		page: async function () {
+		attemptPage: async function () {
 			await this.fetchAttempts();
 		},
 		attemptSelectedExam: async function () {
@@ -534,6 +583,9 @@ export default {
 		},
 		attemptSelectedStatus: async function () {
 			this.attemptPage = 1;
+			await this.fetchAttempts();
+		},
+		attemptLimit: async function () {
 			await this.fetchAttempts();
 		},
 	},

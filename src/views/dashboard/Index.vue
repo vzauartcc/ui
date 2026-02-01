@@ -195,6 +195,12 @@ export default {
 				const { data: discordData } = await zauApi.get('/discord/user');
 				this.discordConnected = discordData;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
 				console.error('error getting discord status', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -204,6 +210,13 @@ export default {
 				const { data: sessionData } = await zauApi.get('/user/sessions');
 				this.activityData = sessionData;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting sessions', e);
 				this.toastError('Something went wrong, please try again later');
 			}

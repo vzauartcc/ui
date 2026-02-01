@@ -163,6 +163,13 @@ export default {
 				const { data } = await zauApi.get('/event');
 				this.events = data;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting upcoming events', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -194,10 +201,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error deleting event', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error deleting event', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'delete');
 			}
@@ -222,10 +230,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error sending event', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error sending event', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'submit');
 			}

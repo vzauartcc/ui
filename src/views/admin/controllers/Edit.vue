@@ -194,6 +194,13 @@ export default {
 					this.form.certs[c.code] = false;
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting certifications', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -207,6 +214,13 @@ export default {
 					this.form.roles[r.code] = false;
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting roles', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -227,6 +241,13 @@ export default {
 				this.controller.certifications.forEach((cert) => (this.form.certs[cert.code] = true));
 				this.controller.roles.forEach((role) => (this.form.roles[role.code] = true));
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting controller', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -240,10 +261,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error getting taken operator initials', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error getting taken operator initials', e);
+				this.toastError('Something went wrong, please try again later');
 			}
 		},
 		checkOi(e) {
@@ -279,10 +301,11 @@ export default {
 					this.toastError(
 						e.response.data.message || 'Something went wrong, please try again later',
 					);
-				} else {
-					console.error('error updating controller', e);
-					this.toastError('Something went wrong, please try again later');
+					return;
 				}
+
+				console.error('error updating controller', e);
+				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.spinners = this.spinners.filter((s) => s !== 'update');
 			}

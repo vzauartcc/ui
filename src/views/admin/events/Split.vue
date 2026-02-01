@@ -480,8 +480,15 @@ export default {
 
 				// Deep copy for tracking dirtiness
 				this.apiSectorOwnership = JSON.parse(JSON.stringify(data.ownership));
-			} catch (error) {
-				console.error('Error fetching map configuration data', error);
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
+				console.error('Error fetching map configuration data', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {
 				this.loading = false;
@@ -511,6 +518,13 @@ export default {
 
 				this.sectors = data.sectors;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error fetching geojson', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -527,6 +541,13 @@ export default {
 
 				this.toastSuccess('Successfully reset split');
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error resetting split', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {
@@ -552,6 +573,13 @@ export default {
 
 				this.toastSuccess('Successfully saved split');
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error saving split', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {

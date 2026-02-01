@@ -232,6 +232,13 @@ export default {
 					this.waitlist.end[e] = data.filter((w) => w.certCode === e);
 				});
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting waitlist', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -243,6 +250,13 @@ export default {
 					.filter((m) => m.type === 'waitlist' && m.isActive === true)
 					.sort((a, b) => a.order - b.order);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting certifications', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -252,6 +266,13 @@ export default {
 				const { data } = await zauApi.get('/training/waitlist/instructors');
 				this.instructors = data.sort((a, b) => a.cid - b.cid);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting instructors', e);
 				this.toastError('Something went wrong, please try again later');
 			}

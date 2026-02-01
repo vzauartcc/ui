@@ -70,6 +70,13 @@ export default {
 					this.$parent.unread = true;
 				}
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting notifications', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -87,6 +94,13 @@ export default {
 
 				this.notifications = this.notifications.concat(data.notif);
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error getting more notifications', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -102,6 +116,13 @@ export default {
 					c.read = true;
 				}
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error redirecting', e);
 				this.toastError('Something went wrong, please try again later');
 			}
@@ -117,6 +138,13 @@ export default {
 				});
 				this.$parent.unread = false;
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error reading all', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {
@@ -135,6 +163,13 @@ export default {
 					this.toastInfo('You have no notifications');
 				}
 			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+					return;
+				}
+
 				console.error('error deleting all', e);
 				this.toastError('Something went wrong, please try again later');
 			} finally {
