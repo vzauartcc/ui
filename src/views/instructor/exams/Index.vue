@@ -303,7 +303,7 @@ export default {
 			selectedExamId: null,
 			examEditors: ['atm', 'datm', 'ta', 'ia'],
 			attemptPage: 1,
-			attemptLimit: 20,
+			attemptLimit: 10,
 			attemptSelectedExam: '',
 			attemptSelectedUser: 0,
 			attemptSelectedStatus: '',
@@ -521,7 +521,7 @@ export default {
 		},
 	},
 	watch: {
-		page: async function () {
+		attemptPage: async function () {
 			await this.fetchAttempts();
 		},
 		attemptSelectedExam: async function () {
@@ -534,6 +534,9 @@ export default {
 		},
 		attemptSelectedStatus: async function () {
 			this.attemptPage = 1;
+			await this.fetchAttempts();
+		},
+		attemptLimit: async function () {
 			await this.fetchAttempts();
 		},
 	},
