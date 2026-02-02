@@ -213,7 +213,7 @@
 						<div v-if="attempts.length > 0">
 							<Pagination
 								:amount="attemptAmount"
-								:page="attemptPage"
+								:page="page"
 								:limit="attemptLimit"
 								:amountOfPages="attemptPages"
 							/>
@@ -302,7 +302,7 @@ export default {
 			controller: 0,
 			selectedExamId: null,
 			examEditors: ['atm', 'datm', 'ta', 'ia'],
-			attemptPage: 1,
+			page: 1,
 			attemptLimit: 10,
 			attemptSelectedExam: '',
 			attemptSelectedUser: 0,
@@ -374,8 +374,8 @@ export default {
 			try {
 				const { data } = await zauApi.get('/exam/attempt', {
 					params: {
-						page: this.attemptPage,
-						limit: this.limit,
+						page: this.page,
+						limit: this.attemptLimit,
 						user: this.attemptSelectedUser,
 						exam: this.attemptSelectedExam,
 						status: this.attemptSelectedStatus,
@@ -570,19 +570,19 @@ export default {
 		},
 	},
 	watch: {
-		attemptPage: async function () {
+		page: async function () {
 			await this.fetchAttempts();
 		},
 		attemptSelectedExam: async function () {
-			this.attemptPage = 1;
+			this.page = 1;
 			await this.fetchAttempts();
 		},
 		attemptSelectedUser: async function () {
-			this.attemptPage = 1;
+			this.page = 1;
 			await this.fetchAttempts();
 		},
 		attemptSelectedStatus: async function () {
-			this.attemptPage = 1;
+			this.page = 1;
 			await this.fetchAttempts();
 		},
 		attemptLimit: async function () {
