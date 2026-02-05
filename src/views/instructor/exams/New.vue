@@ -138,8 +138,8 @@
 						<input
 							type="text"
 							v-model="option.text"
-							maxlength="100"
-							data-length="100"
+							maxlength="400"
+							data-length="400"
 							class="option-text"
 						/>
 					</div>
@@ -267,8 +267,8 @@ export default {
 				return;
 			}
 
-			if (this.newQuestion.options.some((o) => o.text.length > 100)) {
-				this.toastError('Answers may not exceed 100 characters');
+			if (this.newQuestion.options.some((o) => o.text.length > 400)) {
+				this.toastError('Answers may not exceed 400 characters');
 				return;
 			}
 
@@ -370,8 +370,8 @@ export default {
 				return;
 			}
 
-			if (this.questions.some((q) => q.options.some((o) => o.text.length > 100))) {
-				this.toastError('Option text must be less than 100 characters');
+			if (this.questions.some((q) => q.options.some((o) => o.text.length > 400))) {
+				this.toastError('Option text must be less than 400 characters');
 				return;
 			}
 
