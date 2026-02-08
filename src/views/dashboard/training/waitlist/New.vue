@@ -139,7 +139,7 @@ export default {
 				instructor: -1,
 				certification: '',
 				availability: [],
-				notes: [],
+				notes: '',
 			},
 			ack: false,
 			academy: '',
