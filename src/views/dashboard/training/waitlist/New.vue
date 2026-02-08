@@ -292,4 +292,8 @@ label {
 .submit_request {
 	margin-left: 0.75em;
 }
+
+:deep(.select-dropdown.dropdown-content) {
+	max-height: 30em !important;
+}
 </style>

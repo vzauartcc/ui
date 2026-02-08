@@ -403,7 +403,7 @@ export default {
 	}
 }
 
-.modal_edit {
-	height: 75vh;
+:deep(.select-dropdown.dropdown-content) {
+	max-height: 20em !important;
 }
 </style>
