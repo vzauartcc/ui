@@ -352,12 +352,9 @@ export default {
 			const initial = [...this.certifications].sort((a, b) => a.order - b.order);
 			if (this.edit.student.certifications.length < 1) return initial;
 
-			const highest =
-				[...this.edit.student.certifications]
-					.filter((x) => !x.class.includes('solo'))
-					.sort((a, b) => b.order - a.order)[0].order || 0;
-
-			return initial.filter((c) => c.order > highest);
+			return initial.filter(
+				(i) => !this.edit.student.certifications.some((x) => x.certCode === i.certCode),
+			);
 		},
 	},
 };
@@ -406,7 +403,7 @@ export default {
 	}
 }
 
-.modal_edit {
-	height: 75vh;
+:deep(.select-dropdown.dropdown-content) {
+	max-height: 20em !important;
 }
 </style>

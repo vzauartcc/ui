@@ -139,7 +139,7 @@ export default {
 				instructor: -1,
 				certification: '',
 				availability: [],
-				notes: [],
+				notes: '',
 			},
 			ack: false,
 			academy: '',
@@ -291,5 +291,9 @@ label {
 
 .submit_request {
 	margin-left: 0.75em;
+}
+
+:deep(.select-dropdown.dropdown-content) {
+	max-height: 30em !important;
 }
 </style>
