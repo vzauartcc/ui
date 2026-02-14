@@ -3,7 +3,7 @@ name: Build and Deploy Staging
 on:
   push:
     branches:
-      - 'development'
+      - 'staging'
   workflow_dispatch:
 
 jobs:
