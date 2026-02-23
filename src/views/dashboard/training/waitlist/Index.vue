@@ -52,8 +52,8 @@
 							<div class="modal-content">
 								<h4>Delete Waitlist Entry?</h4>
 								<p>
-									This will remove {{ entry.student.fname }} {{ entry.student.lname }}'s waitlist
-									entry...
+									This will remove <b>{{ entry.student.fname }} {{ entry.student.lname }}</b
+									>'s waitlist entry...
 								</p>
 							</div>
 							<div class="modal-footer">
@@ -139,7 +139,7 @@
 									</div>
 									<div class="input-field col s12">
 										<input type="text" name="notes" id="notes" v-model="edit.notes" />
-										<label for="notes">Notes (Optional)</label>
+										<label class="active">Notes (Optional)</label>
 									</div>
 								</form>
 							</div>
@@ -191,6 +191,7 @@ export default {
 					lname: '',
 					cid: -1,
 				},
+				notes: '',
 			},
 		};
 	},
@@ -202,10 +203,10 @@ export default {
 		await this.getCertifications();
 		await this.getInstructors();
 
-		M.Tooltip.init(document.querySelectorAll('.tooltipped'), { margin: 0 });
 		M.Modal.init(document.querySelectorAll('.modal'), { preventScrolling: false });
 		M.FormSelect.init(document.querySelectorAll('select'), {});
 		M.Tabs.init(document.querySelectorAll('.tabs'), {});
+		M.Tooltip.init(document.querySelectorAll('.tooltipped'), { margin: 0 });
 	},
 	methods: {
 		async getWaitlist() {
@@ -230,6 +231,10 @@ export default {
 				});
 				end.forEach((e) => {
 					this.waitlist.end[e] = data.filter((w) => w.certCode === e);
+				});
+
+				this.$nextTick(() => {
+					M.Tooltip.init(document.querySelectorAll('.tooltipped'), { margin: 0 });
 				});
 			} catch (e) {
 				if (e.response) {
@@ -307,6 +312,7 @@ export default {
 				await zauApi.patch(`/training/waitlist/${this.edit._id}`, {
 					instructor: this.edit.instructorCid,
 					certification: this.edit.certCode,
+					notes: this.edit.notes,
 				});
 
 				this.toastSuccess('Entry edited!');
