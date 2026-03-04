@@ -166,7 +166,7 @@
 						<div class="modal_title">Reject Visiting Application?</div>
 						<p>
 							This will reject the visiting application from
-							<strong>{{ app.fname + ' ' + app.lname }}</strong
+							<strong>{{ app.application.fname + ' ' + app.application.lname }}</strong
 							>. You must provide a reason for rejection below. This will also be shown to the
 							applicant.
 						</p>
