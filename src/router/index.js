@@ -299,6 +299,10 @@ const routes = [
 				path: 'users',
 				component: () => import('../views/admin/users/Index.vue'),
 			},
+			{
+				path: 'discord',
+				component: () => import('../views/admin/DiscordBot.vue'),
+			},
 		],
 	},
 	{
