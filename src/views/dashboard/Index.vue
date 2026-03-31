@@ -17,12 +17,22 @@
 							this.activityData.trainings.length
 						}}</b>
 						training sessions this {{ this.activityData.period.unit }}.
-						<span v-if="this.calcSeconds >= this.activityData.requirements.observer.seconds"
+						<span
+							v-if="
+								this.calcSeconds >= this.activityData.requirements.observer.seconds ||
+								this.activityData.trainings.length >=
+									this.activityData.requirements.observer.trainingSessions
+							"
 							>You have met the observer activity requirements for this
 							{{ this.activityData.period.unit }}.</span
 						>
 						<span v-else
-							>You need to observe for <b>{{ calcControlTime }}</b> by
+							>You need to observe for <b>{{ calcControlTime }}</b> or complete
+							<b>{{
+								this.activityData.requirements.observer.trainingSessions -
+								this.activityData.trainings.length
+							}}</b>
+							more training sessions by
 							<b>{{ new Date(this.activityData.period.endOfCurrent).toLocaleDateString() }}</b> to
 							prevent removal from the roster.</span
 						>
@@ -42,7 +52,7 @@
 								{{ this.activityData.period.unit }}.
 							</span>
 							<span v-else>
-								You need to control for <b>{{ calcControlTime }}</b> by
+								You need to control <b>{{ calcControlTime }}</b> by
 								<b>{{ new Date(this.activityData.period.endOfCurrent).toLocaleDateString() }}</b> to
 								prevent removal from the roster.
 							</span>
