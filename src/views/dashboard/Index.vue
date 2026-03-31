@@ -34,7 +34,7 @@
 							}}</b>
 							more training sessions by
 							<b>{{ new Date(this.activityData.period.endOfCurrent).toLocaleDateString() }}</b> to
-							prevent removal from the roster.</span
+							prevent removal from the roster. See vZAU 7210.3 for more information.</span
 						>
 					</span>
 					<span v-else>
@@ -52,9 +52,9 @@
 								{{ this.activityData.period.unit }}.
 							</span>
 							<span v-else>
-								You need to control <b>{{ calcControlTime }}</b> by
+								You need to control for <b>{{ calcControlTime }}</b> by
 								<b>{{ new Date(this.activityData.period.endOfCurrent).toLocaleDateString() }}</b> to
-								prevent removal from the roster.
+								prevent removal from the roster. See vZAU 7210.3 for more information.
 							</span>
 						</span>
 					</span>
