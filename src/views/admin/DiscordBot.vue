@@ -181,6 +181,55 @@
 							</div>
 						</li>
 					</ul>
+					<ul class="collapsible">
+						<li>
+							<div class="collapsible-header">
+								<i class="material-icons">newspaper</i>Reminder Channels ({{
+									Object.keys(config.reminderChannels).length
+								}})
+							</div>
+							<div class="collapsible-body">
+								<p style="margin-bottom: 2rem">
+									The bot will automatically send a message anytime someone else sends a message in
+									these channels.
+								</p>
+								<a href="#" @click.prevent="addReminderChannelModal" class="btn right s3"
+									>Add Channel</a
+								>
+								<table>
+									<thead>
+										<tr>
+											<th>Channel</th>
+											<th>Message Content</th>
+											<th>Options</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="(msgContent, channelId) in config.reminderChannels" :key="channelId">
+											<td>{{ getChannelName(channelId) }}</td>
+											<td>{{ msgContent }}</td>
+											<td class="options">
+												<a
+													href="#"
+													class="modal-trigger"
+													@click.prevent="editReminderChannelModal(channelId, msgContent)"
+												>
+													<i class="material-icons">edit</i>
+												</a>
+												<a
+													href="#"
+													class="modal-trigger red-text"
+													@click.prevent="deleteReminderChannel(channelId)"
+												>
+													<i class="material-icons">delete</i>
+												</a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</li>
+					</ul>
 
 					<a
 						href="#"
@@ -193,7 +242,9 @@
 					<teleport to="body">
 						<div id="modal_role" class="modal modal_role">
 							<div class="modal-content">
-								<p class="modal_title">{{ editRole.key == '' ? 'Create' : 'Edit' }} Managed Role</p>
+								<p class="modal_title">
+									{{ editRole.edit !== true ? 'Create' : 'Edit' }} Managed Role
+								</p>
 								<div class="row row_no_margin">
 									<div class="input-field col s6">
 										<input id="edit_role_key" name="edit_role_key" v-model="editRole.key" />
@@ -232,7 +283,7 @@
 						<div id="modal_repost" class="modal modal_repost">
 							<div class="modal-content">
 								<p class="modal_title">
-									{{ repostChannel.id == '' ? 'Create' : 'Edit' }} Re-post Channel
+									{{ repostChannel.edit !== true ? 'Create' : 'Edit' }} Re-post Channel
 								</p>
 								<div class="row row_no_margin">
 									<div class="input-field col s6">
@@ -278,10 +329,63 @@
 							</div>
 						</div>
 
+						<div id="modal_reminder" class="modal modal_reminder">
+							<div class="modal-content">
+								<p class="modal_title">
+									{{ reminderChannel.edit !== true ? 'Create' : 'Edit' }} Reminder Channel
+								</p>
+								<div class="row row_no_margin">
+									<div class="input-field col s6">
+										<select
+											id="repost_channel"
+											name="repost_channel"
+											class="materialize-select"
+											v-model="reminderChannel.id"
+											required
+											:disabled="reminderChannel.edit"
+										>
+											<option value="" disabled selected>Select a channel</option>
+											<option v-for="channel in textChannels" :value="channel.id" :key="channel.id">
+												{{ getChannelName(channel.id) }}
+											</option>
+										</select>
+										<label for="repost_channel" class=""
+											>Reminder Channel<i
+												v-if="reminderChannel.id != ''"
+												class="material-icons tooltipped"
+												data-position="right"
+												data-tooltip="Channel cannot be modified, delete instead."
+												>help</i
+											></label
+										>
+									</div>
+									<div class="input-field col s6">
+										<input
+											id="repost_topic"
+											name="repost_topic"
+											v-model="reminderChannel.content"
+										/>
+										<label for="repost_topic" class="active"
+											>Message Content<i
+												class="material-icons tooltipped"
+												data-position="right"
+												data-tooltip="Message that is sent by the bot whenever someone else sends a message in the channel"
+												>help</i
+											></label
+										>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<a href="#!" class="btn-flat modal-close right" @click.prevent>Cancel</a>
+								<a href="#" class="btn-flat right" @click.prevent="saveReminder">Save</a>
+							</div>
+						</div>
+
 						<div id="modal_cleanup" class="modal modal_cleanup">
 							<div class="modal-content">
 								<p class="modal_title">
-									{{ editRole.key == '' ? 'Create' : 'Edit' }} Cleanup Channel
+									{{ cleanupChannel.edit !== true ? 'Create' : 'Edit' }} Cleanup Channel
 								</p>
 								<div class="row row_no_margin">
 									<div class="input-field col s6">
@@ -409,6 +513,7 @@ export default {
 			roles: null,
 			messages: {},
 			editRole: {
+				edit: false,
 				key: '',
 				roleId: '',
 			},
@@ -416,6 +521,11 @@ export default {
 				edit: false,
 				id: '',
 				topic: '',
+			},
+			reminderChannel: {
+				edit: false,
+				id: '',
+				content: '',
 			},
 			cleanupChannel: {
 				edit: false,
@@ -588,6 +698,7 @@ export default {
 		},
 		addManagedRoleModal() {
 			this.editRole = {
+				edit: false,
 				key: '',
 				roleId: '',
 			};
@@ -596,6 +707,7 @@ export default {
 		},
 		editManagedRoleModal(key, roleId) {
 			this.editRole = {
+				edit: true,
 				key,
 				roleId,
 			};
@@ -616,6 +728,24 @@ export default {
 				edit: true,
 				id: channelId,
 				topic: topic,
+			};
+
+			this.showModal('modal_repost');
+		},
+		addReminderChannelModal() {
+			this.reminderChannel = {
+				edit: false,
+				id: '',
+				content: '',
+			};
+
+			this.showModal('modal_reminder');
+		},
+		editReminderChannelModal(channelId, content) {
+			this.reminderChannel = {
+				edit: true,
+				id: channelId,
+				content: content,
 			};
 
 			this.showModal('modal_repost');
@@ -679,6 +809,18 @@ export default {
 		},
 		deleteRepostChannel(channelId) {
 			delete this.config.repostChannels[channelId];
+
+			this.dirty = true;
+		},
+		saveReminder() {
+			this.config.reminderChannels[this.reminderChannel.id] = this.reminderChannel.content;
+
+			this.dirty = true;
+
+			M.Modal.getInstance(document.querySelector('.modal_reminder')).close();
+		},
+		deleteReminderChannel(channelId) {
+			delete this.config.reminderChannels[channelId];
 
 			this.dirty = true;
 		},
