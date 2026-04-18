@@ -6,9 +6,9 @@
 				<p>
 					Virtual Chicago ARTCC provides air traffic control services for the Chicago Metro area,
 					Northwestern Indiana, Central Illinois, Eastern Iowa, Southern Wisconsin, and Southwestern
-					Michgan. Our goal is to provide the most realistic experience to our pilots, while
+					Michigan. Our goal is to provide the most realistic experience to our pilots, while
 					maintaining professionalism and courtesy. Chicago offers a wealth of difference for new
-					controllers, and will proivde a good challenge for any aspiring controllers. Join our
+					controllers, and will provide a good challenge for any aspiring controllers. Join our
 					family today!
 				</p>
 				<div class="visit" v-if="!user.isLoggedIn || (!user.data.vis && !user.data.isMember)">
@@ -17,8 +17,8 @@
 				</div>
 			</div>
 		</div>
-		<EventSummary />
 		<NewsSummary />
+		<EventSummary />
 		<WeatherInfo />
 	</div>
 </template>

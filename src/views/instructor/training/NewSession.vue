@@ -121,7 +121,9 @@
 								min="0"
 								max="500"
 								step="1"
-								onkeydown="return event.key.length === 1 && !/[0-9]/.test(event.key) ? false : true;"
+								onkeydown="
+									return event.key.length === 1 && !/[0-9]/.test(event.key) ? false : true;
+								"
 								required
 								v-model="form.movements"
 							/>

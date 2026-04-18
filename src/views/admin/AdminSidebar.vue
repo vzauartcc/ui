@@ -85,6 +85,14 @@
 				Users
 				<div class="secondary-content"><i class="material-icons">people_outline</i></div>
 			</router-link>
+			<router-link
+				to="/admin/discord"
+				class="collection-item"
+				v-if="requiresAuth(['atm', 'datm', 'ta', 'wm'])"
+			>
+				Discord Bot
+				<div class="secondary-content"><i class="material-icons">headset_mic</i></div>
+			</router-link>
 		</div>
 	</div>
 </template>
