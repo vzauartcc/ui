@@ -848,43 +848,51 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
 				document.getElementById('loading').classList.add('hidden');
 
 				generateAirportTabs();
-				Object.keys(data).forEach((key) => {
+				data.forEach((airport) => {
 					const ctr = document.createElement('div');
-					ctr.id = key.substring(1);
+					ctr.id = airport.airport_data.faa_ident;
 					ctr.classList = 'tabcontent flex flex-wrap justify-start items-start hidden';
 					const charts = new Set();
-					data[key].forEach((chart) => {
-						if (charts.has(chart.pdf_path)) {
-							return;
-						}
+					Object.keys(airport.charts).forEach((section) => {
+						const allCharts = airport.charts[section];
 
-						charts.add(chart.pdf_path);
-						const chartDiv = document.createElement('div');
-						chartDiv.id = `${chart.faa_ident}_${chart.chart_name}`.replace(' ', '-');
-						chartDiv.classList = `chartbutton ${getChartButton(chart.chart_code)}`;
-						chartDiv.onclick = (e) => openpdf(chart.pdf_path, e.currentTarget);
-						chartDiv.innerHTML = chart.chart_name;
-						ctr.appendChild(chartDiv);
+						allCharts.forEach((chart) => {
+							if (charts.has(chart.pdf_url)) {
+								console.warn('skipping duplicate entry', chart);
+								return;
+							}
+
+							charts.add(chart.pdf_url);
+							const chartDiv = document.createElement('div');
+							chartDiv.id = `${airport.faa_ident}_${chart.chart_name}`.replace(' ', '-');
+							chartDiv.classList = `chartbutton ${getChartButton(chart.chart_name, section)}`;
+							chartDiv.onclick = (e) => openpdf(chart.pdf_url, e.currentTarget);
+							chartDiv.innerHTML = chart.chart_name;
+							ctr.appendChild(chartDiv);
+						});
 					});
 					document.getElementById('chartPicker').appendChild(ctr);
 				});
 			}
 
-			function getChartButton(code) {
+			function getChartButton(code, chartType) {
 				switch (code) {
-					case 'APD':
+					case 'AIRPORT DIAGRAM':
 						return 'chartbutton-apd';
-					case 'MIN':
+					case 'TAKEOFF MINIMUMS':
 						return 'chartbutton-min';
-					case 'LAH':
+					case 'LAHSO':
 						return 'chartbutton-lah';
-					case 'HOT':
+					case 'HOT SPOT':
 						return 'chartbutton-hot';
-					case 'STAR':
+				}
+
+				switch (chartType) {
+					case 'arrival':
 						return 'chartbutton-star';
-					case 'IAP':
+					case 'approach':
 						return 'chartbutton-iap';
-					case 'DP':
+					case 'departure':
 						return 'chartbutton-dp';
 					case 'DAU':
 						return 'chartbutton-dau';
