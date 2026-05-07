@@ -23,7 +23,13 @@
 			<div v-if="guildID" class="row">
 				<Spinner v-if="guildID && (!config || !textChannels || !roles)" />
 				<div v-else>
-					<a href="#" class="btn blue" @click.prevent="startSendMessage">Post Message</a>
+					<a
+						href="#"
+						class="btn blue"
+						@click.prevent="startSendMessage"
+						v-if="user?.data?.isManagement"
+						>Post Message</a
+					>
 					<ul class="collapsible">
 						<li>
 							<div class="collapsible-header">
@@ -500,6 +506,7 @@
 
 <script>
 import { zauApi } from '@/helpers/axios.js';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'DiscordBot',
@@ -867,7 +874,9 @@ export default {
 			}
 		},
 	},
-	computed: {},
+	computed: {
+		...mapState('user', ['user']),
+	},
 	watch: {
 		'cleanupChannel.channelId': async function () {
 			if (this.cleanupChannel.channelId) {
