@@ -152,6 +152,10 @@
 							</li>
 							<li v-else>
 								<router-link to="/controllers/visit">Become a Visitor</router-link>
+								<router-link to="/login/discord" v-if="discordLinked === false"
+									>Link Discord</router-link
+								>
+								<a href="#" @click.prevent="unlinkDiscord()" v-else>Unlink Discord</a>
 							</li>
 							<!--ADD THIS BACK ONCE IDS IS OPERATIONAL-->
 							<!--<li v-if="user.isLoggedIn && user.data.isMember">
@@ -223,6 +227,7 @@
 <script>
 import { vatsimAuthRedirectUrl } from '@/helpers/uriHelper.js';
 import { mapActions, mapMutations, mapState } from 'vuex';
+import { zauApi } from '../../helpers/axios';
 import Notifications from './Notifications.vue';
 
 export default {
@@ -232,6 +237,7 @@ export default {
 			number: 0,
 			unread: false,
 			window: window,
+			discordLinked: false,
 		};
 	},
 	components: {
@@ -249,6 +255,23 @@ export default {
 			this.toastInfo('Successfully logged out');
 			if (this.$route.meta.isAdmin || this.$route.meta.isAdmin || this.$route.meta.loggedIn)
 				this.$router.push('/');
+		},
+		async unlinkDiscord() {
+			try {
+				await zauApi.delete('/discord/user');
+
+				this.toastSuccess('Discord unlinked.');
+				this.discordLinked = false;
+			} catch (e) {
+				if (e.response) {
+					this.toastError(
+						e.response.data.message || 'Something went wrong, please try again later',
+					);
+				} else {
+					console.error('error unlinking discord', e);
+					this.toastError('Something went wrong, please try again later');
+				}
+			}
 		},
 	},
 	computed: {
@@ -275,6 +298,8 @@ export default {
 		M.Sidenav.init(document.querySelectorAll('.sidenav'), {
 			edge: 'right',
 		});
+
+		this.discordLinked = this.user.data.discordInfo !== undefined;
 	},
 };
 </script>
