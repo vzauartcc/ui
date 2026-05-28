@@ -5,7 +5,7 @@
 		</div>
 		<div class="event" v-else>
 			<img
-				:src="`${event.bannerUrl.match(/^http/) ? event.bannerUrl : `https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/events/${event.bannerUrl}`}`"
+				:src="`${event.bannerUrl.match(/^http/) ? event.bannerUrl : `${originEndpoint}/events/${event.bannerUrl}`}`"
 				class="event_banner"
 				draggable="false"
 				alt=""
@@ -38,7 +38,7 @@ export default {
 	name: 'Events',
 	data() {
 		return {
-			folderPrefix: window.env.VITE_FOLDER_PREFIX,
+			originEndpoint: window.env.VITE_ORIGIN_ENDPOINT,
 			event: null,
 			chips: null,
 		};

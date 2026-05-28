@@ -10,7 +10,7 @@
 				<p>If you are still using Internet Explorer, move on.</p>
 			</div>
 			<img
-				:src="`https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/site-logo/Footer-Logo.png`"
+				:src="`${originEndpoint}/site-logo/Footer-Logo.png`"
 				alt=""
 				draggable="false"
 				height="115"
@@ -48,7 +48,7 @@
 export default {
 	data() {
 		return {
-			folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
+			originEndpoint: window.env.VITE_ORIGIN_ENDPOINT,
 		};
 	},
 	mounted() {

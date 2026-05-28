@@ -12,7 +12,7 @@
 						<div class="col s5 m4 l3">
 							<div class="controller_image">
 								<img
-									:src="`https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/avatars/${controller.avatar || `${controller.cid}-default.png`}`"
+									:src="`${originEndpoint}/avatars/${controller.avatar || `${controller.cid}-default.png`}`"
 									alt=""
 									height="170"
 									width="170"
@@ -123,7 +123,7 @@ export default {
 	name: 'Controller Profile',
 	data() {
 		return {
-			folderPrefix: window.env.VITE_FOLDER_PREFIX,
+			originEndpoint: window.env.VITE_ORIGIN_ENDPOINT,
 			controller: null,
 			stats: null,
 			loading: true,

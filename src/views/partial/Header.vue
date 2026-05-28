@@ -6,7 +6,7 @@
 					<router-link to="/"
 						><img
 							class="mainLogo"
-							:src="`https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/site-logo/Main-Logo.png`"
+							:src="`${originEndpoint}/site-logo/Main-Logo.png`"
 							draggable="false"
 							height="165"
 					/></router-link>
@@ -233,7 +233,7 @@ import Notifications from './Notifications.vue';
 export default {
 	data() {
 		return {
-			folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
+			originEndpoint: window.env.VITE_ORIGIN_ENDPOINT,
 			number: 0,
 			unread: false,
 			window: window,

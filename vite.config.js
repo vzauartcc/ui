@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
 		define:
 			mode === 'development'
 				? {
-						'window.env.VITE_FOLDER_PREFIX': JSON.stringify(process.env.VITE_FOLDER_PREFIX),
+						'window.env.VITE_ORIGIN_ENDPOINT': JSON.stringify(process.env.VITE_ORIGIN_ENDPOINT),
 						'window.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
 					}
 				: {},

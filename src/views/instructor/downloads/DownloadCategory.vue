@@ -2,10 +2,7 @@
 	<div :id="cat" class="col s12">
 		<div v-if="files.length === 0" class="no_files">No files in this category found</div>
 		<div class="download" v-else v-for="file in files" :key="file.id">
-			<a
-				:href="`https://zauartcc.sfo3.cdn.digitaloceanspaces.com/${folderPrefix}/downloads/${file.fileName}`"
-				class="btn button"
-				target="_blank"
+			<a :href="`${originEndpoint}/downloads/${file.fileName}`" class="btn button" target="_blank"
 				><i class="material-icons">file_download</i></a
 			>
 			<div class="title">{{ file.name }}</div>
@@ -19,7 +16,7 @@
 export default {
 	data() {
 		return {
-			folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
+			originEndpoint: window.env.VITE_ORIGIN_ENDPOINT,
 		};
 	},
 	props: ['cat', 'files'],
