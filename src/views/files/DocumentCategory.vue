@@ -7,7 +7,7 @@
 			>
 			<a
 				v-else
-				:href="`https://zauartcc.sfo3.cdn.digitaloceanspaces.com/${folderPrefix}/documents/${doc.fileName}`"
+				:href="`${originEndpoint}/documents/${doc.fileName}`"
 				class="btn button"
 				target="_blank"
 				><i class="material-icons">search</i></a
@@ -23,7 +23,7 @@
 export default {
 	data() {
 		return {
-			folderPrefix: window.env.VITE_FOLDER_PREFIX, // ✅ Now it's available inside the component
+			originEndpoint: window.env.VITE_ORIGIN_ENDPOINT,
 		};
 	},
 	props: ['cat', 'docs'],

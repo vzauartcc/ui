@@ -11,7 +11,7 @@
 	<div v-if="events && events.length > 0">
 		<div class="card event_card" v-for="event in events" :key="event.id">
 			<img
-				:src="`https://zauartcc.sfo3.digitaloceanspaces.com/${folderPrefix}/events/${event.bannerUrl}`"
+				:src="`${originEndpoint}/events/${event.bannerUrl}`"
 				class="event_banner"
 				draggable="false"
 				alt=""
@@ -49,7 +49,7 @@ export default {
 	title: 'Events',
 	data() {
 		return {
-			folderPrefix: window.env.VITE_FOLDER_PREFIX,
+			originEndpoint: window.env.VITE_ORIGIN_ENDPOINT,
 			events: null,
 		};
 	},
