@@ -1,0 +1,31 @@
+export const ratingShort = [
+  'SUS',
+  'OBS',
+  'S1',
+  'S2',
+  'S3',
+  'C1',
+  'C2',
+  'C3',
+  'I1',
+  'I2',
+  'I3',
+  'SUP',
+  'ADM',
+];
+
+export const ratingLong = [
+  'Suspended',
+  'Observer',
+  'Student 1',
+  'Student 2',
+  'Student 3',
+  'Controller 1',
+  'Controller 2',
+  'Controller 3',
+  'Instructor 1',
+  'Instructor 2',
+  'Instructor 3',
+  'Supervisor',
+  'Administrator',
+];

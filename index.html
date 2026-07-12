@@ -1,64 +1,65 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-		<meta
-			name="description"
-			content="Chicago ARTCC is one of the 22 regional ARTCCs in the US and provides virtual ATC services on the VATSIM network."
-		/>
-		<link rel="icon" href="/favicon.ico" />
-		<title>Home | Chicago ARTCC</title>
-	</head>
-	<body style="overflow-y: scroll">
-		<noscript>
-			<strong
-				>We're sorry but the Chicago ARTCC website doesn't work properly without JavaScript enabled.
-				Please enable it to continue.</strong
-			>
-		</noscript>
-		<div
-			id="dev_warn"
-			style="
-				display: none;
-				background-color: yellow;
-				font-weight: bolder;
-				text-align: center;
-				height: 3rem;
-				align-content: center;
-			"
-		>
-			This is a development version of the website. The data shown here is test data, and does not
-			reflect current information. Please visit
-			<a href="https://zauartcc.org" style="color: red">zauartcc.org</a> for the live version of
-			this website.
-		</div>
-		<div id="app"></div>
-		<div id="ie_warn" style="font-size: 24px; font-weight: 700"></div>
-		<!-- built files will be auto injected -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chicago ARTCC</title>
+    <meta
+      name="description"
+      content="Virtual Chicago ARTCC is one of the 22 regional ARTCCs in the US and provides virtual ATC services on the VATSIM network."
+    />
+    <link rel="icon" href="/favicon.ico" />
+  </head>
+  <body style="overflow-y: scroll">
+    <noscript>
+      <strong
+        >We're sorry but the Virtual Chicago ARTCC website doesn't work properly
+        without JavaScript enabled. Please enable it to continue.</strong
+      >
+    </noscript>
+    <div
+      id="dev_warn"
+      style="
+        display: none;
+        background-color: #41b6e6;
+        font-weight: bolder;
+        text-align: center;
+        align-content: center;
+        min-height: 3rem;
+      "
+    >
+      This is a development version of the website. The data shown here is test
+      data, and does not reflect current information. Please visit
+      <a href="https://zauartcc.org" style="text-decoration: underline"
+        >zauartcc.org</a
+      >
+      for the live version of this website.
+    </div>
+    <div id="app"></div>
+    <div id="ie_warn" style="font-size: 24px; font-weight: 700"></div>
 
-		<script>
-			window.env = {
-				VITE_ORIGIN_ENDPOINT: '$VITE_ORIGIN_ENDPOINT',
-				NODE_ENV: '$NODE_ENV',
-			};
-		</script>
+    <script>
+      window.env = {
+        VITE_ORIGIN_ENDPOINT: "$VITE_ORIGIN_ENDPOINT",
+        NODE_ENV: "$NODE_ENV",
+      };
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+    <script>
+      var ieWarn = document.querySelector("#ie_warn");
+      if (
+        navigator.userAgent.indexOf("MSIE") !== -1 ||
+        navigator.appVersion.indexOf("Trident/") > -1
+      ) {
+        ieWarn.innerHTML =
+          "Internet Explorer is not supported by this site. Please use Chrome, Edge, Firefox or Safari.";
+      } else {
+        ieWarn.parentElement.removeChild(ieWarn);
+      }
 
-		<script type="module" src="/src/main.js"></script>
-	</body>
+      if (window.env.NODE_ENV !== "production") {
+        document.getElementById("dev_warn").style.display = "block";
+      }
+    </script>
+  </body>
 </html>
-
-<script>
-	var ieWarn = document.querySelector('#ie_warn');
-	if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > -1) {
-		ieWarn.innerHTML =
-			'Internet Explorer is not supported by this site. Please use Chrome, Edge, Firefox or Safari.';
-	} else {
-		ieWarn.parentElement.removeChild(ieWarn);
-	}
-
-	if (window.env.NODE_ENV !== 'production') {
-		document.getElementById('dev_warn').style.display = 'block';
-	}
-</script>

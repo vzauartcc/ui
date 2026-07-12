@@ -1,141 +1,132 @@
-<template>
-	<div class="card" v-if="!events || events.length === 0">
-		<div class="card-content">
-			<span class="card-title">Upcoming Events</span>
-			<div class="loading_container" v-if="!events">
-				<Spinner />
-			</div>
-			<p v-else-if="events && events.length === 0" class="no_event">There are no upcoming events</p>
-		</div>
-	</div>
-	<div v-if="events && events.length > 0">
-		<div class="card event_card" v-for="event in events" :key="event.id">
-			<img
-				:src="`${originEndpoint}/events/${event.bannerUrl}`"
-				class="event_banner"
-				draggable="false"
-				alt=""
-			/>
-			<div class="card-content">
-				<div class="row">
-					<div class="col s12 l8">
-						<span class="card-title event_title">{{ event.name }}</span>
-						<span class="card-title event_date"
-							>{{ dtLong(event.eventStart) }}
-							<i class="material-icons rotate tiny">airplanemode_active</i>
-							{{ formatTime(event.eventEnd) }}z</span
-						>
-					</div>
-					<div class="col s12 l4">
-						<router-link
-							:to="`/events/${event.url}`"
-							class="btn btn-signup waves-effect waves-light right"
-							>More Info &amp; Sign Up</router-link
-						>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<Past />
-</template>
+<script setup lang="ts">
+import { eventService } from '@/services/events/events.service';
+import type { IEvent } from '@/services/events/events.types';
+import { useUserStore } from '@/stores/user.js';
+import { dateAsMMDDHHMM } from '@/utils/date';
+import { useTitle } from '@/utils/title';
+import { getS3Url } from '@/utils/uriHelper';
+import { Icon } from '@iconify/vue';
+import { storeToRefs } from 'pinia';
+import Button from 'primevue/button';
+import Card from 'primevue/card';
+import Column from 'primevue/column';
+import DataTable, { type DataTablePageEvent } from 'primevue/datatable';
+import ProgressSpinner from 'primevue/progressspinner';
+import { onMounted, ref } from 'vue';
 
-<script>
-import { zauApi } from '@/helpers/axios.js';
-import Past from './Past.vue';
+const s3Url = getS3Url();
 
-export default {
-	name: 'Events',
-	title: 'Events',
-	data() {
-		return {
-			originEndpoint: window.env.VITE_ORIGIN_ENDPOINT,
-			events: null,
-		};
-	},
-	components: {
-		Past,
-	},
-	async mounted() {
-		await this.getUpcomingEvents();
-	},
-	methods: {
-		async getUpcomingEvents() {
-			try {
-				const { data } = await zauApi.get('/event');
-				this.events = data;
-			} catch (e) {
-				if (e.response) {
-					this.toastError(
-						e.response.data.message || 'Something went wrong, please try again later',
-					);
-					return;
-				}
+useTitle('Events');
 
-				console.error('error getting upcoming events', e);
-				this.toastError('Something went wrong, please try again later');
-			}
-		},
-		formatTime(value) {
-			var d = new Date(value);
-			return d.toLocaleString('en-us', {
-				timeZone: 'UTC',
-				hour: '2-digit',
-				minute: '2-digit',
-				hour12: false,
-			});
-		},
-	},
+const events = ref<IEvent[] | null>(null);
+const archive = ref<IEvent[] | null>(null);
+const totalEvents = ref(0);
+const archiveLoading = ref(true);
+const lazyParams = ref({ page: 1, limit: 10 });
+
+const userStore = useUserStore();
+const { isLoggedIn, user } = storeToRefs(userStore);
+
+onMounted(async () => {
+  try {
+    const data = await eventService.getEvents();
+
+    events.value = data;
+  } catch (e) {
+    console.error('error getting events', e);
+  }
+
+  loadLazyArchive();
+});
+
+const loadLazyArchive = async () => {
+  archiveLoading.value = true;
+
+  try {
+    const data = await eventService.getPast(
+      lazyParams.value.page,
+      lazyParams.value.limit,
+    );
+
+    archive.value = data.events;
+    totalEvents.value = data.amount;
+  } catch (e) {
+    console.error('error getting past events', e);
+  } finally {
+    archiveLoading.value = false;
+  }
+};
+
+const onPage = (event: DataTablePageEvent) => {
+  lazyParams.value.page = event.page + 1;
+  lazyParams.value.limit = event.rows;
+
+  loadLazyArchive();
 };
 </script>
 
-<style scoped lang="scss">
-.event_banner {
-	width: 100%;
-}
+<template>
+  <ProgressSpinner v-if="!events" />
+  <template v-else>
+    <Card v-for="event in events" :key="event._id">
+      <template #header>
+        <img
+          :src="`${s3Url}/events/${event.bannerUrl}`"
+          alt="Event banner showing the date and time of the event and the airports involved." />
+      </template>
+      <template #title>
+        <div class="flex items-center justify-between w-full">
+          <span class="font-bold">
+            <router-link :to="`event/${event.url}`">
+              {{ event.name }}
+            </router-link></span
+          >
+          <router-link :to="`event/${event.url}`">
+            <Button
+              v-if="isLoggedIn && user?.isMember"
+              class=""
+              label="More Info & Sign Up" />
+            <Button v-else class="" label="More Info" />
+          </router-link>
+        </div>
+      </template>
+      <template #subtitle>
+        <div class="text-lg">
+          <span>{{ dateAsMMDDHHMM(event.eventStart) }}</span>
+          <Icon icon="heroicons:paper-airplane-solid" class="mx-2 no-pointer" />
+          <span>{{ dateAsMMDDHHMM(event.eventEnd) }}</span>
+        </div>
+      </template>
+    </Card>
+  </template>
 
-.event_list_row tr {
-	transition: background-color 0.3s ease;
-	&:hover {
-		background: #eaeaea;
-	}
-}
+  <ProgressSpinner v-if="!archive" />
+  <DataTable
+    v-else
+    :value="archive"
+    stripedRows
+    size="small"
+    lazy
+    paginator
+    :rows="10"
+    :totalRecords="totalEvents"
+    :loading="archiveLoading"
+    :rowsPerPageOptions="[10, 25, 50]"
+    @page="onPage($event)"
+    class="mt-5">
+    <template #header><p class="text-xl">Past Events</p></template>
+    <template #empty><p>There are no events to display.</p></template>
+    <Column field="name" header="Name" bodyClass="font-bold">
+      <template #body="{ data }">
+        <router-link :to="`event/${data.url}`">{{ data.name }}</router-link>
+      </template>
+    </Column>
+    <Column field="start" header="Start Time">
+      <template #body="{ data }">
+        {{ dateAsMMDDHHMM(data.eventStart) }}
+      </template>
+    </Column>
+  </DataTable>
+</template>
 
-.event_title {
-	font-weight: 700;
-}
-
-.card .card-content .event_date {
-	font-size: 1.15em;
-	margin-top: -15px;
-
-	.rotate {
-		transform: rotate(90deg);
-	}
-}
-
-tr th {
-	text-align: left;
-}
-
-td {
-	padding: 1em;
-}
-
-td a {
-	transition: 0.3s;
-	font-weight: 600;
-	&:hover {
-		color: $primary-color-light;
-	}
-}
-
-.event_card .card-content .row {
-	margin-bottom: 0;
-}
-
-.no_event {
-	margin-top: -1em;
-	font-style: italic;
-}
-</style>
+<style lang="css" scoped></style>
