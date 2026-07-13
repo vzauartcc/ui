@@ -1,11 +1,11 @@
 {
   "name": "ui",
-  "private": true,
   "version": "3.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "format": "oxfmt src/",
+    "format": "oxfmt .",
     "type-check": "vue-tsc -b",
     "build": "npm run type-check && npm run vite-build",
     "vite-build": "vite build",
