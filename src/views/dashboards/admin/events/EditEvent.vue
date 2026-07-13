@@ -2,7 +2,7 @@
 import { eventService } from '@/services/events/events.service';
 import type { IEvent, IPosition } from '@/services/events/events.types';
 import { s3Service } from '@/services/s3.service';
-import { localToUTC, utcToLocal } from '@/utils/date';
+import { localToUTC, roundToNearest15Minutes, utcToLocal } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { Icon } from '@iconify/vue';
@@ -68,8 +68,12 @@ onMounted(async () => {
     const data = await eventService.getEvent(slug);
 
     initialValues.value = data;
-    initialValues.value.eventStart = utcToLocal(data.eventStart);
-    initialValues.value.eventEnd = utcToLocal(data.eventEnd);
+    initialValues.value.eventStart = utcToLocal(
+      roundToNearest15Minutes(data.eventStart),
+    );
+    initialValues.value.eventEnd = utcToLocal(
+      roundToNearest15Minutes(data.eventEnd),
+    );
     eventData.value = data;
   } catch (e) {
     console.error('error getting event', e);
@@ -220,6 +224,15 @@ const uploadBanner = async (url: string) => {
     toastError('Error Uploading!', 'Error uploading the file.');
   }
 };
+
+const minEndTime = (startTime?: string | Date) => {
+  if (!startTime) return new Date();
+
+  const start = new Date(startTime);
+  const minDate = new Date(start.getTime() + 1000 * 60 * 60 * 2);
+
+  return roundToNearest15Minutes(minDate);
+};
 </script>
 
 <template>
@@ -227,7 +240,12 @@ const uploadBanner = async (url: string) => {
   <Card v-else>
     <template #title>{{ eventData.url ? 'Edit' : 'Create' }} Event</template>
     <template #content>
-      <Form :initialValues :resolver @submit="onSubmit" ref="formRef">
+      <Form
+        v-slot="$form"
+        :initialValues
+        :resolver
+        @submit="onSubmit"
+        ref="formRef">
         <div class="grid grid-cols-1 gap-5">
           <FormField v-slot="$field" name="name">
             <FloatLabel variant="on">
@@ -274,6 +292,11 @@ const uploadBanner = async (url: string) => {
                   hourFormat="24"
                   class="w-full"
                   :modelValue="initialValues.eventEnd as Date"
+                  :minDate="
+                    $form.eventStart?.value
+                      ? minEndTime($form.eventStart.value)
+                      : undefined
+                  "
                   :stepMinute="15" />
                 <label for="eventEnd" class="required-field"
                   >Event End Time (Zulu)</label

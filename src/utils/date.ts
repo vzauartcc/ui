@@ -78,3 +78,16 @@ export const localToUTC = (d: Date | string) => {
     ),
   ).toISOString();
 };
+
+export const roundToNearest15Minutes = (d: string | Date) => {
+  const date = new Date(d);
+
+  const minutes = date.getMinutes();
+  const rounded = Math.ceil(minutes / 15) * 15;
+
+  date.setMinutes(rounded);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+
+  return date;
+};

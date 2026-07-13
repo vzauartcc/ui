@@ -6,7 +6,7 @@ import type {
   ITrainingSession,
 } from '@/services/training/training.types';
 import { useUserStore } from '@/stores/user';
-import { localToUTC, utcToLocal } from '@/utils/date';
+import { localToUTC, roundToNearest15Minutes, utcToLocal } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { toastError } from '@/utils/toast';
 import {
@@ -41,8 +41,10 @@ const submitType = ref<'' | 'submit' | 'save'>('');
 const initialValues = ref({
   studentCid: 0,
   milestoneCode: '',
-  startTime: utcToLocal(new Date()),
-  endTime: utcToLocal(new Date(Date.now() + 60 * 60 * 1000)),
+  startTime: utcToLocal(
+    roundToNearest15Minutes(new Date(Date.now() - 60 * 60 * 1000)),
+  ),
+  endTime: utcToLocal(roundToNearest15Minutes(new Date())),
   position: '',
   movements: 0,
   location: 0,
@@ -134,7 +136,7 @@ const resolver = ({
   };
 };
 
-const sendFeedback = async (event: FormSubmitEvent) => {
+const submitSession = async (event: FormSubmitEvent) => {
   if (!event.valid) {
     toastError(
       'Incomplete form!',
@@ -162,6 +164,20 @@ const sendFeedback = async (event: FormSubmitEvent) => {
     insNotes: values.insNotes,
   });
 };
+
+const maxEndTime = (startTime?: string | Date) => {
+  if (!startTime) return new Date();
+
+  const start = new Date(startTime);
+  const maxDate = new Date(start.getTime() + 1000 * 60 * 60 * 10);
+
+  const retval = roundToNearest15Minutes(maxDate);
+  if (retval.getTime() > Date.now()) {
+    return roundToNearest15Minutes(new Date());
+  }
+
+  return retval;
+};
 </script>
 
 <template>
@@ -169,7 +185,7 @@ const sendFeedback = async (event: FormSubmitEvent) => {
     v-slot="$form"
     :initialValues="initialValues"
     :resolver
-    @submit="sendFeedback">
+    @submit="submitSession">
     <div class="grid grid-cols-1 gap-5">
       <div class="grid md:grid-cols-2 gap-5">
         <div class="">
@@ -213,7 +229,7 @@ const sendFeedback = async (event: FormSubmitEvent) => {
               hourFormat="24"
               showTime
               :stepMinute="15"
-              :maxDate="new Date()"
+              :maxDate="roundToNearest15Minutes(utcToLocal(new Date()))"
               :modelValue="initialValues.startTime"
               class="w-full" />
             <label for="startTime" class="required-field"
@@ -231,12 +247,15 @@ const sendFeedback = async (event: FormSubmitEvent) => {
 
         <FormField v-slot="$field" name="endTime">
           <FloatLabel variant="on">
-            <!-- @TODO: make the min date work -->
             <DatePicker
               id="endTime"
               hourFormat="24"
-              :minDate="initialValues.startTime"
-              :maxDate="new Date()"
+              :minDate="
+                $form.startTime?.value
+                  ? utcToLocal(new Date($form?.startTime.value))
+                  : initialValues.startTime
+              "
+              :maxDate="utcToLocal(maxEndTime($form?.startTime?.value))"
               :stepMinute="15"
               showTime
               :modelValue="initialValues.endTime"
@@ -394,8 +413,8 @@ const sendFeedback = async (event: FormSubmitEvent) => {
         severity="warn"
         v-if="$form?.ots?.value === 1 || $form?.ots?.value === 2">
         Due to the OTS Pass/Fail selection, this training session cannot be
-        modified later after submission to VATUSA. Any modifications need to be
-        requested via VATUSA3.
+        modified later after submission to VATUSA, and any modifications need to
+        be requested via VATUSA3.
       </Message>
 
       <div class="grid md:grid-cols-2 gap-5">
