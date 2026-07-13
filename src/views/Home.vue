@@ -8,6 +8,7 @@ import UpcomingEvents from '@/components/homepage/UpcomingEvents.vue';
 import { useUserStore } from '@/stores/user.js';
 import { useTitle } from '@/utils/title';
 import { getEnvironment } from '@/utils/uriHelper';
+import { Icon } from '@iconify/vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -98,7 +99,9 @@ const { user, isLoggedIn } = storeToRefs(userStore);
             <div
               class="flex items-center justify-between mb-4 pb-2 border-b border-surface-100 dark:border-surface-200/10">
               <div class="flex items-center gap-2">
-                <i class="pi pi-users text-[#41b6e6] text-lg"></i>
+                <Icon
+                  icon="heroicons:users"
+                  class="text-[#41b6e6] text-2xl! no-pointer" />
                 <h3
                   class="font-bold text-surface-800 dark:text-surface-100 text-sm tracking-wide uppercase">
                   Online Controllers
@@ -121,7 +124,9 @@ const { user, isLoggedIn } = storeToRefs(userStore);
           <div class="flex items-center gap-3 mb-6">
             <div
               class="p-2.5 bg-primary-50 dark:bg-primary-950/50 rounded-xl text-primary-500">
-              <i class="pi pi-megaphone text-xl text-[#41b6e6]"></i>
+              <Icon
+                icon="heroicons:megaphone"
+                class="text-2xl! text-[#41b6e6] no-pointer" />
             </div>
             <h2
               class="text-2xl font-bold tracking-tight text-surface-900 dark:text-surface-50">
@@ -138,7 +143,9 @@ const { user, isLoggedIn } = storeToRefs(userStore);
           <div class="flex items-center gap-3 mb-6">
             <div
               class="p-2.5 bg-red-50 dark:bg-red-950/30 rounded-xl text-red-500">
-              <i class="pi pi-calendar-plus text-xl text-[#e4002b]"></i>
+              <Icon
+                icon="heroicons:calendar"
+                class="text-2xl! text-[#e4002b] no-pointer" />
             </div>
             <h2
               class="text-2xl font-bold tracking-tight text-surface-900 dark:text-surface-50">
@@ -148,8 +155,6 @@ const { user, isLoggedIn } = storeToRefs(userStore);
           <UpcomingEvents />
         </div>
 
-        <!-- @TODO: fix the <i> tag since that is suppose to be a primevue icon. -->
-        <!-- @TODO investigate making the blue dot pulse. -->
         <div
           class="relative group bg-surface-0 dark:bg-surface-50/10 rounded-2xl p-6 border border-surface-200/80 dark:border-surface-100/20 shadow-sm hover:shadow-md transition-all duration-300">
           <div
@@ -157,7 +162,9 @@ const { user, isLoggedIn } = storeToRefs(userStore);
           <div class="flex items-center gap-3 mb-6">
             <div
               class="p-2.5 bg-primary-50 dark:bg-primary-950/50 rounded-xl text-primary-500">
-              <i class="pi pi-megaphone text-xl text-[#41b6e6]"></i>
+              <Icon
+                icon="heroicons:paper-airplane"
+                class="text-2xl! text-[#41b6e6] no-pointer" />
             </div>
             <h2
               class="text-2xl font-bold tracking-tight text-surface-900 dark:text-surface-50">
@@ -177,7 +184,9 @@ const { user, isLoggedIn } = storeToRefs(userStore);
           <template #title>
             <div
               class="flex items-center gap-2 text-lg font-bold text-surface-900 dark:text-surface-50">
-              <i class="pi pi-cloud text-sky-400"></i>
+              <Icon
+                icon="heroicons:cloud"
+                class="text-2xl! text-sky-400 no-pointer" />
               Airfield Conditions
             </div>
           </template>
@@ -193,7 +202,9 @@ const { user, isLoggedIn } = storeToRefs(userStore);
             <div class="flex items-center justify-between">
               <div
                 class="flex items-center gap-2 text-lg font-bold text-surface-900 dark:text-surface-50">
-                <i class="pi pi-chart-bar text-[#e4002b]"></i>
+                <Icon
+                  icon="heroicons:chart-pie"
+                  class="text-2xl! text-[#e4002b] no-pointer" />
                 Iron Mic Leaderboard
               </div>
               <span
