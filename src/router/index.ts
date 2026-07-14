@@ -5,16 +5,25 @@ import Main from '@/layouts/Main.vue';
 import { useUserStore } from '@/stores/user';
 import * as uriHelper from '@/utils/uriHelper';
 import { vatsimAuthRedirectUrl } from '@/utils/uriHelper';
-import { createRouter, createWebHistory } from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  type RouteRecordRaw,
+} from 'vue-router';
 
 declare module 'vue-router' {
   interface RouteMeta {
-    redirectUrlKey?: keyof typeof uriHelper;
-    externalRedirect?: boolean;
+    loggedIn?: boolean;
+    requiredRating?: number;
+    isAdmin?: boolean;
+    isStaff?: boolean;
+    isTrainingStaff?: boolean;
+    isStaffOrTrainingStaff?: boolean;
+    requiredRoles?: string[];
   }
 }
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: Main,
@@ -189,7 +198,7 @@ const routes = [
         path: 'split-map',
         component: () => import('@/views/dashboards/user/SplitMap.vue'),
         meta: {
-          rating: 5,
+          requiredRating: 5,
         },
       },
     ],
@@ -515,17 +524,14 @@ router.beforeEach(async (to, _from, next) => {
     }
 
     if (
-      to.meta.rating &&
-      !userStore.hasRating(to.meta.requiredRating as number)
+      to.meta.requiredRating &&
+      !userStore.hasRating(to.meta.requiredRating)
     ) {
       console.error('[router] You do not have permission to view this page.');
       return next('/');
     }
 
-    if (
-      to.meta.requiredRoles &&
-      !userStore.hasRoles(to.meta.requiredRoles as string[])
-    ) {
+    if (to.meta.requiredRoles && !userStore.hasRoles(to.meta.requiredRoles)) {
       console.error('[router] You do not have permission to view this page.');
       return next('/');
     }
