@@ -88,7 +88,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
       await newsService.createArticle(values.title, values.content);
     }
 
-    toastSuccess('Article Saved!', 'Article was successfuly saved.');
+    toastSuccess('Article Saved!', 'Article was successfully saved.');
     router.push('/admin/news');
   } catch (e) {
     console.error('error saving article', e);

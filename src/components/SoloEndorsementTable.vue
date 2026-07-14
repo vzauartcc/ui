@@ -96,7 +96,7 @@ const saveEdit = async () => {
     });
 
     toastSuccess(
-      'Solo Endorsement Updated',
+      'Solo Endorsement Updated!',
       `${values.name}'s solo endorsement has been updated.`,
     );
     clearEdit();
@@ -114,7 +114,7 @@ const deleteEndorsement = async () => {
 
     toastSuccess(
       'Solo Endorsement Revoked',
-      `Succesfully revokeded solo endorsement.`,
+      `Succesfully revoked solo endorsement.`,
     );
 
     router.replace('/ins/solo');
@@ -139,9 +139,7 @@ const getMaxExpiration = (issuedAt: string): Date => {
     >
 
     <Column field="student" header="Controller">
-      ,<template #body="{ data }">{{
-        compileUsersName(data.student)
-      }}</template>
+      <template #body="{ data }">{{ compileUsersName(data.student) }}</template>
     </Column>
     <Column field="instructor" header="Instructor">
       <template #body="{ data }">
