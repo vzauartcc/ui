@@ -1,0 +1,152 @@
+@layer theme, base, primevue, components, utilities;
+
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.app-dark, .app-dark *));
+
+@theme {
+  --color-brand-blue: var(--p-core-blue);
+  --color-brand-red: var(--p-core-red);
+
+  --color-sec-blue-100: var(--p-sec-blue-100);
+  --color-sec-blue-300: var(--p-sec-blue-300);
+  --color-sec-blue-500: var(--p-sec-blue-500);
+  --color-sec-blue-700: var(--p-sec-blue-700);
+  --color-sec-blue-900: var(--p-sec-blue-900);
+
+  --color-sec-gray-100: var(--p-sec-gray-100);
+  --color-sec-gray-300: var(--p-sec-gray-300);
+  --color-sec-gray-600: var(--p-sec-gray-600);
+  --color-sec-gray-900: var(--p-sec-gray-900);
+
+  --color-sec-red-100: var(--p-sec-red-100);
+  --color-sec-red-300: var(--p-sec-red-300);
+  --color-sec-red-600: var(--p-sec-red-600);
+  --color-sec-red-900: var(--p-sec-red-900);
+
+  --color-sec-green-100: var(--p-sec-green-100);
+  --color-sec-green-300: var(--p-sec-green-300);
+  --color-sec-green-600: var(--p-sec-green-600);
+  --color-sec-green-900: var(--p-sec-green-900);
+
+  --color-sec-gold-100: var(--p-sec-gold-100);
+  --color-sec-gold-300: var(--p-sec-gold-300);
+  --color-sec-gold-600: var(--p-sec-gold-600);
+  --color-sec-gold-900: var(--p-sec-gold-900);
+
+  --color-bg-1: var(--p-bg-1);
+  --color-bg-2: var(--p-bg-2);
+  --color-bg-3: var(--p-bg-3);
+  --color-bg-4: var(--p-bg-4);
+  --color-bg-5: var(--p-bg-5);
+  --color-bg-6: var(--p-bg-6);
+  --color-bg-7: var(--p-bg-7);
+  --color-bg-8: var(--p-bg-8);
+  --color-bg-9: var(--p-bg-9);
+}
+
+p {
+  margin: 1em 0;
+}
+
+:root {
+  --p-font-family: sans-serif;
+}
+
+body {
+  font-family: var(--p-font-family);
+}
+
+.p-progressspinner {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.help-text {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 0.2rem;
+  cursor: help;
+}
+
+@layer base {
+  .p-toast.p-toast-top-right {
+    @apply top-20! right-5!;
+  }
+}
+
+.required-field::after {
+  content: ' *';
+  color: var(--p-red-500, red);
+  font-weight: bold;
+  margin-left: 0.2rem;
+}
+
+.char-counter {
+  position: absolute;
+  font-size: 0.8rem;
+  right: 0.25rem !important;
+  bottom: 0 !important;
+}
+
+/* Automatically set icons to extra large text and inline. */
+.iconify {
+  @apply inline;
+  @apply text-xl;
+  @apply -mt-1;
+}
+
+.p-panelmenu .iconify {
+  @apply my-auto;
+}
+
+/* Automatically set icons to inline and with a pointer. */
+.iconify:not(.no-pointer) {
+  @apply cursor-pointer;
+}
+
+/* Margin between icons in a table */
+.p-datatable-tbody .text-right .iconify {
+  /* @apply mx-0.5; */
+}
+
+/* Fix DataTable not doing text-right correctly on Column headers. */
+th.text-right > .p-datatable-column-header-content {
+  @apply justify-end;
+}
+
+.p-tab {
+  flex: 1;
+  justify-content: center;
+}
+
+.p-tablist-tab-list {
+  flex: 1;
+  justify-content: center;
+}
+
+.p-datatable-empty-message {
+  @apply italic;
+}
+
+.p-card:not(.no-mt) .p-card-content {
+  @apply mt-5;
+}
+
+.p-card + .p-card {
+  @apply mt-5;
+}
+
+.p-datatable-footer,
+.p-tabpanels,
+.p-dialog-footer,
+.p-card-footer {
+  @apply mt-5;
+}
+
+.p-dialog-content .grid {
+  @apply mt-1;
+}
