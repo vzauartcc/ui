@@ -54,40 +54,6 @@ const MyPreset = definePreset(Aura, {
       900: '{primitive.sec.blue.900}',
       950: '{primitive.sec.blue.900}',
     },
-
-    // 2. Map Light and Dark specific semantic behaviors
-    light: {
-      background: '#ffffff',
-      surface: {
-        50: '{primitive.sec.gray.100}',
-        100: '{primitive.sec.gray.100}',
-        200: '{primitive.sec.gray.300}',
-        300: '{primitive.sec.gray.300}',
-        400: '{primitive.sec.gray.600}',
-        500: '{primitive.sec.gray.600}',
-        600: '{primitive.sec.gray.900}',
-        700: '{primitive.sec.gray.900}',
-        800: '#000000',
-        900: '#000000',
-        950: '#000000',
-      },
-    },
-    dark: {
-      background: '{primitive.bg.8}', // Deep blue/black background from your palette
-      surface: {
-        50: '{primitive.bg.7}',
-        100: '{primitive.bg.6}',
-        200: '{primitive.bg.5}',
-        300: '#444444',
-        400: '{primitive.bg.4}',
-        500: '{primitive.bg.3}',
-        600: '{primitive.bg.2}',
-        700: '{primitive.bg.1}',
-        800: '{primitive.sec.gray.100}',
-        900: '#ffffff',
-        950: '#ffffff',
-      },
-    },
   },
 });
 

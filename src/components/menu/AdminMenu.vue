@@ -14,17 +14,17 @@ const items = ref<MenuItem[]>([
     icon: 'heroicons:squares-2x2',
   },
   {
-    key: 'controller-menu',
-    label: 'Controllers',
-    icon: 'heroicons:user-circle',
-    items: [
-      { label: 'Roster', url: '/admin/controllers', icon: 'heroicons:users' },
-      {
-        label: 'Controller Activity',
-        url: '/admin/controllers/activity',
-        icon: 'heroicons:chart-bar-square',
-      },
-    ],
+    key: 'roster',
+    label: 'Roster',
+    url: '/admin/controllers',
+    icon: 'heroicons:users',
+  },
+  {
+    key: 'controller-activity',
+    label: 'Controller Activity',
+    url: '/admin/controllers/activity',
+    icon: 'heroicons:chart-bar-square',
+    requiredRoles: ['ta', 'wm'],
   },
   {
     key: 'file-menu',
