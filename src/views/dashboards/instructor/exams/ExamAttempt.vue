@@ -195,25 +195,25 @@ const scrollToOverview = () => {
           <template #content>
             <div class="grid grid-cols-1 gap-2">
               <div class="correct flex items-center gap-3">
-                <span class="inline-flex w-6"
+                <span class="text-center w-6"
                   ><Icon icon="heroicons:check-20-solid" class="no-pointer"
                 /></span>
                 <span>Correct answer selected. (Points Awarded)</span>
               </div>
               <div class="incorrect flex items-center gap-3">
-                <span class="inline-flex w-6"
+                <span class="text-center w-6"
                   ><Icon icon="heroicons:x-mark-20-solid" class="no-pointer"
                 /></span>
                 <span>Incorrect answer selected. (No Points Awarded)</span>
               </div>
               <div class="flex items-center gap-3">
-                <span class="inline-flex w-6"></span>
+                <span class="w-6"></span>
                 <span>Incorrect answer not selected.</span>
               </div>
               <div class="missed flex items-center gap-3">
-                <span class="inline-flex w-6"></span>
+                <span class="w-6"></span>
                 <span
-                  >Correct answer <b>not</b> selected (No Points Awarded).</span
+                  >Correct answer <b>not</b> selected. (No Points Awarded)</span
                 >
               </div>
             </div>
@@ -249,7 +249,7 @@ const scrollToOverview = () => {
                       !option.isCorrect &&
                       question.response?.selectedOptions.includes(option._id),
                   }">
-                  <span class="w-6 inline-flex">
+                  <span class="w-6 text-center">
                     <Icon
                       icon="heroicons:x-mark-20-solid"
                       class="no-pointer"
@@ -270,7 +270,7 @@ const scrollToOverview = () => {
               </span>
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex justify-end mt-2.5">
               <span v-tooltip.left="'Jump to top'" @click="scrollToOverview">
                 <Icon icon="heroicons:arrow-up" />
               </span>

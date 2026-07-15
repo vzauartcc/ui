@@ -32,7 +32,7 @@ onMounted(async () => {
       sop: data.filter((d) => d.category === 'sop'),
       loa: data.filter((d) => d.category === 'loa'),
       policy: data.filter((d) => d.category === 'policy'),
-      reference: data.filter((d) => d.category === 'reference'),
+      reference: data.filter((d) => d.category === 'misc'),
       training: data.filter((d) => d.category === 'training'),
     };
   } catch (e) {

@@ -45,14 +45,6 @@ const typeOptions = ref([
     name: 'Instructor Reference',
     value: 'ins',
   },
-  {
-    name: 'Miscellaneous',
-    value: 'misc',
-  },
-  {
-    name: 'Reference',
-    value: 'training',
-  },
 ]);
 
 const file = ref<IDownload | null>(null);
