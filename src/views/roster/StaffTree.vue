@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { controllerService } from '@/services/controller/controller.service';
-import type { IController } from '@/services/controller/controller.types';
+import type {
+  IController,
+  IStaffPosition,
+} from '@/services/controller/controller.types';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import Card from 'primevue/card';
@@ -17,121 +20,90 @@ const seniorStaff = ref<OrganizationChartNode[] | null>(null);
 const staff = ref<OrganizationChartNode[] | null>(null);
 const trainingStaff = ref<OrganizationChartNode[] | null>(null);
 
+const buildHierarchyByClass = (
+  data: IStaffPosition[],
+  targetClass: string,
+): OrganizationChartNode[] => {
+  const map = new Map<string, OrganizationChartNode>();
+  const roots: OrganizationChartNode[] = [];
+
+  // 1. Map all items into their new structure
+  data
+    .filter((item) => item.class === targetClass)
+    .forEach((item) => {
+      map.set(item.code, {
+        key: item.code,
+        title: item.name,
+        description: item.description,
+        users: item.users,
+        _reportsTo: item.reportsTo,
+      });
+    });
+
+  if (targetClass === 'junior') {
+    data
+      .filter((item) => item.class === 'support')
+      .forEach((item) => {
+        map.set(item.code, {
+          key: item.code,
+          title: item.name,
+          description: item.description,
+          users: item.users,
+          _reportsTo: item.reportsTo,
+        });
+      });
+  }
+
+  // 2. Load the parent of any items in the map.
+  for (const item of map.values()) {
+    const parentId = item._reportsTo;
+
+    if (parentId && !map.has(parentId)) {
+      const parent = data.find((d) => d.code === parentId);
+      if (parent) {
+        map.set(parent.code, {
+          key: parent.code,
+          title: parent.name,
+          description: parent.description,
+          users: parent.users,
+          _reportsTo: '', // Do not populate this to prevent overbuilding tree
+        });
+      }
+    }
+  }
+
+  // 3. Build the tree using references
+  for (const item of map.values()) {
+    const parentId = item._reportsTo;
+
+    if (!parentId || !map.has(parentId)) {
+      // Top level node, has no parents
+      roots.push(item);
+    } else {
+      // Child node -> grab the parent reference and push to its children
+      const parent = map.get(parentId)!;
+      if (!parent.children) {
+        parent.children = [];
+      }
+      parent.children.push(item);
+    }
+  }
+
+  return roots;
+};
+
 onMounted(async () => {
   try {
     const data = await controllerService.getStaff();
 
-    // @TODO: perhaps have a 'reportsTo' field to make this less static.
-    seniorStaff.value = [
-      {
-        key: 'atm',
-        title: data.atm.name,
-        description: data.atm.description,
-        users: data.atm.users,
-        children: [
-          {
-            key: 'datm',
-            title: data.datm.name,
-            description: data.datm.description,
-            users: data.datm.users,
-          },
-          {
-            key: 'ta',
-            title: data.ta.name,
-            description: data.ta.description,
-            users: data.ta.users,
-          },
-        ],
-      },
-    ];
+    seniorStaff.value = buildHierarchyByClass(Object.values(data), 'senior');
 
-    staff.value = [
-      {
-        key: 'datm',
-        title: data.datm.name,
-        description: data.datm.description,
-        users: data.datm.users,
-        children: [
-          {
-            key: 'ec',
-            title: data.ec.name,
-            description: data.ec.description,
-            users: data.ec.users,
-            children: [
-              {
-                key: 'et',
-                title: data.et.name,
-                description: data.et.description,
-                users: data.et.users,
-              },
-            ],
-          },
-          {
-            key: 'fe',
-            title: data.fe.name,
-            description: data.fe.description,
-            users: data.fe.users,
-            children: [
-              {
-                key: 'ft',
-                title: data.ft.name,
-                description: data.ft.description,
-                users: data.ft.users,
-              },
-            ],
-          },
-          {
-            key: 'wm',
-            title: data.wm.name,
-            description: data.wm.description,
-            users: data.wm.users,
-            children: [
-              {
-                key: 'wt',
-                title: data.wt.name,
-                description: data.wt.description,
-                users: data.wt.users,
-              },
-            ],
-          },
-          {
-            key: 'cc',
-            title: data.cc.name,
-            description: data.cc.description,
-            users: data.cc.users,
-          },
-        ],
-      },
-    ];
+    staff.value = buildHierarchyByClass(Object.values(data), 'junior');
 
-    trainingStaff.value = [
-      {
-        key: 'ta',
-        title: data.ta.name,
-        description: data.ta.description,
-        users: data.ta.users,
-        children: [
-          {
-            key: 'ins',
-            title: data.ins.name,
-            description: data.ins.description,
-            users: data.ins.users,
-          },
-          {
-            key: 'mtr',
-            title: data.mtr.name,
-            description: data.mtr.description,
-            users: data.mtr.users,
-          },
-          {
-            key: 'ia',
-            title: data.ia.name,
-            description: data.ia.description,
-            users: data.ia.users,
-          },
-        ],
-      },
-    ];
+    trainingStaff.value = buildHierarchyByClass(
+      Object.values(data),
+      'training',
+    );
   } catch (e) {
     console.error('error getting staff', e);
   }

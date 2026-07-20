@@ -63,11 +63,13 @@ export interface IStaff {
   cc: IStaffPosition;
 }
 
-interface IStaffPosition {
+export interface IStaffPosition {
   name: string;
   description: string;
   code: string;
   users: IFeedbackController[];
+  reportsTo: string;
+  class: string;
 }
 
 export interface IControllerStats {
