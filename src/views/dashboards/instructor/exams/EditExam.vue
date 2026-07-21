@@ -3,6 +3,7 @@ import { controllerService } from '@/services/controller/controller.service';
 import type { ICertification } from '@/services/controller/controller.types';
 import { examService } from '@/services/exam/exam.service';
 import type { IExam, IQuestion } from '@/services/exam/exam.types';
+import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
 import { Icon } from '@iconify/vue';
 import {
@@ -26,6 +27,8 @@ import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
 import { onMounted, ref, useTemplateRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
+useTitle('Edit Exam');
 
 interface IOption {
   _id: string;
@@ -98,6 +101,8 @@ onMounted(async () => {
     };
 
     loading.value = false;
+
+    useTitle(`Edit Exam - ${initialValues.value.title}`);
   } catch (e) {
     console.error('error getting exam details', e);
   }

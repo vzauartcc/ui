@@ -359,8 +359,8 @@ const getConditions = (data: IMetar): ICondition => {
     <template #header>
       <p>
         The runways listed here are <strong>suggestions</strong>. Please always
-        check with the online ATIS prior to planning your runways, and
-        follow all ATC instructions.
+        check with the online ATIS prior to planning your runways, and follow
+        all ATC instructions.
       </p></template
     >
     <template #empty>

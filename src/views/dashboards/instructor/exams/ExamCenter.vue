@@ -180,7 +180,7 @@ const assignExam = async (event: FormSubmitEvent) => {
   try {
     await examService.assignExam(values.student, values.exam);
 
-    toastSuccess('Exam Assigned', 'The exam has been assigned.');
+    toastSuccess('Exam Assigned!', 'The exam has been assigned.');
 
     assignVisible.value = false;
 

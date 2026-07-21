@@ -7,6 +7,7 @@ import pluginOxlint from 'eslint-plugin-oxlint';
 import pluginVue from 'eslint-plugin-vue';
 import { globalIgnores } from 'eslint/config';
 import { toastPunctuationRule } from './lint-rules/toast';
+import { useTitleEnforcementRule } from './lint-rules/use-title';
 
 // To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
 // import { configureVueProject } from '@vue/eslint-config-typescript'
@@ -21,11 +22,13 @@ export default defineConfigWithVueTs(
       'local-rules': {
         rules: {
           'toast-punctuation': toastPunctuationRule,
+          'use-title': useTitleEnforcementRule,
         },
       },
     },
     rules: {
       'local-rules/toast-punctuation': 'error',
+      'local-rules/use-title': 'error',
       'vue/multi-word-component-names': [
         'error',
         { ignores: ['404', 'Footer', 'Header', 'Home', 'Index', 'Main'] },

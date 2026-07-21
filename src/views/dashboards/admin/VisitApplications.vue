@@ -71,7 +71,10 @@ const accept = async () => {
       editData.value!.application.cid,
     );
 
-    toastSuccess('Visit Application Accepted', '');
+    toastSuccess(
+      'Visit Application Accepted!',
+      `${compileUsersName(editData.value!.application)}'s visit application has been accepted.`,
+    );
 
     editVisible.value = false;
 
@@ -122,7 +125,10 @@ const rejectApplication = async () => {
       rejectData.value.reason,
     );
 
-    toastSuccess('Visit Application Rejected!', '');
+    toastSuccess(
+      'Visit Application Rejected!',
+      `You have rejected ${compileUsersName(rejectData.value.application)}'s visit application.`,
+    );
 
     closeReject();
 

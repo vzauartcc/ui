@@ -106,7 +106,7 @@ const sendFeedback = async (event: FormSubmitEvent) => {
       values.anonymous === true,
     );
 
-    toastSuccess('Feedback Submitted', 'Your feedback has been submitted!');
+    toastSuccess('Feedback Submitted!', 'Your feedback has been submitted.');
     router.push('/');
   } catch (err) {
     console.error('error submitting feedback', err);

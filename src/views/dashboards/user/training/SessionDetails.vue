@@ -2,10 +2,13 @@
 import SessionDetails from '@/components/training/SessionDetails.vue';
 import { trainingService } from '@/services/training/training.service';
 import type { ITrainingSession } from '@/services/training/training.types';
+import { useTitle } from '@/utils/title';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+
+useTitle('Training Session Details');
 
 const session = ref<ITrainingSession | null>(null);
 

@@ -113,8 +113,8 @@ const deleteEndorsement = async () => {
     await trainingService.deleteSoloEndorsement(deleteVal.value._id);
 
     toastSuccess(
-      'Solo Endorsement Revoked',
-      `Succesfully revoked solo endorsement.`,
+      'Solo Endorsement Revoked!',
+      `Successfully revoked solo endorsement.`,
     );
 
     router.replace('/ins/solo');

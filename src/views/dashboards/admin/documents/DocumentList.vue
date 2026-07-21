@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AdminDocumentList from '@/components/documents/AdminDocumentList.vue';
-import { useTitle } from '@/utils/title';
-import { toastSuccess } from '@/utils/toast';
 import { filesService } from '@/services/files/files.service';
 import type { IDocument } from '@/services/files/files.types';
+import { useTitle } from '@/utils/title';
+import { toastSuccess } from '@/utils/toast';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { onMounted, ref } from 'vue';
@@ -43,7 +43,7 @@ const deleteDocument = async () => {
     await filesService.deleteDocument(deleteData.value._id);
 
     toastSuccess(
-      'Document deleted',
+      'Document deleted!',
       `Document ${deleteData.value.name} has been deleted.`,
     );
     closeDelete();

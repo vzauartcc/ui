@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { localToUTC } from '@/utils/date';
-import { compileUsersName } from '@/utils/text';
-import { useTitle } from '@/utils/title';
-import { toastSuccess, toastWarning } from '@/utils/toast';
 import { controllerService } from '@/services/controller/controller.service';
 import type { ICertification } from '@/services/controller/controller.types';
 import { feedbackService } from '@/services/feedback/feedback.service';
 import type { IFeedbackController } from '@/services/feedback/feedback.types';
 import { trainingService } from '@/services/training/training.service';
+import { localToUTC } from '@/utils/date';
+import { compileUsersName } from '@/utils/text';
+import { useTitle } from '@/utils/title';
+import { toastSuccess, toastWarning } from '@/utils/toast';
 import {
   Form,
   FormField,
@@ -105,8 +105,8 @@ const saveForm = async (event: FormSubmitEvent) => {
       `Solo Endorsement issued to ${values.controller}.`,
     );
     toastWarning(
-      'Controller Update Required',
-      'Please assign the appropriate solo endorsement.',
+      'Controller Update Required!',
+      'Please assign the appropriate solo endorsement to the controller.',
     );
 
     router.push(`/ins/controller/${values.controller.cid}`);

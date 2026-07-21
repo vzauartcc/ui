@@ -89,7 +89,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
   try {
     await staffingRequestService.editRequest(staffingRequest.value._id, data);
     toastSuccess(
-      'Staffing Request Saved',
+      'Staffing Request Saved!',
       'The changes to the staffing request have been saved.',
     );
     router.push('/admin/events');

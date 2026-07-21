@@ -111,7 +111,7 @@ const deleteEvent = async () => {
   try {
     await eventService.deleteEvent(eventDeleteData.value.url);
 
-    toastSuccess('Event Delete', 'The event has been successfully deleted.');
+    toastSuccess('Event Deleted!', 'The event has been successfully deleted.');
 
     loadEvents();
     closeEventDelete();

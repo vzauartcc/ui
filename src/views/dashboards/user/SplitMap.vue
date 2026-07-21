@@ -353,7 +353,7 @@ const saveSplit = async (
     liveSplit.value!.ownership = JSON.parse(JSON.stringify(data));
     populateActivePositions(data);
 
-    toastSuccess('Split Saved', 'Successfully saved the split.');
+    toastSuccess('Split Saved!', 'Successfully saved the split.');
   } catch (e) {
     console.error('error saving split', e);
   }
@@ -367,7 +367,7 @@ const resetSplit = async () => {
     liveSplit.value!.ownership = JSON.parse(JSON.stringify(data));
     populateActivePositions(data);
 
-    toastSuccess('Split Reset', 'Center split has been reset.');
+    toastSuccess('Split Reset!', 'Center split has been reset.');
   } catch (e) {
     console.error('error resetting split', e);
   }

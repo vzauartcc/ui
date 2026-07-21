@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AdminDocumentList from '@/components/documents/AdminDocumentList.vue';
-import { useTitle } from '@/utils/title';
-import { toastSuccess } from '@/utils/toast';
 import { filesService } from '@/services/files/files.service';
 import type { IDownload } from '@/services/files/files.types';
+import { useTitle } from '@/utils/title';
+import { toastSuccess } from '@/utils/toast';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { onMounted, ref } from 'vue';
@@ -43,7 +43,7 @@ const deleteDownload = async () => {
     await filesService.deleteDownload(deleteData.value._id);
 
     toastSuccess(
-      'Download deleted',
+      'Download deleted!',
       `Download ${deleteData.value.name} has been deleted.`,
     );
     closeDelete();

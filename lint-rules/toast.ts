@@ -27,7 +27,10 @@ export const toastPunctuationRule: Rule.RuleModule = {
         // and property calls: this.toast...() or obj.toast...()
         const isToastCall =
           (node.callee.type === 'Identifier' &&
-            node.callee.name === 'toastError') ||
+            (node.callee.name === 'toastError' ||
+              node.callee.name === 'toastSuccess' ||
+              node.callee.name === 'toastInfo' ||
+              node.callee.name === 'toastWarning')) ||
           (node.callee.type === 'MemberExpression' &&
             node.callee.property.type === 'Identifier' &&
             (node.callee.property.name === 'toastError' ||

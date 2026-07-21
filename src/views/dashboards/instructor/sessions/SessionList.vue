@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { dateAsMMDDHHMM } from '@/utils/date';
-import { compileUsersName } from '@/utils/text';
-import { useTitle } from '@/utils/title';
-import { toastSuccess } from '@/utils/toast';
 import { trainingService } from '@/services/training/training.service';
 import type {
   ISessionResponse,
   ITrainingSession,
 } from '@/services/training/training.types';
 import { useUserStore } from '@/stores/user';
+import { dateAsMMDDHHMM } from '@/utils/date';
+import { compileUsersName } from '@/utils/text';
+import { useTitle } from '@/utils/title';
+import { toastSuccess } from '@/utils/toast';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -85,7 +85,7 @@ const confirmDelete = async () => {
     await trainingService.deleteSession(deleteSession.value!._id);
 
     toastSuccess(
-      'Training Session Deleted',
+      'Training Session Deleted!',
       `Successfully deleted training session.`,
     );
     closeDelete();

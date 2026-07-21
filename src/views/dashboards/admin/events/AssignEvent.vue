@@ -146,12 +146,12 @@ const assignPosition = async (newVal: number | null, posData: IPosition) => {
 
     if (newVal) {
       toastSuccess(
-        'Position Assigned',
+        'Position Assigned!',
         `Successfully assigned the ${posData.pos} position.`,
       );
     } else {
       toastSuccess(
-        'Position Unassigned',
+        'Position Unassigned'!,
         `Successfully unassigned the ${posData.pos} position.`,
       );
     }

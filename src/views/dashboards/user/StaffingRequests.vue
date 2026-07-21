@@ -2,10 +2,13 @@
 import { staffingRequestService } from '@/services/staffingRequest/staffingRequest.service';
 import type { IStaffingRequest } from '@/services/staffingRequest/staffingRequest.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
+import { useTitle } from '@/utils/title';
 import Column from 'primevue/column';
 import DataTable, { type DataTablePageEvent } from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
+
+useTitle('Upcoming Staffing Requests');
 
 const staffingRequests = ref<IStaffingRequest[] | null>(null);
 const lazyParams = ref({ page: 1, limit: 10 });

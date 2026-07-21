@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { controllerService } from '@/services/controller/controller.service';
+import { useTitle } from '@/utils/title';
 import Accordion from 'primevue/accordion';
 import AccordionContent from 'primevue/accordioncontent';
 import AccordionHeader from 'primevue/accordionheader';
@@ -7,6 +8,8 @@ import AccordionPanel from 'primevue/accordionpanel';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import { computed, onMounted, ref } from 'vue';
+
+useTitle('Available Operating Initials');
 
 const available = ref<string[] | null>(null);
 
