@@ -1,16 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":disableMajorUpdates",
-    "helpers:pinGitHubActionDigests"
-  ],
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "timezone": "America/Chicago",
   "schedule": ["* 10-18 * * *"],
   "dependencyDashboard": true,
   "prConcurrentLimit": 5,
   "minimumReleaseAge": "21 days",
   "internalChecksFilter": "strict",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["before 5am on monday"]
+  },
   "packageRules": [
     {
       "description": "Completely lock all PrimeVue / PrimeUI ecosystem packages",
@@ -29,6 +30,12 @@
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["major"],
       "groupName": null,
+      "automerge": false
+    },
+    {
+      "description": "Group all remaining minor and patch updates together, but do not automerge",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "minor and patch updates",
       "automerge": false
     },
     {
@@ -89,12 +96,6 @@
         "/^@vue\\/tsconfig/",
         "/^@tsconfig\\//"
       ],
-      "automerge": false
-    },
-    {
-      "description": "Group all remaining minor and patch updates together, but do not automerge",
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "minor and patch updates",
       "automerge": false
     },
     {
