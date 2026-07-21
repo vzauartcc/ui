@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "lint": "npm run oxlint && npm run eslint",
     "oxlint": "oxlint .",
-    "eslint": "eslint . --cache"
+    "eslint": "eslint . --cache",
+    "test:renovate": "npx --yes --package renovate -- renovate-config-validator"
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
