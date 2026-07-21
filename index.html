@@ -6,8 +6,7 @@
     <title>Virtual Chicago ARTCC</title>
     <meta
       name="description"
-      content="Virtual Chicago ARTCC is one of the 22 regional ARTCCs in the US and provides virtual ATC services on the VATSIM network. Not affiliated with the FAA."
-    />
+      content="Virtual Chicago ARTCC is one of the 22 regional ARTCCs in the US and provides virtual ATC services on the VATSIM network. Not affiliated with the FAA." />
     <link rel="icon" href="/favicon.ico" />
   </head>
   <body style="overflow-y: scroll">
@@ -26,8 +25,7 @@
         text-align: center;
         align-content: center;
         min-height: 3rem;
-      "
-    >
+      ">
       This is a development version of the website. The data shown here is test
       data, and does not reflect current information. Please visit
       <a href="https://zauartcc.org" style="text-decoration: underline"
@@ -40,25 +38,25 @@
 
     <script>
       window.env = {
-        VITE_ORIGIN_ENDPOINT: "$VITE_ORIGIN_ENDPOINT",
-        NODE_ENV: "$NODE_ENV",
+        VITE_ORIGIN_ENDPOINT: '$VITE_ORIGIN_ENDPOINT',
+        NODE_ENV: '$NODE_ENV',
       };
     </script>
     <script type="module" src="/src/main.ts"></script>
     <script>
-      var ieWarn = document.querySelector("#ie_warn");
+      var ieWarn = document.querySelector('#ie_warn');
       if (
-        navigator.userAgent.indexOf("MSIE") !== -1 ||
-        navigator.appVersion.indexOf("Trident/") > -1
+        navigator.userAgent.indexOf('MSIE') !== -1 ||
+        navigator.appVersion.indexOf('Trident/') > -1
       ) {
         ieWarn.innerHTML =
-          "Internet Explorer is not supported by this site. Please use Chrome, Edge, Firefox or Safari.";
+          'Internet Explorer is not supported by this site. Please use Chrome, Edge, Firefox or Safari.';
       } else {
         ieWarn.parentElement.removeChild(ieWarn);
       }
 
-      if (window.env.NODE_ENV !== "production") {
-        document.getElementById("dev_warn").style.display = "block";
+      if (window.env.NODE_ENV !== 'production') {
+        document.getElementById('dev_warn').style.display = 'block';
       }
     </script>
   </body>
