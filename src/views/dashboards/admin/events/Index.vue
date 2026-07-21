@@ -313,7 +313,7 @@ const isInPast = (date?: Date | string) => {
     modal
     v-model:visible="eventDeleteVisible"
     class="w-1/2"
-    header="Confirm Deleteion"
+    header="Confirm Deletion"
     @hide="closeEventDelete">
     <p>
       Confirm the deletion of the <b>{{ staffingDeleteData?.vaName }}</b> event.
@@ -328,7 +328,7 @@ const isInPast = (date?: Date | string) => {
     modal
     v-model:visible="staffingDeleteVisible"
     class="w-1/2"
-    header="Confirm Deleteion"
+    header="Confirm Deletion"
     @hide="closeStaffingDelete">
     <p>
       Confirm the deletion of <b>{{ staffingDeleteData?.vaName }}</b

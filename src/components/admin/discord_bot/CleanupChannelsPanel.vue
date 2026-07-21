@@ -182,7 +182,7 @@ const getChannelFromId = (id: string) => {
           bodyClass="text-right">
           <template #body="{ data }">
             <span
-              v-tooltip.top="'Edit Clenaup Channel'"
+              v-tooltip.top="'Edit Cleanup Channel'"
               @click="loadEditCleanupChannel(data)">
               <Icon icon="heroicons:pencil" />
             </span>

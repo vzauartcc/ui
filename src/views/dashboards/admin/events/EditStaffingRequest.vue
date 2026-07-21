@@ -127,7 +127,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
             <InputText name="email" v-model="staffingRequest.email" disabled />
             <label for="email">Requestor Email</label>
           </FloatLabel>
-          <FloatLabel varient="on">
+          <FloatLabel variant="on">
             <DatePicker
               :modelValue="new Date(initialValues.date)"
               disabled

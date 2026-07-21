@@ -35,7 +35,7 @@ const editVal = ref({
   position: '',
   issuedAt: new Date(0),
   expires: new Date(0),
-  newExpiraton: new Date(1),
+  newExpiration: new Date(1),
   acknowledgement: false,
   maxExpiration: new Date(1),
 });
@@ -53,7 +53,7 @@ const loadEdit = (endorsement: ISoloEndorsement) => {
     position: endorsement.position,
     issuedAt: utcToLocal(endorsement.createdAt),
     expires: utcToLocal(endorsement.expires),
-    newExpiraton: getMaxExpiration(endorsement.createdAt),
+    newExpiration: getMaxExpiration(endorsement.createdAt),
     maxExpiration: getMaxExpiration(endorsement.createdAt),
     acknowledgement: false,
   };
@@ -76,7 +76,7 @@ const clearEdit = () => {
     position: '',
     issuedAt: new Date(0),
     expires: new Date(0),
-    newExpiraton: new Date(1),
+    newExpiration: new Date(1),
     acknowledgement: false,
     maxExpiration: new Date(1),
   };
@@ -91,7 +91,7 @@ const saveEdit = async () => {
 
   try {
     await trainingService.editSoloEndorsement(values._id, {
-      expirationDate: localToUTC(values.newExpiraton),
+      expirationDate: localToUTC(values.newExpiration),
       confirmation: values.acknowledgement,
     });
 
@@ -221,7 +221,7 @@ const getMaxExpiration = (issuedAt: string): Date => {
       </FloatLabel>
       <FloatLabel variant="on">
         <DatePicker
-          v-model="editVal.newExpiraton"
+          v-model="editVal.newExpiration"
           :maxDate="editVal.maxExpiration"
           :minDate="editVal.expires"
           name="new" />

@@ -33,7 +33,7 @@ onMounted(async () => {
   <template v-else-if="events.length > 0">
     <Galleria
       :value="events"
-      :numVisibile="3"
+      :numVisible="3"
       circular
       autoPlay
       :transitionInterval="3000"
