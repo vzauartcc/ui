@@ -22,7 +22,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
 <template>
   <div class="w-full min-h-screen space-y-12 pb-16">
     <section
-      class="relative overflow-hidden rounded-3xl bg-linear-to-br from-surface-50 to-surface-100 dark:from-bg-8 dark:to-surface-50 border border-surface-200 dark:border-surface-100 p-8 md:p-12 shadow-xl">
+      class="relative overflow-hidden rounded-3xl bg-linear-to-br from-surface-200 to-surface-100 dark:from-bg-8 dark:to-surface-800 border border-surface-200 dark:border-surface-100 p-8 md:p-12 shadow-xl">
       <div class="absolute top-0 left-0 w-2 h-full bg-[#e4002b]"></div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -65,13 +65,16 @@ const { user, isLoggedIn } = storeToRefs(userStore);
               <Button
                 as="router-link"
                 to="/visit"
-                label="Become a Visitor!"
-                icon="pi pi-plane"
-                severity="primary"
-                class="shadow-md shadow-primary-500/20 font-semibold px-6 py-2.5 rounded-xl transform hover:-translate-y-0.5 transition-all duration-200" />
+                class="inline-flex items-center justify-center shadow-md shadow-primary-500/20 font-semibold px-6 py-2.5 rounded-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                ><Icon
+                  icon="heroicons:paper-airplane-solid"
+                  style="margin-top: unset !important"
+                  class="shrink-0 align-middle" />
+                <span>Become a visitor!</span>
+              </Button>
             </div>
             <p class="text-sm text-surface-500 dark:text-surface-400">
-              Rather transfer in? Request via
+              Rather make Chicago your new home? Request a transfer via
               <a
                 href="https://www.vatusa.net/help/kb#q8"
                 target="_blank"
