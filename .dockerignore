@@ -18,10 +18,15 @@ build/
 # Version Control
 .git/
 .gitignore
+.gitattributes
+.github/
 .svn/
 .hg/
 .bzr/
 CVS/
+README.md
+LICENSE
+
 
 # Editors & IDEs
 .vscode/
@@ -49,3 +54,14 @@ temp/
 *.pid
 *.seed
 *.pid.lock
+
+# Linting, Formatting, and Dev Tools
+.editorconfig
+eslint.config.ts
+lint-rules/
+.oxfmtrc.json
+.oxlintrc.json
+scripts/
+doppler-template.yaml
+.dockerignore
+Dockerfile

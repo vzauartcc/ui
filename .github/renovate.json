@@ -1,85 +1,107 @@
 {
-	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["config:recommended", ":disableMajorUpdates", "helpers:pinGitHubActionDigests"],
-	"timezone": "America/Chicago",
-	"schedule": ["* 10-18 * * *"],
-	"dependencyDashboard": true,
-	"prConcurrentLimit": 5,
-	"minimumReleaseAge": "21 days",
-	"internalChecksFilter": "strict",
-	"packageRules": [
-		{
-			"description": "Group minor, patch, and digest updates for GitHub Actions",
-			"matchManagers": ["github-actions"],
-			"matchUpdateTypes": ["minor", "patch", "digest"],
-			"groupName": "all minor and patch github action updates",
-			"automerge": false
-		},
-		{
-			"description": "Allow major updates for GitHub Actions (override global block) and keep them separate",
-			"matchManagers": ["github-actions"],
-			"matchUpdateTypes": ["major"],
-			"groupName": null,
-			"automerge": false
-		},
-		{
-			"description": "Group all remaining minor and patch updates together, but do not automerge",
-			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "minor and patch updates",
-			"automerge": false
-		},
-		{
-			"description": "Group minor and patch updates together for Vue core components, but do not automerge",
-			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "vue core minor and patch updates",
-			"automerge": false,
-			"matchPackageNames": ["/^vue/", "/vite-plugin-vue/"]
-		},
-		{
-			"description": "Group minor and patch updates together for Leaflet, but do not automerge",
-			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "maps-geospatial minor and patch updates",
-			"matchPackageNames": [
-				"maplibre-gl",
-				"leaflet",
-				"metar-parser",
-				"/^@indoorequal/",
-				"/^@vue-leaflet/"
-			],
-			"automerge": false
-		},
-		{
-			"description": "Group minor and patch updates together for UI components, but do not automerge",
-			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "ui minor and patch updates",
-			"matchPackageNames": [
-				"flatpickr",
-				"materialize-css",
-				"chart.js",
-				"/^@toast-ui/",
-				"/vue-flatpickr/"
-			],
-			"automerge": false
-		},
-		{
-			"description": "Group minor and patch updates together for tooling and linting, but do not automerge",
-			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "tooling-lint minor and patch updates",
-			"matchPackageNames": [
-				"prettier",
-				"sass",
-				"vite",
-				"globals",
-				"/^@eslint/",
-				"/^@vue/eslint-config/",
-				"/^eslint/"
-			],
-			"automerge": false
-		},
-		{
-			"description": "Don't group major updates",
-			"matchUpdateTypes": ["major"],
-			"groupName": null
-		}
-	]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "timezone": "America/Chicago",
+  "schedule": ["* 10-18 * * *"],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 5,
+  "minimumReleaseAge": "21 days",
+  "internalChecksFilter": "strict",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["before 5am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Completely lock all PrimeVue / PrimeUI ecosystem packages",
+      "matchPackageNames": ["/^@?prime/", "tailwindcss-primeui"],
+      "enabled": false
+    },
+    {
+      "description": "Group minor, patch, and digest updates for GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "all minor and patch github action updates",
+      "automerge": false
+    },
+    {
+      "description": "Allow major updates for GitHub Actions (override global block) and keep them separate",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "groupName": null,
+      "automerge": false
+    },
+    {
+      "description": "Group all remaining minor and patch updates together, but do not automerge",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "minor and patch updates",
+      "automerge": false
+    },
+    {
+      "description": "Group minor and patch updates for Vue core ecosystem",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "vue core minor and patch updates",
+      "matchPackageNames": [
+        "vue",
+        "vue-router",
+        "pinia",
+        "/^@vitejs\\/plugin-vue/",
+        "vite-plugin-vue-devtools"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Group minor and patch updates for UI components and Tailwind",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "ui minor and patch updates",
+      "matchPackageNames": [
+        "tailwindcss",
+        "/^@tailwindcss\\//",
+        "/^@iconify\\//",
+        "chart.js"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Group minor and patch updates for Tiptap rich text editor",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "tiptap minor and patch updates",
+      "matchPackageNames": ["/^@tiptap\\//"],
+      "automerge": false
+    },
+    {
+      "description": "Group minor and patch updates for Maps and Geospatial",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "maps-geospatial minor and patch updates",
+      "matchPackageNames": ["leaflet", "@types/leaflet", "/^@vue-leaflet\\//"],
+      "automerge": false
+    },
+    {
+      "description": "Group minor and patch updates for Tooling, TypeScript, and Linting",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "tooling-lint minor and patch updates",
+      "matchPackageNames": [
+        "vite",
+        "typescript",
+        "vue-tsc",
+        "oxlint",
+        "oxfmt",
+        "eslint",
+        "eslint-config-prettier",
+        "vue-eslint-parser",
+        "/^eslint-plugin-/",
+        "/^@eslint\\//",
+        "/^@vue\\/eslint-config/",
+        "/^@vue\\/tsconfig/",
+        "/^@tsconfig\\//"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Don't group major updates",
+      "matchUpdateTypes": ["major"],
+      "groupName": null
+    }
+  ]
 }
