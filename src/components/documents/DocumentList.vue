@@ -23,6 +23,11 @@ const tagDate = ref(Date.now() - 1000 * 60 * 60 * 24 * 61);
 
 <template>
   <DataView :value="props.documents">
+    <template #empty
+      ><p class="italic">
+        No {{ props.isDownload ? 'downloads' : 'documents' }} found.
+      </p></template
+    >
     <template #list="{ items }">
       <div class="flex flex-col">
         <div v-for="(item, index) in items" :key="index">
