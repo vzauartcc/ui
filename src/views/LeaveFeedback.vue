@@ -24,15 +24,24 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 useTitle('Submit Feedback');
 
 const userStore = useUserStore();
 const { user, isLoggedIn } = storeToRefs(userStore);
+
 const router = useRouter();
+const route = useRoute();
+const cid =
+  (Array.isArray(route.params.cid) ? route.params.cid[0] : route.params.cid) ||
+  '';
 
 const controllerList = ref<IFeedbackController[] | null>(null);
+
+const initialValues = ref({
+  controller: undefined as IFeedbackController | undefined,
+});
 
 const availablePositions = ref([
   { name: 'Center', value: 'center' },
@@ -55,6 +64,8 @@ onMounted(async () => {
     const data = await feedbackService.getControllerList();
 
     controllerList.value = data;
+
+    initialValues.value.controller = data.find((c) => c.cid === +cid);
   } catch (e) {
     console.error('error getting controller list', e);
   }
@@ -136,7 +147,12 @@ const sendFeedback = async (event: FormSubmitEvent) => {
             <b>Please note:</b> your identity will always be shared with the
             ATM, DATM, and TA, even if you select the 'Remain Anonymous' option.
           </p>
-          <Form v-slot="$form" :resolver @submit="sendFeedback" class="mt-10">
+          <Form
+            v-slot="$form"
+            :initialValues="initialValues"
+            :resolver
+            @submit="sendFeedback"
+            class="mt-10">
             <div class="grid grid-cols-1 gap-2">
               <div class="grid md:grid-cols-3 gap-5">
                 <div class="">

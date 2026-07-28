@@ -123,6 +123,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/LeaveFeedback.vue'),
         meta: {},
       },
+      {
+        path: '/feedback/:cid',
+        component: () => import('@/views/LeaveFeedback.vue'),
+        meta: {},
+      },
 
       {
         path: '/staffingrequest',
