@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onlineService } from '@/services/online/online.service';
 import type { ITopControllers } from '@/services/online/online.types';
-import { secToHHMMSS } from '@/utils/text';
+import { secToHHMM } from '@/utils/text';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -33,7 +33,7 @@ onMounted(async () => {
       <Column field="name" />
       <Column field="len" bodyClass="text-right">
         <template #body="{ data }">
-          {{ secToHHMMSS(data.len) }}
+          {{ secToHHMM(data.len) }}
         </template>
       </Column>
     </DataTable>
@@ -48,7 +48,7 @@ onMounted(async () => {
       <Column field="name" />
       <Column field="len" bodyClass="text-right">
         <template #body="{ data }">
-          {{ secToHHMMSS(data.len) }}
+          {{ secToHHMM(data.len) }}
         </template>
       </Column>
     </DataTable>

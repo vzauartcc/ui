@@ -2,17 +2,15 @@ export const timeDiffInHHMMSSAsDate = (start: Date, end = new Date()) => {
   const totalSeconds = Math.floor((end.getTime() - start.getTime()) / 1000);
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
 
   const HH = String(hours).padStart(2, '0');
   const MM = String(minutes).padStart(2, '0');
-  const SS = String(seconds).padStart(2, '0');
 
   if (HH === '00') {
-    return `${MM}m${SS}s`;
+    return `${MM}m`;
   }
 
-  return `${HH}h${MM}m${SS}s`;
+  return `${HH}h ${MM}m`;
 };
 
 export const dateAsMMDDHHMM = (d: Date | string) => {
