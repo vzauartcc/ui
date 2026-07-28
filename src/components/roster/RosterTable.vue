@@ -334,6 +334,7 @@ const ptColumn = ref({
 
 .red {
   color: red;
+  opacity: 75%;
 }
 
 .green {
@@ -352,7 +353,7 @@ const ptColumn = ref({
 .atm,
 .datm,
 .ta {
-  background-color: red;
+  background-color: rgb(255 0 0 / 80%);
 }
 
 .ec,
