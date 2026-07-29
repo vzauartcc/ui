@@ -26,7 +26,7 @@ onMounted(async () => {
     const data = await filesService.getDownloads();
 
     downloads.value = {
-      sectorFiles: data.filter((d) => d.category === 'sectorfiles'),
+      sectorFiles: data.filter((d) => d.category === 'sectorFiles'),
       training: data.filter((d) => d.category === 'training'),
     };
   } catch (e) {
