@@ -277,7 +277,8 @@ const updateController = async (event: FormSubmitEvent) => {
               optionLabel="name"
               optionValue="value"
               multiple
-              ariaLabelledby="multiple" />
+              ariaLabelledby="multiple"
+              class="mybuttons" />
           </div>
         </template>
         <template v-if="userStore.isStaff && roles">
@@ -292,7 +293,8 @@ const updateController = async (event: FormSubmitEvent) => {
               optionLabel="name"
               optionValue="value"
               multiple
-              ariaLabelledby="multiple" />
+              ariaLabelledby="multiple"
+              class="mybuttons" />
           </div>
         </template>
         <Divider />
@@ -333,5 +335,13 @@ const updateController = async (event: FormSubmitEvent) => {
 
 .training :deep(.p-togglebutton) {
   background-color: var(--p-sec-green-300);
+}
+
+/* Fix text color on the role buttons */
+:deep(.p-togglebutton)[data-p-checked='false'] {
+  color: black;
+}
+.app-dark .mybuttons :deep(.p-togglebutton)[data-p-checked='false'] {
+  color: white;
 }
 </style>

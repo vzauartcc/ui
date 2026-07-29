@@ -15,7 +15,7 @@ onMounted(async () => {
   try {
     const data = await filesService.getDownloads();
 
-    downloads.value = data.filter((d) => d.category !== 'ins');
+    downloads.value = data.filter((d) => d.category !== 'ins' && d.category !== 'insguides');
   } catch (e) {
     console.error('error getting downloads', e);
   }

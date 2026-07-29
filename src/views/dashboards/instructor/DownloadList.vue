@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DocumentList from '@/components/documents/DocumentList.vue';
 import { filesService } from '@/services/files/files.service';
-import type { IDocument } from '@/services/files/files.types';
+import type { IDownload } from '@/services/files/files.types';
 import { useTitle } from '@/utils/title';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -14,19 +14,19 @@ import { onMounted, ref } from 'vue';
 
 useTitle('Instructor Downloads');
 
-interface Documents {
-  training: IDocument[];
-  insguides: IDocument[];
+interface Downloads {
+  training: IDownload[];
+  insguides: IDownload[];
 }
 
-const documents = ref<Documents | null>(null);
+const documents = ref<Downloads | null>(null);
 
 onMounted(async () => {
   try {
-    const data = await filesService.getDocuments();
+    const data = await filesService.getDownloads();
 
     documents.value = {
-      training: data.filter((d) => d.category === 'training'),
+      training: data.filter((d) => d.category === 'ins'),
       insguides: data.filter((d) => d.category === 'insguides'),
     };
   } catch (e) {
@@ -42,8 +42,8 @@ onMounted(async () => {
     <template #content>
       <Tabs value="0" class="my-tabs">
         <TabList>
-          <Tab value="0">Sweatbox Files</Tab>
-          <Tab value="1">Instructor Guides</Tab>
+          <Tab value="0">Reference</Tab>
+          <Tab value="1">Guides</Tab>
         </TabList>
 
         <TabPanels>
