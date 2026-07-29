@@ -150,3 +150,7 @@ th.text-right > .p-datatable-column-header-content {
 .p-dialog-content .grid {
   @apply mt-1;
 }
+
+.p-progressbar-value {
+  transition: width 0.2s ease-in-out;
+}

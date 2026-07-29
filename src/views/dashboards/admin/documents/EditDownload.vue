@@ -45,6 +45,10 @@ const typeOptions = ref([
     name: 'Instructor Reference',
     value: 'ins',
   },
+  {
+    name: 'Training Downloads',
+    value: 'training',
+  },
 ]);
 
 const file = ref<IDownload | null>(null);
@@ -158,6 +162,8 @@ const uploadDownload = async (url: string) => {
       fileData.value!.type,
       (progress) => (uploadProgress.value = progress),
     );
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   } catch (e) {
     console.error('error uploading to s3', e);
     toastError('Error uploading!', 'An error occurred uploading the file.');
@@ -181,7 +187,7 @@ const uploadDownload = async (url: string) => {
           <FormField v-slot="$field" name="name">
             <FloatLabel variant="on">
               <InputText id="name" class="w-1/2" />
-              <label for="name">Name</label>
+              <label for="name" class="required-field">Name</label>
             </FloatLabel>
             <Message
               v-if="$field?.invalid"
@@ -214,7 +220,7 @@ const uploadDownload = async (url: string) => {
                 optionLabel="name"
                 optionValue="value"
                 class="w-1/3" />
-              <label for="category">Category</label>
+              <label for="category" class="required-field">Category</label>
             </FloatLabel>
             <Message
               v-if="$field?.invalid"

@@ -25,11 +25,12 @@ const emit = defineEmits(['loadDelete']);
 const categoryFilter = ref([
   { name: 'Agreements', value: 'loa' },
   { name: 'Reference', value: 'misc' },
+  { name: 'Facility Files', value: 'sectorFiles' },
+  { name: 'Instructor Guides', value: 'insguides' },
   { name: 'Instructor Reference', value: 'ins' },
   { name: 'Policies', value: 'policy' },
   { name: 'Procedures', value: 'sop' },
-  { name: 'Instructor', value: 'training' },
-  { name: 'Facility Files', value: 'sectorFiles' },
+  { name: 'Training Downloads', value: 'training' },
 ]);
 
 const categoryName = (id: string) => {
@@ -37,18 +38,21 @@ const categoryName = (id: string) => {
     case 'loa':
       return 'Agreements';
     case 'misc':
-    case 'ins':
       return 'Reference';
+    case 'ins':
+      return 'Instructor Reference';
     case 'policy':
       return 'Policies';
     case 'sop':
       return 'Procedures';
     case 'training':
-      return 'Instructor';
+      return 'Training Downloads';
     case 'sectorFiles':
       return 'Facility Files';
+    case 'insguides':
+      return 'Instructor Guides';
     default:
-      return 'Unknown Category';
+      return `Unknown Category ${id}`;
   }
 };
 
@@ -148,6 +152,13 @@ const loadDelete = (data: IDownload | IDocument) => {
             </span>
           </template>
         </Column>
+        <template #footer>
+          <p>
+            Instructor Reference and Instructor Guides are restricted to
+            training staff only. All other documents and downloads are publicly
+            visible.
+          </p>
+        </template>
       </DataTable>
     </template>
   </Card>
