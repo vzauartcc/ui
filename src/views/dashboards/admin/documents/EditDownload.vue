@@ -162,6 +162,8 @@ const uploadDownload = async (url: string) => {
       fileData.value!.type,
       (progress) => (uploadProgress.value = progress),
     );
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   } catch (e) {
     console.error('error uploading to s3', e);
     toastError('Error uploading!', 'An error occurred uploading the file.');
