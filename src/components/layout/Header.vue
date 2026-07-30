@@ -199,7 +199,7 @@ const login = () => {
   <header ref="popoverref" class="w-full">
     <Menubar
       :model="items"
-      class="bg-primary md:w-10/12 mx-auto rounded-full shadow-lg py-2 px-5">
+      class="bg-primary md:w-10/12 mx-auto rounded-full shadow-lg py-2 px-5 relative z-[999]">
       <template #start>
         <router-link to="/">
           <img
