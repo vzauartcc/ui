@@ -14,9 +14,18 @@ const props = defineProps<{
   allPositions: IPosition[];
 }>();
 
+const emit = defineEmits(['update:ownership']);
+
 const compilePosition = (data?: IPosition) => {
   if (!data) return '';
   return `${data.name} (${data.id})`;
+};
+
+const handleChange = (sector, newVal) => {
+  emit('update:ownership', {
+    sectorId: sector,
+    value: newVal,
+  });
 };
 </script>
 
@@ -36,7 +45,8 @@ const compilePosition = (data?: IPosition) => {
       filter
       :filterFields="['name', 'id']"
       optionValue="id"
-      optionLabel="name">
+      optionLabel="name"
+      @update:modelValue="(val) => handleChange(sector.properties.id, val)">
       <template #value="slotProps">
         {{
           compilePosition(
