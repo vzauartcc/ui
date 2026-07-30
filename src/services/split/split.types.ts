@@ -21,6 +21,14 @@ export interface IGeojsonResponse {
     high: IGeojson;
     low: IGeojson;
   };
+  zob: {
+    high: IZOBGeojson;
+    low: IZOBGeojson;
+  };
+  zmp: {
+    high: IZMPGeojson;
+    low: IZMPGeojson;
+  };
 }
 
 interface IGeojson {
@@ -42,4 +50,37 @@ export interface IGeojsonFeature {
     type: string;
     coordinates: number[][];
   };
+}
+
+interface IZOBGeojson {
+  type: string;
+  features: [
+    {
+      type: string;
+      properties: {
+        id: string;
+        sector: string;
+      };
+      geometry: {
+        type: string;
+        coordinates: number[][];
+      };
+    },
+  ];
+}
+
+interface IZMPGeojson {
+  type: string;
+  features: [
+    {
+      type: string;
+      properties: {
+        id: string | number;
+      };
+      geometry: {
+        type: string;
+        coordinates: number[][];
+      };
+    },
+  ];
 }
