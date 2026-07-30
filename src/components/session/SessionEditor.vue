@@ -110,7 +110,7 @@ const resolver = ({
 
   if (!values.position || values.position === undefined) {
     errors.position = [{ message: 'Position is required.' }];
-  } else if (!/^[A-Z]_(FSS|CTR|APP|DEP|TWR|GND|DEL)$/.test(values.position)) {
+  } else if (!/^[A-Z]{3}_(FSS|CTR|APP|DEP|TWR|GND|DEL)$/.test(values.position)) {
     errors.position = [{ message: 'Position is invalid. Ex: CHI_APP.' }];
   }
 
