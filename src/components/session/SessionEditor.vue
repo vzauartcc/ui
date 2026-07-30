@@ -275,7 +275,7 @@ const maxEndTime = (startTime?: string | Date) => {
               hourFormat="24"
               :minDate="
                 $form.startTime?.value
-                  ? utcToLocal(new Date($form?.startTime.value))
+                  ? new Date($form?.startTime.value)
                   : initialValues.startTime
               "
               :maxDate="utcToLocal(maxEndTime($form?.startTime?.value))"
