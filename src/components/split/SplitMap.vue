@@ -64,15 +64,22 @@ const zauLoBorders = ref<any>(null);
 const pmmBorder = ref<any>(null);
 const eonBorder = ref<any>(null);
 
+const zobHiSectors = ref<any>(null);
+const zobLoSectors = ref<any>(null);
+
+const zmpHiSectors = ref<any>(null);
+const zmpLoSectors = ref<any>(null);
+
 const zoom = ref<number>(6.7);
 const center = ref<[number, number]>([42, -89]);
+// @TODO: consider making this use the TabPanel to eliminate the need for enabling zoom
 const mapOptions = ref({
   zoomSnap: 0.1,
   zoomControl: false,
   doubleClickZoom: false,
-  scrollWheelZoom: false,
-  touchZoom: false,
-  dragging: false,
+  scrollWheelZoom: true,
+  touchZoom: true,
+  dragging: true,
 });
 const isLoading = ref<boolean>(true);
 
@@ -451,6 +458,12 @@ const fetchSectorsData = async () => {
     rawHiSectors.value = data.sectors.high;
     rawLoSectors.value = data.sectors.low;
 
+    zobHiSectors.value = data.zob.high;
+    zobLoSectors.value = data.zob.low;
+
+    zmpHiSectors.value = data.zmp.high;
+    zmpLoSectors.value = data.zmp.low;
+
     initializePositionsAndProcessOwnership();
   } catch (e) {
     console.error('Critical error during map data fetching:', e);
@@ -614,6 +627,16 @@ onMounted(async () => {
           v-if="showPmmKubbsSplit"
           :geojson="pmmBorder"
           :options="testOptions" />
+
+        <LGeoJson
+          v-if="zobHiSectors"
+          :geojson="zobHiSectors"
+          :options="testOptions" />
+
+        <LGeoJson
+          v-if="zmpHiSectors"
+          :geojson="zmpHiSectors"
+          :options="testOptions" />
       </LMap>
     </template>
   </Card>
@@ -668,6 +691,16 @@ onMounted(async () => {
         <LGeoJson
           v-if="showPmmKubbsSplit"
           :geojson="pmmBorder"
+          :options="testOptions" />
+
+        <LGeoJson
+          v-if="zobLoSectors"
+          :geojson="zobLoSectors"
+          :options="testOptions" />
+
+        <LGeoJson
+          v-if="zmpLoSectors"
+          :geojson="zmpLoSectors"
           :options="testOptions" />
       </LMap>
     </template>
