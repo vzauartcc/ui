@@ -118,14 +118,14 @@ export const trainingService = {
   },
   saveSession(data: Partial<ITrainingSession>) {
     return zauApi
-      .patch(`training/session/save`, {
+      .post(`training/session/save`, {
         json: data,
       })
       .json();
   },
   submitSession(data: Partial<ITrainingSession>) {
     return zauApi
-      .patch(`training/session/submit`, {
+      .post(`training/session/submit`, {
         json: data,
       })
       .json();

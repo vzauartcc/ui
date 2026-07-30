@@ -2,7 +2,7 @@
 import { trainingService } from '@/services/training/training.service';
 import type {
   ISessionResponse,
-  ITrainingSession,
+  rainingSession,
 } from '@/services/training/training.types';
 import { useUserStore } from '@/stores/user';
 import { dateAsMMDDHHMM } from '@/utils/date';
@@ -225,7 +225,7 @@ const canDelete = (session: ITrainingSession) => {
           bodyClass="text-right">
           <template #body="{ data }">
             <router-link
-              :to="`/ins/session/${data._id}`"
+              :to="`/ins/training/session/${data._id}`"
               v-tooltip.top="'Session Details'">
               <Icon icon="heroicons:magnifying-glass" />
             </router-link>
