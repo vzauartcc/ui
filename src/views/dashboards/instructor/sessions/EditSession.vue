@@ -8,6 +8,7 @@ import type {
 } from '@/services/training/training.types';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
+import { toastSuccess } from '@/utils/toast';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
@@ -58,14 +59,19 @@ onMounted(async () => {
   }
 });
 
-const sendFeedback = async (
+const persistSession = async (
   type: 'save' | 'submit',
   data: Partial<ITrainingSession>,
 ) => {
   if (type === 'submit') {
     try {
       await trainingService.submitSessionEdit(session.value!._id, data);
+
       router.push('/ins/sessions');
+      toastSuccess(
+        'Session Submitted!',
+        'Successfully submitted session to VATUSA.',
+      );
     } catch (err) {
       console.error('error submitting form', err);
     }
@@ -74,6 +80,7 @@ const sendFeedback = async (
       await trainingService.saveSessionEdit(session.value!._id, data);
 
       router.push('/ins/sessions');
+      toastSuccess('Session Saved!', 'Successfully saved session notes.');
     } catch (e) {
       console.error('error saving session', e);
     }
@@ -90,7 +97,7 @@ const sendFeedback = async (
         :controllers="controllers"
         :milestones="milestones"
         :edit="session"
-        @finishSession="sendFeedback" />
+        @finishSession="persistSession" />
     </template>
   </Card>
 </template>

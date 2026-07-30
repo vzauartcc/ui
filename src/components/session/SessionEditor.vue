@@ -39,16 +39,16 @@ const { user } = storeToRefs(userStore);
 const submitType = ref<'' | 'submit' | 'save'>('');
 
 const initialValues = ref({
-  studentCid: 0,
+  studentCid: null as null | number,
   milestoneCode: '',
   startTime: utcToLocal(
     roundToNearest15Minutes(new Date(Date.now() - 60 * 60 * 1000)),
   ),
   endTime: utcToLocal(roundToNearest15Minutes(new Date())),
   position: '',
-  movements: 0,
-  location: 0,
-  progress: 3,
+  movements: null as number | null,
+  location: null as number | null,
+  progress: null as number | null,
   ots: 0,
   studentNotes: '',
   insNotes: '',
@@ -116,19 +116,38 @@ const resolver = ({
     errors.position = [{ message: 'Position is invalid. Ex: CHI_APP.' }];
   }
 
-  if (values.movements === null || values.movements === undefined) {
+  if (
+    values.movements === null ||
+    values.movements === undefined ||
+    +values.movements < 0
+  ) {
     errors.movements = [{ message: 'Movements is required.' }];
   }
 
-  if (values.location === null || values.location === undefined) {
+  if (
+    values.location === null ||
+    values.location === undefined ||
+    +values.location < 0 ||
+    +values.location > 2
+  ) {
     errors.location = [{ message: 'Location is required.' }];
   }
 
-  if (values.progress === null || values.progress === undefined) {
+  if (
+    values.progress === null ||
+    values.progress === undefined ||
+    +values.progress < 1 ||
+    +values.progress > 5
+  ) {
     errors.progress = [{ message: 'Progress is required.' }];
   }
 
-  if (values.ots === null || values.ots === undefined) {
+  if (
+    values.ots === null ||
+    values.ots === undefined ||
+    +values.ots < 0 ||
+    +values.ots > 3
+  ) {
     errors.ots = [{ message: 'OTS is required.' }];
   }
 
@@ -155,8 +174,10 @@ const submitSession = async (event: FormSubmitEvent) => {
   const { values } = event;
 
   emit('finishSession', submitType.value, {
+    student: values.studentCid || 0,
+    milestone: values.milestoneCode,
     position: values.position,
-    movements: values.movements,
+    movements: values.movements || 0,
     progress: values.progress,
     ots: values.ots,
     location: values.location,
@@ -254,7 +275,7 @@ const maxEndTime = (startTime?: string | Date) => {
               hourFormat="24"
               :minDate="
                 $form.startTime?.value
-                  ? utcToLocal(new Date($form?.startTime.value))
+                  ? new Date($form?.startTime.value)
                   : initialValues.startTime
               "
               :maxDate="utcToLocal(maxEndTime($form?.startTime?.value))"
@@ -283,7 +304,7 @@ const maxEndTime = (startTime?: string | Date) => {
               filter
               class="w-full h-10"
               :disabled="edit !== null" />
-            <label for="milestoneCode" class="">Milestone</label>
+            <label for="milestoneCode" class="required-field">Milestone</label>
           </FloatLabel>
           <Message
             v-if="$field?.invalid"
@@ -298,7 +319,7 @@ const maxEndTime = (startTime?: string | Date) => {
           <div class="">
             <FloatLabel variant="on">
               <InputText id="position" type="string" class="w-full" />
-              <label for="position">Position</label>
+              <label for="position" class="required-field">Position</label>
             </FloatLabel>
             <Message
               v-if="$field?.invalid"
@@ -314,7 +335,9 @@ const maxEndTime = (startTime?: string | Date) => {
           <div class="">
             <FloatLabel variant="on">
               <InputNumber id="movements" type="string" class="w-full" />
-              <label for="movements"># of Movements</label>
+              <label for="movements" class="required-field"
+                ># of Movements</label
+              >
             </FloatLabel>
             <Message
               v-if="$field?.invalid"
@@ -365,7 +388,11 @@ const maxEndTime = (startTime?: string | Date) => {
 
         <FormField v-slot="$field" name="ots">
           <FloatLabel variant="on">
-            <Select id="ots" :options="otsOptions" class="w-full" />
+            <Select
+              id="ots"
+              :options="otsOptions"
+              class="w-full"
+              :optionValue="(option) => otsOptions.indexOf(option)" />
             <label for="ots" class="required-field">OTS</label>
           </FloatLabel>
           <Message
