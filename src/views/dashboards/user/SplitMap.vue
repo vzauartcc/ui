@@ -40,108 +40,108 @@ const quickSplits = ref([
         name: 'Plan 2A N/S',
         description: 'N: 60 BAE, S: 35 BEARZ',
         high: {
-          5: '35', // FWA
-          0: '60', // PMM
-          1: '35', // BOILER
-          2: '35', // BDF
-          3: '60', // BADGER
-          4: '35', // GIJ
-          7: '60', // COTON
-          8: '35', // IOW
+          36: '35', // FWA
+          25: '60', // PMM
+          46: '35', // BOILER
+          52: '35', // BDF
+          60: '60', // BADGER
+          89: '35', // GIJ
+          75: '60', // COTON
+          94: '35', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '35', // PLANO
-          1: '60', // HARLY
-          2: '60', // DBQ
-          3: '60', // LNR
-          4: '60', // FARMM
-          5: '35', // MALTA
-          6: '35', // EON
-          9: '35', // BRL
-          10: '60', // KUBBS
-          11: '35', // CRIBB
+          35: '35', // BEARZ
+          51: '35', // PLANO
+          62: '60', // HARLY
+          63: '60', // DBQ
+          64: '60', // LNR
+          74: '60', // FARMM
+          77: '35', // MALTA
+          44: '35', // EON
+          55: '35', // BRL
+          26: '60', // KUBBS
+          81: '35', // CRIBB
         },
       },
       {
         name: 'Plan 2B E/W',
         description: 'E: 35 BEARZ, W: 75 COTON',
         high: {
-          5: '35', // FWA
-          0: '35', // PMM
-          1: '35', // BOILER
-          2: '75', // BDF
-          3: '75', // BADGER
-          4: '35', // GIJ
-          7: '75', // COTON
-          8: '75', // IOW
+          36: '35', // FWA
+          25: '35', // PMM
+          46: '35', // BOILER
+          52: '75', // BDF
+          60: '75', // BADGER
+          89: '35', // GIJ
+          75: '75', // COTON
+          94: '75', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '75', // PLANO
-          1: '75', // HARLY
-          2: '75', // DBQ
-          3: '75', // LNR
-          4: '75', // FARMM
-          5: '75', // MALTA
-          6: '35', // EON
-          9: '75', // BRL
-          10: '35', // KUBBS
-          11: '35', // CRIBB
+          35: '35', // BEARZ
+          51: '75', // PLANO
+          62: '75', // HARLY
+          63: '75', // DBQ
+          64: '75', // LNR
+          74: '75', // FARMM
+          77: '75', // MALTA
+          44: '35', // EON
+          55: '75', // BRL
+          26: '35', // KUBBS
+          81: '35', // CRIBB
         },
       },
       {
         name: 'Plan 2C Hi/Lo',
         description: 'Hi: 89 GIJ, Lo: 35 LO',
         high: {
-          5: '89', // FWA
-          0: '89', // PMM
-          1: '89', // BOILER
-          2: '89', // BDF
-          3: '89', // BADGER
-          4: '89', // GIJ
-          7: '89', // COTON
-          8: '89', // IOW
+          36: '89', // FWA
+          25: '89', // PMM
+          46: '89', // BOILER
+          52: '89', // BDF
+          60: '89', // BADGER
+          89: '89', // GIJ
+          75: '89', // COTON
+          94: '89', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '35', // PLANO
-          1: '35', // HARLY
-          2: '35', // DBQ
-          3: '35', // LNR
-          4: '35', // FARMM
-          5: '35', // MALTA
-          6: '35', // EON
-          9: '35', // BRL
-          10: '35', // KUBBS
-          11: '35', // CRIBB
+          35: '35', // BEARZ
+          51: '35', // PLANO
+          62: '35', // HARLY
+          63: '35', // DBQ
+          64: '35', // LNR
+          74: '35', // FARMM
+          77: '35', // MALTA
+          44: '35', // EON
+          55: '35', // BRL
+          26: '35', // KUBBS
+          81: '35', // CRIBB
         },
       },
       {
         name: 'Plan 2D: MSP CrossFire',
         description: 'W/SW: 75 COTON, E/NE: 35 BEARZ',
         high: {
-          5: '35', // FWA
-          0: '35', // PMM
-          1: '75', // BOILER
-          2: '75', // BDF
-          3: '35', // BADGER
-          4: '35', // GIJ
-          7: '75', // COTON
-          8: '75', // IOW
+          36: '35', // FWA
+          25: '35', // PMM
+          46: '75', // BOILER
+          52: '75', // BDF
+          60: '35', // BADGER
+          89: '35', // GIJ
+          75: '75', // COTON
+          94: '75', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '75', // PLANO
-          1: '35', // HARLY
-          2: '75', // DBQ
-          3: '35', // LNR
-          4: '75', // FARMM
-          5: '75', // MALTA
-          6: '75', // EON
-          9: '75', // BRL
-          10: '35', // KUBBS
-          11: '35', // CRIBB
+          35: '35', // BEARZ
+          51: '75', // PLANO
+          62: '35', // HARLY
+          63: '75', // DBQ
+          64: '35', // LNR
+          74: '75', // FARMM
+          77: '75', // MALTA
+          44: '75', // EON
+          55: '75', // BRL
+          26: '35', // KUBBS
+          81: '35', // CRIBB
         },
       },
     ],
@@ -153,54 +153,54 @@ const quickSplits = ref([
         name: 'Plan 3A',
         description: 'W: 75 COTON, N: 60 BAE, SE: 35 BEARZ',
         high: {
-          5: '35', // FWA
-          0: '60', // PMM
-          1: '35', // BOILER
-          2: '75', // BDF
-          3: '60', // BADGER
-          4: '35', // GIJ
-          7: '75', // COTON
-          8: '75', // IOW
+          36: '35', // FWA
+          25: '60', // PMM
+          46: '35', // BOILER
+          52: '75', // BDF
+          60: '60', // BADGER
+          89: '35', // GIJ
+          75: '75', // COTON
+          94: '75', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '75', // PLANO
-          1: '60', // HARLY
-          2: '60', // DBQ
-          3: '60', // LNR
-          4: '75', // FARMM
-          5: '75', // MALTA
-          6: '35', // EON
-          9: '75', // BRL
-          10: '60', // KUBBS
-          11: '35', // CRIBB
+          35: '35', // BEARZ
+          51: '75', // PLANO
+          62: '60', // HARLY
+          63: '60', // DBQ
+          64: '60', // LNR
+          74: '75', // FARMM
+          77: '75', // MALTA
+          44: '35', // EON
+          55: '75', // BRL
+          26: '60', // KUBBS
+          81: '35', // CRIBB
         },
       },
       {
         name: 'Plan 3B East',
         description: 'W: 75 COTON, N: 60 BAE, SE: 35 BEARZ',
         high: {
-          5: '35', // FWA
-          0: '60', // PMM
-          1: '75', // BOILER
-          2: '75', // BDF
-          3: '60', // BADGER
-          4: '35', // GIJ
-          7: '75', // COTON
-          8: '75', // IOW
+          36: '35', // FWA
+          25: '60', // PMM
+          46: '75', // BOILER
+          52: '75', // BDF
+          60: '60', // BADGER
+          89: '35', // GIJ
+          75: '75', // COTON
+          94: '75', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '75', // PLANO
-          1: '60', // HARLY
-          2: '60', // DBQ
-          3: '60', // LNR
-          4: '75', // FARMM
-          5: '75', // MALTA
-          6: '75', // EON
-          9: '75', // BRL
-          10: '60', // KUBBS
-          11: '35', // CRIBB
+          35: '35', // BEARZ
+          51: '75', // PLANO
+          62: '60', // HARLY
+          63: '60', // DBQ
+          64: '60', // LNR
+          74: '75', // FARMM
+          77: '75', // MALTA
+          44: '75', // EON
+          55: '75', // BRL
+          26: '60', // KUBBS
+          81: '35', // CRIBB
         },
       },
     ],
@@ -212,81 +212,81 @@ const quickSplits = ref([
         name: 'Plan 4A: Standard',
         description: 'N: 60 BAE, SE: 35 BEARZ, SW: 46 BVT, W: 75 COTON',
         high: {
-          5: '35', // FWA
-          0: '60', // PMM
-          1: '46', // BOILER
-          2: '46', // BDF
-          3: '60', // BADGER
-          4: '35', // GIJ
-          7: '75', // COTON
-          8: '75', // IOW
+          36: '35', // FWA
+          25: '60', // PMM
+          46: '46', // BOILER
+          52: '46', // BDF
+          60: '60', // BADGER
+          89: '35', // GIJ
+          75: '75', // COTON
+          94: '75', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '46', // PLANO
-          1: '60', // HARLY
-          2: '60', // DBQ
-          3: '60', // LNR
-          4: '75', // FARMM
-          5: '75', // MALTA
-          6: '46', // EON
-          9: '46', // BRL
-          10: '60', // KUBBS
-          11: '35', // CRIBB
+          35: '35', // BEARZ
+          51: '46', // PLANO
+          62: '60', // HARLY
+          63: '60', // DBQ
+          64: '60', // LNR
+          74: '75', // FARMM
+          77: '75', // MALTA
+          44: '46', // EON
+          55: '46', // BRL
+          26: '60', // KUBBS
+          81: '35', // CRIBB
         },
       },
       {
         name: 'Plan 4B',
         description: 'NW: 60 BAE, NW: 89 GIJ, SE: 35 BEARZ, S/SW: 46 BVT',
         high: {
-          5: '35', // FWA
-          0: '89', // PMM
-          1: '46', // BOILER
-          2: '46', // BDF
-          3: '60', // BADGER
-          4: '89', // GIJ
-          7: '60', // COTON
-          8: '46', // IOW
+          36: '35', // FWA
+          25: '89', // PMM
+          46: '46', // BOILER
+          52: '46', // BDF
+          60: '60', // BADGER
+          89: '89', // GIJ
+          75: '60', // COTON
+          94: '46', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '46', // PLANO
-          1: '60', // HARLY
-          2: '60', // DBQ
-          3: '60', // LNR
-          4: '60', // FARMM
-          5: '60', // MALTA
-          6: '46', // EON
-          9: '46', // BRL
-          10: '89', // KUBBS
-          11: '89', // CRIBB
+          35: '35', // BEARZ
+          51: '46', // PLANO
+          62: '60', // HARLY
+          63: '60', // DBQ
+          64: '60', // LNR
+          74: '60', // FARMM
+          77: '60', // MALTA
+          44: '46', // EON
+          55: '46', // BRL
+          26: '89', // KUBBS
+          81: '89', // CRIBB
         },
       },
       {
         name: 'Plan 4C: Iso-COTON',
         description: 'N/NE: 60 BAE, E/SE: 35 BEARZ, S/SW: 94 IOW, NW: 75 COTON',
         high: {
-          5: '35', // FWA
-          0: '60', // PMM
-          1: '94', // BOILER
-          2: '94', // BDF
-          3: '60', // BADGER
-          4: '35', // GIJ
-          7: '75', // COTON
-          8: '94', // IOW
+          36: '35', // FWA
+          25: '60', // PMM
+          46: '94', // BOILER
+          52: '94', // BDF
+          60: '60', // BADGER
+          89: '35', // GIJ
+          75: '75', // COTON
+          94: '94', // IOW
         },
         low: {
-          7: '35', // BEARZ
-          0: '94', // PLANO
-          1: '60', // HARLY
-          2: '60', // DBQ
-          3: '60', // LNR
-          4: '75', // FARMM
-          5: '94', // MALTA
-          6: '94', // EON
-          9: '94', // BRL
-          10: '60', // KUBBS
-          11: '35', // CRIBB
+          35: '35', // BEARZ
+          51: '94', // PLANO
+          62: '60', // HARLY
+          63: '60', // DBQ
+          64: '60', // LNR
+          74: '75', // FARMM
+          77: '94', // MALTA
+          44: '94', // EON
+          55: '94', // BRL
+          26: '60', // KUBBS
+          81: '35', // CRIBB
         },
       },
     ],
@@ -390,6 +390,18 @@ const toggleSplit = (data: { id: string; name: string }) => {
     activePositions.value.push(data);
   }
 };
+
+const updateOwnershipLo = (d) => {
+  if (!currentSplit.value) return;
+
+  currentSplit.value.ownership.low[d.sectorId] = d.value;
+};
+
+const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
+  if (!currentSplit.value) return;
+
+  currentSplit.value.ownership.high[d.sectorId] = d.value;
+};
 </script>
 
 <template>
@@ -487,7 +499,8 @@ const toggleSplit = (data: { id: string; name: string }) => {
                   :geojson="geojson.sectors.high.features"
                   :allPositions="currentSplit.positions"
                   :activePositions="activePositions"
-                  :ownership="currentSplit.ownership.high" />
+                  :ownership="currentSplit.ownership.high"
+                  @update:ownership="updateOwnershipHi" />
                 <div class="flex justify-center mt-5">
                   <Button
                     severity="danger"
@@ -502,7 +515,8 @@ const toggleSplit = (data: { id: string; name: string }) => {
                   :geojson="geojson.sectors.low.features"
                   :allPositions="currentSplit.positions"
                   :activePositions="activePositions"
-                  :ownership="currentSplit.ownership.low" />
+                  :ownership="currentSplit.ownership.low"
+                  @update:ownership="updateOwnershipLo" />
               </div>
             </div>
             <Message
