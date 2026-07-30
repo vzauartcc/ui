@@ -473,12 +473,9 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
     );
   };
 
-  const nonCorridors = (mySet: Set<string>) =>
-    new Set([...mySet].filter((y) => y !== '6' && y !== '9'));
-
   for (const pos of positions.value.values()) {
     if (pos.ownedHi.size > 0) {
-      const firstSectorId = nonCorridors(pos.ownedHi).values().next().value;
+      const firstSectorId = Array.from(pos.ownedHi).find((n) => n > 10);
       const feature = findFeature(rawHiSectors.value?.features, firstSectorId!);
 
       if (feature && feature.properties.labelAnchor) {
@@ -494,7 +491,7 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
     }
 
     if (pos.ownedLo.size > 0) {
-      const firstSectorId = pos.ownedLo.values().next().value;
+      const firstSectorId = Array.from(pos.ownedLo).find((n) => n > 10);
       const feature = findFeature(rawLoSectors.value?.features, firstSectorId!);
 
       if (feature && feature.properties.labelAnchor) {
@@ -509,6 +506,7 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
       }
     }
   }
+
   return labeled;
 });
 
