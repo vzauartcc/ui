@@ -2,7 +2,7 @@
 import { trainingService } from '@/services/training/training.service';
 import type {
   ISessionResponse,
-  rainingSession,
+  ITrainingSession,
 } from '@/services/training/training.types';
 import { useUserStore } from '@/stores/user';
 import { dateAsMMDDHHMM } from '@/utils/date';
