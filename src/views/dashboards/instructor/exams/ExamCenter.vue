@@ -410,9 +410,9 @@ const deleteExamAttempt = async () => {
           <FloatLabel variant="on">
             <Select
               class="w-1/2"
-              :options="studentFilter"
+              :options="studentList"
               optionLabel="name"
-              optionValue="value"
+              optionValue="cid"
               filter
               required />
 
