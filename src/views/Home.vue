@@ -78,8 +78,6 @@ const { user, isLoggedIn } = storeToRefs(userStore);
               <a
                 href="https://www.vatusa.net/help/kb#q8"
                 target="_blank"
-                noreferrer
-                noopener
                 rel="noopener noreferrer"
                 class="text-[#41b6e6] hover:text-[#0092d1] underline transition-colors font-medium"
                 >VATUSA</a

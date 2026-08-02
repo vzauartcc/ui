@@ -151,8 +151,6 @@ useTitle('Privacy Policy');
               data. Please head to
               <a
                 href="https://membership.vatsim.net/"
-                noopener
-                noreferrer
                 target="_blank"
                 rel="noopener noreferrer"
                 class="underline"

@@ -70,6 +70,8 @@ const tagDate = ref(Date.now() - 1000 * 60 * 60 * 24 * 61);
                 <Button>
                   <a
                     :href="`${s3Url}/${props.isDownload ? 'downloads' : 'documents'}/${item.fileName}`"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     class="w-full md:w-auto flex justify-center items-center gap-2">
                     <Icon
                       :icon="`heroicons:${props.isDownload ? 'document-arrow-down' : 'magnifying-glass'}`"
