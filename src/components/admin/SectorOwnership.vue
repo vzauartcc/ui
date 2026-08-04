@@ -21,7 +21,7 @@ const compilePosition = (data?: IPosition) => {
   return `${data.name} (${data.id})`;
 };
 
-const handleChange = (sector, newVal) => {
+const handleChange = (sector: number, newVal: string | null) => {
   emit('update:ownership', {
     sectorId: sector,
     value: newVal,

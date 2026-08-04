@@ -4,6 +4,7 @@ import SplitMap from '@/components/split/SplitMap.vue';
 import { splitService } from '@/services/split/split.service';
 import type {
   IGeojsonResponse,
+  IOwnership,
   IOwnershipResponse,
 } from '@/services/split/split.types';
 import { useUserStore } from '@/stores/user';
@@ -318,13 +319,11 @@ const getCurrentSplit = async () => {
   }
 };
 
-const populateActivePositions = (data: {
-  high: Record<string, string>;
-  low: Record<string, string>;
-}) => {
-  const allValues = Object.values(data).flatMap((category) =>
-    Object.values(category),
-  );
+const populateActivePositions = (data: IOwnership) => {
+  const allValues = [
+    ...Object.values(data.zau.high),
+    ...Object.values(data.zau.low),
+  ];
   const existingPositions = [...new Set(allValues)];
   existingPositions.forEach((v) => {
     if (v === defaultSector.id) return;
@@ -377,30 +376,32 @@ const toggleSplit = (data: { id: string; name: string }) => {
   const idx = activePositions.value.findIndex((o) => o.id === data.id);
   if (idx > -1) {
     activePositions.value.splice(idx, 1);
-    Object.entries(currentSplit.value!.ownership).forEach(
-      ([_levels, sectors]) => {
-        Object.entries(sectors).forEach(([key, val]) => {
-          if (`${val}` === data.id) {
-            sectors[key] = defaultSector.id;
-          }
-        });
-      },
-    );
+    const collections = [
+      currentSplit.value!.ownership.zau.high,
+      currentSplit.value!.ownership.zau.low,
+    ];
+    collections.forEach((sectors) => {
+      Object.entries(sectors).forEach(([key, val]) => {
+        if (`${val}` === data.id) {
+          sectors[key] = defaultSector.id;
+        }
+      });
+    });
   } else {
     activePositions.value.push(data);
   }
 };
 
-const updateOwnershipLo = (d) => {
+const updateOwnershipLo = (d: { sectorId: number; value: string }) => {
   if (!currentSplit.value) return;
 
-  currentSplit.value.ownership.low[d.sectorId] = d.value;
+  currentSplit.value.ownership.zau.low[d.sectorId] = d.value;
 };
 
 const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
   if (!currentSplit.value) return;
 
-  currentSplit.value.ownership.high[d.sectorId] = d.value;
+  currentSplit.value.ownership.zau.high[d.sectorId] = d.value;
 };
 </script>
 
@@ -499,7 +500,7 @@ const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
                   :geojson="geojson.sectors.high.features"
                   :allPositions="currentSplit.positions"
                   :activePositions="activePositions"
-                  :ownership="currentSplit.ownership.high"
+                  :ownership="currentSplit.ownership.zau.high"
                   @update:ownership="updateOwnershipHi" />
                 <div class="flex justify-center mt-5">
                   <Button
@@ -515,7 +516,7 @@ const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
                   :geojson="geojson.sectors.low.features"
                   :allPositions="currentSplit.positions"
                   :activePositions="activePositions"
-                  :ownership="currentSplit.ownership.low"
+                  :ownership="currentSplit.ownership.zau.low"
                   @update:ownership="updateOwnershipLo" />
               </div>
             </div>
@@ -531,8 +532,8 @@ const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
                 label="Save!"
                 @click="
                   saveSplit(
-                    currentSplit.ownership.high,
-                    currentSplit.ownership.low,
+                    currentSplit.ownership.zau.high,
+                    currentSplit.ownership.zau.low,
                   )
                 " />
             </div>

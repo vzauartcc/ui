@@ -278,7 +278,7 @@ const updateSectorColors = () => {
       feature.properties.isOwned = isOwned;
     });
 
-    const byName = new Map(
+    const byName = new Map<string, any>(
       newSectors.features.map((f: any) => [f.properties.name, f]),
     );
 
@@ -370,7 +370,7 @@ const assignColors = (
   const activePositions = [...new Set(Object.values(ownership))].sort();
   const colorMap: Record<string, string> = {};
   activePositions.forEach((positionId, index) => {
-    colorMap[positionId] = palette[index % palette.length];
+    colorMap[positionId] = palette[index % palette.length]!;
   });
   return colorMap;
 };
@@ -634,7 +634,7 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
 
   for (const pos of positions.value.values()) {
     if (pos.ownedHi.size > 0) {
-      const firstSectorId = Array.from(pos.ownedHi).find((n) => n > 10);
+      const firstSectorId = Array.from(pos.ownedHi).find((n) => Number(n) > 10);
       const feature = findFeature(rawHiSectors.value?.features, firstSectorId!);
 
       if (feature && feature.properties.labelAnchor) {
@@ -650,7 +650,7 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
     }
 
     if (pos.ownedLo.size > 0) {
-      const firstSectorId = Array.from(pos.ownedLo).find((n) => n > 10);
+      const firstSectorId = Array.from(pos.ownedLo).find((n) => Number(n) > 10);
       const feature = findFeature(rawLoSectors.value?.features, firstSectorId!);
 
       if (feature && feature.properties.labelAnchor) {
@@ -698,8 +698,8 @@ const buildZmpZobLabels = (
     if (highAnchor) {
       labels.push({
         text: `${prefix}${positionId}`,
-        lat: highAnchor[0],
-        lng: highAnchor[1],
+        lat: highAnchor[0]!,
+        lng: highAnchor[1]!,
         mapLevel: 'hi',
       });
     }
@@ -707,8 +707,8 @@ const buildZmpZobLabels = (
     if (lowAnchor) {
       labels.push({
         text: `${prefix}${positionId}`,
-        lat: lowAnchor[0],
-        lng: lowAnchor[1],
+        lat: lowAnchor[0]!,
+        lng: lowAnchor[1]!,
         mapLevel: 'lo',
       });
     }
