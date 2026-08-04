@@ -51,6 +51,30 @@ interface PmmKubbsLabel {
   kubbsText: string;
 }
 
+interface ZmpZobLabel {
+  text: string;
+  lat: number;
+  lng: number;
+  mapLevel: 'hi' | 'lo';
+}
+
+const ZOB_COLORS = [
+  '#e6194b',
+  '#3cb44b',
+  '#ffe119',
+  '#4363d8',
+  '#911eb4',
+  '#f032e6',
+];
+const ZMP_COLORS = [
+  '#42d4f4',
+  '#469990',
+  '#9a6324',
+  '#800000',
+  '#808000',
+  '#000080',
+];
+
 const props = defineProps<{
   positionsData: PositionData[];
   ownershipData: IOwnership;
@@ -69,6 +93,14 @@ const zobLoSectors = ref<any>(null);
 
 const zmpHiSectors = ref<any>(null);
 const zmpLoSectors = ref<any>(null);
+
+const rawZmpHiSectors = ref<any>(null);
+const rawZmpLoSectors = ref<any>(null);
+const rawZobHiSectors = ref<any>(null);
+const rawZobLoSectors = ref<any>(null);
+
+const zmpPositionColors = ref<Record<string, string>>({});
+const zobPositionColors = ref<Record<string, string>>({});
 
 const zoom = ref<number>(6.7);
 const center = ref<[number, number]>([42, -89]);
@@ -308,6 +340,65 @@ const applyOwnership = (ownershipMap: IOwnership) => {
   processLevelOwnership('high');
   processLevelOwnership('low');
   updateSectorColors();
+  processZmpZobOwnership(ownershipMap);
+};
+
+const assignColors = (
+  ownership: Record<string, string>,
+  palette: string[],
+): Record<string, string> => {
+  const activePositions = [...new Set(Object.values(ownership))].sort();
+  const colorMap: Record<string, string> = {};
+  activePositions.forEach((positionId, index) => {
+    colorMap[positionId] = palette[index % palette.length];
+  });
+  return colorMap;
+};
+
+const colorSectors = (
+  raw: any,
+  ownership: Record<string, string>,
+  colorMap: Record<string, string>,
+) => {
+  if (!raw) return raw;
+  const copy = JSON.parse(JSON.stringify(raw));
+  copy.features.forEach((feature: any) => {
+    const polygonId = String(feature.properties.id);
+    const ownerId = ownership[polygonId];
+    feature.properties.ownerColor = ownerId
+      ? (colorMap[ownerId] ?? '#808080')
+      : '#808080';
+  });
+  return copy;
+};
+
+const processZmpZobOwnership = (ownershipMap: IOwnership) => {
+  const zmpOwnership = ownershipMap.zmp ?? {};
+  const zobOwnership = ownershipMap.zob ?? {};
+
+  zmpPositionColors.value = assignColors(zmpOwnership, ZMP_COLORS);
+  zobPositionColors.value = assignColors(zobOwnership, ZOB_COLORS);
+
+  zmpHiSectors.value = colorSectors(
+    rawZmpHiSectors.value,
+    zmpOwnership,
+    zmpPositionColors.value,
+  );
+  zmpLoSectors.value = colorSectors(
+    rawZmpLoSectors.value,
+    zmpOwnership,
+    zmpPositionColors.value,
+  );
+  zobHiSectors.value = colorSectors(
+    rawZobHiSectors.value,
+    zobOwnership,
+    zobPositionColors.value,
+  );
+  zobLoSectors.value = colorSectors(
+    rawZobLoSectors.value,
+    zobOwnership,
+    zobPositionColors.value,
+  );
 };
 
 const checkSpecialSectors = () => {
@@ -460,9 +551,13 @@ const fetchSectorsData = async () => {
 
     zobHiSectors.value = data.zob.high;
     zobLoSectors.value = data.zob.low;
+    rawZobHiSectors.value = data.zob.high;
+    rawZobLoSectors.value = data.zob.low;
 
     zmpHiSectors.value = data.zmp.high;
     zmpLoSectors.value = data.zmp.low;
+    rawZmpHiSectors.value = data.zmp.high;
+    rawZmpLoSectors.value = data.zmp.low;
 
     initializePositionsAndProcessOwnership();
   } catch (e) {
@@ -523,6 +618,72 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
 
   return labeled;
 });
+
+const buildZmpZobLabels = (
+  ownership: Record<string, string>,
+  prefix: string,
+  rawHi: any,
+  rawLo: any,
+): ZmpZobLabel[] => {
+  const labels: ZmpZobLabel[] = [];
+  const activePositions = [...new Set(Object.values(ownership))].sort();
+
+  const findAnchor = (
+    features: any[] | undefined,
+    positionId: string,
+  ): number[] | null => {
+    if (!features) return null;
+    for (const feature of features) {
+      const polygonId = String(feature.properties.id);
+      const anchor = feature.properties.labelAnchor;
+      if (ownership[polygonId] === positionId && anchor) {
+        return anchor;
+      }
+    }
+    return null;
+  };
+
+  activePositions.forEach((positionId) => {
+    const highAnchor = findAnchor(rawHi?.features, positionId);
+    if (highAnchor) {
+      labels.push({
+        text: `${prefix}${positionId}`,
+        lat: highAnchor[0],
+        lng: highAnchor[1],
+        mapLevel: 'hi',
+      });
+    }
+    const lowAnchor = findAnchor(rawLo?.features, positionId);
+    if (lowAnchor) {
+      labels.push({
+        text: `${prefix}${positionId}`,
+        lat: lowAnchor[0],
+        lng: lowAnchor[1],
+        mapLevel: 'lo',
+      });
+    }
+  });
+
+  return labels;
+};
+
+const zmpLabels = computed<ZmpZobLabel[]>(() =>
+  buildZmpZobLabels(
+    props.ownershipData.zmp ?? {},
+    'P',
+    rawZmpHiSectors.value,
+    rawZmpLoSectors.value,
+  ),
+);
+
+const zobLabels = computed<ZmpZobLabel[]>(() =>
+  buildZmpZobLabels(
+    props.ownershipData.zob ?? {},
+    'C',
+    rawZobHiSectors.value,
+    rawZobLoSectors.value,
+  ),
+);
 
 // Watchers
 watch(
@@ -637,6 +798,30 @@ onMounted(async () => {
           v-if="zmpHiSectors"
           :geojson="zmpHiSectors"
           :options="testOptions" />
+
+        <div
+          v-for="label in zobLabels"
+          :key="`zob-${label.text}-${label.mapLevel}`">
+          <LMarker
+            :lat-lng="[label.lat, label.lng]"
+            v-if="label.mapLevel === 'hi'">
+            <LIcon :icon-anchor="[0, 0]" className="">
+              <div class="zmp-zob-label">{{ label.text }}</div>
+            </LIcon>
+          </LMarker>
+        </div>
+
+        <div
+          v-for="label in zmpLabels"
+          :key="`zmp-${label.text}-${label.mapLevel}`">
+          <LMarker
+            :lat-lng="[label.lat, label.lng]"
+            v-if="label.mapLevel === 'hi'">
+            <LIcon :icon-anchor="[0, 0]" className="">
+              <div class="zmp-zob-label">{{ label.text }}</div>
+            </LIcon>
+          </LMarker>
+        </div>
       </LMap>
     </template>
   </Card>
@@ -702,6 +887,30 @@ onMounted(async () => {
           v-if="zmpLoSectors"
           :geojson="zmpLoSectors"
           :options="testOptions" />
+
+        <div
+          v-for="label in zobLabels"
+          :key="`zob-${label.text}-${label.mapLevel}`">
+          <LMarker
+            :lat-lng="[label.lat, label.lng]"
+            v-if="label.mapLevel === 'lo'">
+            <LIcon :icon-anchor="[0, 0]" className="">
+              <div class="zmp-zob-label">{{ label.text }}</div>
+            </LIcon>
+          </LMarker>
+        </div>
+
+        <div
+          v-for="label in zmpLabels"
+          :key="`zmp-${label.text}-${label.mapLevel}`">
+          <LMarker
+            :lat-lng="[label.lat, label.lng]"
+            v-if="label.mapLevel === 'lo'">
+            <LIcon :icon-anchor="[0, 0]" className="">
+              <div class="zmp-zob-label">{{ label.text }}</div>
+            </LIcon>
+          </LMarker>
+        </div>
       </LMap>
     </template>
   </Card>
@@ -723,6 +932,16 @@ onMounted(async () => {
   font-family: 'Roboto', Arial, sans-serif;
   font-weight: bold;
   font-size: 20px;
+  line-height: 1;
+  width: min-content;
+}
+
+.zmp-zob-label {
+  text-align: center;
+  color: black;
+  font-family: 'Roboto', Arial, sans-serif;
+  font-weight: bold;
+  font-size: 18px;
   line-height: 1;
   width: min-content;
 }
