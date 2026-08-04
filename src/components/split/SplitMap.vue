@@ -74,7 +74,7 @@ const zoom = ref<number>(6.7);
 const center = ref<[number, number]>([42, -89]);
 // @TODO: consider making this use the TabPanel to eliminate the need for enabling zoom
 const mapOptions = ref({
-  zoomSnap: 0.1,
+  zoomSnap: 0.05,
   zoomControl: false,
   doubleClickZoom: false,
   scrollWheelZoom: true,
@@ -288,7 +288,7 @@ const applyOwnership = (ownershipMap: IOwnership) => {
   });
 
   const processLevelOwnership = (level: 'high' | 'low') => {
-    const ownershipData = ownershipMap[level];
+    const ownershipData = ownershipMap.zau[level];
     if (!ownershipData) return;
 
     for (const sectorId in ownershipData) {
@@ -564,7 +564,7 @@ onMounted(async () => {
     <template #subtitle>FL240 & Above</template>
     <template #content>
       <LMap
-        v-model:zoom="zoom"
+        :zoom="zoom"
         :center="center"
         :useGlobalLeaflet="false"
         :options="mapOptions"
@@ -645,7 +645,7 @@ onMounted(async () => {
     <template #subtitle>FL230 & Below</template>
     <template #content>
       <LMap
-        v-model:zoom="zoom"
+        :zoom="zoom"
         :center="center"
         :useGlobalLeaflet="false"
         :options="mapOptions"
