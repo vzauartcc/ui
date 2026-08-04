@@ -663,7 +663,8 @@ const activeSectors = computed(
 );
 
 const activeBorders = computed<any>(
-  () => geojson.value?.borders[activeLevel.value] ?? null,
+  () =>
+    geojson.value?.borders[activeLevel.value === 'hi' ? 'high' : 'low'] ?? null,
 );
 
 const activeZob = computed(() => zobColored.value?.[activeLevel.value] ?? null);
