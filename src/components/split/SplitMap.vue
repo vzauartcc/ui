@@ -13,7 +13,7 @@ import 'leaflet/dist/leaflet.css';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import SelectButton from 'primevue/selectbutton';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 // Fix for the Icon problem that prevents leaflet from working
 delete (Icon.Default.prototype as any)._getIconUrl;
@@ -106,6 +106,11 @@ const staticCorridorCoords: Record<string, [number, number]> = {
   pmmKubbs: [42.77505, -86.045098],
 };
 
+const MAP_BOUNDS: [[number, number], [number, number]] = [
+  [39.110179882405795, -95.81045234346043],
+  [44.57851537556797, -82.75578162931266],
+];
+
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
@@ -122,7 +127,8 @@ const props = defineProps<{
 const zoom = ref<number>(7.25);
 const center = ref<[number, number]>([42, -89]);
 const mapOptions = ref({
-  zoomSnap: 0.05,
+  zoomSnap: 0,
+  wheelPxPerZoomLevel: 300,
   zoomControl: false,
   doubleClickZoom: false,
   scrollWheelZoom: true,
@@ -142,12 +148,30 @@ const geojson = ref<IGeojsonResponse | null>(null);
 // Map setup
 // ---------------------------------------------------------------------------
 
+const mapRef = ref<any>(null);
+let resizeObserver: ResizeObserver | null = null;
+
+const fitMapToData = () => {
+  const map = mapRef.value;
+  if (!map) return;
+  map.fitBounds(MAP_BOUNDS, { padding: [0, 0] });
+};
+
 const onMapReady = (obj: any) => {
+  mapRef.value = obj;
   if (obj) {
     obj.createPane('bordersPane');
     obj.getPane('bordersPane').style.zIndex = 499;
+    resizeObserver?.disconnect();
+    resizeObserver = new ResizeObserver(fitMapToData);
+    resizeObserver.observe(obj.getContainer());
+    fitMapToData();
   }
 };
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+});
 
 // ---------------------------------------------------------------------------
 // Data fetching
