@@ -2,14 +2,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Imported and converted from the original site
 import { splitService } from '@/services/split/split.service';
-import type { IOwnership, IPosition } from '@/services/split/split.types';
+import type {
+  IGeojsonResponse,
+  IOwnership,
+  IPosition,
+} from '@/services/split/split.types';
 import { LGeoJson, LIcon, LMap, LMarker } from '@vue-leaflet/vue-leaflet';
 import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import SelectButton from 'primevue/selectbutton';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // Fix for the Icon problem that prevents leaflet from working
 delete (Icon.Default.prototype as any)._getIconUrl;
@@ -20,6 +24,10 @@ Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.21/dist/images/marker-shadow.png',
 });
 
+// ---------------------------------------------------------------------------
+// Types & constants
+// ---------------------------------------------------------------------------
+
 interface PositionData extends IPosition {
   isSpecial?: boolean;
   active?: boolean;
@@ -28,6 +36,14 @@ interface PositionData extends IPosition {
 
 interface PositionInternal extends PositionData {
   id: string;
+}
+
+interface Owner {
+  name: string;
+  color: string;
+}
+
+interface OwnedSectors {
   ownedHi: Set<string>;
   ownedLo: Set<string>;
 }
@@ -51,7 +67,7 @@ interface PmmKubbsLabel {
   kubbsText: string;
 }
 
-interface NeighborLabel {
+interface ZmpZobLabel {
   text: string;
   lat: number;
   lng: number;
@@ -90,10 +106,18 @@ const staticCorridorCoords: Record<string, [number, number]> = {
   pmmKubbs: [42.77505, -86.045098],
 };
 
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
+
 const props = defineProps<{
   positionsData: PositionData[];
   ownershipData: IOwnership;
 }>();
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
 
 const zoom = ref<number>(7.25);
 const center = ref<[number, number]>([42, -89]);
@@ -105,7 +129,6 @@ const mapOptions = ref({
   touchZoom: true,
   dragging: true,
 });
-const isLoading = ref<boolean>(true);
 
 const activeLevel = ref<'hi' | 'lo'>('hi');
 const levelOptions = [
@@ -113,40 +136,13 @@ const levelOptions = [
   { label: 'Low', value: 'lo' },
 ];
 
-const positions = ref<Map<string, PositionInternal>>(new Map());
-
-const rawHiSectors = ref<any>(null);
-const rawLoSectors = ref<any>(null);
-const hiSectorData = ref<any>(null);
-const loSectorData = ref<any>(null);
-
-const zauHiBorders = ref<any>(null);
-const zauLoBorders = ref<any>(null);
-const pmmBorder = ref<any>(null);
-
-const zobHiSectors = ref<any>(null);
-const zobLoSectors = ref<any>(null);
-const rawZobHiSectors = ref<any>(null);
-const rawZobLoSectors = ref<any>(null);
-
-const zmpHiSectors = ref<any>(null);
-const zmpLoSectors = ref<any>(null);
-const rawZmpHiSectors = ref<any>(null);
-const rawZmpLoSectors = ref<any>(null);
-
-const showPmmKubbsSplit = ref<boolean>(false);
-
-const iowCorridorLabel = ref<CorridorLabel | null>(null);
-const bdfSplitLabel = ref<CorridorLabel | null>(null);
-const bvtCorridorLabel = ref<CorridorLabel | null>(null);
-const eonLowLabel = ref<CorridorLabel | null>(null);
-const pmmKubbsLabel = ref<PmmKubbsLabel | null>(null);
+const geojson = ref<IGeojsonResponse | null>(null);
 
 // ---------------------------------------------------------------------------
 // Map setup
 // ---------------------------------------------------------------------------
 
-const mapReady = (obj: any) => {
+const onMapReady = (obj: any) => {
   if (obj) {
     obj.createPane('bordersPane');
     obj.getPane('bordersPane').style.zIndex = 499;
@@ -158,69 +154,79 @@ const mapReady = (obj: any) => {
 // ---------------------------------------------------------------------------
 
 const fetchSectorsData = async () => {
-  isLoading.value = true;
   try {
-    const data = await splitService.getGeojson();
-
-    hiSectorData.value = data.sectors.high;
-    loSectorData.value = data.sectors.low;
-    rawHiSectors.value = data.sectors.high;
-    rawLoSectors.value = data.sectors.low;
-
-    zauHiBorders.value = data.borders.high;
-    zauLoBorders.value = data.borders.low;
-    pmmBorder.value = data.borders.PMM;
-
-    zobHiSectors.value = data.zob.high;
-    zobLoSectors.value = data.zob.low;
-    rawZobHiSectors.value = data.zob.high;
-    rawZobLoSectors.value = data.zob.low;
-
-    zmpHiSectors.value = data.zmp.high;
-    zmpLoSectors.value = data.zmp.low;
-    rawZmpHiSectors.value = data.zmp.high;
-    rawZmpLoSectors.value = data.zmp.low;
-
-    initializePositionsAndProcessOwnership();
+    geojson.value = await splitService.getGeojson();
   } catch (e) {
     console.error('Critical error during map data fetching:', e);
-  } finally {
-    isLoading.value = false;
   }
 };
 
 // ---------------------------------------------------------------------------
-// Ownership processing — ZAU
+// Derived ownership indexes
 // ---------------------------------------------------------------------------
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
-const initializePositionsMap = () => {
+const positions = computed<Map<string, PositionInternal>>(() => {
   const map = new Map<string, PositionInternal>();
   props.positionsData.forEach((p) => {
-    map.set(String(p.id), {
-      ...p,
-      id: String(p.id),
-      ownedHi: new Set<string>(),
-      ownedLo: new Set<string>(),
-    });
+    map.set(String(p.id), { ...p, id: String(p.id) });
   });
-  positions.value = map;
+  return map;
+});
+
+const positionOwned = computed<Map<string, OwnedSectors>>(() => {
+  const map = new Map<string, OwnedSectors>();
+  const ensure = (ownerId: string): OwnedSectors => {
+    let entry = map.get(ownerId);
+    if (!entry) {
+      entry = { ownedHi: new Set<string>(), ownedLo: new Set<string>() };
+      map.set(ownerId, entry);
+    }
+    return entry;
+  };
+
+  const { high, low } = props.ownershipData.zau;
+  for (const [sectorId, ownerId] of Object.entries(high)) {
+    if (positions.value.has(String(ownerId))) {
+      ensure(String(ownerId)).ownedHi.add(String(sectorId));
+    }
+  }
+  for (const [sectorId, ownerId] of Object.entries(low)) {
+    if (positions.value.has(String(ownerId))) {
+      ensure(String(ownerId)).ownedLo.add(String(sectorId));
+    }
+  }
+  return map;
+});
+
+const sectorOwner = computed<{
+  hi: Map<string, PositionInternal>;
+  lo: Map<string, PositionInternal>;
+}>(() => {
+  const hi = new Map<string, PositionInternal>();
+  const lo = new Map<string, PositionInternal>();
+  for (const [positionId, owned] of positionOwned.value) {
+    const position = positions.value.get(positionId);
+    if (!position) continue;
+    for (const sectorId of owned.ownedHi) hi.set(sectorId, position);
+    for (const sectorId of owned.ownedLo) lo.set(sectorId, position);
+  }
+  return { hi, lo };
+});
+
+const getOwner = (sectorFeature: any): Owner => {
+  const id = String(sectorFeature.properties.id);
+  const level = sectorFeature.properties.level as 'hi' | 'lo';
+  const owner = sectorOwner.value[level].get(id);
+  return owner
+    ? { name: owner.name, color: owner.color }
+    : { name: 'N/A', color: '#808080' };
 };
 
-const processOwnershipUpdates = () => {
-  if (!positions.value.size || !rawHiSectors.value) {
-    return;
-  }
-  applyOwnership(props.ownershipData);
-};
-
-const initializePositionsAndProcessOwnership = () => {
-  if (props.positionsData && props.positionsData.length > 0) {
-    initializePositionsMap();
-    processOwnershipUpdates();
-  }
-};
+// ---------------------------------------------------------------------------
+// Sector coloring — ZAU
+// ---------------------------------------------------------------------------
 
 const averageColors = (colorA: string, colorB: string): string => {
   const matchA = colorA.match(/\w\w/g);
@@ -241,126 +247,76 @@ const averageColors = (colorA: string, colorB: string): string => {
   return '#' + r + g + b;
 };
 
-const getOwner = (sectorFeature: any) => {
-  const id = String(sectorFeature.properties.id);
-  const level = sectorFeature.properties.level;
+const colorZauSectors = (raw: any, level: 'hi' | 'lo') => {
+  if (!raw) return { type: 'FeatureCollection', features: [] };
 
-  for (const pos of positions.value.values()) {
-    if (level === 'hi' && pos.ownedHi.has(id)) return pos;
-    if (level === 'lo' && pos.ownedLo.has(id)) return pos;
-  }
-  return { name: 'N/A', color: '#808080' };
-};
+  const newSectors = clone(raw);
+  const owners = sectorOwner.value[level];
 
-const updateSectorColors = () => {
-  const processSectors = (rawSectors: any, level: 'hi' | 'lo') => {
-    if (!rawSectors) return { type: 'FeatureCollection', features: [] };
-
-    const newSectors = clone(rawSectors);
-
-    newSectors.features.forEach((feature: any) => {
-      const sectorId = String(feature.properties.id);
-      let ownerColor = '#808080';
-      let isOwned = false;
-
-      for (const pos of positions.value.values()) {
-        if (level === 'hi' && pos.ownedHi.has(sectorId)) {
-          ownerColor = pos.color;
-          isOwned = true;
-          break;
-        } else if (level === 'lo' && pos.ownedLo.has(sectorId)) {
-          ownerColor = pos.color;
-          isOwned = true;
-          break;
-        }
-      }
-      feature.properties.ownerColor = ownerColor;
-      feature.properties.isOwned = isOwned;
-    });
-
-    const byName = new Map<string, any>(
-      newSectors.features.map((f: any) => [f.properties.name, f]),
-    );
-
-    if (level === 'hi') {
-      const iow = byName.get('IOWA CITY');
-      const coton = byName.get('COTON');
-      const boiler = byName.get('BOILER');
-      const gipper = byName.get('GIPPER');
-      const bradford = byName.get('BRADFORD');
-
-      const corridor = byName.get('IOW Corridor');
-      if (corridor && iow && coton) {
-        corridor.properties.ownerColor = averageColors(
-          iow.properties.ownerColor,
-          coton.properties.ownerColor,
-        );
-      }
-
-      const boilerClimb = byName.get('BOILER CLIMB CORRIDOR');
-      if (boilerClimb && boiler && gipper) {
-        boilerClimb.properties.ownerColor = averageColors(
-          boiler.properties.ownerColor,
-          gipper.properties.ownerColor,
-        );
-      }
-
-      if (bradford && iow) {
-        bradford.properties.ownerColor = averageColors(
-          bradford.properties.ownerColor,
-          iow.properties.ownerColor,
-        );
-      }
-    } else {
-      const lowEon = byName.get('LOW EON');
-      const peotone = byName.get('PEOTONE');
-      const plano = byName.get('PLANO');
-      if (lowEon && peotone && plano) {
-        lowEon.properties.ownerColor = averageColors(
-          peotone.properties.ownerColor,
-          plano.properties.ownerColor,
-        );
-      }
-    }
-    return newSectors;
-  };
-
-  hiSectorData.value = { ...processSectors(rawHiSectors.value, 'hi') };
-  loSectorData.value = { ...processSectors(rawLoSectors.value, 'lo') };
-};
-
-const applyOwnership = (ownershipMap: IOwnership) => {
-  positions.value.forEach((p) => {
-    p.ownedHi.clear();
-    p.ownedLo.clear();
+  newSectors.features.forEach((feature: any) => {
+    const sectorId = String(feature.properties.id);
+    const owner = owners.get(sectorId);
+    feature.properties.ownerColor = owner ? owner.color : '#808080';
+    feature.properties.isOwned = !!owner;
   });
 
-  const processLevelOwnership = (level: 'high' | 'low') => {
-    const ownershipData = ownershipMap.zau[level];
-    if (!ownershipData) return;
+  const byName = new Map<string, any>(
+    newSectors.features.map((f: any) => [f.properties.name, f]),
+  );
 
-    for (const sectorId in ownershipData) {
-      const ownerId = String(ownershipData[sectorId]);
-      const owner = positions.value.get(ownerId);
+  if (level === 'hi') {
+    const iow = byName.get('IOWA CITY');
+    const coton = byName.get('COTON');
+    const boiler = byName.get('BOILER');
+    const gipper = byName.get('GIPPER');
+    const bradford = byName.get('BRADFORD');
 
-      if (owner) {
-        if (level === 'high') {
-          owner.ownedHi.add(String(sectorId));
-        } else if (level === 'low') {
-          owner.ownedLo.add(String(sectorId));
-        }
-      }
+    const corridor = byName.get('IOW Corridor');
+    if (corridor && iow && coton) {
+      corridor.properties.ownerColor = averageColors(
+        iow.properties.ownerColor,
+        coton.properties.ownerColor,
+      );
     }
-  };
 
-  processLevelOwnership('high');
-  processLevelOwnership('low');
-  updateSectorColors();
-  processNeighborOwnership(ownershipMap);
+    const boilerClimb = byName.get('BOILER CLIMB CORRIDOR');
+    if (boilerClimb && boiler && gipper) {
+      boilerClimb.properties.ownerColor = averageColors(
+        boiler.properties.ownerColor,
+        gipper.properties.ownerColor,
+      );
+    }
+
+    if (bradford && iow) {
+      bradford.properties.ownerColor = averageColors(
+        bradford.properties.ownerColor,
+        iow.properties.ownerColor,
+      );
+    }
+  } else {
+    const lowEon = byName.get('LOW EON');
+    const peotone = byName.get('PEOTONE');
+    const plano = byName.get('PLANO');
+    if (lowEon && peotone && plano) {
+      lowEon.properties.ownerColor = averageColors(
+        peotone.properties.ownerColor,
+        plano.properties.ownerColor,
+      );
+    }
+  }
+  return newSectors;
 };
 
+const zauColored = computed(() => {
+  if (!geojson.value) return null;
+  return {
+    hi: colorZauSectors(geojson.value.sectors.high, 'hi'),
+    lo: colorZauSectors(geojson.value.sectors.low, 'lo'),
+  };
+});
+
 // ---------------------------------------------------------------------------
-// Ownership processing — ZMP / ZOB
+// Sector coloring — ZMP / ZOB
 // ---------------------------------------------------------------------------
 
 const assignColors = (
@@ -375,13 +331,14 @@ const assignColors = (
   return colorMap;
 };
 
-const colorSectors = (
+const colorNeighbor = (
   raw: any,
   ownership: Record<string, string>,
-  colorMap: Record<string, string>,
+  palette: string[],
 ) => {
   if (!raw) return raw;
   const copy = clone(raw);
+  const colorMap = assignColors(ownership, palette);
   copy.features.forEach((feature: any) => {
     const polygonId = String(feature.properties.id);
     const ownerId = ownership[polygonId];
@@ -392,34 +349,23 @@ const colorSectors = (
   return copy;
 };
 
-const processNeighborOwnership = (ownershipMap: IOwnership) => {
-  const zmpOwnership = ownershipMap.zmp ?? {};
-  const zobOwnership = ownershipMap.zob ?? {};
+const zobColored = computed(() => {
+  if (!geojson.value) return null;
+  const ownership = props.ownershipData.zob ?? {};
+  return {
+    hi: colorNeighbor(geojson.value.zob.high, ownership, ZOB_COLORS),
+    lo: colorNeighbor(geojson.value.zob.low, ownership, ZOB_COLORS),
+  };
+});
 
-  const zmpPositionColors = assignColors(zmpOwnership, ZMP_COLORS);
-  const zobPositionColors = assignColors(zobOwnership, ZOB_COLORS);
-
-  zmpHiSectors.value = colorSectors(
-    rawZmpHiSectors.value,
-    zmpOwnership,
-    zmpPositionColors,
-  );
-  zmpLoSectors.value = colorSectors(
-    rawZmpLoSectors.value,
-    zmpOwnership,
-    zmpPositionColors,
-  );
-  zobHiSectors.value = colorSectors(
-    rawZobHiSectors.value,
-    zobOwnership,
-    zobPositionColors,
-  );
-  zobLoSectors.value = colorSectors(
-    rawZobLoSectors.value,
-    zobOwnership,
-    zobPositionColors,
-  );
-};
+const zmpColored = computed(() => {
+  if (!geojson.value) return null;
+  const ownership = props.ownershipData.zmp ?? {};
+  return {
+    hi: colorNeighbor(geojson.value.zmp.high, ownership, ZMP_COLORS),
+    lo: colorNeighbor(geojson.value.zmp.low, ownership, ZMP_COLORS),
+  };
+});
 
 // ---------------------------------------------------------------------------
 // Style / geometry helpers
@@ -477,148 +423,89 @@ const getLabelClass = (position: PositionData) => {
 };
 
 // ---------------------------------------------------------------------------
-// Special sector labels
+// Special sector labels (co-owned corridors)
 // ---------------------------------------------------------------------------
 
-const checkSpecialSectors = () => {
-  if (!hiSectorData.value || !loSectorData.value) return;
-
-  const findSector = (name: string, level: 'hi' | 'lo') => {
-    const data = level === 'hi' ? hiSectorData.value : loSectorData.value;
-    return data.features.find((f: any) => f.properties.name === name);
+const corridorLabel = (
+  a: any,
+  b: any,
+  text: (ownerA: Owner, ownerB: Owner) => string,
+): CorridorLabel | null => {
+  if (!a || !b) return null;
+  const ownerA = getOwner(a);
+  const ownerB = getOwner(b);
+  const colorA = a.properties.ownerColor;
+  const colorB = b.properties.ownerColor;
+  if (colorA === colorB || ownerA.name === 'N/A' || ownerB.name === 'N/A') {
+    return null;
+  }
+  return {
+    text: text(ownerA, ownerB),
+    colorA,
+    colorB,
+    fillColor: averageColors(colorA, colorB),
   };
-
-  const getFillColor = (feature: any) => feature.properties.ownerColor;
-
-  const layerCOTON = findSector('COTON', 'hi');
-  const layerIOW = findSector('IOWA CITY', 'hi');
-  const layerBDF = findSector('BRADFORD', 'hi');
-  const layerBVT = findSector('BOILER', 'hi');
-  const layerGIJ = findSector('GIPPER', 'hi');
-  const layerPMM = findSector('PULLMAN', 'hi');
-  const layerEON = findSector('PEOTONE', 'lo');
-  const layerPLANO = findSector('PLANO', 'lo');
-  const layerKUBBS = findSector('KUBBS', 'lo');
-
-  if (
-    !layerCOTON ||
-    !layerIOW ||
-    !layerBDF ||
-    !layerBVT ||
-    !layerGIJ ||
-    !layerPMM ||
-    !layerEON ||
-    !layerPLANO ||
-    !layerKUBBS
-  )
-    return;
-
-  const colorCOTON = getFillColor(layerCOTON);
-  const colorIOW = getFillColor(layerIOW);
-  const colorBDF = getFillColor(layerBDF);
-  const colorBVT = getFillColor(layerBVT);
-  const colorGIJ = getFillColor(layerGIJ);
-  const colorPMM = getFillColor(layerPMM);
-  const colorEON = getFillColor(layerEON);
-  const colorPLANO = getFillColor(layerPLANO);
-  const colorKUBBS = getFillColor(layerKUBBS);
-
-  const ownerCOTON = getOwner(layerCOTON);
-  const ownerIOW = getOwner(layerIOW);
-  const ownerBDF = getOwner(layerBDF);
-  const ownerBVT = getOwner(layerBVT);
-  const ownerGIJ = getOwner(layerGIJ);
-  const ownerPMM = getOwner(layerPMM);
-  const ownerEON = getOwner(layerEON);
-  const ownerPLANO = getOwner(layerPLANO);
-  const ownerKUBBS = getOwner(layerKUBBS);
-
-  // 1. IOW Corridor
-  if (
-    colorCOTON === colorIOW ||
-    ownerCOTON.name === 'N/A' ||
-    ownerIOW.name === 'N/A'
-  ) {
-    iowCorridorLabel.value = null;
-  } else {
-    iowCorridorLabel.value = {
-      text: `${ownerIOW.name} FL240 - FL329 <br /> ${ownerCOTON.name} FL330+`,
-      colorA: colorCOTON,
-      colorB: colorIOW,
-      fillColor: averageColors(colorCOTON, colorIOW),
-    };
-  }
-
-  // 2. Bradford Split
-  if (
-    colorBDF === colorIOW ||
-    ownerBDF.name === 'N/A' ||
-    ownerIOW.name === 'N/A'
-  ) {
-    bdfSplitLabel.value = null;
-  } else {
-    bdfSplitLabel.value = {
-      text: `${ownerBDF.name} FL240 - FL330 <br /> ${ownerIOW.name} FL340+`,
-      colorA: colorBDF,
-      colorB: colorIOW,
-      fillColor: averageColors(colorBDF, colorIOW),
-    };
-  }
-
-  // 3. Boiler Climb Corridor
-  if (
-    colorBVT === colorGIJ ||
-    ownerBVT.name === 'N/A' ||
-    ownerGIJ.name === 'N/A'
-  ) {
-    bvtCorridorLabel.value = null;
-  } else {
-    bvtCorridorLabel.value = {
-      text: `${ownerBVT.name} <br /> FL240 - FL290`,
-      colorA: colorBVT,
-      colorB: colorGIJ,
-      fillColor: averageColors(colorBVT, colorGIJ),
-    };
-  }
-
-  // 4. Peotone
-  if (
-    colorEON === colorPLANO ||
-    ownerEON.name === 'N/A' ||
-    ownerPLANO.name === 'N/A'
-  ) {
-    eonLowLabel.value = null;
-  } else {
-    eonLowLabel.value = {
-      text: `${ownerEON.name} 110 - FL230 <br /> ${ownerPLANO.name} SFC - 100`,
-      colorA: colorEON,
-      colorB: colorPLANO,
-      fillColor: averageColors(colorEON, colorPLANO),
-    };
-  }
-
-  // 5. PMM and KUBBS
-  if (
-    colorPMM === colorKUBBS ||
-    ownerPMM.name === 'N/A' ||
-    ownerKUBBS.name === 'N/A'
-  ) {
-    showPmmKubbsSplit.value = false;
-    pmmKubbsLabel.value = null;
-  } else {
-    showPmmKubbsSplit.value = true;
-    pmmKubbsLabel.value = {
-      pmmText: `${ownerPMM.name} FL200+`,
-      kubbsText: `${ownerKUBBS.name} <br /> SFC - FL190`,
-    };
-  }
 };
+
+const specialSectors = computed(() => {
+  const zau = zauColored.value;
+  if (!zau) return null;
+  const hi = zau.hi.features;
+  const lo = zau.lo.features;
+  const byName = (features: any[], name: string) =>
+    features.find((f: any) => f.properties.name === name);
+
+  const iow = corridorLabel(
+    byName(hi, 'COTON'),
+    byName(hi, 'IOWA CITY'),
+    (a, b) => `${b.name} FL240 - FL329 <br /> ${a.name} FL330+`,
+  );
+  const bdf = corridorLabel(
+    byName(hi, 'BRADFORD'),
+    byName(hi, 'IOWA CITY'),
+    (a, b) => `${a.name} FL240 - FL330 <br /> ${b.name} FL340+`,
+  );
+  const bvt = corridorLabel(
+    byName(hi, 'BOILER'),
+    byName(hi, 'GIPPER'),
+    (a) => `${a.name} <br /> FL240 - FL290`,
+  );
+  const eon = corridorLabel(
+    byName(lo, 'PEOTONE'),
+    byName(lo, 'PLANO'),
+    (a, b) => `${a.name} 110 - FL230 <br /> ${b.name} SFC - 100`,
+  );
+
+  const pmm = byName(hi, 'PULLMAN');
+  const kubbs = byName(lo, 'KUBBS');
+  let pmmKubbs: PmmKubbsLabel | null = null;
+  let showPmmKubbsSplit = false;
+  if (pmm && kubbs) {
+    const ownerPMM = getOwner(pmm);
+    const ownerKUBBS = getOwner(kubbs);
+    const colorPMM = pmm.properties.ownerColor;
+    const colorKUBBS = kubbs.properties.ownerColor;
+    if (
+      colorPMM !== colorKUBBS &&
+      ownerPMM.name !== 'N/A' &&
+      ownerKUBBS.name !== 'N/A'
+    ) {
+      showPmmKubbsSplit = true;
+      pmmKubbs = {
+        pmmText: `${ownerPMM.name} FL200+`,
+        kubbsText: `${ownerKUBBS.name} <br /> SFC - FL190`,
+      };
+    }
+  }
+
+  return { iow, bdf, bvt, eon, pmmKubbs, showPmmKubbsSplit };
+});
 
 // ---------------------------------------------------------------------------
 // Computed properties
 // ---------------------------------------------------------------------------
 
-const testOptions = computed(() => ({
+const geojsonOptions = computed(() => ({
   style: getSectorStyle,
   onEachFeature: onEachFeature,
 }));
@@ -632,13 +519,19 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
     );
   };
 
-  for (const pos of positions.value.values()) {
-    if (pos.ownedHi.size > 0) {
-      const firstSectorId = Array.from(pos.ownedHi).find((n) => Number(n) > 10);
-      const feature = findFeature(rawHiSectors.value?.features, firstSectorId!);
+  for (const [positionId, owned] of positionOwned.value) {
+    if (owned.ownedHi.size > 0) {
+      const firstSectorId = Array.from(owned.ownedHi).find(
+        (n) => Number(n) > 10,
+      );
+      const feature = findFeature(
+        geojson.value?.sectors.high.features,
+        firstSectorId!,
+      );
 
       if (feature && feature.properties.labelAnchor) {
         const latLng = feature.properties.labelAnchor;
+        const pos = positions.value.get(positionId)!;
         labeled.push({
           ...pos,
           displayId: `${pos.id}-hi`,
@@ -649,12 +542,18 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
       }
     }
 
-    if (pos.ownedLo.size > 0) {
-      const firstSectorId = Array.from(pos.ownedLo).find((n) => Number(n) > 10);
-      const feature = findFeature(rawLoSectors.value?.features, firstSectorId!);
+    if (owned.ownedLo.size > 0) {
+      const firstSectorId = Array.from(owned.ownedLo).find(
+        (n) => Number(n) > 10,
+      );
+      const feature = findFeature(
+        geojson.value?.sectors.low.features,
+        firstSectorId!,
+      );
 
       if (feature && feature.properties.labelAnchor) {
         const latLng = feature.properties.labelAnchor;
+        const pos = positions.value.get(positionId)!;
         labeled.push({
           ...pos,
           displayId: `${pos.id}-lo`,
@@ -669,13 +568,13 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
   return labeled;
 });
 
-const buildNeighborLabels = (
+const buildZmpZobLabels = (
   ownership: Record<string, string>,
   prefix: string,
   rawHi: any,
   rawLo: any,
-): NeighborLabel[] => {
-  const labels: NeighborLabel[] = [];
+): ZmpZobLabel[] => {
+  const labels: ZmpZobLabel[] = [];
   const activePositions = [...new Set(Object.values(ownership))].sort();
 
   const findAnchor = (
@@ -717,39 +616,37 @@ const buildNeighborLabels = (
   return labels;
 };
 
-const zmpLabels = computed<NeighborLabel[]>(() =>
-  buildNeighborLabels(
+const zmpLabels = computed<ZmpZobLabel[]>(() =>
+  buildZmpZobLabels(
     props.ownershipData.zmp ?? {},
     'P',
-    rawZmpHiSectors.value,
-    rawZmpLoSectors.value,
+    geojson.value?.zmp.high,
+    geojson.value?.zmp.low,
   ),
 );
 
-const zobLabels = computed<NeighborLabel[]>(() =>
-  buildNeighborLabels(
+const zobLabels = computed<ZmpZobLabel[]>(() =>
+  buildZmpZobLabels(
     props.ownershipData.zob ?? {},
     'C',
-    rawZobHiSectors.value,
-    rawZobLoSectors.value,
+    geojson.value?.zob.high,
+    geojson.value?.zob.low,
   ),
 );
 
-const activeSectors = computed(() =>
-  activeLevel.value === 'hi' ? hiSectorData.value : loSectorData.value,
+const activeSectors = computed(
+  () => zauColored.value?.[activeLevel.value] ?? null,
 );
 
-const activeBorders = computed(() =>
-  activeLevel.value === 'hi' ? zauHiBorders.value : zauLoBorders.value,
+const activeBorders = computed<any>(
+  () => geojson.value?.borders[activeLevel.value] ?? null,
 );
 
-const activeZob = computed(() =>
-  activeLevel.value === 'hi' ? zobHiSectors.value : zobLoSectors.value,
-);
+const activeZob = computed(() => zobColored.value?.[activeLevel.value] ?? null);
 
-const activeZmp = computed(() =>
-  activeLevel.value === 'hi' ? zmpHiSectors.value : zmpLoSectors.value,
-);
+const activeZmp = computed(() => zmpColored.value?.[activeLevel.value] ?? null);
+
+const pmmBorder = computed<any>(() => geojson.value?.borders.PMM ?? null);
 
 const activePositionLabels = computed<LabeledPosition[]>(() =>
   labeledPositions.value.filter(
@@ -757,87 +654,47 @@ const activePositionLabels = computed<LabeledPosition[]>(() =>
   ),
 );
 
-const activeZobLabels = computed<NeighborLabel[]>(() =>
+const activeZobLabels = computed<ZmpZobLabel[]>(() =>
   zobLabels.value.filter((label) => label.mapLevel === activeLevel.value),
 );
 
-const activeZmpLabels = computed<NeighborLabel[]>(() =>
+const activeZmpLabels = computed<ZmpZobLabel[]>(() =>
   zmpLabels.value.filter((label) => label.mapLevel === activeLevel.value),
 );
 
 const activeSpecialLabels = computed<SpecialLabel[]>(() => {
   const labels: SpecialLabel[] = [];
+  const special = specialSectors.value;
+  if (!special) return labels;
 
   const push = (key: string, coords: [number, number], html: string) => {
     labels.push({ key, lat: coords[0], lng: coords[1], html });
   };
 
   if (activeLevel.value === 'hi') {
-    if (iowCorridorLabel.value) {
-      push(
-        'iow',
-        staticCorridorCoords.iowCorridor!,
-        iowCorridorLabel.value.text,
-      );
+    if (special.iow) {
+      push('iow', staticCorridorCoords.iowCorridor!, special.iow.text);
     }
-    if (bvtCorridorLabel.value) {
-      push(
-        'bvt',
-        staticCorridorCoords.bvtCorridor!,
-        bvtCorridorLabel.value.text,
-      );
+    if (special.bvt) {
+      push('bvt', staticCorridorCoords.bvtCorridor!, special.bvt.text);
     }
-    if (showPmmKubbsSplit.value && pmmKubbsLabel.value) {
-      push('pmm', staticCorridorCoords.pmmKubbs!, pmmKubbsLabel.value.pmmText);
+    if (special.showPmmKubbsSplit && special.pmmKubbs) {
+      push('pmm', staticCorridorCoords.pmmKubbs!, special.pmmKubbs.pmmText);
     }
-    if (bdfSplitLabel.value) {
-      push('bdf', staticCorridorCoords.bdfSplit!, bdfSplitLabel.value.text);
+    if (special.bdf) {
+      push('bdf', staticCorridorCoords.bdfSplit!, special.bdf.text);
     }
   } else {
-    if (eonLowLabel.value) {
-      push('eon', staticCorridorCoords.eonLow!, eonLowLabel.value.text);
+    if (special.eon) {
+      push('eon', staticCorridorCoords.eonLow!, special.eon.text);
     }
-    if (showPmmKubbsSplit.value && pmmKubbsLabel.value) {
-      push(
-        'pmm',
-        staticCorridorCoords.pmmKubbs!,
-        pmmKubbsLabel.value.kubbsText,
-      );
+    if (special.showPmmKubbsSplit && special.pmmKubbs) {
+      push('pmm', staticCorridorCoords.pmmKubbs!, special.pmmKubbs.kubbsText);
     }
   }
 
   return labels;
 });
-
-// ---------------------------------------------------------------------------
-// Watchers
-// ---------------------------------------------------------------------------
-
-watch(
-  hiSectorData,
-  () => {
-    if (!isLoading.value) {
-      checkSpecialSectors();
-    }
-  },
-  { deep: true },
-);
-
-watch(
-  () => props.positionsData,
-  () => {
-    initializePositionsAndProcessOwnership();
-  },
-  { deep: true, immediate: true },
-);
-
-watch(
-  () => props.ownershipData,
-  () => {
-    processOwnershipUpdates();
-  },
-  { deep: true, immediate: true },
-);
 
 // ---------------------------------------------------------------------------
 // Lifecycle Hooks
@@ -849,7 +706,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <ProgressSpinner v-if="!hiSectorData" />
+  <ProgressSpinner v-if="!geojson" />
   <Card v-else>
     <template #title>High / Low Altitude Sectors</template>
     <template #content>
@@ -869,11 +726,11 @@ onMounted(async () => {
         :options="mapOptions"
         class="leaflet-map"
         style="width: 100%; aspect-ratio: 16 / 9"
-        @ready="mapReady">
+        @ready="onMapReady">
         <LGeoJson
           v-if="activeSectors && activeSectors.features.length"
           :geojson="activeSectors"
-          :options="testOptions" />
+          :options="geojsonOptions" />
 
         <div v-for="pos in activePositionLabels" :key="pos.displayId">
           <LMarker :lat-lng="[pos.lat, pos.lng]">
@@ -897,22 +754,22 @@ onMounted(async () => {
         <LGeoJson
           v-if="activeBorders"
           :geojson="activeBorders"
-          :options="testOptions" />
+          :options="geojsonOptions" />
 
         <LGeoJson
-          v-if="showPmmKubbsSplit"
+          v-if="specialSectors?.showPmmKubbsSplit"
           :geojson="pmmBorder"
-          :options="testOptions" />
+          :options="geojsonOptions" />
 
         <LGeoJson
           v-if="activeZob"
           :geojson="activeZob"
-          :options="testOptions" />
+          :options="geojsonOptions" />
 
         <LGeoJson
           v-if="activeZmp"
           :geojson="activeZmp"
-          :options="testOptions" />
+          :options="geojsonOptions" />
 
         <div v-for="label in activeZobLabels" :key="`zob-${label.text}`">
           <LMarker :lat-lng="[label.lat, label.lng]">
