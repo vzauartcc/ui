@@ -409,7 +409,7 @@ const getSectorStyle = (feature: any) => {
 const drawBorders = (feature: any) => {
   switch (feature.properties.borderType) {
     case 'ZAU':
-      return { color: '#e4002b', weight: 5, pane: 'bordersPane' };
+      return { color: '#b8253a', weight: 3, pane: 'bordersPane' };
     case 'Neighbor':
       return { color: '#000000', weight: 2, pane: 'bordersPane' };
     case 'InteriorBoundary':
