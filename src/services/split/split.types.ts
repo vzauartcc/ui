@@ -31,16 +31,16 @@ export interface IGeojsonResponse {
     low: IGeojson;
   };
   zob: {
-    high: IZOBGeojson;
-    low: IZOBGeojson;
+    high: INeighborGeojson;
+    low: INeighborGeojson;
   };
   zmp: {
-    high: IZMPGeojson;
-    low: IZMPGeojson;
+    high: INeighborGeojson;
+    low: INeighborGeojson;
   };
   zid: {
-    high: IZMPGeojson;
-    low: IZMPGeojson;
+    high: INeighborGeojson;
+    low: INeighborGeojson;
   };
 }
 
@@ -65,32 +65,13 @@ export interface IGeojsonFeature {
   };
 }
 
-interface IZOBGeojson {
+interface INeighborGeojson {
   type: string;
   features: [
     {
       type: string;
       properties: {
         id: string;
-        sector: string;
-        labelAnchor: number[];
-      };
-      geometry: {
-        type: string;
-        coordinates: number[][];
-      };
-    },
-  ];
-}
-
-interface IZMPGeojson {
-  type: string;
-  features: [
-    {
-      type: string;
-      properties: {
-        id: string | number;
-        labelAnchor: number[];
       };
       geometry: {
         type: string;

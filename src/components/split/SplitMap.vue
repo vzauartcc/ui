@@ -491,7 +491,7 @@ const drawBorders = (feature: any) => {
   }
 };
 
-const getSectorOwnerInfo = (feature: any) => {
+const getSectorOwnerInfo = (feature: any, center?: 'zob' | 'zmp' | 'zid') => {
   const id = String(feature.properties.id);
   const level = feature.properties.level as 'high' | 'low' | undefined;
 
@@ -504,19 +504,12 @@ const getSectorOwnerInfo = (feature: any) => {
     };
   }
 
-  const isZob = 'sector' in feature.properties;
-  const isZid = !isZob && props.ownershipData.zid?.[id] !== undefined;
-  const center = isZob ? 'zob' : isZid ? 'zid' : 'zmp';
-  const ownership = isZob
-    ? props.ownershipData.zob
-    : isZid
-      ? props.ownershipData.zid
-      : props.ownershipData.zmp;
+  const ownership = props.ownershipData[center!];
   const ownerId = ownership?.[id];
-  const owner = ownerId ? positions.value[center].get(String(ownerId)) : null;
+  const owner = ownerId ? positions.value[center!].get(String(ownerId)) : null;
   return {
     id,
-    callsign: owner ? `${CENTER_PREFIX[center]}_${owner.id}_CTR` : 'N/A',
+    callsign: owner ? `${CENTER_PREFIX[center!]}_${owner.id}_CTR` : 'N/A',
     ownerColor: owner?.color ?? '#808080',
   };
 };
@@ -623,6 +616,37 @@ const specialSectors = computed(() => {
 // ---------------------------------------------------------------------------
 // Computed properties
 // ---------------------------------------------------------------------------
+
+const makeOnEachFeature =
+  (center: 'zob' | 'zmp' | 'zid') => (feature: any, layer: any) => {
+    if (feature.properties.borderType) {
+      layer.setStyle(drawBorders(feature));
+    } else {
+      layer.setStyle(getSectorStyle(feature));
+      const { callsign } = getSectorOwnerInfo(feature, center);
+      const idHtml = `<span class="sector-tooltip-id">Sector ${feature.properties.id}</span>`;
+      layer.bindTooltip(
+        `<div class="sector-tooltip">${callsign}${idHtml}</div>`,
+        {
+          sticky: true,
+          direction: 'top',
+        },
+      );
+    }
+  };
+
+const zobOptions = {
+  style: getSectorStyle,
+  onEachFeature: makeOnEachFeature('zob'),
+};
+const zmpOptions = {
+  style: getSectorStyle,
+  onEachFeature: makeOnEachFeature('zmp'),
+};
+const zidOptions = {
+  style: getSectorStyle,
+  onEachFeature: makeOnEachFeature('zid'),
+};
 
 const geojsonOptions = computed(() => ({
   style: getSectorStyle,
@@ -821,17 +845,17 @@ onMounted(async () => {
           <LGeoJson
             v-if="activeZob"
             :geojson="activeZob"
-            :options="geojsonOptions" />
+            :options="zobOptions" />
 
           <LGeoJson
             v-if="activeZmp"
             :geojson="activeZmp"
-            :options="geojsonOptions" />
+            :options="zmpOptions" />
 
           <LGeoJson
             v-if="activeZid"
             :geojson="activeZid"
-            :options="geojsonOptions" />
+            :options="zidOptions" />
         </LMap>
 
         <div class="map-legend">
