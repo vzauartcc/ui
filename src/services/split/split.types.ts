@@ -1,8 +1,9 @@
 export interface IOwnershipResponse {
   positions: {
-    zau: IZauPosition[];
-    zmp: INeighborPosition[];
-    zob: INeighborPosition[];
+    zau: ISplitPosition[];
+    zmp: ISplitPosition[];
+    zob: ISplitPosition[];
+    zid: ISplitPosition[];
   };
   ownership: IOwnership;
 }
@@ -14,16 +15,13 @@ export interface IOwnership {
   };
   zmp: Record<string, string>;
   zob: Record<string, string>;
+  zid: Record<string, string>;
 }
 
-export interface INeighborPosition {
+export interface ISplitPosition {
   id: string;
   name: string;
   frequency: string;
-}
-
-export interface IZauPosition extends INeighborPosition {
-  color: string; // Hex color
 }
 
 export interface IGeojsonResponse {
@@ -37,6 +35,10 @@ export interface IGeojsonResponse {
     low: IZOBGeojson;
   };
   zmp: {
+    high: IZMPGeojson;
+    low: IZMPGeojson;
+  };
+  zid: {
     high: IZMPGeojson;
     low: IZMPGeojson;
   };

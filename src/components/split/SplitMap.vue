@@ -4,7 +4,7 @@
 import { splitService } from '@/services/split/split.service';
 import type {
   IGeojsonResponse,
-  INeighborPosition,
+  ISplitPosition,
   IOwnership,
 } from '@/services/split/split.types';
 import { LGeoJson, LIcon, LMap, LMarker } from '@vue-leaflet/vue-leaflet';
@@ -28,7 +28,7 @@ Icon.Default.mergeOptions({
 // Types & constants
 // ---------------------------------------------------------------------------
 
-interface PositionData extends INeighborPosition {
+interface PositionData extends ISplitPosition {
   color?: string;
   isSpecial?: boolean;
   active?: boolean;
@@ -39,6 +39,7 @@ interface PositionsByCenter {
   zau: PositionData[];
   zmp: PositionData[];
   zob: PositionData[];
+  zid: PositionData[];
 }
 
 interface PositionInternal extends PositionData {
@@ -86,26 +87,54 @@ interface LegendGroup {
 }
 
 const ZOB_COLORS = [
-  '#e6194b',
-  '#3cb44b',
-  '#ffe119',
-  '#4363d8',
-  '#911eb4',
-  '#f032e6',
+  '#c62828',
+  '#e65100',
+  '#827717',
+  '#f57f17',
+  '#ff4081',
+  '#ff6e40',
 ];
 const ZMP_COLORS = [
-  '#42d4f4',
-  '#469990',
-  '#9a6324',
-  '#800000',
-  '#808000',
-  '#000080',
+  '#1a237e',
+  '#00695c',
+  '#37474f',
+  '#01579b',
+  '#004d40',
+  '#311b92',
+];
+const ZID_COLORS = [
+  '#880e4f',
+  '#1b5e20',
+  '#4a148c',
+  '#00bfa5',
+  '#006064',
+  '#00897b',
+];
+const ZAU_COLORS = [
+  '#4aa564',
+  '#5674b9',
+  '#ff7f27',
+  '#f06eaa',
+  '#9999ff',
+  '#a4d5ee',
+  '#cccc00',
+  '#f5989d',
+  '#7accc8',
+  '#f26d7d',
+  '#fbaf5d',
+  '#7fd2a8',
+  '#f9ad81',
+  '#fbc98e',
+  '#c2c2c2',
+  '#41b6e6',
+  '#2e8540',
 ];
 
-const CENTER_PREFIX: Record<'zau' | 'zmp' | 'zob', string> = {
+const CENTER_PREFIX: Record<'zau' | 'zmp' | 'zob' | 'zid', string> = {
   zau: 'CHI',
   zmp: 'MSP',
   zob: 'CLE',
+  zid: 'IND',
 };
 
 const staticCorridorCoords: Record<string, [number, number]> = {
@@ -202,14 +231,18 @@ const fetchSectorsData = async () => {
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
 const positions = computed<
-  Record<'zau' | 'zmp' | 'zob', Map<string, PositionInternal>>
+  Record<'zau' | 'zmp' | 'zob' | 'zid', Map<string, PositionInternal>>
 >(() => {
-  const maps: Record<'zau' | 'zmp' | 'zob', Map<string, PositionInternal>> = {
+  const maps: Record<
+    'zau' | 'zmp' | 'zob' | 'zid',
+    Map<string, PositionInternal>
+  > = {
     zau: new Map<string, PositionInternal>(),
     zmp: new Map<string, PositionInternal>(),
     zob: new Map<string, PositionInternal>(),
+    zid: new Map<string, PositionInternal>(),
   };
-  (['zau', 'zmp', 'zob'] as const).forEach((center) => {
+  (['zau', 'zmp', 'zob', 'zid'] as const).forEach((center) => {
     props.positionsData[center].forEach((p) => {
       maps[center].set(String(p.id), { ...p, id: String(p.id) });
     });
@@ -261,9 +294,8 @@ const getOwner = (sectorFeature: any): Owner => {
   const id = String(sectorFeature.properties.id);
   const level = sectorFeature.properties.level as 'high' | 'low';
   const owner = sectorOwner.value[level].get(id);
-  return owner
-    ? { name: owner.name, color: owner.color ?? '#808080' }
-    : { name: 'N/A', color: '#808080' };
+  const color = sectorFeature.properties.ownerColor || '#808080';
+  return owner ? { name: owner.name, color } : { name: 'N/A', color };
 };
 
 // ---------------------------------------------------------------------------
@@ -289,17 +321,24 @@ const averageColors = (colorA: string, colorB: string): string => {
   return '#' + r + g + b;
 };
 
-const colorZauSectors = (raw: any, level: 'high' | 'low') => {
+const colorZauSectors = (
+  raw: any,
+  level: 'high' | 'low',
+  palette: string[],
+) => {
   if (!raw) return { type: 'FeatureCollection', features: [] };
 
   const newSectors = clone(raw);
-  const owners = sectorOwner.value[level];
+  const ownership = props.ownershipData.zau[level];
+  const colorMap = assignColors(ownership, palette);
 
   newSectors.features.forEach((feature: any) => {
     const sectorId = String(feature.properties.id);
-    const owner = owners.get(sectorId);
-    feature.properties.ownerColor = owner ? owner.color : '#808080';
-    feature.properties.isOwned = !!owner;
+    const ownerId = ownership[sectorId];
+    feature.properties.ownerColor = ownerId
+      ? (colorMap[ownerId] ?? '#808080')
+      : '#808080';
+    feature.properties.isOwned = !!ownerId;
   });
 
   const byName = new Map<string, any>(
@@ -352,8 +391,8 @@ const colorZauSectors = (raw: any, level: 'high' | 'low') => {
 const zauColored = computed(() => {
   if (!geojson.value) return null;
   return {
-    high: colorZauSectors(geojson.value.sectors.high, 'high'),
-    low: colorZauSectors(geojson.value.sectors.low, 'low'),
+    high: colorZauSectors(geojson.value.sectors.high, 'high', ZAU_COLORS),
+    low: colorZauSectors(geojson.value.sectors.low, 'low', ZAU_COLORS),
   };
 });
 
@@ -409,6 +448,15 @@ const zmpColored = computed(() => {
   };
 });
 
+const zidColored = computed(() => {
+  if (!geojson.value) return null;
+  const ownership = props.ownershipData.zid ?? {};
+  return {
+    high: colorNeighbor(geojson.value.zid.high, ownership, ZID_COLORS),
+    low: colorNeighbor(geojson.value.zid.low, ownership, ZID_COLORS),
+  };
+});
+
 // ---------------------------------------------------------------------------
 // Style / geometry helpers
 // ---------------------------------------------------------------------------
@@ -457,8 +505,13 @@ const getSectorOwnerInfo = (feature: any) => {
   }
 
   const isZob = 'sector' in feature.properties;
-  const center = isZob ? 'zob' : 'zmp';
-  const ownership = isZob ? props.ownershipData.zob : props.ownershipData.zmp;
+  const isZid = !isZob && props.ownershipData.zid?.[id] !== undefined;
+  const center = isZob ? 'zob' : isZid ? 'zid' : 'zmp';
+  const ownership = isZob
+    ? props.ownershipData.zob
+    : isZid
+      ? props.ownershipData.zid
+      : props.ownershipData.zmp;
   const ownerId = ownership?.[id];
   const owner = ownerId ? positions.value[center].get(String(ownerId)) : null;
   return {
@@ -577,7 +630,7 @@ const geojsonOptions = computed(() => ({
 }));
 
 const buildLegendGroup = (
-  center: 'zau' | 'zmp' | 'zob',
+  center: 'zau' | 'zmp' | 'zob' | 'zid',
   ownership: Record<string, string>,
   colorMap: Record<string, string>,
 ): LegendGroup => {
@@ -612,16 +665,16 @@ const filterOwnershipByLevel = (
 const legendGroups = computed<LegendGroup[]>(() => {
   const groups: LegendGroup[] = [];
 
-  const zauOwners = new Map<string, PositionInternal>();
-  for (const [, owner] of sectorOwner.value[activeLevel.value]) {
-    zauOwners.set(owner.id, owner);
-  }
-  const zauItems: LegendItem[] = [...zauOwners.values()].map((pos) => ({
-    label: `${CENTER_PREFIX.zau}_${pos.id}_CTR - ${pos.frequency}`,
-    color: pos.color ?? '#808080',
-    key: `zau-${pos.id}`,
-  }));
-  if (zauItems.length > 0) groups.push({ title: 'ZAU', items: zauItems });
+  const zauOwnership = props.ownershipData.zau[activeLevel.value] ?? {};
+  const zau = buildLegendGroup(
+    'zau',
+    filterOwnershipByLevel(
+      zauOwnership,
+      geojson.value?.sectors[activeLevel.value].features,
+    ),
+    assignColors(zauOwnership, ZAU_COLORS),
+  );
+  if (zau.items.length > 0) groups.push(zau);
 
   const zobOwnership = props.ownershipData.zob ?? {};
   const zob = buildLegendGroup(
@@ -645,6 +698,17 @@ const legendGroups = computed<LegendGroup[]>(() => {
   );
   if (zmp.items.length > 0) groups.push(zmp);
 
+  const zidOwnership = props.ownershipData.zid ?? {};
+  const zid = buildLegendGroup(
+    'zid',
+    filterOwnershipByLevel(
+      zidOwnership,
+      geojson.value?.zid[activeLevel.value].features,
+    ),
+    assignColors(zidOwnership, ZID_COLORS),
+  );
+  if (zid.items.length > 0) groups.push(zid);
+
   return groups;
 });
 
@@ -659,6 +723,8 @@ const activeBorders = computed<any>(
 const activeZob = computed(() => zobColored.value?.[activeLevel.value] ?? null);
 
 const activeZmp = computed(() => zmpColored.value?.[activeLevel.value] ?? null);
+
+const activeZid = computed(() => zidColored.value?.[activeLevel.value] ?? null);
 
 const pmmBorder = computed<any>(() => geojson.value?.borders.PMM ?? null);
 
@@ -760,6 +826,11 @@ onMounted(async () => {
           <LGeoJson
             v-if="activeZmp"
             :geojson="activeZmp"
+            :options="geojsonOptions" />
+
+          <LGeoJson
+            v-if="activeZid"
+            :geojson="activeZid"
             :options="geojsonOptions" />
         </LMap>
 
