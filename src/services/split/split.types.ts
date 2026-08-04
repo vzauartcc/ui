@@ -47,7 +47,7 @@ export interface IGeojsonFeature {
     name: string;
     area: string;
     special: boolean;
-    level: 'hi' | 'lo';
+    level: 'high' | 'low';
     labelAnchor: number[];
   };
   geometry: {
