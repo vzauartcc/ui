@@ -64,6 +64,7 @@ interface IZOBGeojson {
       properties: {
         id: string;
         sector: string;
+        labelAnchor: number[];
       };
       geometry: {
         type: string;
@@ -80,6 +81,7 @@ interface IZMPGeojson {
       type: string;
       properties: {
         id: string | number;
+        labelAnchor: number[];
       };
       geometry: {
         type: string;
