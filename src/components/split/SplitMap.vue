@@ -44,15 +44,15 @@ interface Owner {
 }
 
 interface OwnedSectors {
-  ownedHi: Set<string>;
-  ownedLo: Set<string>;
+  ownedHigh: Set<string>;
+  ownedLow: Set<string>;
 }
 
 interface LabeledPosition extends PositionInternal {
   displayId: string;
   lat: number;
   lng: number;
-  mapLevel: 'hi' | 'lo';
+  mapLevel: 'high' | 'low';
 }
 
 interface CorridorLabel {
@@ -71,7 +71,7 @@ interface ZmpZobLabel {
   text: string;
   lat: number;
   lng: number;
-  mapLevel: 'hi' | 'lo';
+  mapLevel: 'high' | 'low';
 }
 
 interface SpecialLabel {
@@ -136,10 +136,10 @@ const mapOptions = ref({
   dragging: true,
 });
 
-const activeLevel = ref<'hi' | 'lo'>('hi');
+const activeLevel = ref<'high' | 'low'>('high');
 const levelOptions = [
-  { label: 'High', value: 'hi' },
-  { label: 'Low', value: 'lo' },
+  { label: 'High', value: 'high' },
+  { label: 'Low', value: 'low' },
 ];
 
 const geojson = ref<IGeojsonResponse | null>(null);
@@ -204,7 +204,7 @@ const positionOwned = computed<Map<string, OwnedSectors>>(() => {
   const ensure = (ownerId: string): OwnedSectors => {
     let entry = map.get(ownerId);
     if (!entry) {
-      entry = { ownedHi: new Set<string>(), ownedLo: new Set<string>() };
+      entry = { ownedHigh: new Set<string>(), ownedLow: new Set<string>() };
       map.set(ownerId, entry);
     }
     return entry;
@@ -213,35 +213,35 @@ const positionOwned = computed<Map<string, OwnedSectors>>(() => {
   const { high, low } = props.ownershipData.zau;
   for (const [sectorId, ownerId] of Object.entries(high)) {
     if (positions.value.has(String(ownerId))) {
-      ensure(String(ownerId)).ownedHi.add(String(sectorId));
+      ensure(String(ownerId)).ownedHigh.add(String(sectorId));
     }
   }
   for (const [sectorId, ownerId] of Object.entries(low)) {
     if (positions.value.has(String(ownerId))) {
-      ensure(String(ownerId)).ownedLo.add(String(sectorId));
+      ensure(String(ownerId)).ownedLow.add(String(sectorId));
     }
   }
   return map;
 });
 
 const sectorOwner = computed<{
-  hi: Map<string, PositionInternal>;
-  lo: Map<string, PositionInternal>;
+  high: Map<string, PositionInternal>;
+  low: Map<string, PositionInternal>;
 }>(() => {
-  const hi = new Map<string, PositionInternal>();
-  const lo = new Map<string, PositionInternal>();
+  const high = new Map<string, PositionInternal>();
+  const low = new Map<string, PositionInternal>();
   for (const [positionId, owned] of positionOwned.value) {
     const position = positions.value.get(positionId);
     if (!position) continue;
-    for (const sectorId of owned.ownedHi) hi.set(sectorId, position);
-    for (const sectorId of owned.ownedLo) lo.set(sectorId, position);
+    for (const sectorId of owned.ownedHigh) high.set(sectorId, position);
+    for (const sectorId of owned.ownedLow) low.set(sectorId, position);
   }
-  return { hi, lo };
+  return { high, low };
 });
 
 const getOwner = (sectorFeature: any): Owner => {
   const id = String(sectorFeature.properties.id);
-  const level = sectorFeature.properties.level as 'hi' | 'lo';
+  const level = sectorFeature.properties.level as 'high' | 'low';
   const owner = sectorOwner.value[level].get(id);
   return owner
     ? { name: owner.name, color: owner.color }
@@ -271,7 +271,7 @@ const averageColors = (colorA: string, colorB: string): string => {
   return '#' + r + g + b;
 };
 
-const colorZauSectors = (raw: any, level: 'hi' | 'lo') => {
+const colorZauSectors = (raw: any, level: 'high' | 'low') => {
   if (!raw) return { type: 'FeatureCollection', features: [] };
 
   const newSectors = clone(raw);
@@ -288,7 +288,7 @@ const colorZauSectors = (raw: any, level: 'hi' | 'lo') => {
     newSectors.features.map((f: any) => [f.properties.name, f]),
   );
 
-  if (level === 'hi') {
+  if (level === 'high') {
     const iow = byName.get('IOWA CITY');
     const coton = byName.get('COTON');
     const boiler = byName.get('BOILER');
@@ -334,8 +334,8 @@ const colorZauSectors = (raw: any, level: 'hi' | 'lo') => {
 const zauColored = computed(() => {
   if (!geojson.value) return null;
   return {
-    hi: colorZauSectors(geojson.value.sectors.high, 'hi'),
-    lo: colorZauSectors(geojson.value.sectors.low, 'lo'),
+    high: colorZauSectors(geojson.value.sectors.high, 'high'),
+    low: colorZauSectors(geojson.value.sectors.low, 'low'),
   };
 });
 
@@ -377,8 +377,8 @@ const zobColored = computed(() => {
   if (!geojson.value) return null;
   const ownership = props.ownershipData.zob ?? {};
   return {
-    hi: colorNeighbor(geojson.value.zob.high, ownership, ZOB_COLORS),
-    lo: colorNeighbor(geojson.value.zob.low, ownership, ZOB_COLORS),
+    high: colorNeighbor(geojson.value.zob.high, ownership, ZOB_COLORS),
+    low: colorNeighbor(geojson.value.zob.low, ownership, ZOB_COLORS),
   };
 });
 
@@ -386,8 +386,8 @@ const zmpColored = computed(() => {
   if (!geojson.value) return null;
   const ownership = props.ownershipData.zmp ?? {};
   return {
-    hi: colorNeighbor(geojson.value.zmp.high, ownership, ZMP_COLORS),
-    lo: colorNeighbor(geojson.value.zmp.low, ownership, ZMP_COLORS),
+    high: colorNeighbor(geojson.value.zmp.high, ownership, ZMP_COLORS),
+    low: colorNeighbor(geojson.value.zmp.low, ownership, ZMP_COLORS),
   };
 });
 
@@ -474,34 +474,34 @@ const corridorLabel = (
 const specialSectors = computed(() => {
   const zau = zauColored.value;
   if (!zau) return null;
-  const hi = zau.hi.features;
-  const lo = zau.lo.features;
+  const high = zau.high.features;
+  const low = zau.low.features;
   const byName = (features: any[], name: string) =>
     features.find((f: any) => f.properties.name === name);
 
   const iow = corridorLabel(
-    byName(hi, 'COTON'),
-    byName(hi, 'IOWA CITY'),
+    byName(high, 'COTON'),
+    byName(high, 'IOWA CITY'),
     (a, b) => `${b.name} FL240 - FL329 <br /> ${a.name} FL330+`,
   );
   const bdf = corridorLabel(
-    byName(hi, 'BRADFORD'),
-    byName(hi, 'IOWA CITY'),
+    byName(high, 'BRADFORD'),
+    byName(high, 'IOWA CITY'),
     (a, b) => `${a.name} FL240 - FL330 <br /> ${b.name} FL340+`,
   );
   const bvt = corridorLabel(
-    byName(hi, 'BOILER'),
-    byName(hi, 'GIPPER'),
+    byName(high, 'BOILER'),
+    byName(high, 'GIPPER'),
     (a) => `${a.name} <br /> FL240 - FL290`,
   );
   const eon = corridorLabel(
-    byName(lo, 'PEOTONE'),
-    byName(lo, 'PLANO'),
+    byName(low, 'PEOTONE'),
+    byName(low, 'PLANO'),
     (a, b) => `${a.name} 110 - FL230 <br /> ${b.name} SFC - 100`,
   );
 
-  const pmm = byName(hi, 'PULLMAN');
-  const kubbs = byName(lo, 'KUBBS');
+  const pmm = byName(high, 'PULLMAN');
+  const kubbs = byName(low, 'KUBBS');
   let pmmKubbs: PmmKubbsLabel | null = null;
   let showPmmKubbsSplit = false;
   if (pmm && kubbs) {
@@ -544,8 +544,8 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
   };
 
   for (const [positionId, owned] of positionOwned.value) {
-    if (owned.ownedHi.size > 0) {
-      const firstSectorId = Array.from(owned.ownedHi).find(
+    if (owned.ownedHigh.size > 0) {
+      const firstSectorId = Array.from(owned.ownedHigh).find(
         (n) => Number(n) > 10,
       );
       const feature = findFeature(
@@ -558,16 +558,16 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
         const pos = positions.value.get(positionId)!;
         labeled.push({
           ...pos,
-          displayId: `${pos.id}-hi`,
+          displayId: `${pos.id}-high`,
           lat: latLng[0],
           lng: latLng[1],
-          mapLevel: 'hi',
+          mapLevel: 'high',
         });
       }
     }
 
-    if (owned.ownedLo.size > 0) {
-      const firstSectorId = Array.from(owned.ownedLo).find(
+    if (owned.ownedLow.size > 0) {
+      const firstSectorId = Array.from(owned.ownedLow).find(
         (n) => Number(n) > 10,
       );
       const feature = findFeature(
@@ -580,10 +580,10 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
         const pos = positions.value.get(positionId)!;
         labeled.push({
           ...pos,
-          displayId: `${pos.id}-lo`,
+          displayId: `${pos.id}-low`,
           lat: latLng[0],
           lng: latLng[1],
-          mapLevel: 'lo',
+          mapLevel: 'low',
         });
       }
     }
@@ -623,7 +623,7 @@ const buildZmpZobLabels = (
         text: `${prefix}${positionId}`,
         lat: highAnchor[0]!,
         lng: highAnchor[1]!,
-        mapLevel: 'hi',
+        mapLevel: 'high',
       });
     }
     const lowAnchor = findAnchor(rawLo?.features, positionId);
@@ -632,7 +632,7 @@ const buildZmpZobLabels = (
         text: `${prefix}${positionId}`,
         lat: lowAnchor[0]!,
         lng: lowAnchor[1]!,
-        mapLevel: 'lo',
+        mapLevel: 'low',
       });
     }
   });
@@ -663,8 +663,7 @@ const activeSectors = computed(
 );
 
 const activeBorders = computed<any>(
-  () =>
-    geojson.value?.borders[activeLevel.value === 'hi' ? 'high' : 'low'] ?? null,
+  () => geojson.value?.borders[activeLevel.value] ?? null,
 );
 
 const activeZob = computed(() => zobColored.value?.[activeLevel.value] ?? null);
@@ -696,7 +695,7 @@ const activeSpecialLabels = computed<SpecialLabel[]>(() => {
     labels.push({ key, lat: coords[0], lng: coords[1], html });
   };
 
-  if (activeLevel.value === 'hi') {
+  if (activeLevel.value === 'high') {
     if (special.iow) {
       push('iow', staticCorridorCoords.iowCorridor!, special.iow.text);
     }
