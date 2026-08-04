@@ -328,7 +328,7 @@ const populateActivePositions = (data: IOwnership) => {
   existingPositions.forEach((v) => {
     if (v === defaultSector.id) return;
 
-    const p = currentSplit.value!.positions.find((x) => x.id === v);
+    const p = currentSplit.value!.positions.zau.find((x) => x.id === v);
     if (!p) return;
 
     activePositions.value.push({ id: p.id, name: p.name });
@@ -469,7 +469,7 @@ const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
             </p>
             <div class="grid grid-cols-4 gap-5 items-center">
               <div
-                v-for="position of currentSplit.positions"
+                v-for="position of currentSplit.positions.zau"
                 :key="position.id"
                 class="flex flex-row gap-2.5">
                 <ToggleSwitch
@@ -498,7 +498,7 @@ const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
                 <p class="text-2xl">High</p>
                 <SectorOwnership
                   :geojson="geojson.sectors.high.features"
-                  :allPositions="currentSplit.positions"
+                  :allPositions="currentSplit.positions.zau"
                   :activePositions="activePositions"
                   :ownership="currentSplit.ownership.zau.high"
                   @update:ownership="updateOwnershipHi" />
@@ -514,7 +514,7 @@ const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
                 <p class="text-2xl">Low</p>
                 <SectorOwnership
                   :geojson="geojson.sectors.low.features"
-                  :allPositions="currentSplit.positions"
+                  :allPositions="currentSplit.positions.zau"
                   :activePositions="activePositions"
                   :ownership="currentSplit.ownership.zau.low"
                   @update:ownership="updateOwnershipLo" />

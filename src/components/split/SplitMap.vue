@@ -4,8 +4,8 @@
 import { splitService } from '@/services/split/split.service';
 import type {
   IGeojsonResponse,
+  INeighborPosition,
   IOwnership,
-  IPosition,
 } from '@/services/split/split.types';
 import { LGeoJson, LIcon, LMap, LMarker } from '@vue-leaflet/vue-leaflet';
 import { Icon } from 'leaflet';
@@ -28,10 +28,17 @@ Icon.Default.mergeOptions({
 // Types & constants
 // ---------------------------------------------------------------------------
 
-interface PositionData extends IPosition {
+interface PositionData extends INeighborPosition {
+  color?: string;
   isSpecial?: boolean;
   active?: boolean;
   [key: string]: any;
+}
+
+interface PositionsByCenter {
+  zau: PositionData[];
+  zmp: PositionData[];
+  zob: PositionData[];
 }
 
 interface PositionInternal extends PositionData {
@@ -95,6 +102,12 @@ const ZMP_COLORS = [
   '#000080',
 ];
 
+const CENTER_PREFIX: Record<'zau' | 'zmp' | 'zob', string> = {
+  zau: 'CHI',
+  zmp: 'MSP',
+  zob: 'CLE',
+};
+
 const staticCorridorCoords: Record<string, [number, number]> = {
   iowCorridor: [42.182026, -90.919368],
   bdfSplit: [41.1, -90.4],
@@ -113,7 +126,7 @@ const MAP_BOUNDS: [[number, number], [number, number]] = [
 // ---------------------------------------------------------------------------
 
 const props = defineProps<{
-  positionsData: PositionData[];
+  positionsData: PositionsByCenter;
   ownershipData: IOwnership;
 }>();
 
@@ -188,12 +201,20 @@ const fetchSectorsData = async () => {
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
-const positions = computed<Map<string, PositionInternal>>(() => {
-  const map = new Map<string, PositionInternal>();
-  props.positionsData.forEach((p) => {
-    map.set(String(p.id), { ...p, id: String(p.id) });
+const positions = computed<
+  Record<'zau' | 'zmp' | 'zob', Map<string, PositionInternal>>
+>(() => {
+  const maps: Record<'zau' | 'zmp' | 'zob', Map<string, PositionInternal>> = {
+    zau: new Map<string, PositionInternal>(),
+    zmp: new Map<string, PositionInternal>(),
+    zob: new Map<string, PositionInternal>(),
+  };
+  (['zau', 'zmp', 'zob'] as const).forEach((center) => {
+    props.positionsData[center].forEach((p) => {
+      maps[center].set(String(p.id), { ...p, id: String(p.id) });
+    });
   });
-  return map;
+  return maps;
 });
 
 const positionOwned = computed<Map<string, OwnedSectors>>(() => {
@@ -209,12 +230,12 @@ const positionOwned = computed<Map<string, OwnedSectors>>(() => {
 
   const { high, low } = props.ownershipData.zau;
   for (const [sectorId, ownerId] of Object.entries(high)) {
-    if (positions.value.has(String(ownerId))) {
+    if (positions.value.zau.has(String(ownerId))) {
       ensure(String(ownerId)).ownedHigh.add(String(sectorId));
     }
   }
   for (const [sectorId, ownerId] of Object.entries(low)) {
-    if (positions.value.has(String(ownerId))) {
+    if (positions.value.zau.has(String(ownerId))) {
       ensure(String(ownerId)).ownedLow.add(String(sectorId));
     }
   }
@@ -228,7 +249,7 @@ const sectorOwner = computed<{
   const high = new Map<string, PositionInternal>();
   const low = new Map<string, PositionInternal>();
   for (const [positionId, owned] of positionOwned.value) {
-    const position = positions.value.get(positionId);
+    const position = positions.value.zau.get(positionId);
     if (!position) continue;
     for (const sectorId of owned.ownedHigh) high.set(sectorId, position);
     for (const sectorId of owned.ownedLow) low.set(sectorId, position);
@@ -241,7 +262,7 @@ const getOwner = (sectorFeature: any): Owner => {
   const level = sectorFeature.properties.level as 'high' | 'low';
   const owner = sectorOwner.value[level].get(id);
   return owner
-    ? { name: owner.name, color: owner.color }
+    ? { name: owner.name, color: owner.color ?? '#808080' }
     : { name: 'N/A', color: '#808080' };
 };
 
@@ -430,18 +451,19 @@ const getSectorOwnerInfo = (feature: any) => {
     const owner = sectorOwner.value[level].get(id);
     return {
       id,
-      ownerName: owner?.name ?? 'N/A',
+      callsign: owner ? `${CENTER_PREFIX.zau}_${owner.id}_CTR` : 'N/A',
       ownerColor: owner?.color ?? '#808080',
     };
   }
 
-  const zobOwnerId = props.ownershipData.zob?.[id];
-  const zmpOwnerId = props.ownershipData.zmp?.[id];
-  const ownerId = zobOwnerId ?? zmpOwnerId;
-  const owner = ownerId ? positions.value.get(String(ownerId)) : null;
+  const isZob = 'sector' in feature.properties;
+  const center = isZob ? 'zob' : 'zmp';
+  const ownership = isZob ? props.ownershipData.zob : props.ownershipData.zmp;
+  const ownerId = ownership?.[id];
+  const owner = ownerId ? positions.value[center].get(String(ownerId)) : null;
   return {
     id,
-    ownerName: owner?.name ?? (ownerId ? String(ownerId) : 'N/A'),
+    callsign: owner ? `${CENTER_PREFIX[center]}_${owner.id}_CTR` : 'N/A',
     ownerColor: owner?.color ?? '#808080',
   };
 };
@@ -451,7 +473,7 @@ const onEachFeature = (feature: any, layer: any) => {
     layer.setStyle(drawBorders(feature));
   } else {
     layer.setStyle(getSectorStyle(feature));
-    const { ownerName } = getSectorOwnerInfo(feature);
+    const { callsign } = getSectorOwnerInfo(feature);
     const level = feature.properties.level;
     const isSpecialZauSector =
       (level === 'high' || level === 'low') &&
@@ -460,7 +482,7 @@ const onEachFeature = (feature: any, layer: any) => {
       ? ''
       : `<span class="sector-tooltip-id">Sector ${feature.properties.id}</span>`;
     layer.bindTooltip(
-      `<div class="sector-tooltip">${ownerName}${idHtml}</div>`,
+      `<div class="sector-tooltip">${callsign}${idHtml}</div>`,
       { sticky: true, direction: 'top' },
     );
   }
@@ -555,20 +577,22 @@ const geojsonOptions = computed(() => ({
 }));
 
 const buildLegendGroup = (
-  title: string,
+  center: 'zau' | 'zmp' | 'zob',
   ownership: Record<string, string>,
   colorMap: Record<string, string>,
 ): LegendGroup => {
+  const prefix = CENTER_PREFIX[center];
+  const positionMap = positions.value[center];
   const activePositions = [...new Set(Object.values(ownership))].sort();
   const items: LegendItem[] = activePositions.map((positionId) => {
-    const pos = positions.value.get(String(positionId));
+    const pos = positionMap.get(String(positionId));
     return {
-      label: pos?.name ?? String(positionId),
+      label: `${prefix}_${positionId}_CTR - ${pos?.frequency ?? ''}`,
       color: colorMap[positionId] ?? '#808080',
-      key: `${title}-${positionId}`,
+      key: `${prefix}-${positionId}`,
     };
   });
-  return { title, items };
+  return { title: center.toUpperCase(), items };
 };
 
 const filterOwnershipByLevel = (
@@ -593,15 +617,15 @@ const legendGroups = computed<LegendGroup[]>(() => {
     zauOwners.set(owner.id, owner);
   }
   const zauItems: LegendItem[] = [...zauOwners.values()].map((pos) => ({
-    label: `${pos.name} - ${pos.frequency}`,
-    color: pos.color,
+    label: `${CENTER_PREFIX.zau}_${pos.id}_CTR - ${pos.frequency}`,
+    color: pos.color ?? '#808080',
     key: `zau-${pos.id}`,
   }));
   if (zauItems.length > 0) groups.push({ title: 'ZAU', items: zauItems });
 
   const zobOwnership = props.ownershipData.zob ?? {};
   const zob = buildLegendGroup(
-    'ZOB',
+    'zob',
     filterOwnershipByLevel(
       zobOwnership,
       geojson.value?.zob[activeLevel.value].features,
@@ -612,7 +636,7 @@ const legendGroups = computed<LegendGroup[]>(() => {
 
   const zmpOwnership = props.ownershipData.zmp ?? {};
   const zmp = buildLegendGroup(
-    'ZMP',
+    'zmp',
     filterOwnershipByLevel(
       zmpOwnership,
       geojson.value?.zmp[activeLevel.value].features,
