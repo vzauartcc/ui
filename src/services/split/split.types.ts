@@ -4,8 +4,12 @@ export interface IOwnershipResponse {
 }
 
 export interface IOwnership {
-  high: Record<string, string>;
-  low: Record<string, string>;
+  zau: {
+    high: Record<string, string>;
+    low: Record<string, string>;
+  };
+  zmp: Record<string, string>;
+  zob: Record<string, string>;
 }
 
 export interface IPosition {
