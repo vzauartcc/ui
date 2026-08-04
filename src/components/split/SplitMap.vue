@@ -51,7 +51,7 @@ interface PmmKubbsLabel {
   kubbsText: string;
 }
 
-interface ZmpZobLabel {
+interface NeighborLabel {
   text: string;
   lat: number;
   lng: number;
@@ -356,7 +356,7 @@ const applyOwnership = (ownershipMap: IOwnership) => {
   processLevelOwnership('high');
   processLevelOwnership('low');
   updateSectorColors();
-  processZmpZobOwnership(ownershipMap);
+  processNeighborOwnership(ownershipMap);
 };
 
 // ---------------------------------------------------------------------------
@@ -392,7 +392,7 @@ const colorSectors = (
   return copy;
 };
 
-const processZmpZobOwnership = (ownershipMap: IOwnership) => {
+const processNeighborOwnership = (ownershipMap: IOwnership) => {
   const zmpOwnership = ownershipMap.zmp ?? {};
   const zobOwnership = ownershipMap.zob ?? {};
 
@@ -669,13 +669,13 @@ const labeledPositions = computed<LabeledPosition[]>(() => {
   return labeled;
 });
 
-const buildZmpZobLabels = (
+const buildNeighborLabels = (
   ownership: Record<string, string>,
   prefix: string,
   rawHi: any,
   rawLo: any,
-): ZmpZobLabel[] => {
-  const labels: ZmpZobLabel[] = [];
+): NeighborLabel[] => {
+  const labels: NeighborLabel[] = [];
   const activePositions = [...new Set(Object.values(ownership))].sort();
 
   const findAnchor = (
@@ -717,8 +717,8 @@ const buildZmpZobLabels = (
   return labels;
 };
 
-const zmpLabels = computed<ZmpZobLabel[]>(() =>
-  buildZmpZobLabels(
+const zmpLabels = computed<NeighborLabel[]>(() =>
+  buildNeighborLabels(
     props.ownershipData.zmp ?? {},
     'P',
     rawZmpHiSectors.value,
@@ -726,8 +726,8 @@ const zmpLabels = computed<ZmpZobLabel[]>(() =>
   ),
 );
 
-const zobLabels = computed<ZmpZobLabel[]>(() =>
-  buildZmpZobLabels(
+const zobLabels = computed<NeighborLabel[]>(() =>
+  buildNeighborLabels(
     props.ownershipData.zob ?? {},
     'C',
     rawZobHiSectors.value,
@@ -757,11 +757,11 @@ const activePositionLabels = computed<LabeledPosition[]>(() =>
   ),
 );
 
-const activeZobLabels = computed<ZmpZobLabel[]>(() =>
+const activeZobLabels = computed<NeighborLabel[]>(() =>
   zobLabels.value.filter((label) => label.mapLevel === activeLevel.value),
 );
 
-const activeZmpLabels = computed<ZmpZobLabel[]>(() =>
+const activeZmpLabels = computed<NeighborLabel[]>(() =>
   zmpLabels.value.filter((label) => label.mapLevel === activeLevel.value),
 );
 
