@@ -48,13 +48,6 @@ interface OwnedSectors {
   ownedLow: Set<string>;
 }
 
-interface LabeledPosition extends PositionInternal {
-  displayId: string;
-  lat: number;
-  lng: number;
-  mapLevel: 'high' | 'low';
-}
-
 interface CorridorLabel {
   text: string;
   colorA: string;
@@ -67,18 +60,22 @@ interface PmmKubbsLabel {
   kubbsText: string;
 }
 
-interface ZmpZobLabel {
-  text: string;
-  lat: number;
-  lng: number;
-  mapLevel: 'high' | 'low';
-}
-
 interface SpecialLabel {
   key: string;
   lat: number;
   lng: number;
   html: string;
+}
+
+interface LegendItem {
+  label: string;
+  color: string;
+  key: string;
+}
+
+interface LegendGroup {
+  title: string;
+  items: LegendItem[];
 }
 
 const ZOB_COLORS = [
@@ -425,25 +422,48 @@ const drawBorders = (feature: any) => {
   }
 };
 
+const getSectorOwnerInfo = (feature: any) => {
+  const id = String(feature.properties.id);
+  const level = feature.properties.level as 'high' | 'low' | undefined;
+
+  if (level === 'high' || level === 'low') {
+    const owner = sectorOwner.value[level].get(id);
+    return {
+      id,
+      ownerName: owner?.name ?? 'N/A',
+      ownerColor: owner?.color ?? '#808080',
+    };
+  }
+
+  const zobOwnerId = props.ownershipData.zob?.[id];
+  const zmpOwnerId = props.ownershipData.zmp?.[id];
+  const ownerId = zobOwnerId ?? zmpOwnerId;
+  const owner = ownerId ? positions.value.get(String(ownerId)) : null;
+  return {
+    id,
+    ownerName: owner?.name ?? (ownerId ? String(ownerId) : 'N/A'),
+    ownerColor: owner?.color ?? '#808080',
+  };
+};
+
 const onEachFeature = (feature: any, layer: any) => {
   if (feature.properties.borderType) {
     layer.setStyle(drawBorders(feature));
   } else {
     layer.setStyle(getSectorStyle(feature));
+    const { ownerName } = getSectorOwnerInfo(feature);
+    const level = feature.properties.level;
+    const isSpecialZauSector =
+      (level === 'high' || level === 'low') &&
+      Number(feature.properties.id) < 10;
+    const idHtml = isSpecialZauSector
+      ? ''
+      : `<span class="sector-tooltip-id">Sector ${feature.properties.id}</span>`;
+    layer.bindTooltip(
+      `<div class="sector-tooltip">${ownerName}${idHtml}</div>`,
+      { sticky: true, direction: 'top' },
+    );
   }
-};
-
-const getLabelClass = (position: PositionData) => {
-  let className = 'pos-label-base';
-  if (position.isSpecial) {
-    className += ' spec-label';
-  } else {
-    className += ' pos-label';
-  }
-  if (position.active) {
-    className += ' pos-active';
-  }
-  return className;
 };
 
 // ---------------------------------------------------------------------------
@@ -534,129 +554,75 @@ const geojsonOptions = computed(() => ({
   onEachFeature: onEachFeature,
 }));
 
-const labeledPositions = computed<LabeledPosition[]>(() => {
-  const labeled: LabeledPosition[] = [];
-  const findFeature = (features: any[] | undefined, sectorId: string) => {
-    if (!features) return null;
-    return features.find(
-      (f) => String(f.properties.id) === sectorId && f.properties.labelAnchor,
-    );
-  };
-
-  for (const [positionId, owned] of positionOwned.value) {
-    if (owned.ownedHigh.size > 0) {
-      const firstSectorId = Array.from(owned.ownedHigh).find(
-        (n) => Number(n) > 10,
-      );
-      const feature = findFeature(
-        geojson.value?.sectors.high.features,
-        firstSectorId!,
-      );
-
-      if (feature && feature.properties.labelAnchor) {
-        const latLng = feature.properties.labelAnchor;
-        const pos = positions.value.get(positionId)!;
-        labeled.push({
-          ...pos,
-          displayId: `${pos.id}-high`,
-          lat: latLng[0],
-          lng: latLng[1],
-          mapLevel: 'high',
-        });
-      }
-    }
-
-    if (owned.ownedLow.size > 0) {
-      const firstSectorId = Array.from(owned.ownedLow).find(
-        (n) => Number(n) > 10,
-      );
-      const feature = findFeature(
-        geojson.value?.sectors.low.features,
-        firstSectorId!,
-      );
-
-      if (feature && feature.properties.labelAnchor) {
-        const latLng = feature.properties.labelAnchor;
-        const pos = positions.value.get(positionId)!;
-        labeled.push({
-          ...pos,
-          displayId: `${pos.id}-low`,
-          lat: latLng[0],
-          lng: latLng[1],
-          mapLevel: 'low',
-        });
-      }
-    }
-  }
-
-  return labeled;
-});
-
-const buildZmpZobLabels = (
+const buildLegendGroup = (
+  title: string,
   ownership: Record<string, string>,
-  prefix: string,
-  rawHi: any,
-  rawLo: any,
-): ZmpZobLabel[] => {
-  const labels: ZmpZobLabel[] = [];
+  colorMap: Record<string, string>,
+): LegendGroup => {
   const activePositions = [...new Set(Object.values(ownership))].sort();
-
-  const findAnchor = (
-    features: any[] | undefined,
-    positionId: string,
-  ): number[] | null => {
-    if (!features) return null;
-    for (const feature of features) {
-      const polygonId = String(feature.properties.id);
-      const anchor = feature.properties.labelAnchor;
-      if (ownership[polygonId] === positionId && anchor) {
-        return anchor;
-      }
-    }
-    return null;
-  };
-
-  activePositions.forEach((positionId) => {
-    const highAnchor = findAnchor(rawHi?.features, positionId);
-    if (highAnchor) {
-      labels.push({
-        text: `${prefix}${positionId}`,
-        lat: highAnchor[0]!,
-        lng: highAnchor[1]!,
-        mapLevel: 'high',
-      });
-    }
-    const lowAnchor = findAnchor(rawLo?.features, positionId);
-    if (lowAnchor) {
-      labels.push({
-        text: `${prefix}${positionId}`,
-        lat: lowAnchor[0]!,
-        lng: lowAnchor[1]!,
-        mapLevel: 'low',
-      });
-    }
+  const items: LegendItem[] = activePositions.map((positionId) => {
+    const pos = positions.value.get(String(positionId));
+    return {
+      label: pos?.name ?? String(positionId),
+      color: colorMap[positionId] ?? '#808080',
+      key: `${title}-${positionId}`,
+    };
   });
-
-  return labels;
+  return { title, items };
 };
 
-const zmpLabels = computed<ZmpZobLabel[]>(() =>
-  buildZmpZobLabels(
-    props.ownershipData.zmp ?? {},
-    'P',
-    geojson.value?.zmp.high,
-    geojson.value?.zmp.low,
-  ),
-);
+const filterOwnershipByLevel = (
+  ownership: Record<string, string>,
+  features: any[] | undefined,
+): Record<string, string> => {
+  if (!features) return {};
+  const result: Record<string, string> = {};
+  for (const feature of features) {
+    const sectorId = String(feature.properties.id);
+    const ownerId = ownership[sectorId];
+    if (ownerId !== undefined) result[sectorId] = ownerId;
+  }
+  return result;
+};
 
-const zobLabels = computed<ZmpZobLabel[]>(() =>
-  buildZmpZobLabels(
-    props.ownershipData.zob ?? {},
-    'C',
-    geojson.value?.zob.high,
-    geojson.value?.zob.low,
-  ),
-);
+const legendGroups = computed<LegendGroup[]>(() => {
+  const groups: LegendGroup[] = [];
+
+  const zauOwners = new Map<string, PositionInternal>();
+  for (const [, owner] of sectorOwner.value[activeLevel.value]) {
+    zauOwners.set(owner.id, owner);
+  }
+  const zauItems: LegendItem[] = [...zauOwners.values()].map((pos) => ({
+    label: `${pos.name} - ${pos.frequency}`,
+    color: pos.color,
+    key: `zau-${pos.id}`,
+  }));
+  if (zauItems.length > 0) groups.push({ title: 'ZAU', items: zauItems });
+
+  const zobOwnership = props.ownershipData.zob ?? {};
+  const zob = buildLegendGroup(
+    'ZOB',
+    filterOwnershipByLevel(
+      zobOwnership,
+      geojson.value?.zob[activeLevel.value].features,
+    ),
+    assignColors(zobOwnership, ZOB_COLORS),
+  );
+  if (zob.items.length > 0) groups.push(zob);
+
+  const zmpOwnership = props.ownershipData.zmp ?? {};
+  const zmp = buildLegendGroup(
+    'ZMP',
+    filterOwnershipByLevel(
+      zmpOwnership,
+      geojson.value?.zmp[activeLevel.value].features,
+    ),
+    assignColors(zmpOwnership, ZMP_COLORS),
+  );
+  if (zmp.items.length > 0) groups.push(zmp);
+
+  return groups;
+});
 
 const activeSectors = computed(
   () => zauColored.value?.[activeLevel.value] ?? null,
@@ -671,20 +637,6 @@ const activeZob = computed(() => zobColored.value?.[activeLevel.value] ?? null);
 const activeZmp = computed(() => zmpColored.value?.[activeLevel.value] ?? null);
 
 const pmmBorder = computed<any>(() => geojson.value?.borders.PMM ?? null);
-
-const activePositionLabels = computed<LabeledPosition[]>(() =>
-  labeledPositions.value.filter(
-    (label) => label.mapLevel === activeLevel.value,
-  ),
-);
-
-const activeZobLabels = computed<ZmpZobLabel[]>(() =>
-  zobLabels.value.filter((label) => label.mapLevel === activeLevel.value),
-);
-
-const activeZmpLabels = computed<ZmpZobLabel[]>(() =>
-  zmpLabels.value.filter((label) => label.mapLevel === activeLevel.value),
-);
 
 const activeSpecialLabels = computed<SpecialLabel[]>(() => {
   const labels: SpecialLabel[] = [];
@@ -743,74 +695,65 @@ onMounted(async () => {
           :allowEmpty="false" />
       </div>
 
-      <LMap
-        :zoom="zoom"
-        :center="center"
-        :useGlobalLeaflet="false"
-        :options="mapOptions"
-        class="leaflet-map"
-        style="width: 100%; aspect-ratio: 16 / 9"
-        @ready="onMapReady">
-        <LGeoJson
-          v-if="activeSectors && activeSectors.features.length"
-          :geojson="activeSectors"
-          :options="geojsonOptions" />
+      <div class="map-wrapper">
+        <LMap
+          :zoom="zoom"
+          :center="center"
+          :useGlobalLeaflet="false"
+          :options="mapOptions"
+          class="leaflet-map"
+          style="width: 100%; aspect-ratio: 16 / 9"
+          @ready="onMapReady">
+          <LGeoJson
+            v-if="activeSectors && activeSectors.features.length"
+            :geojson="activeSectors"
+            :options="geojsonOptions" />
 
-        <div v-for="pos in activePositionLabels" :key="pos.displayId">
-          <LMarker :lat-lng="[pos.lat, pos.lng]">
+          <LMarker
+            v-for="label in activeSpecialLabels"
+            :key="label.key"
+            :lat-lng="[label.lat, label.lng]">
             <LIcon :icon-anchor="[0, 0]" className="">
-              <div :class="getLabelClass(pos)">
-                {{ pos.name }} ({{ pos.id }})
-              </div>
+              <div class="spec-label" v-html="label.html"></div>
             </LIcon>
           </LMarker>
+
+          <LGeoJson
+            v-if="activeBorders"
+            :geojson="activeBorders"
+            :options="geojsonOptions" />
+
+          <LGeoJson
+            v-if="specialSectors?.showPmmKubbsSplit"
+            :geojson="pmmBorder"
+            :options="geojsonOptions" />
+
+          <LGeoJson
+            v-if="activeZob"
+            :geojson="activeZob"
+            :options="geojsonOptions" />
+
+          <LGeoJson
+            v-if="activeZmp"
+            :geojson="activeZmp"
+            :options="geojsonOptions" />
+        </LMap>
+
+        <div class="map-legend">
+          <div
+            v-for="group in legendGroups"
+            :key="group.title"
+            class="legend-group">
+            <div class="legend-group-title">{{ group.title }}</div>
+            <div v-for="item in group.items" :key="item.key" class="legend-row">
+              <span
+                class="legend-swatch"
+                :style="{ backgroundColor: item.color }"></span>
+              <span class="legend-label">{{ item.label }}</span>
+            </div>
+          </div>
         </div>
-
-        <LMarker
-          v-for="label in activeSpecialLabels"
-          :key="label.key"
-          :lat-lng="[label.lat, label.lng]">
-          <LIcon :icon-anchor="[0, 0]" className="">
-            <div class="spec-label" v-html="label.html"></div>
-          </LIcon>
-        </LMarker>
-
-        <LGeoJson
-          v-if="activeBorders"
-          :geojson="activeBorders"
-          :options="geojsonOptions" />
-
-        <LGeoJson
-          v-if="specialSectors?.showPmmKubbsSplit"
-          :geojson="pmmBorder"
-          :options="geojsonOptions" />
-
-        <LGeoJson
-          v-if="activeZob"
-          :geojson="activeZob"
-          :options="geojsonOptions" />
-
-        <LGeoJson
-          v-if="activeZmp"
-          :geojson="activeZmp"
-          :options="geojsonOptions" />
-
-        <div v-for="label in activeZobLabels" :key="`zob-${label.text}`">
-          <LMarker :lat-lng="[label.lat, label.lng]">
-            <LIcon :icon-anchor="[0, 0]" className="">
-              <div class="neighbor-label">{{ label.text }}</div>
-            </LIcon>
-          </LMarker>
-        </div>
-
-        <div v-for="label in activeZmpLabels" :key="`zmp-${label.text}`">
-          <LMarker :lat-lng="[label.lat, label.lng]">
-            <LIcon :icon-anchor="[0, 0]" className="">
-              <div class="neighbor-label">{{ label.text }}</div>
-            </LIcon>
-          </LMarker>
-        </div>
-      </LMap>
+      </div>
     </template>
   </Card>
 </template>
@@ -825,30 +768,71 @@ onMounted(async () => {
   font-size: 10px;
 }
 
-.pos-label-base {
-  text-align: center;
-  color: black;
-  font-family: 'Roboto', Arial, sans-serif;
-  font-weight: bold;
-  font-size: 20px;
-  line-height: 1;
-  width: min-content;
-}
-
-.neighbor-label {
-  text-align: center;
-  color: black;
-  font-family: 'Roboto', Arial, sans-serif;
-  font-weight: bold;
-  font-size: 18px;
-  line-height: 1;
-  width: min-content;
-}
-
 .level-toggle {
   display: flex;
   justify-content: center;
   margin-bottom: 0.5rem;
+}
+
+.map-wrapper {
+  position: relative;
+}
+
+.map-legend {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+.legend-group-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #3f3f3f;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-swatch {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+}
+
+.legend-label {
+  font-size: 12px;
+  color: #1f1f1f;
+  white-space: nowrap;
+}
+
+.sector-tooltip {
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #1f1f1f;
+  text-align: center;
+}
+
+.sector-tooltip-id {
+  display: block;
+  font-weight: normal;
+  color: #5a5a5a;
 }
 
 .p-card-title,
