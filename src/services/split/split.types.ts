@@ -1,5 +1,9 @@
 export interface IOwnershipResponse {
-  positions: IPosition[];
+  positions: {
+    zau: IZauPosition[];
+    zmp: INeighborPosition[];
+    zob: INeighborPosition[];
+  };
   ownership: IOwnership;
 }
 
@@ -12,10 +16,13 @@ export interface IOwnership {
   zob: Record<string, string>;
 }
 
-export interface IPosition {
+export interface INeighborPosition {
   id: string;
   name: string;
   frequency: string;
+}
+
+export interface IZauPosition extends INeighborPosition {
   color: string; // Hex color
 }
 
