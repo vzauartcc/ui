@@ -507,9 +507,12 @@ const getSectorOwnerInfo = (feature: any, center?: 'zob' | 'zmp' | 'zid') => {
   const ownership = props.ownershipData[center!];
   const ownerId = ownership?.[id];
   const owner = ownerId ? positions.value[center!].get(String(ownerId)) : null;
+  const ownerName = owner?.name ?? '';
   return {
     id,
-    callsign: owner ? `${CENTER_PREFIX[center!]}_${owner.id}_CTR` : 'N/A',
+    callsign: owner
+      ? `${CENTER_PREFIX[center!]}_${owner.id}_CTR - ${ownerName}`
+      : 'N/A',
     ownerColor: owner?.color ?? '#808080',
   };
 };
