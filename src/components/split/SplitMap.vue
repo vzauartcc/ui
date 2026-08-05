@@ -40,6 +40,7 @@ interface PositionsByCenter {
   zmp: PositionData[];
   zob: PositionData[];
   zid: PositionData[];
+  zkc: PositionData[];
 }
 
 interface PositionInternal extends PositionData {
@@ -110,6 +111,14 @@ const ZID_COLORS = [
   '#006064',
   '#00897b',
 ];
+const ZKC_COLORS = [
+  '#7c3aed',
+  '#84cc16',
+  '#06b6d4',
+  '#a855f7',
+  '#db2777',
+  '#d946ef',
+];
 const ZAU_COLORS = [
   '#4aa564',
   '#5674b9',
@@ -130,11 +139,12 @@ const ZAU_COLORS = [
   '#2e8540',
 ];
 
-const CENTER_PREFIX: Record<'zau' | 'zmp' | 'zob' | 'zid', string> = {
+const CENTER_PREFIX: Record<'zau' | 'zmp' | 'zob' | 'zid' | 'zkc', string> = {
   zau: 'CHI',
   zmp: 'MSP',
   zob: 'CLE',
   zid: 'IND',
+  zkc: 'KC',
 };
 
 const staticCorridorCoords: Record<string, [number, number]> = {
@@ -231,18 +241,19 @@ const fetchSectorsData = async () => {
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
 const positions = computed<
-  Record<'zau' | 'zmp' | 'zob' | 'zid', Map<string, PositionInternal>>
+  Record<'zau' | 'zmp' | 'zob' | 'zid' | 'zkc', Map<string, PositionInternal>>
 >(() => {
   const maps: Record<
-    'zau' | 'zmp' | 'zob' | 'zid',
+    'zau' | 'zmp' | 'zob' | 'zid' | 'zkc',
     Map<string, PositionInternal>
   > = {
     zau: new Map<string, PositionInternal>(),
     zmp: new Map<string, PositionInternal>(),
     zob: new Map<string, PositionInternal>(),
     zid: new Map<string, PositionInternal>(),
+    zkc: new Map<string, PositionInternal>(),
   };
-  (['zau', 'zmp', 'zob', 'zid'] as const).forEach((center) => {
+  (['zau', 'zmp', 'zob', 'zid', 'zkc'] as const).forEach((center) => {
     props.positionsData[center].forEach((p) => {
       maps[center].set(String(p.id), { ...p, id: String(p.id) });
     });
@@ -466,6 +477,15 @@ const zidColored = computed(() => {
   };
 });
 
+const zkcColored = computed(() => {
+  if (!geojson.value) return null;
+  const ownership = props.ownershipData.zkc ?? {};
+  return {
+    high: colorNeighbor(geojson.value.zkc.high, ownership, ZKC_COLORS),
+    low: colorNeighbor(geojson.value.zkc.low, ownership, ZKC_COLORS),
+  };
+});
+
 // ---------------------------------------------------------------------------
 // Style / geometry helpers
 // ---------------------------------------------------------------------------
@@ -500,7 +520,10 @@ const drawBorders = (feature: any) => {
   }
 };
 
-const getSectorOwnerInfo = (feature: any, center?: 'zob' | 'zmp' | 'zid') => {
+const getSectorOwnerInfo = (
+  feature: any,
+  center?: 'zob' | 'zmp' | 'zid' | 'zkc',
+) => {
   const id = String(feature.properties.id);
   const level = feature.properties.level as 'high' | 'low' | undefined;
 
@@ -630,7 +653,7 @@ const specialSectors = computed(() => {
 // ---------------------------------------------------------------------------
 
 const makeOnEachFeature =
-  (center: 'zob' | 'zmp' | 'zid') => (feature: any, layer: any) => {
+  (center: 'zob' | 'zmp' | 'zid' | 'zkc') => (feature: any, layer: any) => {
     if (feature.properties.borderType) {
       layer.setStyle(drawBorders(feature));
     } else {
@@ -659,6 +682,10 @@ const zidOptions = {
   style: getSectorStyle,
   onEachFeature: makeOnEachFeature('zid'),
 };
+const zkcOptions = {
+  style: getSectorStyle,
+  onEachFeature: makeOnEachFeature('zkc'),
+};
 
 const geojsonOptions = computed(() => ({
   style: getSectorStyle,
@@ -666,7 +693,7 @@ const geojsonOptions = computed(() => ({
 }));
 
 const buildLegendGroup = (
-  center: 'zau' | 'zmp' | 'zob' | 'zid',
+  center: 'zau' | 'zmp' | 'zob' | 'zid' | 'zkc',
   ownership: Record<string, string>,
   colorMap: Record<string, string>,
 ): LegendGroup => {
@@ -745,6 +772,17 @@ const legendGroups = computed<LegendGroup[]>(() => {
   );
   if (zid.items.length > 0) groups.push(zid);
 
+  const zkcOwnership = props.ownershipData.zkc ?? {};
+  const zkc = buildLegendGroup(
+    'zkc',
+    filterOwnershipByLevel(
+      zkcOwnership,
+      geojson.value?.zkc[activeLevel.value].features,
+    ),
+    assignColors(zkcOwnership, ZKC_COLORS),
+  );
+  if (zkc.items.length > 0) groups.push(zkc);
+
   return groups;
 });
 
@@ -761,6 +799,7 @@ const activeZob = computed(() => zobColored.value?.[activeLevel.value] ?? null);
 const activeZmp = computed(() => zmpColored.value?.[activeLevel.value] ?? null);
 
 const activeZid = computed(() => zidColored.value?.[activeLevel.value] ?? null);
+const activeZkc = computed(() => zkcColored.value?.[activeLevel.value] ?? null);
 
 const pmmBorder = computed<any>(() => geojson.value?.borders.PMM ?? null);
 
@@ -868,6 +907,11 @@ onMounted(async () => {
             v-if="activeZid"
             :geojson="activeZid"
             :options="zidOptions" />
+
+          <LGeoJson
+            v-if="activeZkc"
+            :geojson="activeZkc"
+            :options="zkcOptions" />
         </LMap>
 
         <div class="map-legend">

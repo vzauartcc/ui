@@ -4,6 +4,7 @@ export interface IOwnershipResponse {
     zmp: ISplitPosition[];
     zob: ISplitPosition[];
     zid: ISplitPosition[];
+    zkc: ISplitPosition[];
   };
   ownership: IOwnership;
 }
@@ -16,6 +17,7 @@ export interface IOwnership {
   zmp: Record<string, string>;
   zob: Record<string, string>;
   zid: Record<string, string>;
+  zkc: Record<string, string>;
 }
 
 export interface ISplitPosition {
@@ -39,6 +41,10 @@ export interface IGeojsonResponse {
     low: INeighborGeojson;
   };
   zid: {
+    high: INeighborGeojson;
+    low: INeighborGeojson;
+  };
+  zkc: {
     high: INeighborGeojson;
     low: INeighborGeojson;
   };
