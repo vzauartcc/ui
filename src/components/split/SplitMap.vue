@@ -324,13 +324,12 @@ const averageColors = (colorA: string, colorB: string): string => {
 const colorZauSectors = (
   raw: any,
   level: 'high' | 'low',
-  palette: string[],
+  colorMap: Record<string, string>,
 ) => {
   if (!raw) return { type: 'FeatureCollection', features: [] };
 
   const newSectors = clone(raw);
   const ownership = props.ownershipData.zau[level];
-  const colorMap = assignColors(ownership, palette);
 
   newSectors.features.forEach((feature: any) => {
     const sectorId = String(feature.properties.id);
@@ -388,11 +387,21 @@ const colorZauSectors = (
   return newSectors;
 };
 
+// Unified ZAU color map across both high+low levels so same position gets same color
+const zauColorMap = computed<Record<string, string>>(() => {
+  const allOwnership: Record<string, string> = {
+    ...props.ownershipData.zau.high,
+    ...props.ownershipData.zau.low,
+  };
+  return assignColors(allOwnership, ZAU_COLORS);
+});
+
 const zauColored = computed(() => {
   if (!geojson.value) return null;
+  const colorMap = zauColorMap.value;
   return {
-    high: colorZauSectors(geojson.value.sectors.high, 'high', ZAU_COLORS),
-    low: colorZauSectors(geojson.value.sectors.low, 'low', ZAU_COLORS),
+    high: colorZauSectors(geojson.value.sectors.high, 'high', colorMap),
+    low: colorZauSectors(geojson.value.sectors.low, 'low', colorMap),
   };
 });
 
@@ -699,7 +708,7 @@ const legendGroups = computed<LegendGroup[]>(() => {
       zauOwnership,
       geojson.value?.sectors[activeLevel.value].features,
     ),
-    assignColors(zauOwnership, ZAU_COLORS),
+    zauColorMap.value,
   );
   if (zau.items.length > 0) groups.push(zau);
 
