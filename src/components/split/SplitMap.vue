@@ -4,8 +4,8 @@
 import { splitService } from '@/services/split/split.service';
 import type {
   IGeojsonResponse,
-  ISplitPosition,
   IOwnership,
+  ISplitPosition,
 } from '@/services/split/split.types';
 import { LGeoJson, LIcon, LMap, LMarker } from '@vue-leaflet/vue-leaflet';
 import { Icon } from 'leaflet';
@@ -49,6 +49,7 @@ interface PositionInternal extends PositionData {
 
 interface Owner {
   name: string;
+  id: string;
   color: string;
 }
 
@@ -149,8 +150,8 @@ const CENTER_PREFIX: Record<'zau' | 'zmp' | 'zob' | 'zid' | 'zkc', string> = {
 
 const staticCorridorCoords: Record<string, [number, number]> = {
   iowCorridor: [42.182026, -90.919368],
-  bdfSplit: [41.1, -90.4],
-  bvtCorridor: [41.375229, -88.363288],
+  bdfSplit: [40.9, -90.4],
+  bvtCorridor: [41.375229, -88.163288],
   eonLow: [41.120992, -88.302134],
   pmmKubbs: [42.77505, -86.045098],
 };
@@ -306,7 +307,9 @@ const getOwner = (sectorFeature: any): Owner => {
   const level = sectorFeature.properties.level as 'high' | 'low';
   const owner = sectorOwner.value[level].get(id);
   const color = sectorFeature.properties.ownerColor || '#808080';
-  return owner ? { name: owner.name, color } : { name: 'N/A', color };
+  return owner
+    ? { id, name: owner.name, color }
+    : { id: '0', name: 'N/A', color };
 };
 
 // ---------------------------------------------------------------------------
@@ -605,22 +608,23 @@ const specialSectors = computed(() => {
   const iow = corridorLabel(
     byName(high, 'COTON'),
     byName(high, 'IOWA CITY'),
-    (a, b) => `${b.name} FL240 - FL329 <br /> ${a.name} FL330+`,
+    (a, b) => `${b.name} ${b.id} FL240 - FL329 <br /> ${a.name} ${a.id} FL330+`,
   );
   const bdf = corridorLabel(
     byName(high, 'BRADFORD'),
     byName(high, 'IOWA CITY'),
-    (a, b) => `${a.name} FL240 - FL330 <br /> ${b.name} FL340+`,
+    (a, b) => `${a.name} ${a.id} FL240 - FL330 <br /> ${b.name} ${b.id} FL340+`,
   );
   const bvt = corridorLabel(
     byName(high, 'BOILER'),
     byName(high, 'GIPPER'),
-    (a) => `${a.name} <br /> FL240 - FL290`,
+    (a) => `${a.name} ${a.id} <br /> FL240 - FL290`,
   );
   const eon = corridorLabel(
     byName(low, 'PEOTONE'),
     byName(low, 'PLANO'),
-    (a, b) => `${a.name} 110 - FL230 <br /> ${b.name} SFC - 100`,
+    (a, b) =>
+      `${a.name} ${a.id} 110 - FL230 <br /> ${b.name} ${b.id} SFC - 100`,
   );
 
   const pmm = byName(high, 'PULLMAN');
@@ -639,8 +643,8 @@ const specialSectors = computed(() => {
     ) {
       showPmmKubbsSplit = true;
       pmmKubbs = {
-        pmmText: `${ownerPMM.name} FL200+`,
-        kubbsText: `${ownerKUBBS.name} <br /> SFC - FL190`,
+        pmmText: `${ownerPMM.name} ${ownerPMM.id} FL200+`,
+        kubbsText: `${ownerKUBBS.name} ${ownerKUBBS.id} <br /> SFC - FL190`,
       };
     }
   }
