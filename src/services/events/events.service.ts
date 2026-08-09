@@ -47,6 +47,7 @@ export const eventService = {
           requiresEventEndorsement: endorsementRequired,
           fileName: fileData.name,
           fileType: fileData.type,
+          fileSize: fileData.size,
         },
       })
       .json();
@@ -72,6 +73,7 @@ export const eventService = {
           requiresEventEndorsement: endorsementRequired,
           fileName: fileData?.name || '',
           fileType: fileData?.type || '',
+          fileSize: fileData?.size,
         },
       })
       .json();
