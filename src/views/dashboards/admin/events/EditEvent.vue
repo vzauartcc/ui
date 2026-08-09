@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SingleFileUpload from '@/components/admin/SingleFileUpload.vue';
 import { eventService } from '@/services/events/events.service';
 import type { IEvent, IPosition } from '@/services/events/events.types';
 import { s3Service } from '@/services/s3.service';
@@ -19,7 +20,6 @@ import Checkbox from 'primevue/checkbox';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import DatePicker from 'primevue/datepicker';
-import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
@@ -113,12 +113,6 @@ const resolver = ({ values }: FormResolverOptions) => {
     values,
     errors,
   };
-};
-
-const onFileSelect = (event: FileUploadSelectEvent) => {
-  if (event.files && event.files.length > 0) {
-    fileData.value = event.files[0];
-  }
 };
 
 const deletePosition = (index: number) => {
@@ -340,50 +334,10 @@ const minEndTime = (startTime?: string | Date) => {
             </div>
           </FormField>
 
-          <FileUpload
-            :maxFileSize="100000000000"
-            :fileLimit="1"
-            :auto="false"
-            @select="onFileSelect">
-            <template #header="{ chooseCallback, files }">
-              <Button
-                @click="chooseCallback()"
-                label="Choose"
-                :disabled="files.length > 0" />
-            </template>
-            <template #empty>
-              <div class="flex items-center justify-center flex-col">
-                <Icon
-                  icon="heroicons:cloud-arrow-up"
-                  class="no-pointer text-6xl" />
-                <p class="mt-6 mb-0">
-                  Drag and drop file here to replace upload.
-                </p>
-              </div>
-            </template>
-            <template #content="{ files }">
-              <div class="flex flex-wrap gap-4 w-full">
-                <div
-                  v-if="files.length === 0"
-                  class="p-8 rounded-border flex flex-col border border-surface items-center gap-4 w-full">
-                  <span
-                    class="font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
-                    {{ eventData.bannerUrl }}
-                  </span>
-                </div>
-                <div
-                  v-else
-                  v-for="tmpFile of files"
-                  :key="tmpFile.name + tmpFile.type + tmpFile.size"
-                  class="p-8 rounded-border flex flex-col border border-surface items-center gap-4 w-full">
-                  <span
-                    class="font-semibold text-ellipsis whitespace-nowrap overflow-hidden"
-                    >{{ tmpFile.name }}</span
-                  >
-                </div>
-              </div>
-            </template>
-          </FileUpload>
+          <SingleFileUpload
+            v-model="fileData"
+            :fileName="eventData.bannerUrl"
+            :maxFileSize="5 * 1024 * 1024" />
         </div>
 
         <Card class="my-2" v-if="eventData._id">

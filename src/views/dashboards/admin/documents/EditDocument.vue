@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import SingleFileUpload from '@/components/admin/SingleFileUpload.vue';
 import RichEditor from '@/components/RichEditor.vue';
 import { filesService } from '@/services/files/files.service';
 import type { IDocument } from '@/services/files/files.types';
 import { s3Service } from '@/services/s3.service';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
-import { Icon } from '@iconify/vue';
 import {
   Form,
   FormField,
@@ -14,7 +14,6 @@ import {
 } from '@primevue/forms';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
@@ -23,7 +22,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import RadioButton from 'primevue/radiobutton';
 import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, useTemplateRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
@@ -34,6 +33,9 @@ const slug = Array.isArray(route.params.slug)
 const router = useRouter();
 
 const fileData = ref<File | null>(null);
+
+const singleFileUpload =
+  useTemplateRef<InstanceType<typeof SingleFileUpload>>('singleFileUpload');
 
 const typeOptions = ref([
   {
@@ -118,16 +120,21 @@ const resolver = ({ values }: FormResolverOptions) => {
   };
 };
 
-const onFileSelect = (event: FileUploadSelectEvent) => {
-  if (event.files && event.files.length > 0) {
-    fileData.value = event.files[0];
-  }
-};
-
 const onSubmit = async (event: FormSubmitEvent) => {
   if (!event.valid) return;
 
   const { values } = event;
+
+  if (
+    values.type === 'file' &&
+    (singleFileUpload.value?.getFileCount() ?? 0) > 1
+  ) {
+    toastError(
+      'Invalid selection!',
+      'Only one file can be uploaded at a time.',
+    );
+    return;
+  }
 
   try {
     if (file.value!._id) {
@@ -271,51 +278,12 @@ const uploadDocument = async (url: string) => {
             >
           </FormField>
 
-          <FileUpload
+          <SingleFileUpload
             v-else
-            :maxFileSize="100000000000"
-            :fileLimit="1"
-            :auto="false"
-            @select="onFileSelect">
-            <template #header="{ chooseCallback, files }">
-              <Button
-                @click="chooseCallback()"
-                label="Choose"
-                :disabled="files.length > 0" />
-            </template>
-            <template #empty>
-              <div class="flex items-center justify-center flex-col">
-                <Icon
-                  icon="heroicons:cloud-arrow-up"
-                  class="no-pointer text-6xl" />
-                <p class="mt-6 mb-0">
-                  Drag and drop file here to replace upload.
-                </p>
-              </div>
-            </template>
-            <template #content="{ files }">
-              <div class="flex flex-wrap gap-4 w-full">
-                <div
-                  v-if="files.length === 0"
-                  class="p-8 rounded-border flex flex-col border border-surface items-center gap-4 w-full">
-                  <span
-                    class="font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
-                    {{ file.fileName }}
-                  </span>
-                </div>
-                <div
-                  v-else
-                  v-for="tmpFile of files"
-                  :key="tmpFile.name + tmpFile.type + tmpFile.size"
-                  class="p-8 rounded-border flex flex-col border border-surface items-center gap-4 w-full">
-                  <span
-                    class="font-semibold text-ellipsis whitespace-nowrap overflow-hidden"
-                    >{{ tmpFile.name }}</span
-                  >
-                </div>
-              </div>
-            </template>
-          </FileUpload>
+            v-model="fileData"
+            :fileName="file.fileName"
+            :maxFileSize="500 * 1024 * 1024"
+            ref="singleFileUpload" />
 
           <template v-if="uploadProgress >= 0">
             <span>Uploading</span>
