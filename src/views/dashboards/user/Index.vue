@@ -68,9 +68,11 @@ const unlinkDiscord = async () => {
     await userService.unlinkDiscord();
 
     toastSuccess(
-      'Discord Account Unlink!',
+      'Discord Account Unlinked!',
       'Your Discord account has been unlinked.',
     );
+
+    await userStore.getUser(true);
   } catch (e) {
     console.error('error unlinking discord', e);
 

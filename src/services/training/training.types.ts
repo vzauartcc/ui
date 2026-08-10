@@ -42,6 +42,7 @@ export interface ITrainingSessionsResponse {
 export const sessionLocation = ['Classroom', 'Live Network', 'Sweatbox'];
 
 export const sessionProgress = [
+  '', // Progress starts a 1
   'No Progress',
   'Little Progress',
   'Average Progress',

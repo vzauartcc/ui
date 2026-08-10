@@ -228,8 +228,6 @@ const login = () => {
           v-else
           :href="item.url"
           target="_blank"
-          noopener
-          noreferrer
           rel="noopener noreferrer"
           v-bind="props.action">
           <span
@@ -302,8 +300,6 @@ const login = () => {
                 v-else
                 :href="item.url"
                 target="_blank"
-                noopener
-                noreferrer
                 rel="noreferrer noopener"
                 v-bind="props.action">
                 <span>{{ item.label }}</span>

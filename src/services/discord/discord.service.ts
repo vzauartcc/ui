@@ -8,6 +8,9 @@ import type {
 } from './discord.types';
 
 export const discordService = {
+  linkDiscord(code: string) {
+    return zauApi.post('discord/info', { json: { code: code } }).json();
+  },
   getServers(): Promise<IServerList[]> {
     return zauApi.get('discord/bot/all-guilds').json();
   },

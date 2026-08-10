@@ -34,6 +34,7 @@ export const filesService = {
           type: data.type,
           fileName: fileData?.name || '',
           fileType: fileData?.type || '',
+          fileSize: fileData?.size || 0,
         },
       })
       .json();
@@ -51,6 +52,7 @@ export const filesService = {
           type: data.type,
           fileName: fileData?.name || '',
           fileType: fileData?.type || '',
+          fileSize: fileData?.size || 0,
         },
       })
       .json();
@@ -68,6 +70,7 @@ export const filesService = {
           category: data.category,
           fileName: fileData?.name || '',
           fileType: fileData?.type || '',
+          fileSize: fileData?.size || 0,
         },
       })
       .json();
@@ -84,6 +87,7 @@ export const filesService = {
           category: data.category,
           fileName: fileData?.name || '',
           fileType: fileData?.type || '',
+          fileSize: fileData?.size || 0,
         },
       })
       .json();

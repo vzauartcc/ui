@@ -146,6 +146,14 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/VisitApplication.vue'),
         meta: {},
       },
+
+      {
+        path: '/connect/discord',
+        component: () => import('@/views/ConnectDiscord.vue'),
+        meta: {
+          loggedIn: true,
+        },
+      },
     ],
   },
   {

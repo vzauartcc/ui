@@ -25,7 +25,7 @@ export const s3Service = {
       xhr.open('PUT', url);
       xhr.setRequestHeader(
         'Content-Type',
-        fileType || 'application/octet-stream',
+        fileType || fileData.type || 'application/octet-stream',
       );
       xhr.setRequestHeader('x-amz-acl', 'public-read');
 
