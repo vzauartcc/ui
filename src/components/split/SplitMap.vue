@@ -1000,6 +1000,19 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
+@media (max-width: 768px) {
+  .map-legend {
+    position: static;
+    margin-top: 0.5rem;
+    max-height: 45vh;
+    overflow-y: auto;
+  }
+
+  .legend-label {
+    white-space: normal;
+  }
+}
+
 .sector-tooltip {
   font-family: 'Roboto', Arial, sans-serif;
   font-size: 12px;
