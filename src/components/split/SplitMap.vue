@@ -83,9 +83,21 @@ interface LegendItem {
   key: string;
 }
 
+interface SpecialLegendRow {
+  text: string;
+  color: string | null;
+}
+
+interface SpecialLegendItem {
+  key: string;
+  title: string;
+  rows: SpecialLegendRow[];
+}
+
 interface LegendGroup {
   title: string;
   items: LegendItem[];
+  specialItems?: SpecialLegendItem[];
 }
 
 const ZOB_COLORS = [
@@ -741,7 +753,8 @@ const legendGroups = computed<LegendGroup[]>(() => {
     ),
     zauColorMap.value,
   );
-  if (zau.items.length > 0) groups.push(zau);
+  zau.specialItems = specialLegendItems.value;
+  if (zau.items.length > 0 || zau.specialItems.length > 0) groups.push(zau);
 
   const zobOwnership = props.ownershipData.zob ?? {};
   const zob = buildLegendGroup(
@@ -788,6 +801,114 @@ const legendGroups = computed<LegendGroup[]>(() => {
   if (zkc.items.length > 0) groups.push(zkc);
 
   return groups;
+});
+
+const sliceRows = (
+  a: any,
+  b: any,
+  build: (
+    ownerA: Owner,
+    ownerB: Owner,
+    colorA: string,
+    colorB: string,
+  ) => SpecialLegendRow[],
+): SpecialLegendRow[] | null => {
+  if (!a || !b) return null;
+  const ownerA = getOwner(a);
+  const ownerB = getOwner(b);
+  const colorA = a.properties.ownerColor;
+  const colorB = b.properties.ownerColor;
+  if (colorA === colorB || ownerA.name === 'N/A' || ownerB.name === 'N/A') {
+    return null;
+  }
+  return build(ownerA, ownerB, colorA, colorB);
+};
+
+const specialLegendItems = computed<SpecialLegendItem[]>(() => {
+  const zau = zauColored.value;
+  if (!zau) return [];
+  const high = zau.high.features;
+  const low = zau.low.features;
+  const byName = (features: any[], name: string) =>
+    features.find((f: any) => f.properties.name === name);
+  const items: SpecialLegendItem[] = [];
+  const push = (
+    key: string,
+    title: string,
+    rows: SpecialLegendRow[] | null,
+  ) => {
+    if (rows && rows.length > 0) items.push({ key, title, rows });
+  };
+
+  if (activeLevel.value === 'high') {
+    push(
+      'iow',
+      'IOW Corridor',
+      sliceRows(
+        byName(high, 'COTON'),
+        byName(high, 'IOWA CITY'),
+        (a, b, cA, cB) => [
+          { text: `${b.name} ${b.id} FL240 - FL329`, color: cB },
+          { text: `${a.name} ${a.id} FL330+`, color: cA },
+        ],
+      ),
+    );
+    push(
+      'bdf',
+      'BDF Split',
+      sliceRows(
+        byName(high, 'BRADFORD'),
+        byName(high, 'IOWA CITY'),
+        (a, b, cA, cB) => [
+          { text: `${a.name} ${a.id} FL240 - FL330`, color: cA },
+          { text: `${b.name} ${b.id} FL340+`, color: cB },
+        ],
+      ),
+    );
+    push(
+      'bvt',
+      'BVT Corridor',
+      sliceRows(byName(high, 'BOILER'), byName(high, 'GIPPER'), (a, _b, cA) => [
+        { text: `${a.name} ${a.id}`, color: cA },
+        { text: 'FL240 - FL290', color: null },
+      ]),
+    );
+  } else {
+    push(
+      'eon',
+      'EON Low',
+      sliceRows(
+        byName(low, 'PEOTONE'),
+        byName(low, 'PLANO'),
+        (a, b, cA, cB) => [
+          { text: `${a.name} ${a.id} 110 - FL230`, color: cA },
+          { text: `${b.name} ${b.id} SFC - 100`, color: cB },
+        ],
+      ),
+    );
+  }
+
+  const pmm = byName(high, 'PULLMAN');
+  const kubbs = byName(low, 'KUBBS');
+  if (pmm && kubbs) {
+    const ownerPMM = getOwner(pmm);
+    const ownerKUBBS = getOwner(kubbs);
+    const colorPMM = pmm.properties.ownerColor;
+    const colorKUBBS = kubbs.properties.ownerColor;
+    if (
+      colorPMM !== colorKUBBS &&
+      ownerPMM.name !== 'N/A' &&
+      ownerKUBBS.name !== 'N/A'
+    ) {
+      push('pmm', 'PMM / KUBBS', [
+        { text: `${ownerPMM.name} ${ownerPMM.id} FL200+`, color: colorPMM },
+        { text: `${ownerKUBBS.name} ${ownerKUBBS.id}`, color: colorKUBBS },
+        { text: 'SFC - FL190', color: null },
+      ]);
+    }
+  }
+
+  return items;
 });
 
 const activeSectors = computed(
@@ -882,7 +1003,7 @@ onMounted(async () => {
             v-for="label in activeSpecialLabels"
             :key="label.key"
             :lat-lng="[label.lat, label.lng]">
-            <LIcon :icon-anchor="[0, 0]" className="">
+            <LIcon :icon-anchor="[0, 0]" className="spec-label-icon">
               <div class="spec-label" v-html="label.html"></div>
             </LIcon>
           </LMarker>
@@ -920,15 +1041,37 @@ onMounted(async () => {
 
         <div class="map-legend">
           <div
-            v-for="group in legendGroups"
+            v-for="(group, index) in legendGroups"
             :key="group.title"
-            class="legend-group">
+            class="legend-group"
+            :class="{
+              'legend-group-divider': index < legendGroups.length - 1,
+            }">
             <div class="legend-group-title">{{ group.title }}</div>
             <div v-for="item in group.items" :key="item.key" class="legend-row">
               <span
                 class="legend-swatch"
                 :style="{ backgroundColor: item.color }"></span>
               <span class="legend-label">{{ item.label }}</span>
+            </div>
+            <div v-if="group.specialItems?.length" class="legend-special">
+              <div
+                v-for="special in group.specialItems"
+                :key="special.key"
+                class="legend-special-item">
+                <div class="legend-special-title">{{ special.title }}</div>
+                <div
+                  v-for="(row, index) in special.rows"
+                  :key="index"
+                  class="legend-row">
+                  <span
+                    class="legend-swatch"
+                    :style="{
+                      backgroundColor: row.color ?? 'transparent',
+                    }"></span>
+                  <span class="legend-label">{{ row.text }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -944,7 +1087,7 @@ onMounted(async () => {
   color: black;
   font-family: 'Roboto', Arial, Helvetica, sans-serif;
   font-weight: bold;
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 
 .level-toggle {
@@ -967,14 +1110,14 @@ onMounted(async () => {
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.3);
   font-family: 'Roboto', Arial, sans-serif;
 }
 
 .legend-group-title {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;
   color: #3f3f3f;
@@ -988,19 +1131,44 @@ onMounted(async () => {
 
 .legend-swatch {
   flex-shrink: 0;
-  width: 14px;
-  height: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  border-radius: 2px;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 0.0625rem solid rgba(0, 0, 0, 0.25);
+  border-radius: 0.125rem;
 }
 
 .legend-label {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #1f1f1f;
   white-space: nowrap;
 }
 
-@media (max-width: 768px) {
+.legend-group-divider {
+  border-bottom: 0.125rem solid rgba(0, 0, 0, 0.35);
+  padding-bottom: 0.5rem;
+}
+
+.legend-special {
+  display: none;
+  margin-top: 0.25rem;
+}
+
+.legend-special-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0;
+  border-top: 0.0625rem solid rgba(0, 0, 0, 0.1);
+}
+
+.legend-special-title {
+  font-size: 0.6875rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #5a5a5a;
+}
+
+@media (max-width: 48rem) {
   .map-legend {
     position: static;
     margin-top: 0.5rem;
@@ -1011,11 +1179,19 @@ onMounted(async () => {
   .legend-label {
     white-space: normal;
   }
+
+  .legend-special {
+    display: block;
+  }
+
+  .spec-label-icon {
+    display: none;
+  }
 }
 
 .sector-tooltip {
   font-family: 'Roboto', Arial, sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: bold;
   color: #1f1f1f;
   text-align: center;
