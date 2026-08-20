@@ -11,8 +11,8 @@
     "vite-build": "vite build",
     "preview": "vite preview",
     "lint": "npm run oxlint && npm run eslint",
-    "oxlint": "oxlint .",
-    "eslint": "eslint . --cache",
+    "oxlint": "oxlint . --quiet",
+    "eslint": "eslint . --cache --quiet",
     "test:renovate": "npx --yes --package renovate -- renovate-config-validator"
   },
   "dependencies": {
