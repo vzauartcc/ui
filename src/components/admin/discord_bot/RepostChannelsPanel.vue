@@ -36,8 +36,6 @@ const getChannelFromId = (id: string) => {
 };
 
 const repostChannels = computed(() => {
-  if (!localConfig.value.repostChannels) return [];
-
   return Object.entries(localConfig.value.repostChannels).map(
     ([key, value]) => ({
       channelId: key,

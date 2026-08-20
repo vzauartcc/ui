@@ -13,7 +13,7 @@ export const s3Service = {
       const xhr = new XMLHttpRequest();
 
       // Track upload progress safely on HTTP/1.1
-      if (onProgress && xhr.upload) {
+      if (onProgress) {
         xhr.upload.addEventListener('progress', (event) => {
           if (event.lengthComputable) {
             const percent = Math.round((event.loaded / event.total) * 100);

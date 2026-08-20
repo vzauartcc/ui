@@ -29,10 +29,8 @@ export default defineConfigWithVueTs(
     rules: {
       'local-rules/toast-punctuation': 'error',
       'local-rules/use-title': 'error',
-      'vue/multi-word-component-names': [
-        'error',
-        { ignores: ['404', 'Footer', 'Header', 'Home', 'Index', 'Main'] },
-      ],
+
+      '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -40,14 +38,19 @@ export default defineConfigWithVueTs(
           argsIgnorePattern: '^_',
         },
       ],
+
+      'vue/block-order': ['error', { order: ['script', 'template', 'style'] }],
+      'vue/component-api-style': ['error', ['script-setup']],
+      'vue/multi-word-component-names': [
+        'error',
+        { ignores: ['404', 'Footer', 'Header', 'Home', 'Index', 'Main'] },
+      ],
       'vue/no-constant-condition': 'error',
+      'vue/no-ref-as-operand': 'error',
       'vue/no-template-target-blank': 'error',
       'vue/prefer-true-attribute-shorthand': 'error',
       'vue/prefer-use-template-ref': 'error',
-      'vue/no-ref-as-operand': 'error',
       'vue/require-typed-ref': 'error',
-      'vue/block-order': ['error', { order: ['script', 'template', 'style'] }],
-      'vue/component-api-style': ['error', ['script-setup']],
     },
   },
 

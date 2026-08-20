@@ -43,8 +43,8 @@ export const toastPunctuationRule: Rule.RuleModule = {
         }
 
         // 2. Ensure there is a second argument
-        const firstArg = node.arguments[0];
-        const secondArg = node.arguments[1];
+        const firstArg = node.arguments.at(0);
+        const secondArg = node.arguments.at(1);
         if (!firstArg || !secondArg) {
           return;
         }
@@ -81,7 +81,7 @@ export const toastPunctuationRule: Rule.RuleModule = {
         // Note: This only reliably checks if the template ends in static text, not a variable.
         if (firstArg.type === 'TemplateLiteral') {
           const lastQuasis = firstArg.quasis[firstArg.quasis.length - 1];
-          if (lastQuasis && lastQuasis.value.cooked) {
+          if (lastQuasis.value.cooked) {
             const str = lastQuasis.value.cooked.trim();
             // Only check if it actually ends with text, not a variable expression like `${err}`
             if (str.length > 0) {
@@ -98,7 +98,7 @@ export const toastPunctuationRule: Rule.RuleModule = {
 
         if (secondArg.type === 'TemplateLiteral') {
           const lastQuasis = secondArg.quasis[secondArg.quasis.length - 1];
-          if (lastQuasis && lastQuasis.value.cooked) {
+          if (lastQuasis.value.cooked) {
             const str = lastQuasis.value.cooked.trim();
             // Only check if it actually ends with text, not a variable expression like `${err}`
             if (str.length > 0) {

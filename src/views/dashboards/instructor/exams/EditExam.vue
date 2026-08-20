@@ -113,23 +113,19 @@ const resolver = ({
 }: FormResolverOptions & { values: Partial<IExam> }) => {
   const errors: Record<string, { message: string }[]> = {};
 
-  if (!values.title || values.title === undefined) {
+  if (values.title === undefined) {
     errors.title = [{ message: 'Title is required.' }];
   }
 
-  if (!values.description || values.description === undefined) {
+  if (values.description === undefined) {
     errors.description = [{ message: 'Description is required.' }];
   }
 
-  if (!values.certCode || values.certCode === undefined) {
+  if (values.certCode === undefined) {
     errors.certCode = [{ message: 'Milestone is required.' }];
   }
 
-  if (
-    !values.questions ||
-    values.questions === undefined ||
-    values.questions.length < 1
-  ) {
+  if (values.questions === undefined || values.questions.length < 1) {
     errors.questions = [{ message: 'At least one question is required.' }];
   }
 
@@ -230,7 +226,7 @@ const deleteQuestion = (index: number) => {
   if (!formRef.value) return;
 
   const currentQuestions = [
-    ...((formRef.value.states.questions?.value as IQuestion[]) || []),
+    ...(formRef.value.states.questions!.value as IQuestion[]),
   ];
 
   currentQuestions.splice(index, 1);

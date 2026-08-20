@@ -119,7 +119,7 @@ const deletePosition = (index: number) => {
   if (!formRef.value) return;
 
   const currentPositions = [
-    ...((formRef.value.states.positions?.value as IPosition[]) || []),
+    ...(formRef.value.states.positions!.value as IPosition[]),
   ];
 
   currentPositions.splice(index, 1);
