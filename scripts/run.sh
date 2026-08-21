@@ -18,4 +18,4 @@ shift
 
 export LOCAL_DEV_ENVIRONMENT="true"
 
-doppler run -p data-parser -c "$CONFIG_NAME" -- npm run dev
+doppler run -p ui -c dev -- npm run dev

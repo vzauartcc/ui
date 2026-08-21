@@ -61,7 +61,7 @@ const signupData = computed(() => {
   if (!eventData.value) return [];
   const list = eventData.value.signups.map((s) => ({
     ...s,
-    name: s.user ? s.user.name : 'Unassigned',
+    name: s.user.name,
   }));
   return [{ cid: null, name: 'Unassigned' }, ...list];
 });

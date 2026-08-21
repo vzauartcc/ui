@@ -105,9 +105,9 @@ const loadLazyArchive = async () => {
     const data = await examService.getExamAttempts(
       lazyParams.value.page,
       lazyParams.value.rows,
-      lazyParams.value.filters.exam?.value || '',
-      lazyParams.value.filters.status?.value || '',
-      lazyParams.value.filters.student?.value || 0,
+      lazyParams.value.filters.exam.value || '',
+      lazyParams.value.filters.status.value || '',
+      lazyParams.value.filters.student.value || 0,
     );
 
     examAttempts.value = data.attempts;

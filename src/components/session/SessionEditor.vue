@@ -87,15 +87,15 @@ const resolver = ({
 }: FormResolverOptions & { values: Partial<ITrainingSession> }) => {
   const errors: Record<string, { message: string }[]> = {};
 
-  if (!values.studentCid || values.studentCid === undefined) {
+  if (values.studentCid === undefined) {
     errors.studentCid = [{ message: 'Student is required.' }];
   }
 
-  if (!values.startTime || values.startTime === undefined) {
+  if (values.startTime === undefined) {
     errors.startTime = [{ message: 'Start Time is required.' }];
   }
 
-  if (!values.endTime || values.endTime === undefined) {
+  if (values.endTime === undefined) {
     errors.endTime = [{ message: 'End Time is required.' }];
   } else if (
     values.startTime &&
@@ -104,11 +104,11 @@ const resolver = ({
     errors.endTime = [{ message: 'End Time must be after Start Time.' }];
   }
 
-  if (!values.milestoneCode || values.milestoneCode === undefined) {
+  if (values.milestoneCode === undefined) {
     errors.milestoneCode = [{ message: 'Milestone is required.' }];
   }
 
-  if (!values.position || values.position === undefined) {
+  if (values.position === undefined) {
     errors.position = [{ message: 'Position is required.' }];
   } else if (
     !/^[A-Z]{3}_(FSS|CTR|APP|DEP|TWR|GND|DEL)$/.test(values.position)
@@ -116,16 +116,11 @@ const resolver = ({
     errors.position = [{ message: 'Position is invalid. Ex: CHI_APP.' }];
   }
 
-  if (
-    values.movements === null ||
-    values.movements === undefined ||
-    +values.movements < 0
-  ) {
+  if (values.movements === undefined || +values.movements < 0) {
     errors.movements = [{ message: 'Movements is required.' }];
   }
 
   if (
-    values.location === null ||
     values.location === undefined ||
     +values.location < 0 ||
     +values.location > 2
@@ -134,7 +129,6 @@ const resolver = ({
   }
 
   if (
-    values.progress === null ||
     values.progress === undefined ||
     +values.progress < 1 ||
     +values.progress > 5
@@ -142,12 +136,7 @@ const resolver = ({
     errors.progress = [{ message: 'Progress is required.' }];
   }
 
-  if (
-    values.ots === null ||
-    values.ots === undefined ||
-    +values.ots < 0 ||
-    +values.ots > 3
-  ) {
+  if (values.ots === undefined || +values.ots < 0 || +values.ots > 3) {
     errors.ots = [{ message: 'OTS is required.' }];
   }
 

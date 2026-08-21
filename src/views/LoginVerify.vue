@@ -39,7 +39,7 @@ onMounted(async () => {
 
     router.push(redirectTo);
   } catch (e) {
-    if (e instanceof HTTPError && e.response) {
+    if (e instanceof HTTPError) {
       const data = await e.response.json();
       if (
         e.response.status === 400 &&

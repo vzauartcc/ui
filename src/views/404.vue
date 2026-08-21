@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { useTitle } from '@/utils/title';
 import Card from 'primevue/card';
+import { useRoute } from 'vue-router';
 
 useTitle('404 - Page not found');
+
+const route = useRoute();
 </script>
 
 <template>
   <Card>
     <template #title>404 - Page Not Found</template>
+    <template #subtitle>
+      <p class="text-xs">Path: {{ route.fullPath }}</p>
+    </template>
     <template #content>
       <p>
         We're sorry, but the content you requested could not be found, If you

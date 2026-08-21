@@ -34,7 +34,7 @@ export const examService = {
       .patch(`exam/attempt/${attemptId}`, {
         json: {
           questionId: questionId,
-          selectedOptions: answers.filter((a) => a !== null && a.trim() !== ''),
+          selectedOptions: answers.filter((a) => a.trim() !== ''),
           timeSpent: timeSpent,
         },
       })

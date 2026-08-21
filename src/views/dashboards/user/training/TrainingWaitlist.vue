@@ -123,7 +123,7 @@ const saveForm = async (event: FormSubmitEvent) => {
       <Button
         severity="success"
         label="Join Waitlist"
-        v-if="user!.rating < 5 && !isOnWaitlist"
+        v-if="!isOnWaitlist"
         @click.prevent="visible = true" />
       <Message severity="error" v-if="isOnWaitlist"
         >You are on the waitlist.<span

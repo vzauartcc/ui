@@ -49,6 +49,16 @@ interface ILocalQuestion {
 
 const questions = ref<ILocalQuestion[]>([]);
 
+const emptyResponse = (question: IQuestion): IResponse => {
+  return {
+    questionId: question._id,
+    selectedOptions: [],
+    timeSpent: 0,
+    isCorrect: false,
+    question: question,
+  };
+};
+
 onMounted(async () => {
   if (!id) return;
 
@@ -61,7 +71,9 @@ onMounted(async () => {
     data.questionOrder.forEach((q) => {
       questions.value.push({
         question: q,
-        response: data.responses.find((r) => r.questionId === q._id)!,
+        response:
+          data.responses.find((r) => r.questionId === q._id) ??
+          emptyResponse(q),
       });
     });
   } catch (e) {
@@ -175,11 +187,11 @@ const scrollToOverview = () => {
           <template #content>
             <div class="flex flex-wrap gap-2">
               <span
-                v-for="(response, idx) of attempt.responses"
+                v-for="(question, idx) of questions"
                 :key="idx"
                 :class="{
-                  'bg-green-500': response.isCorrect,
-                  'bg-red-500': !response.isCorrect,
+                  'bg-green-500': question.response.isCorrect,
+                  'bg-red-500': !question.response.isCorrect,
                 }"
                 class="w-12 border rounded-xl px-3 py-1 text-xl cursor-pointer justify-center inline-flex"
                 v-tooltip.top="`Jump to question ${idx + 1}`"
@@ -241,13 +253,13 @@ const scrollToOverview = () => {
                   :class="{
                     missed:
                       option.isCorrect &&
-                      !question.response?.selectedOptions.includes(option._id),
+                      !question.response.selectedOptions.includes(option._id),
                     correct:
                       option.isCorrect &&
-                      question.response?.selectedOptions.includes(option._id),
+                      question.response.selectedOptions.includes(option._id),
                     incorrect:
                       !option.isCorrect &&
-                      question.response?.selectedOptions.includes(option._id),
+                      question.response.selectedOptions.includes(option._id),
                   }">
                   <span class="w-6 text-center">
                     <Icon
@@ -255,14 +267,14 @@ const scrollToOverview = () => {
                       class="no-pointer"
                       v-if="
                         !option.isCorrect &&
-                        question.response?.selectedOptions.includes(option._id)
+                        question.response.selectedOptions.includes(option._id)
                       " />
                     <Icon
                       icon="heroicons:check-20-solid"
                       class="no-pointer"
                       v-if="
                         option.isCorrect &&
-                        question.response?.selectedOptions.includes(option._id)
+                        question.response.selectedOptions.includes(option._id)
                       " />
                   </span>
                   <span>{{ option.text }}</span>
@@ -270,10 +282,15 @@ const scrollToOverview = () => {
               </span>
             </div>
 
-            <div class="flex justify-end mt-2.5">
-              <span v-tooltip.left="'Jump to top'" @click="scrollToOverview">
-                <Icon icon="heroicons:arrow-up" />
-              </span>
+            <div class="flex mt-5">
+              <div v-if="question.response.selectedOptions.length === 0">
+                <span class="italic">Question not answered.</span>
+              </div>
+              <div class="ml-auto">
+                <span v-tooltip.left="'Jump to top'" @click="scrollToOverview">
+                  <Icon icon="heroicons:arrow-up" />
+                </span>
+              </div>
             </div>
           </template>
         </Card>

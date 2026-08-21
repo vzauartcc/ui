@@ -8,9 +8,9 @@ export const zauApi = ky.create({
   hooks: {
     beforeError: [
       async (error) => {
-        const silent = !!error.options.context?.silent;
+        const silent = !!error.options.context.silent;
 
-        if (!silent && error.response) {
+        if (!silent) {
           let message = 'Something went wrong, please try again later.';
 
           try {

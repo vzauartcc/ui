@@ -32,8 +32,6 @@ const localConfig = computed({
 });
 
 const reminderChannels = computed(() => {
-  if (!localConfig.value.reminderChannels) return [];
-
   return Object.entries(localConfig.value.reminderChannels).map(
     ([key, value]) => ({
       channelId: key,

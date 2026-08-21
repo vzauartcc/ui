@@ -75,7 +75,7 @@ const persistSession = async (
     } catch (err) {
       console.error('error submitting form', err);
     }
-  } else if (type === 'save') {
+  } else {
     try {
       await trainingService.saveSessionEdit(session.value!._id, data);
 
