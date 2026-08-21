@@ -30,8 +30,6 @@ const localConfig = computed({
 });
 
 const getRoleNameById = (id: string): string => {
-  if (!props.allRoles) return '';
-
   return props.allRoles.find((r) => r.id === id)?.name ?? '';
 };
 

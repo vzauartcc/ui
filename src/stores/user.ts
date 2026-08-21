@@ -75,7 +75,7 @@ export const useUserStore = defineStore('user', () => {
       const data = await userService.getSelf();
       user.value = data;
     } catch (e) {
-      if (e instanceof HTTPError && e.response?.status !== 401) {
+      if (e instanceof HTTPError && e.response.status !== 401) {
         console.error('[store] error getting user', e);
       } else {
         console.error('[store] non-http error getting user', e);

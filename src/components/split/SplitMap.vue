@@ -124,7 +124,7 @@ const processOwnershipUpdates = () => {
 };
 
 const initializePositionsAndProcessOwnership = () => {
-  if (props.positionsData && props.positionsData.length > 0) {
+  if (props.positionsData.length > 0) {
     initializePositionsMap();
     processOwnershipUpdates();
   }
@@ -282,7 +282,6 @@ const applyOwnership = (ownershipMap: IOwnership) => {
 
   const processLevelOwnership = (level: 'high' | 'low') => {
     const ownershipData = ownershipMap[level];
-    if (!ownershipData) return;
 
     for (const sectorId in ownershipData) {
       const ownerId = String(ownershipData[sectorId]);
@@ -291,7 +290,7 @@ const applyOwnership = (ownershipMap: IOwnership) => {
       if (owner) {
         if (level === 'high') {
           owner.ownedHi.add(String(sectorId));
-        } else if (level === 'low') {
+        } else {
           owner.ownedLo.add(String(sectorId));
         }
       }

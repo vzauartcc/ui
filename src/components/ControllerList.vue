@@ -62,7 +62,7 @@ const closeDelete = () => {
 };
 
 const submitDelete = async () => {
-  if (!deleteData.value || !deleteData.value.confirmed) return;
+  if (!deleteData.value.confirmed) return;
   try {
     await controllerService.removeController(
       deleteData.value.controller.cid,

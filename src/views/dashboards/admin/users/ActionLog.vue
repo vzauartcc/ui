@@ -59,7 +59,7 @@ const onPage = (event: DataTablePageEvent) => {
 };
 
 const onFilter = (event: DataTableFilterEvent) => {
-  const target = event.filters?.actionType;
+  const target = event.filters.actionType;
 
   lazyParams.value.page = 1;
   lazyParams.value.action = target
