@@ -8,7 +8,7 @@ import type {
 export const statsService = {
   getActivity(period?: number, year?: number): Promise<IActivityResponse> {
     return zauApi
-      .get(`stats/activity?period=${period}&year=${year}`, {})
+      .get('stats/activity', { searchParams: { period, year } })
       .json();
   },
   getAdminStats(): Promise<IAdminStatsResponse> {
