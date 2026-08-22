@@ -5,6 +5,7 @@ import type {
   INotificationResponse,
 } from '@/services/notification/notification.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
+import { sanitize } from '@/utils/sanitize';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -99,7 +100,7 @@ const deleteNotification = async (notification: INotification) => {
               </div>
             </template>
             <template #content>
-              <span v-html="notification.content"></span>
+              <span v-html="sanitize(notification.content)"></span>
             </template>
             <template #footer>
               <span class="text-xs">{{

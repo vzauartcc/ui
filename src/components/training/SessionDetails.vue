@@ -7,6 +7,7 @@ import {
 import { useUserStore } from '@/stores/user';
 import { dateAsMMDDHHMM } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
+import { sanitize } from '@/utils/sanitize';
 import Fieldset from 'primevue/fieldset';
 import Message from 'primevue/message';
 
@@ -68,7 +69,7 @@ const props = defineProps<{ session: ITrainingSession }>();
 
   <Fieldset legend="Student Notes">
     <div
-      v-html="props.session.studentNotes"
+      v-html="sanitize(props.session.studentNotes)"
       class="prose max-w-none dark:prose-invert" />
   </Fieldset>
 

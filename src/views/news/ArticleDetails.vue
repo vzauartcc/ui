@@ -3,6 +3,7 @@ import { newsService } from '@/services/news/news.service';
 import type { INewsArticle } from '@/services/news/news.types';
 import { dateAsMMMMDDYYYY } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
+import { sanitize } from '@/utils/sanitize';
 import { useTitle } from '@/utils/title';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -46,7 +47,9 @@ onMounted(async () => {
     </template>
 
     <template #content>
-      <div class="prose dark:prose-invert" v-html="article.content"></div>
+      <div
+        class="prose dark:prose-invert"
+        v-html="sanitize(article.content)"></div>
     </template>
   </Card>
 </template>

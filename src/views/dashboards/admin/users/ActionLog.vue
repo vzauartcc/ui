@@ -3,6 +3,7 @@ import { controllerService } from '@/services/controller/controller.service';
 import type { IDossier } from '@/services/controller/controller.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
+import { sanitize } from '@/utils/sanitize';
 import { useTitle } from '@/utils/title';
 import { FilterMatchMode } from '@primevue/core/api';
 import Card from 'primevue/card';
@@ -128,12 +129,14 @@ onMounted(async () => {
           <template #body="{ data }">
             <div
               v-html="
-                data.action
-                  .replaceAll('%b', `<b>${compileUsersName(data.userBy)}</b>`)
-                  .replaceAll(
-                    '%a',
-                    `<b>${compileUsersName(data.userAffected)}</b>`,
-                  )
+                sanitize(
+                  data.action
+                    .replaceAll('%b', `<b>${compileUsersName(data.userBy)}</b>`)
+                    .replaceAll(
+                      '%a',
+                      `<b>${compileUsersName(data.userAffected)}</b>`,
+                    ),
+                )
               " />
           </template>
         </Column>
