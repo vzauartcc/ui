@@ -28,10 +28,6 @@ const filters = ref({
   actionType: { value: 0, matchMode: FilterMatchMode.EQUALS },
 });
 
-onMounted(async () => {
-  loadLazyArchive();
-});
-
 const loadLazyArchive = async () => {
   archiveLoading.value = true;
 
