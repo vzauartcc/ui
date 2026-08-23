@@ -81,10 +81,12 @@ onMounted(async () => {
     const data = await examService.getExams();
 
     exams.value = data;
-    examFilterOptions.value = data.map((e) => ({
-      name: e.title,
-      value: e._id,
-    }));
+    examFilterOptions.value = data
+      .filter((e) => e.isActive)
+      .map((e) => ({
+        name: e.title,
+        value: e._id,
+      }));
   } catch (e) {
     console.error('error getting exams', e);
   }
@@ -403,7 +405,7 @@ const deleteExamAttempt = async () => {
     v-model:visible="assignVisible"
     header="Assign Exam"
     class="w-1/2">
-    <p>They will have <b>30 days</b> to complete the exam.</p>
+    <p>The student will have <b>30 days</b> to complete the exam.</p>
     <Form v-slot="$form" :resolver @submit="assignExam">
       <div class="grid grid-cols-1 gap-5 mt-5">
         <FormField v-slot="$field" name="student">

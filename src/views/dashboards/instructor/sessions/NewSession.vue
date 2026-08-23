@@ -33,7 +33,9 @@ onMounted(async () => {
   try {
     const data = await trainingService.getMilestones();
 
-    milestones.value = data.milestones.filter((m) => m.type === 'session');
+    milestones.value = data.milestones.filter(
+      (m) => m.type === 'session' && m.isActive,
+    );
   } catch (e) {
     console.error('error getting training milestones', e);
   }
