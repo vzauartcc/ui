@@ -32,7 +32,7 @@ import { useRoute, useRouter } from 'vue-router';
 useTitle('Edit Exam');
 
 interface IOption {
-  _id: string;
+  _id?: string;
   text: string;
   isCorrect: boolean;
 }
@@ -260,11 +260,17 @@ const saveExam = async (event: FormSubmitEvent) => {
   const { values } = event;
 
   values.questions = values.questions.map((q: IQuestion) => {
-    if (q._id === '') {
-      const { _id, ...rest } = q;
-      return rest;
-    }
-    return q;
+    const question = q._id === '' ? (({ _id, ...rest }) => rest)(q) : q;
+
+    question.options = question.options.map((o) => {
+      if (!o._id || o._id === '') {
+        const { _id, ...rest } = o;
+        return rest;
+      }
+      return o;
+    });
+
+    return question;
   });
 
   const examId = values._id;

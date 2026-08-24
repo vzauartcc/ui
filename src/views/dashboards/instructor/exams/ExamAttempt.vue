@@ -247,19 +247,19 @@ const scrollToOverview = () => {
             <div class="grid grid-cols-1 gap-2">
               <span
                 v-for="option of question.question.options"
-                :key="option._id">
+                :key="option._id!">
                 <div
                   class="flex flex-row gap-5 items-center"
                   :class="{
                     missed:
                       option.isCorrect &&
-                      !question.response.selectedOptions.includes(option._id),
+                      !question.response.selectedOptions.includes(option._id!),
                     correct:
                       option.isCorrect &&
-                      question.response.selectedOptions.includes(option._id),
+                      question.response.selectedOptions.includes(option._id!),
                     incorrect:
                       !option.isCorrect &&
-                      question.response.selectedOptions.includes(option._id),
+                      question.response.selectedOptions.includes(option._id!),
                   }">
                   <span class="w-6 text-center">
                     <Icon
@@ -267,14 +267,14 @@ const scrollToOverview = () => {
                       class="no-pointer"
                       v-if="
                         !option.isCorrect &&
-                        question.response.selectedOptions.includes(option._id)
+                        question.response.selectedOptions.includes(option._id!)
                       " />
                     <Icon
                       icon="heroicons:check-20-solid"
                       class="no-pointer"
                       v-if="
                         option.isCorrect &&
-                        question.response.selectedOptions.includes(option._id)
+                        question.response.selectedOptions.includes(option._id!)
                       " />
                   </span>
                   <span>{{ option.text }}</span>
