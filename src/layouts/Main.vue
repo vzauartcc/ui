@@ -69,7 +69,7 @@ const checkAcknowledgement = () => {
     <main class="mt-2 flex-1-0-auto my-5 mx-auto md:w-10/12">
       <div class="row main-content wrapper">
         <div class="main_content col s12 18 push-14">
-          <router-view></router-view>
+          <router-view :key="route.fullPath"></router-view>
         </div>
         <div class="sidebar col s12 14 pull-18">
           <!-- <Sidebar /> -->
