@@ -7,6 +7,7 @@ import type {
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -66,14 +67,16 @@ const hasHome = computed(() => !!editData.value?.statusChecks.hasHome);
 const needsBasic = computed(() => !!editData.value?.statusChecks.needsBasic);
 
 const accept = async () => {
-  try {
-    await controllerService.acceptVisitApplication(
-      editData.value!.application.cid,
-    );
+  if (!editData.value) return;
+  const cid = editData.value.application.cid;
+  const name = compileUsersName(editData.value.application);
+
+  await executeAccept(async () => {
+    await controllerService.acceptVisitApplication(cid);
 
     toastSuccess(
       'Visit Application Accepted!',
-      `${compileUsersName(editData.value!.application)}'s visit application has been accepted.`,
+      `${name}'s visit application has been accepted.`,
     );
 
     editVisible.value = false;
@@ -81,9 +84,7 @@ const accept = async () => {
     const data = await controllerService.getVisitApplications();
 
     visitApplications.value = data;
-  } catch (e) {
-    console.error('error accepting visit application', e);
-  }
+  });
 };
 const reject = async () => {
   rejectData.value = {
@@ -103,6 +104,9 @@ const close = () => {
   editVisible.value = false;
 };
 
+const { isSubmitting: isAccepting, execute: executeAccept } = useAsyncSubmit();
+const { isSubmitting: isRejecting, execute: executeReject } = useAsyncSubmit();
+
 interface IRejectData {
   application: IVisitorApplication;
   reason: string;
@@ -119,15 +123,17 @@ const rejectApplication = async () => {
     return;
   }
 
-  try {
-    await controllerService.rejectVisitApplication(
-      rejectData.value.application.cid,
-      rejectData.value.reason,
-    );
+  const application = rejectData.value.application;
+  const cid = application.cid;
+  const name = compileUsersName(application);
+  const reason = rejectData.value.reason;
+
+  await executeReject(async () => {
+    await controllerService.rejectVisitApplication(cid, reason);
 
     toastSuccess(
       'Visit Application Rejected!',
-      `You have rejected ${compileUsersName(rejectData.value.application)}'s visit application.`,
+      `You have rejected ${name}'s visit application.`,
     );
 
     closeReject();
@@ -135,9 +141,7 @@ const rejectApplication = async () => {
     const data = await controllerService.getVisitApplications();
 
     visitApplications.value = data;
-  } catch (e) {
-    console.error('error rejecting application', e);
-  }
+  });
 };
 </script>
 
@@ -313,7 +317,11 @@ const rejectApplication = async () => {
     </div>
 
     <template #footer>
-      <Button severity="success" label="Accept" @click="accept" />
+      <Button
+        severity="success"
+        label="Accept"
+        @click="accept"
+        :loading="isAccepting" />
       <Button severity="danger" label="Reject" @click="reject" />
       <Button outlined label="Cancel" @click="close" />
     </template>
@@ -337,7 +345,11 @@ const rejectApplication = async () => {
       <label for="rejectReason">Reason</label>
     </FloatLabel>
     <template #footer>
-      <Button severity="danger" label="Reject" @click="rejectApplication" />
+      <Button
+        severity="danger"
+        label="Reject"
+        @click="rejectApplication"
+        :loading="isRejecting" />
       <Button outlined label="Cancel" @click="closeReject" />
     </template>
   </Dialog>

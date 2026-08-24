@@ -4,6 +4,7 @@ import { filesService } from '@/services/files/files.service';
 import type { IDocument } from '@/services/files/files.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { onMounted, ref } from 'vue';
@@ -37,20 +38,23 @@ const closeDelete = () => {
   deleteData.value = null;
 };
 
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const deleteDocument = async () => {
   if (!deleteData.value) return;
-  try {
-    await filesService.deleteDocument(deleteData.value._id);
+  const documentId = deleteData.value._id;
+  const documentName = deleteData.value.name;
+
+  await execute(async () => {
+    await filesService.deleteDocument(documentId);
 
     toastSuccess(
       'Document deleted!',
-      `Document ${deleteData.value.name} has been deleted.`,
+      `Document ${documentName} has been deleted.`,
     );
     closeDelete();
     loadDocuments();
-  } catch (e) {
-    console.error('error deleting document', e);
-  }
+  });
 };
 </script>
 
@@ -69,7 +73,11 @@ const deleteDocument = async () => {
       This will permanently delete the <b>{{ deleteData?.name }}</b> document.
     </p>
     <template #footer>
-      <Button severity="danger" label="Delete" @click="deleteDocument" />
+      <Button
+        severity="danger"
+        label="Delete"
+        @click="deleteDocument"
+        :loading="isSubmitting" />
       <Button outlined label="Cancel" @click="closeDelete" />
     </template>
   </Dialog>

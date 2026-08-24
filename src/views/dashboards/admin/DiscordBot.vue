@@ -12,6 +12,7 @@ import type {
 } from '@/services/discord/discord.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import Accordion from 'primevue/accordion';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -30,6 +31,8 @@ const config = ref<IBotConfig | null>(null);
 const oldConfig = ref<IBotConfig | null>(null);
 const allChannels = ref<IDiscordChannel[]>([]);
 const allRoles = ref<IDiscordRole[]>([]);
+
+const { isSubmitting, execute } = useAsyncSubmit();
 
 onMounted(async () => {
   try {
@@ -86,18 +89,17 @@ const hasChanges = computed(() => {
 
 const saveConfig = async () => {
   if (!config.value) return;
+  const configToSave = config.value;
 
-  try {
-    await discordService.saveConfig(config.value);
+  await execute(async () => {
+    await discordService.saveConfig(configToSave);
 
     toastSuccess(
       'Config Saved!',
       'Discord configuration has been successfully saved!',
     );
-    oldConfig.value = JSON.parse(JSON.stringify(config.value));
-  } catch (e) {
-    console.error('error saving config', e);
-  }
+    oldConfig.value = JSON.parse(JSON.stringify(configToSave));
+  });
 };
 </script>
 
@@ -144,7 +146,11 @@ const saveConfig = async () => {
               class="text-center justify-center mb-4"
               >UNSAVED CHANGES</Message
             >
-            <Button label="Save" @click="saveConfig" :disabled="!hasChanges" />
+            <Button
+              label="Save"
+              @click="saveConfig"
+              :disabled="!hasChanges"
+              :loading="isSubmitting" />
           </div>
         </template>
       </Card>

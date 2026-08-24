@@ -6,6 +6,7 @@ import { s3Service } from '@/services/s3.service';
 import { localToUTC, roundToNearest15Minutes, utcToLocal } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import {
   Form,
@@ -40,6 +41,7 @@ const slug = Array.isArray(route.params.slug)
   : route.params.slug;
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const eventData = ref<IEvent | null>(null);
 const fileData = ref<File | null>(null);
@@ -165,7 +167,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
 
   const { values } = event;
 
-  try {
+  await execute(async () => {
     if (eventData.value?._id) {
       const positions = values.positions.map((p: IPosition) => p.pos);
 
@@ -200,9 +202,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
 
     toastSuccess('Event Updated!', 'The event has been successfully updated.');
     router.push('/admin/events');
-  } catch (e) {
-    console.error('error saving event', e);
-  }
+  });
 
   uploadProgress.value = -1;
 };
@@ -383,7 +383,10 @@ const minEndTime = (startTime?: string | Date) => {
         </Card>
 
         <div class="flex justify-end mt-5">
-          <Button type="submit" :label="slug ? 'Save!' : 'Create!'" />
+          <Button
+            type="submit"
+            :label="slug ? 'Save!' : 'Create!'"
+            :loading="isSubmitting" />
         </div>
       </Form>
     </template>

@@ -9,6 +9,7 @@ import { useUserStore } from '@/stores/user';
 import { localToUTC, roundToNearest15Minutes, utcToLocal } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { toastError } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -35,6 +36,8 @@ const emit = defineEmits(['finishSession']);
 
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
+
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const submitType = ref<'' | 'submit' | 'save'>('');
 
@@ -161,19 +164,22 @@ const submitSession = async (event: FormSubmitEvent) => {
   }
 
   const { values } = event;
+  const type = submitType.value;
 
-  emit('finishSession', submitType.value, {
-    student: values.studentCid || 0,
-    milestone: values.milestoneCode,
-    position: values.position,
-    movements: values.movements || 0,
-    progress: values.progress,
-    ots: values.ots,
-    location: values.location,
-    startTime: localToUTC(values.startTime),
-    endTime: localToUTC(values.endTime),
-    studentNotes: values.studentNotes,
-    insNotes: values.insNotes,
+  await execute(async () => {
+    emit('finishSession', type, {
+      student: values.studentCid || 0,
+      milestone: values.milestoneCode,
+      position: values.position,
+      movements: values.movements || 0,
+      progress: values.progress,
+      ots: values.ots,
+      location: values.location,
+      startTime: localToUTC(values.startTime),
+      endTime: localToUTC(values.endTime),
+      studentNotes: values.studentNotes,
+      insNotes: values.insNotes,
+    });
   });
 };
 
@@ -442,14 +448,16 @@ const maxEndTime = (startTime?: string | Date) => {
           severity="secondary"
           :disabled="!$form?.valid"
           v-tooltip.top="'Save session to edit later'"
-          @click="submitType = 'save'" />
+          @click="submitType = 'save'"
+          :loading="isSubmitting" />
         <Button
           type="submit"
           severity="success"
           label="Submit to VATUSA"
           :disabled="!$form?.valid"
           v-tooltip.top="'Submit session to VATUSA and make visible to student'"
-          @click="submitType = 'submit'" />
+          @click="submitType = 'submit'"
+          :loading="isSubmitting" />
       </div>
     </div>
   </Form>

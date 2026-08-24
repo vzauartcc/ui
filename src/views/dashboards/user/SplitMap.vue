@@ -9,6 +9,7 @@ import type {
 import { useUserStore } from '@/stores/user';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Divider from 'primevue/divider';
@@ -26,6 +27,11 @@ useTitle('Configure Split Map');
 const defaultSector = { id: '35', name: 'BEARZ' };
 
 const userStore = useUserStore();
+
+const { isSubmitting: isSavingSplit, execute: executeSaveSplit } =
+  useAsyncSubmit();
+const { isSubmitting: isResettingSplit, execute: executeResetSplit } =
+  useAsyncSubmit();
 
 const currentSplit = ref<IOwnershipResponse | null>(null);
 const liveSplit = ref<IOwnershipResponse | null>(null);
@@ -346,7 +352,7 @@ const saveSplit = async (
   highSplit: Record<string, string>,
   lowSplit: Record<string, string>,
 ) => {
-  try {
+  await executeSaveSplit(async () => {
     const data = await splitService.saveSplit(highSplit, lowSplit);
 
     currentSplit.value!.ownership = JSON.parse(JSON.stringify(data));
@@ -354,13 +360,11 @@ const saveSplit = async (
     populateActivePositions(data);
 
     toastSuccess('Split Saved!', 'Successfully saved the split.');
-  } catch (e) {
-    console.error('error saving split', e);
-  }
+  });
 };
 
 const resetSplit = async () => {
-  try {
+  await executeResetSplit(async () => {
     const data = await splitService.resetSplit();
 
     currentSplit.value!.ownership = JSON.parse(JSON.stringify(data));
@@ -368,9 +372,7 @@ const resetSplit = async () => {
     populateActivePositions(data);
 
     toastSuccess('Split Reset!', 'Center split has been reset.');
-  } catch (e) {
-    console.error('error resetting split', e);
-  }
+  });
 };
 
 const toggleSplit = (data: { id: string; name: string }) => {
@@ -429,7 +431,8 @@ const toggleSplit = (data: { id: string; name: string }) => {
                 class="grid grid-cols-5 gap-5 my-2.5 items-center">
                 <Button
                   label="Activate"
-                  @click="saveSplit(split.high, split.low)" />
+                  @click="saveSplit(split.high, split.low)"
+                  :loading="isSavingSplit" />
                 <span class="col-span-4"
                   ><b>{{ split.name }}</b> {{ split.description }}</span
                 >
@@ -442,7 +445,8 @@ const toggleSplit = (data: { id: string; name: string }) => {
               <Button
                 severity="danger"
                 label="Reset Split"
-                @click="resetSplit" />
+                @click="resetSplit"
+                :loading="isResettingSplit" />
               <span class="col-span-4"
                 ><b>Plan 1A</b> {{ defaultSector.id }}
                 {{ defaultSector.name }} owns everything
@@ -492,7 +496,8 @@ const toggleSplit = (data: { id: string; name: string }) => {
                   <Button
                     severity="danger"
                     label="Reset Split"
-                    @click="resetSplit" />
+                    @click="resetSplit"
+                    :loading="isResettingSplit" />
                 </div>
               </div>
 
@@ -520,7 +525,8 @@ const toggleSplit = (data: { id: string; name: string }) => {
                     currentSplit.ownership.high,
                     currentSplit.ownership.low,
                   )
-                " />
+                "
+                :loading="isSavingSplit" />
             </div>
           </TabPanel>
         </TabPanels>

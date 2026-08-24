@@ -4,6 +4,7 @@ import { newsService } from '@/services/news/news.service';
 import type { INewsArticle } from '@/services/news/news.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -25,6 +26,7 @@ const slug = Array.isArray(route.params.slug)
   : route.params.slug;
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const initialValues = ref({
   title: '',
@@ -77,7 +79,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
 
   const { values } = event;
 
-  try {
+  await execute(async () => {
     if (article.value?.uriSlug) {
       await newsService.editArticle(
         article.value.uriSlug,
@@ -90,9 +92,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
 
     toastSuccess('Article Saved!', 'Article was successfully saved.');
     router.push('/admin/news');
-  } catch (e) {
-    console.error('error saving article', e);
-  }
+  });
 };
 </script>
 
@@ -140,7 +140,8 @@ const onSubmit = async (event: FormSubmitEvent) => {
                 !$form?.content?.valid ||
                 !$form?.title?.valid ||
                 ($form?.title?.pristine && $form?.content?.pristine)
-              " />
+              "
+              :loading="isSubmitting" />
           </div>
         </div>
       </Form>

@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores/user';
 import { dateAsMMDDHHMM } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { getS3Url } from '@/utils/uriHelper';
 import { Icon } from '@iconify/vue';
 import { storeToRefs } from 'pinia';
@@ -28,6 +29,9 @@ const route = useRoute();
 const eventData = ref<IEvent | null>(null);
 const positions = ref<IPositions | null>(null);
 const signupVisible = ref(false);
+
+const { isSubmitting: isRemovingSignup, execute: executeRemoveSignup } =
+  useAsyncSubmit();
 
 const userStore = useUserStore();
 const { user, isLoggedIn } = storeToRefs(userStore);
@@ -88,16 +92,15 @@ const getEvent = async () => {
 
 const removeSignup = async () => {
   if (!eventData.value) return;
+  const url = eventData.value.url;
 
-  try {
-    await eventService.deleteSignup(eventData.value.url);
+  await executeRemoveSignup(async () => {
+    await eventService.deleteSignup(url);
 
     toastSuccess('Event signup removed!', 'Your signup has been deleted.');
 
     getEvent();
-  } catch (e) {
-    console.error('Error deleting signup request', e);
-  }
+  });
 };
 
 const isEventInPast = () => {
@@ -176,7 +179,8 @@ const reloadEventData = async () => {
                   !isEventInPast()
                 "
                 label="Remove signup"
-                @click.prevent="removeSignup" />
+                @click.prevent="removeSignup"
+                :loading="isRemovingSignup" />
 
               <Message
                 severity="warn"

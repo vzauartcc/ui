@@ -4,6 +4,7 @@ import type { ISoloEndorsement } from '@/services/training/training.types';
 import { dateAsMMDD, localToUTC, utcToLocal } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
@@ -17,6 +18,10 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
+const { isSubmitting: isSavingEdit, execute: executeSaveEdit } =
+  useAsyncSubmit();
+const { isSubmitting: isDeleting, execute: executeDelete } = useAsyncSubmit();
 
 const props = withDefaults(
   defineProps<{
@@ -89,7 +94,7 @@ const saveEdit = async () => {
 
   const values = editVal.value;
 
-  try {
+  await executeSaveEdit(async () => {
     await trainingService.editSoloEndorsement(values._id, {
       expirationDate: localToUTC(values.newExpiration),
       confirmation: values.acknowledgement,
@@ -100,17 +105,17 @@ const saveEdit = async () => {
       `${values.name}'s solo endorsement has been updated.`,
     );
     clearEdit();
-  } catch (e) {
-    console.error('error updating solo endorsement', e);
-  }
+  });
 };
 
 const deleteEndorsement = async () => {
   if (!deleteVal.value || !deleteVal.value._id) {
     return;
   }
-  try {
-    await trainingService.deleteSoloEndorsement(deleteVal.value._id);
+  const endorsementId = deleteVal.value._id;
+
+  await executeDelete(async () => {
+    await trainingService.deleteSoloEndorsement(endorsementId);
 
     toastSuccess(
       'Solo Endorsement Revoked!',
@@ -118,9 +123,7 @@ const deleteEndorsement = async () => {
     );
 
     router.replace('/ins/solo');
-  } catch (e) {
-    console.error('error deleting solo endorsement', e);
-  }
+  });
 };
 
 const getMaxExpiration = (issuedAt: string): Date => {
@@ -240,7 +243,8 @@ const getMaxExpiration = (issuedAt: string): Date => {
       <Button
         label="Save"
         @click="saveEdit"
-        :disabled="!editVal.acknowledgement" />
+        :disabled="!editVal.acknowledgement"
+        :loading="isSavingEdit" />
       <Button label="Cancel" @click="clearEdit" severity="secondary" />
     </template>
   </Dialog>
@@ -258,7 +262,11 @@ const getMaxExpiration = (issuedAt: string): Date => {
       >?
     </p>
     <template #footer>
-      <Button label="Revoke" @click="deleteEndorsement" severity="danger" />
+      <Button
+        label="Revoke"
+        @click="deleteEndorsement"
+        severity="danger"
+        :loading="isDeleting" />
       <Button label="Cancel" @click="clearDelete" severity="secondary" />
     </template>
   </Dialog>

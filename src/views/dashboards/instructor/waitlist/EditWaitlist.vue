@@ -9,6 +9,7 @@ import type {
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -33,6 +34,7 @@ const id =
   (Array.isArray(route.params.id) ? route.params.id[0] : route.params.id) || '';
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 const endorsements = ref<ICertification[] | null>(null);
 const instructors = ref<IInstructor[] | null>(null);
 
@@ -120,12 +122,14 @@ const resolver = ({ values }: FormResolverOptions) => {
 };
 
 const saveForm = async (event: FormSubmitEvent) => {
-  try {
-    if (!event.valid || !signup.value) return;
+  if (!event.valid || !signup.value) return;
 
-    const { values } = event;
+  const { values } = event;
+  const signupId = signup.value._id;
+  const studentName = compileUsersName(signup.value.student);
 
-    await trainingService.editWaitlistEntryManual(signup.value._id, {
+  await execute(async () => {
+    await trainingService.editWaitlistEntryManual(signupId, {
       instructor: values.instructor,
       certification: values.endorsement,
       availability: values.availability,
@@ -134,13 +138,11 @@ const saveForm = async (event: FormSubmitEvent) => {
 
     toastSuccess(
       'Waitlist Entry Updated!',
-      `${compileUsersName(signup.value.student)}'s waitlist entry has been updated.`,
+      `${studentName}'s waitlist entry has been updated.`,
     );
 
     router.push('/ins/waitlist');
-  } catch (e) {
-    console.error('error saving form', e);
-  }
+  });
 };
 </script>
 
@@ -243,7 +245,11 @@ const saveForm = async (event: FormSubmitEvent) => {
             </FormField>
           </div>
 
-          <Button type="submit" label="Edit Signup" :disabled="!$form?.valid" />
+          <Button
+            type="submit"
+            label="Edit Signup"
+            :disabled="!$form?.valid"
+            :loading="isSubmitting" />
         </div>
       </Form>
     </template>

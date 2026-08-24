@@ -5,6 +5,7 @@ import { useUserStore } from '@/stores/user';
 import { localToUTC } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -27,6 +28,8 @@ useTitle('Request Staffing');
 const userStore = useUserStore();
 const { user, isLoggedIn } = storeToRefs(userStore);
 const router = useRouter();
+
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const minDate = ref(new Date(Date.now() + 24 * 60 * 60 * 1000));
 
@@ -67,7 +70,8 @@ const requestStaffing = async (event: FormSubmitEvent) => {
   }
 
   const { values } = event;
-  try {
+
+  await execute(async () => {
     await staffingRequestService.createRequest(
       values.vaName,
       values.pilots,
@@ -82,9 +86,7 @@ const requestStaffing = async (event: FormSubmitEvent) => {
     );
 
     router.push('/');
-  } catch (e) {
-    console.error('error submitting request for staffing', e);
-  }
+  });
 };
 </script>
 
@@ -256,7 +258,8 @@ const requestStaffing = async (event: FormSubmitEvent) => {
                 $form?.route?.pristine ||
                 $form?.pilots?.pristine ||
                 $form?.vaName?.pristine
-              " />
+              "
+              :loading="isSubmitting" />
           </div>
         </Form>
       </template>

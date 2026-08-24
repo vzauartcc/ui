@@ -3,6 +3,7 @@ import { discordService } from '@/services/discord/discord.service';
 import { useUserStore } from '@/stores/user';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
@@ -13,6 +14,7 @@ useTitle('Processing data. . . .');
 const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
+const { execute } = useAsyncSubmit();
 
 const errorCode = ref('');
 const errorDescription = ref('');
@@ -54,23 +56,16 @@ onMounted(async () => {
     return redirect();
   }
 
-  try {
+  await execute(async () => {
     await discordService.linkDiscord(discordCode);
 
     toastSuccess(
       'Discord Account Linked!',
       'Successfully linked your Discord account. Role syncing in progress.',
     );
-  } catch (e) {
-    console.error('error linking discord', e);
+  });
 
-    toastError(
-      'Error Linking Discord!',
-      'Failed to link Discord: Unable to save information.',
-    );
-  } finally {
-    redirect();
-  }
+  redirect();
 });
 
 const redirect = async () => {

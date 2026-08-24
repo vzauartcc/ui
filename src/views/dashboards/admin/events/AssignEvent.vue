@@ -11,6 +11,7 @@ import { feedbackService } from '@/services/feedback/feedback.service';
 import type { IFeedbackController } from '@/services/feedback/feedback.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -98,35 +99,39 @@ const closeDeleteSignup = () => {
   deleteSignupData.value = null;
 };
 
+const { isSubmitting: isDeletingSignup, execute: executeDeleteSignup } =
+  useAsyncSubmit();
+
 const deleteSignup = async () => {
   if (!deleteSignupData.value) return;
+  const data = deleteSignupData.value;
 
-  try {
-    await eventService.manuallyDeleteSignup(slug, deleteSignupData.value.cid);
+  await executeDeleteSignup(async () => {
+    await eventService.manuallyDeleteSignup(slug, data.cid);
 
     closeDeleteSignup();
     toastSuccess('Signup Deleted!', 'Successfully deleted the signup.');
     getEventData();
-  } catch (e) {
-    console.error('error deleting signup', e);
-  }
+  });
 };
 
 const manualSignupVisible = ref(false);
 const manualSignupData = ref({ cid: 0 });
+const { isSubmitting: isSavingManualSignup, execute: executeSaveManualSignup } =
+  useAsyncSubmit();
+
 const saveManualSignup = async () => {
   if (manualSignupData.value.cid < 1) return;
 
-  try {
+  await executeSaveManualSignup(async () => {
     await eventService.manuallySignUp(slug, manualSignupData.value.cid);
 
     closeManualSignup();
     toastSuccess('Sign Up Saved!', 'Successfully saved the sign up.');
     getEventData();
-  } catch (e) {
-    console.error('error saving manual sign up', e);
-  }
+  });
 };
+
 const closeManualSignup = () => {
   manualSignupVisible.value = false;
   manualSignupData.value = { cid: 0 };
@@ -138,10 +143,12 @@ const getRowColor = (data: IPosition) => {
   }
 };
 
+const { execute: executeAssignPosition } = useAsyncSubmit();
+
 const assignPosition = async (newVal: number | null, posData: IPosition) => {
   if (!eventData.value) return;
 
-  try {
+  await executeAssignPosition(async () => {
     await eventService.assignPosition(slug, posData._id, newVal);
 
     if (newVal) {
@@ -157,41 +164,43 @@ const assignPosition = async (newVal: number | null, posData: IPosition) => {
     }
 
     getEventData();
-  } catch (e) {
-    console.error('error assigning position', e);
-  }
+  });
 };
 
 const sendEventVisible = ref(false);
+
+const { isSubmitting: isSendingEvent, execute: executeSendEvent } =
+  useAsyncSubmit();
+
 const sendEvent = async () => {
-  try {
+  await executeSendEvent(async () => {
     await eventService.sendEvent(slug);
 
     toastSuccess('Event Sent!', 'Event has been sent to the Discord channel.');
     sendEventVisible.value = false;
-  } catch (e) {
-    console.error('error sending event to discord', e);
-  }
+  });
 };
 
+const { isSubmitting: isClosingSignups, execute: executeCloseSignups } =
+  useAsyncSubmit();
+
 const closeSignups = async () => {
-  try {
+  await executeCloseSignups(async () => {
     await eventService.closeSignups(slug, false);
 
     eventData.value!.open = false;
-  } catch (e) {
-    console.error('error closing signups', e);
-  }
+  });
 };
 
+const { isSubmitting: isOpeningSignups, execute: executeOpenSignups } =
+  useAsyncSubmit();
+
 const openSignups = async () => {
-  try {
+  await executeOpenSignups(async () => {
     await eventService.closeSignups(slug, true);
 
     eventData.value!.open = true;
-  } catch (e) {
-    console.error('error closing signups', e);
-  }
+  });
 };
 </script>
 
@@ -210,12 +219,14 @@ const openSignups = async () => {
               v-if="eventData.open"
               label="Close Signups"
               severity="danger"
-              @click="closeSignups" />
+              @click="closeSignups"
+              :loading="isClosingSignups" />
             <Button
               v-else
               label="Open Signups"
               severity="success"
-              @click="openSignups" />
+              @click="openSignups"
+              :loading="isOpeningSignups" />
             <Button label="New Signup" @click="manualSignupVisible = true" />
           </div>
         </template>
@@ -336,7 +347,11 @@ const openSignups = async () => {
       >'s sign up for this event.
     </p>
     <template #footer>
-      <Button severity="danger" label="Delete" @click="deleteSignup" />
+      <Button
+        severity="danger"
+        label="Delete"
+        @click="deleteSignup"
+        :loading="isDeletingSignup" />
       <Button outlined label="Cancel" @click="closeDeleteSignup" />
     </template>
   </Dialog>
@@ -366,7 +381,10 @@ const openSignups = async () => {
       </FloatLabel>
     </div>
     <template #footer>
-      <Button label="Sign Up" @click="saveManualSignup" />
+      <Button
+        label="Sign Up"
+        @click="saveManualSignup"
+        :loading="isSavingManualSignup" />
       <Button outlined label="Cancel" @click="closeManualSignup" />
     </template>
   </Dialog>
@@ -381,7 +399,7 @@ const openSignups = async () => {
       This will send <b>{{ eventData?.name }}</b> to the Discord channel.
     </p>
     <template #footer>
-      <Button @click="sendEvent" label="Send!" />
+      <Button @click="sendEvent" label="Send!" :loading="isSendingEvent" />
       <Button outlined label="Cancel" @click="sendEventVisible = false" />
     </template>
   </Dialog>

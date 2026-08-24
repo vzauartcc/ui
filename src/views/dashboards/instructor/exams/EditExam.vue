@@ -5,6 +5,7 @@ import { examService } from '@/services/exam/exam.service';
 import type { IExam, IQuestion } from '@/services/exam/exam.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import {
   Form,
@@ -47,6 +48,8 @@ const id = Array.isArray(route.params.id)
   ? route.params.id[0]
   : route.params.id;
 const loading = ref(true);
+
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const milestones = ref<ICertification[]>([]);
 
@@ -264,9 +267,11 @@ const saveExam = async (event: FormSubmitEvent) => {
     return q;
   });
 
-  try {
-    if (values._id !== '') {
-      await examService.editExam(values._id, values as IExam);
+  const examId = values._id;
+
+  await execute(async () => {
+    if (examId !== '') {
+      await examService.editExam(examId, values as IExam);
 
       toastSuccess('Exam Saved!', 'Changes to the exam have been saved.');
     } else {
@@ -276,9 +281,7 @@ const saveExam = async (event: FormSubmitEvent) => {
     }
 
     router.push('/ins/exams');
-  } catch (e) {
-    console.error('error saving exam', e);
-  }
+  });
 };
 </script>
 
@@ -401,7 +404,8 @@ const saveExam = async (event: FormSubmitEvent) => {
           <Button
             type="submit"
             severity="success"
-            :disabled="!$form?.valid || initialValues.questions.length < 1">
+            :disabled="!$form?.valid || initialValues.questions.length < 1"
+            :loading="isSubmitting">
             <span v-if="id">Save!</span>
             <span v-else>Create!</span>
           </Button>

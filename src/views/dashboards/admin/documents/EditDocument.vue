@@ -6,6 +6,7 @@ import type { IDocument } from '@/services/files/files.types';
 import { s3Service } from '@/services/s3.service';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -31,6 +32,7 @@ const slug = Array.isArray(route.params.slug)
   : route.params.slug;
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const fileData = ref<File | null>(null);
 
@@ -136,7 +138,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
     return;
   }
 
-  try {
+  await execute(async () => {
     if (file.value!._id) {
       const data = await filesService.editDocument(
         file.value!.slug,
@@ -166,9 +168,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
     }
 
     router.push('/admin/files/documents');
-  } catch (e) {
-    console.error('error saving file changes', e);
-  }
+  });
 
   uploadProgress.value = -1;
 };
@@ -299,7 +299,8 @@ const uploadDocument = async (url: string) => {
                 !$form?.valid ||
                 ($form?.type?.value === 'doc' && !$form?.content?.value) ||
                 ($form?.type?.value === 'file' && !fileData && !slug)
-              " />
+              "
+              :loading="isSubmitting" />
           </div>
         </div>
       </Form>

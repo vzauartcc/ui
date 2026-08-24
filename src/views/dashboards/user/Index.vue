@@ -5,7 +5,8 @@ import { useUserStore } from '@/stores/user';
 import { dateAsMMDDHHMM } from '@/utils/date';
 import { secToHHMMSS } from '@/utils/text';
 import { useTitle } from '@/utils/title';
-import { toastError, toastSuccess } from '@/utils/toast';
+import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
@@ -26,6 +27,8 @@ const sessionData = ref<IUserSessionsResponse | null>(null);
 const activitySecs = ref(0.0);
 
 const router = useRouter();
+
+const { isSubmitting, execute } = useAsyncSubmit();
 
 onMounted(async () => {
   try {
@@ -64,7 +67,7 @@ const linkDiscord = () => {
 };
 
 const unlinkDiscord = async () => {
-  try {
+  await execute(async () => {
     await userService.unlinkDiscord();
 
     toastSuccess(
@@ -73,14 +76,7 @@ const unlinkDiscord = async () => {
     );
 
     await userStore.getUser(true);
-  } catch (e) {
-    console.error('error unlinking discord', e);
-
-    toastError(
-      'Discord Account Unlink Error!',
-      'An error occurred unlinking your Discord account.',
-    );
-  }
+  });
 };
 </script>
 
@@ -133,7 +129,8 @@ const unlinkDiscord = async () => {
       <Button
         v-if="user!.discord ?? '' !== ''"
         severity="warn"
-        @click.prevent="unlinkDiscord()">
+        @click.prevent="unlinkDiscord()"
+        :loading="isSubmitting">
         Unlink Discord
         <Icon icon="mdi:discord" />
       </Button>

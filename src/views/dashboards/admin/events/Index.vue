@@ -6,6 +6,7 @@ import type { IStaffingRequest } from '@/services/staffingRequest/staffingReques
 import { dateAsMMDDHHMM } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -105,19 +106,24 @@ const closeEventDelete = () => {
   eventDeleteVisible.value = false;
   eventDeleteData.value = null;
 };
+
+const { isSubmitting: isDeletingEvent, execute: executeDeleteEvent } =
+  useAsyncSubmit();
+const { isSubmitting: isDeletingStaffing, execute: executeDeleteStaffing } =
+  useAsyncSubmit();
+
 const deleteEvent = async () => {
   if (!eventDeleteData.value) return;
+  const url = eventDeleteData.value.url;
 
-  try {
-    await eventService.deleteEvent(eventDeleteData.value.url);
+  await executeDeleteEvent(async () => {
+    await eventService.deleteEvent(url);
 
     toastSuccess('Event Deleted!', 'The event has been successfully deleted.');
 
     loadEvents();
     closeEventDelete();
-  } catch (e) {
-    console.error('error deleting event', e);
-  }
+  });
 };
 
 const staffingDeleteData = ref<IStaffingRequest | null>(null);
@@ -130,19 +136,19 @@ const closeStaffingDelete = () => {
   staffingDeleteVisible.value = false;
   staffingDeleteData.value = null;
 };
+
 const deleteStaffingRequest = async () => {
   if (!staffingDeleteData.value) return;
+  const id = staffingDeleteData.value._id;
 
-  try {
-    await staffingRequestService.deleteRequest(staffingDeleteData.value._id);
+  await executeDeleteStaffing(async () => {
+    await staffingRequestService.deleteRequest(id);
 
     toastSuccess('Request Deleted!', 'The staffing request has been deleted.');
     loadLazyStaffingRequests();
 
     closeStaffingDelete();
-  } catch (e) {
-    console.error('error deleting staffing request', e);
-  }
+  });
 };
 
 const isInPast = (date?: Date | string) => {
@@ -319,7 +325,11 @@ const isInPast = (date?: Date | string) => {
       Confirm the deletion of the <b>{{ staffingDeleteData?.vaName }}</b> event.
     </p>
     <template #footer>
-      <Button severity="danger" @click="deleteEvent" label="Delete" />
+      <Button
+        severity="danger"
+        @click="deleteEvent"
+        label="Delete"
+        :loading="isDeletingEvent" />
       <Button outlined @click="closeEventDelete" label="Cancel" />
     </template>
   </Dialog>
@@ -335,7 +345,11 @@ const isInPast = (date?: Date | string) => {
       >'s staffing request.
     </p>
     <template #footer>
-      <Button severity="danger" @click="deleteStaffingRequest" label="Delete" />
+      <Button
+        severity="danger"
+        @click="deleteStaffingRequest"
+        label="Delete"
+        :loading="isDeletingStaffing" />
       <Button outlined @click="closeStaffingDelete" label="Cancel" />
     </template>
   </Dialog>

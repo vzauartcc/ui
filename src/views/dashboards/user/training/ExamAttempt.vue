@@ -4,6 +4,7 @@ import type { IExamAttempt } from '@/services/exam/exam.types';
 import { useUserStore } from '@/stores/user';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -100,6 +101,8 @@ const selectedOptions = ref<string[]>([]);
 const isSaving = ref(false);
 const startTime = ref(Date.now());
 
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const saveAnswer = async (
   questionOrder: number,
   answers: string[],
@@ -190,8 +193,10 @@ const submitExam = async () => {
 
   if (!allQuestionsAnswered.value) {
     alert('Some questions are missing!');
+    return;
   }
-  try {
+
+  await execute(async () => {
     // Force save the current question.
     await saveAnswer(
       activeQuestion.value,
@@ -199,12 +204,13 @@ const submitExam = async () => {
       Date.now() - startTime.value,
     );
 
-    await examService.submitExam(attempt.value._id);
+    if (!attempt.value) return;
+    const attemptId = attempt.value._id;
+
+    await examService.submitExam(attemptId);
     router.push('/dash/training/exams');
     toastSuccess('Exam Submitted!', 'Your exam attempt has been recorded.');
-  } catch (e) {
-    console.error('error submitting exam', e);
-  }
+  });
 };
 
 const questionIsAnswered = (id: number) => {
@@ -316,7 +322,8 @@ const questionIsAnswered = (id: number) => {
                     label="Submit"
                     @click="submitExam"
                     v-if="allQuestionsAnswered"
-                    severity="danger" />
+                    severity="danger"
+                    :loading="isSubmitting" />
                 </div>
               </template>
             </Card>

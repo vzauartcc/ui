@@ -8,6 +8,7 @@ import { localToUTC } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess, toastWarning } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -27,6 +28,7 @@ import { useRouter } from 'vue-router';
 useTitle('Issue Solo Endorsement');
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const controllers = ref<IFeedbackController[] | null>(null);
 const endorsements = ref<ICertification[] | null>(null);
@@ -89,11 +91,11 @@ const resolver = ({ values }: FormResolverOptions) => {
 };
 
 const saveForm = async (event: FormSubmitEvent) => {
-  try {
-    if (!event.valid) return;
+  if (!event.valid) return;
 
-    const { values } = event;
+  const { values } = event;
 
+  await execute(async () => {
     await trainingService.createSoloEndorsement(
       values.controller.cid,
       values.position,
@@ -110,9 +112,7 @@ const saveForm = async (event: FormSubmitEvent) => {
     );
 
     router.push(`/ins/controller/${values.controller.cid}`);
-  } catch (e) {
-    console.error('error saving form', e);
-  }
+  });
 };
 </script>
 
@@ -216,7 +216,8 @@ const saveForm = async (event: FormSubmitEvent) => {
               $form?.controller?.pristine ||
               $form?.position?.pristine ||
               $form.expirationDate?.pristine
-            " />
+            "
+            :loading="isSubmitting" />
           <p>Form submissions are automatically be sent to VATUSA.</p>
         </div>
       </Form>

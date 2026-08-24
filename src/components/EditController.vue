@@ -9,6 +9,7 @@ import { useUserStore } from '@/stores/user';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import {
   Form,
@@ -149,6 +150,8 @@ const getOITooltip = (field: FormFieldState): string => {
   return 'Operating Initials Available';
 };
 
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const updateController = async (event: FormSubmitEvent) => {
   if (!event.valid) {
     toastError(
@@ -162,7 +165,7 @@ const updateController = async (event: FormSubmitEvent) => {
 
   const { values } = event;
 
-  try {
+  await execute(async () => {
     await controllerService.updateController(
       props.cid,
       values.roleCodes,
@@ -171,9 +174,7 @@ const updateController = async (event: FormSubmitEvent) => {
     );
 
     toastSuccess('Controller Updated!', 'Successfully updated controller.');
-  } catch (e) {
-    console.error('error saving controller', e);
-  }
+  });
 };
 </script>
 
@@ -301,7 +302,8 @@ const updateController = async (event: FormSubmitEvent) => {
         <Button
           type="submit"
           label="Update Controller"
-          :disabled="!$form?.valid" />
+          :disabled="!$form?.valid"
+          :loading="isSubmitting" />
       </Form>
     </template>
   </Card>

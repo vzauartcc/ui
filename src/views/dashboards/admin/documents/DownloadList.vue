@@ -4,6 +4,7 @@ import { filesService } from '@/services/files/files.service';
 import type { IDownload } from '@/services/files/files.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { onMounted, ref } from 'vue';
@@ -37,20 +38,23 @@ const closeDelete = () => {
   deleteData.value = null;
 };
 
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const deleteDownload = async () => {
   if (!deleteData.value) return;
-  try {
-    await filesService.deleteDownload(deleteData.value._id);
+  const downloadId = deleteData.value._id;
+  const downloadName = deleteData.value.name;
+
+  await execute(async () => {
+    await filesService.deleteDownload(downloadId);
 
     toastSuccess(
       'Download deleted!',
-      `Download ${deleteData.value.name} has been deleted.`,
+      `Download ${downloadName} has been deleted.`,
     );
     closeDelete();
     loadDownloads();
-  } catch (e) {
-    console.error('error deleting document', e);
-  }
+  });
 };
 </script>
 
@@ -69,7 +73,11 @@ const deleteDownload = async () => {
       This will permanently delete the <b>{{ deleteData?.name }}</b> download.
     </p>
     <template #footer>
-      <Button severity="danger" label="Delete" @click="deleteDownload" />
+      <Button
+        severity="danger"
+        label="Delete"
+        @click="deleteDownload"
+        :loading="isSubmitting" />
       <Button outlined label="Cancel" @click="closeDelete" />
     </template>
   </Dialog>

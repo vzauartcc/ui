@@ -6,6 +6,7 @@ import { useUserStore } from '@/stores/user';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -38,6 +39,8 @@ const cid =
   '';
 
 const controllerList = ref<IFeedbackController[] | null>(null);
+
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const initialValues = ref({
   controller: undefined as IFeedbackController | undefined,
@@ -108,7 +111,7 @@ const sendFeedback = async (event: FormSubmitEvent) => {
 
   const { values } = event;
 
-  try {
+  await execute(async () => {
     await feedbackService.postFeedback(
       values.controller.cid,
       values.position,
@@ -119,9 +122,7 @@ const sendFeedback = async (event: FormSubmitEvent) => {
 
     toastSuccess('Feedback Submitted!', 'Your feedback has been submitted.');
     router.push('/');
-  } catch (err) {
-    console.error('error submitting feedback', err);
-  }
+  });
 };
 </script>
 
@@ -299,7 +300,8 @@ const sendFeedback = async (event: FormSubmitEvent) => {
               <Button
                 type="submit"
                 label="Send Feedback"
-                :disabled="!$form?.valid || $form?.comments?.pristine" />
+                :disabled="!$form?.valid || $form?.comments?.pristine"
+                :loading="isSubmitting" />
             </div>
           </Form>
         </template>

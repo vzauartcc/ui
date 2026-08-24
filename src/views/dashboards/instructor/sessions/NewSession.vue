@@ -9,6 +9,7 @@ import type {
 } from '@/services/training/training.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
@@ -17,6 +18,7 @@ import { useRouter } from 'vue-router';
 useTitle('New Session Notes');
 
 const router = useRouter();
+const { execute } = useAsyncSubmit();
 
 const controllers = ref<IFeedbackController[] | null>(null);
 const milestones = ref<ITrainingMilestone[] | null>(null);
@@ -45,8 +47,8 @@ const persistSession = async (
   type: 'save' | 'submit',
   data: Partial<ITrainingSession>,
 ) => {
-  if (type === 'submit') {
-    try {
+  await execute(async () => {
+    if (type === 'submit') {
       await trainingService.submitSession(data);
 
       router.push('/ins/sessions');
@@ -54,19 +56,13 @@ const persistSession = async (
         'Session Submitted!',
         'Successfully submitted session to VATUSA.',
       );
-    } catch (err) {
-      console.error('error submitting form', err);
-    }
-  } else {
-    try {
+    } else {
       await trainingService.saveSession(data);
 
       router.push('/ins/sessions');
       toastSuccess('Session Saved!', 'Successfully saved session notes.');
-    } catch (e) {
-      console.error('error saving session', e);
     }
-  }
+  });
 };
 </script>
 

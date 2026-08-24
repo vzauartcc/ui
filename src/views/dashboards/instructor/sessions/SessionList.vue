@@ -9,6 +9,7 @@ import { dateAsMMDDHHMM } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -80,9 +81,14 @@ const closeDelete = () => {
   visible.value = false;
 };
 
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const confirmDelete = async () => {
-  try {
-    await trainingService.deleteSession(deleteSession.value!._id);
+  if (!deleteSession.value) return;
+  const sessionId = deleteSession.value._id;
+
+  await execute(async () => {
+    await trainingService.deleteSession(sessionId);
 
     toastSuccess(
       'Training Session Deleted!',
@@ -91,9 +97,7 @@ const confirmDelete = async () => {
     closeDelete();
 
     loadLazyArchive();
-  } catch (e) {
-    console.error('error deleting session', e);
-  }
+  });
 };
 
 const canEdit = (session: ITrainingSession) => {
@@ -259,7 +263,11 @@ const canDelete = (session: ITrainingSession) => {
       >.
     </p>
     <template #footer>
-      <Button severity="danger" @click="confirmDelete" label="Delete" />
+      <Button
+        severity="danger"
+        @click="confirmDelete"
+        label="Delete"
+        :loading="isSubmitting" />
       <Button severity="secondary" @click="closeDelete" label="Cancel" />
     </template>
   </Dialog>

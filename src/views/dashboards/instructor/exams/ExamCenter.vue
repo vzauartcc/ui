@@ -8,6 +8,7 @@ import { dateAsMMDD } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import {
@@ -179,7 +180,7 @@ const assignExam = async (event: FormSubmitEvent) => {
 
   const { values } = event;
 
-  try {
+  await executeAssign(async () => {
     await examService.assignExam(values.student, values.exam);
 
     toastSuccess('Exam Assigned!', 'The exam has been assigned.');
@@ -187,9 +188,7 @@ const assignExam = async (event: FormSubmitEvent) => {
     assignVisible.value = false;
 
     loadLazyArchive();
-  } catch (e) {
-    console.error('error assigning exam', e);
-  }
+  });
 };
 
 const deleteVisible = ref(false);
@@ -205,19 +204,21 @@ const closeDelete = () => {
   deleteAttempt.value = null;
 };
 
+const { isSubmitting: isAssigning, execute: executeAssign } = useAsyncSubmit();
+const { isSubmitting: isDeleting, execute: executeDelete } = useAsyncSubmit();
+
 const deleteExamAttempt = async () => {
   if (!deleteAttempt.value) return;
+  const attempt = deleteAttempt.value;
 
-  try {
-    await examService.deleteAttempt(deleteAttempt.value._id);
+  await executeDelete(async () => {
+    await examService.deleteAttempt(attempt._id);
 
     toastSuccess('Attempt Deleted!', `Exam attempt deleted.`);
 
     closeDelete();
     loadLazyArchive();
-  } catch (e) {
-    console.error('error deleting exam attempt', e);
-  }
+  });
 };
 </script>
 
@@ -457,7 +458,8 @@ const deleteExamAttempt = async () => {
           severity="success"
           :disabled="
             !$form?.valid || $form?.student?.pristine || $form?.exam?.pristine
-          " />
+          "
+          :loading="isAssigning" />
         <Button label="Cancel" outlined @click="assignVisible = false" />
       </div>
     </Form>
@@ -478,7 +480,8 @@ const deleteExamAttempt = async () => {
       <Button
         severity="danger"
         label="Delete"
-        @click.prevent="deleteExamAttempt" />
+        @click.prevent="deleteExamAttempt"
+        :loading="isDeleting" />
       <Button outlined label="Cancel" @click.prevent="closeDelete" />
     </template>
   </Dialog>
