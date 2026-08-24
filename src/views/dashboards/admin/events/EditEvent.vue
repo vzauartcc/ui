@@ -222,7 +222,8 @@ const uploadBanner = async (url: string) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   } catch (e) {
     console.error('error uploading to s3', e);
-    toastError('Error Uploading!', 'Error uploading the file.');
+    toastError('Error uploading!', 'An error occurred uploading the file.');
+    throw e;
   }
 };
 

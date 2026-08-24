@@ -188,6 +188,7 @@ const uploadDocument = async (url: string) => {
   } catch (e) {
     console.error('error uploading to s3', e);
     toastError('Error uploading!', 'An error occurred uploading the file.');
+    throw e;
   }
 };
 </script>
