@@ -4,7 +4,12 @@ import { toastError } from './toast';
 export const zauApi = ky.create({
   prefixUrl: isRunningOnDev() ? '/devapi' : '/api',
   credentials: 'include',
-  retry: 0,
+  retry: {
+    limit: 3,
+    methods: ['get'],
+    statusCodes: [500, 502, 503, 504],
+    backoffLimit: 30000,
+  },
   hooks: {
     beforeError: [
       async (error) => {

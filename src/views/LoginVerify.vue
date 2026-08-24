@@ -39,30 +39,36 @@ onMounted(async () => {
 
     router.push(redirectTo);
   } catch (e) {
+    let errorMessage = 'Something went wrong, please try again later.';
+
     if (e instanceof HTTPError) {
-      const data = await e.response.json();
+      try {
+        const data = await e.response.json();
+        if (data && typeof data.message === 'string') {
+          errorMessage = data.message;
+        }
+      } catch {
+        // Non-JSON error body (e.g., nginx 502/504 HTML page)
+        errorMessage = `Server error (${e.response.status}). Please try again later.`;
+      }
+
       if (
         e.response.status === 400 &&
-        data.message.includes('[Authorize Data]')
+        errorMessage.includes('[Authorize Data]')
       ) {
         toastError(
           'Authorization Failure!',
           'Unable to process login, please authorize all requested VATSIM data.',
         );
       } else {
-        toastError(
-          'Error Logging In!',
-          data.message || 'Something went wrong, please try again later',
-        );
+        toastError('Error Logging In!', errorMessage);
       }
     } else {
-      loading.value = false;
       console.error('error logging in', e);
-      toastError(
-        'Error Logging In!',
-        'Something went wrong, please try again later.',
-      );
+      toastError('Error Logging In!', errorMessage);
     }
+  } finally {
+    loading.value = false;
   }
 });
 </script>
