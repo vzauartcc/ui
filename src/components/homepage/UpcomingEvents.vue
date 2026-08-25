@@ -7,6 +7,8 @@ import { truncateText } from '@/utils/text';
 import { getS3Url } from '@/utils/uriHelper';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
 import Galleria from 'primevue/galleria';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
@@ -36,7 +38,7 @@ onMounted(async () => {
       :numVisible="3"
       circular
       autoPlay
-      :transitionInterval="3000"
+      :transitionInterval="5000"
       containerStyle="width: 100%"
       :showThumbnails="false"
       showItemNavigators>
@@ -70,6 +72,21 @@ onMounted(async () => {
         </div>
       </template>
     </Galleria>
+    <br />
+    <DataTable :value="events">
+      <Column field="name" header="Name">
+        <template #body="{ data }">
+          <router-link class="font-bold" :to="`/event/${data.url}`">{{
+            data.name
+          }}</router-link>
+        </template>
+      </Column>
+      <Column field="eventStart" header="Event Start">
+        <template #body="{ data }">
+          {{ dateAsMMDDHHMM(data.eventStart) }}
+        </template>
+      </Column>
+    </DataTable>
   </template>
   <template v-else>
     <p class="italic">
