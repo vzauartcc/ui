@@ -240,7 +240,9 @@ const scrollToOverview = () => {
           <template #title>
             <div class="flex gap-5 items-center">
               <span class="w-6">{{ idx + 1 }}.</span>
-              <span>{{ question.question.text }}</span>
+              <span class="whitespace-pre-line break-words">{{
+                question.question.text
+              }}</span>
             </div></template
           >
           <template #content>
@@ -277,7 +279,9 @@ const scrollToOverview = () => {
                         question.response.selectedOptions.includes(option._id!)
                       " />
                   </span>
-                  <span>{{ option.text }}</span>
+                  <span class="whitespace-pre-line break-words">{{
+                    option.text
+                  }}</span>
                 </div>
               </span>
             </div>

@@ -371,7 +371,13 @@ const saveExam = async (event: FormSubmitEvent) => {
               <template #header>
                 <Button label="Add Question" @click="questionVisible = true" />
               </template>
-              <Column field="text" header="Question" />
+              <Column field="text" header="Question">
+                <template #body="{ data }">
+                  <span class="whitespace-pre-line break-words">{{
+                    data.text
+                  }}</span>
+                </template>
+              </Column>
               <Column field="isActive" header="Active">
                 <template #body="{ data }">
                   {{ data.isActive ? 'Active' : 'Inactive' }}

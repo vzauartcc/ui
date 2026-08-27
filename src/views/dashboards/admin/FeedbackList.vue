@@ -303,7 +303,9 @@ const rejectFeedback = async () => {
       </FloatLabel>
     </div>
     <p>Comments</p>
-    <p id="comments">{{ feedback!.comments }}</p>
+    <p id="comments" class="whitespace-pre-line break-words">
+      {{ feedback!.comments }}
+    </p>
 
     <template #footer>
       <template v-if="feedback!.pending">

@@ -125,7 +125,7 @@ const history = computed(() => {
           class="text-surface-500 dark:text-surface-400">
           {{ dateAsMMDD(item.date) }}
         </span>
-        <span v-else>
+        <span v-else class="whitespace-pre-line break-words">
           {{ item.reason }}
         </span>
       </template>
@@ -135,7 +135,7 @@ const history = computed(() => {
           class="text-surface-500 dark:text-surface-400">
           {{ dateAsMMDD(item.date) }}
         </span>
-        <span v-else>
+        <span v-else class="whitespace-pre-line break-words">
           {{ item.reason }}
         </span>
       </template>

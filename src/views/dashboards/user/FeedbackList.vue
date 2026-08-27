@@ -131,7 +131,7 @@ const viewFeedback = (data: IFeedback) => {
     modal
     header="Feedback Details"
     class="w-1/2">
-    <p>{{ feedback?.comments }}</p>
+    <p class="whitespace-pre-line break-words">{{ feedback?.comments }}</p>
     <template #footer>
       <Button label="Close" @click="feedbackVisible = false" />
     </template>

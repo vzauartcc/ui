@@ -80,7 +80,9 @@ const props = defineProps<{ session: ITrainingSession }>();
       !userStore.isSelf(props.session.studentCid) &&
       props.session.insNotes
     ">
-    <span>{{ props.session.insNotes }}</span>
+    <span class="whitespace-pre-line break-words">{{
+      props.session.insNotes
+    }}</span>
   </Fieldset>
 </template>
 

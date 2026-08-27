@@ -134,7 +134,9 @@ const reloadEventData = async () => {
         <span>{{ dateAsMMDDHHMM(eventData.eventEnd) }}</span>
       </template>
       <template #content>
-        <p>{{ eventData.description }}</p>
+        <p class="whitespace-pre-line break-words">
+          {{ eventData.description }}
+        </p>
       </template>
     </Card>
 

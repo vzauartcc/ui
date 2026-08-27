@@ -280,8 +280,10 @@ const questionIsAnswered = (id: number) => {
             ref="questionRef">
             <Card>
               <template #title
-                ><b>{{ idx + 1 }}</b
-                >. {{ question.text }}</template
+                ><span class="whitespace-pre-line break-words"
+                  ><b>{{ idx + 1 }}</b
+                  >. {{ question.text }}</span
+                ></template
               >
               <template #content>
                 <div
@@ -301,9 +303,11 @@ const questionIsAnswered = (id: number) => {
                     name="dynamic"
                     :value="option._id"
                     v-else />
-                  <label :for="option._id" class="ml-2">{{
-                    option.text
-                  }}</label>
+                  <label
+                    :for="option._id"
+                    class="ml-2 whitespace-pre-line break-words"
+                    >{{ option.text }}</label
+                  >
                 </div>
               </template>
 

@@ -57,7 +57,7 @@ onMounted(async () => {
               {{ dateAsMMDDHHMM(item.eventEnd) }}
             </div>
             <p class="text-white">
-              {{ truncateText(item.description, 100) }}
+              {{ truncateText(item.description.replace(/\r?\n/g, ' '), 100) }}
             </p>
           </div>
 
