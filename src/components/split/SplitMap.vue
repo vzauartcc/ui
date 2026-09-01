@@ -546,7 +546,9 @@ const getSectorOwnerInfo = (
     const owner = sectorOwner.value[level].get(id);
     return {
       id,
-      callsign: owner ? `${CENTER_PREFIX.zau}_${owner.id}_CTR` : 'N/A',
+      callsign: owner
+        ? `${CENTER_PREFIX.zau}_${owner.id}_CTR - ${owner.name}`
+        : 'N/A',
       ownerColor: owner?.color ?? '#808080',
     };
   }
