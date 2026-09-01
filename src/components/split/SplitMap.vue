@@ -169,8 +169,8 @@ const staticCorridorCoords: Record<string, [number, number]> = {
 };
 
 const MAP_BOUNDS: [[number, number], [number, number]] = [
-  [39.110179882405795, -95.81045234346043],
-  [44.57851537556797, -82.75578162931266],
+  [39.610179882405795, -96.31045234346043],
+  [44.07851537556797, -82.25578162931266],
 ];
 
 // ---------------------------------------------------------------------------
@@ -186,11 +186,10 @@ const props = defineProps<{
 // State
 // ---------------------------------------------------------------------------
 
-const zoom = ref<number>(7.25);
 const center = ref<[number, number]>([42, -89]);
 const mapOptions = ref({
   zoomSnap: 0,
-  wheelPxPerZoomLevel: 300,
+  wheelPxPerZoomLevel: 150,
   zoomControl: false,
   doubleClickZoom: false,
   scrollWheelZoom: true,
@@ -989,7 +988,6 @@ onMounted(async () => {
 
       <div class="map-wrapper">
         <LMap
-          :zoom="zoom"
           :center="center"
           :useGlobalLeaflet="false"
           :options="mapOptions"
