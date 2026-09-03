@@ -6,6 +6,7 @@ import { dateAsMMDD } from '@/utils/date';
 import { ratingShort } from '@/utils/ratings';
 import { compileUsersName } from '@/utils/text';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -25,6 +26,9 @@ const userStore = useUserStore();
 
 const deleteVisible = ref(false);
 const deleteEntry = ref<ITrainingWaitlist | null>(null);
+
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const deleteWaitlist = (entry: ITrainingWaitlist) => {
   deleteEntry.value = entry;
   deleteVisible.value = true;
@@ -36,19 +40,19 @@ const doDelete = async () => {
     return;
   }
 
-  try {
-    await trainingService.deleteWaitlist(deleteEntry.value._id);
+  const entryId = deleteEntry.value._id;
+
+  await execute(async () => {
+    await trainingService.deleteWaitlist(entryId);
 
     toastSuccess(
       'Waitlist Entry Deleted!',
       'Waitlist entry successfully deleted.',
     );
-  } catch (e) {
-    console.error('error deleting waitlist entry', e);
-  } finally {
+
     deleteVisible.value = false;
     deleteEntry.value = null;
-  }
+  });
 };
 
 const reduceAvailability = (availability: string[]) => {
@@ -334,7 +338,8 @@ const averageInstructorLoad = () => {
         <Button
           severity="danger"
           label="Delete Entry"
-          @click.prevent="doDelete()" />
+          @click.prevent="doDelete()"
+          :loading="isSubmitting" />
       </div>
     </template>
   </Dialog>

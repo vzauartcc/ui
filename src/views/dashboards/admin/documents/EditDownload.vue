@@ -5,6 +5,7 @@ import type { IDownload } from '@/services/files/files.types';
 import { s3Service } from '@/services/s3.service';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -29,6 +30,7 @@ const id = Array.isArray(route.params.id)
   : route.params.id;
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 const fileData = ref<File | null>(null);
 
 const typeOptions = ref([
@@ -110,7 +112,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
 
   const { values } = event;
 
-  try {
+  await execute(async () => {
     if (file.value!._id) {
       const data = await filesService.editDownload(
         file.value!._id,
@@ -138,9 +140,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
       toastSuccess('Download Created!', 'Successfully created the download.');
     }
     router.push('/admin/files/downloads');
-  } catch (e) {
-    console.error('error saving file changes', e);
-  }
+  });
 
   uploadProgress.value = -1;
 };
@@ -160,6 +160,7 @@ const uploadDownload = async (url: string) => {
   } catch (e) {
     console.error('error uploading to s3', e);
     toastError('Error uploading!', 'An error occurred uploading the file.');
+    throw e;
   }
 };
 </script>
@@ -241,7 +242,8 @@ const uploadDownload = async (url: string) => {
               :disabled="
                 !$form?.valid ||
                 (!file._id && ($form?.name?.pristine || !fileData))
-              " />
+              "
+              :loading="isSubmitting" />
           </div>
         </div>
       </Form>

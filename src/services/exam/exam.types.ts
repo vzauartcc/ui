@@ -58,7 +58,7 @@ export interface IQuestion {
   _id: string;
   text: string;
   isActive: boolean;
-  options: { _id: string; text: string; isCorrect: boolean }[];
+  options: { _id?: string; text: string; isCorrect: boolean }[];
   multiCorrect: boolean;
 }
 

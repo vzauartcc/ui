@@ -9,6 +9,7 @@ import type {
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
@@ -18,6 +19,7 @@ useTitle('Edit Session Details');
 
 const route = useRoute();
 const router = useRouter();
+const { execute } = useAsyncSubmit();
 
 const session = ref<ITrainingSession | null>(null);
 const id = Array.isArray(route.params.id)
@@ -32,7 +34,9 @@ onMounted(async () => {
   try {
     const data = await trainingService.getMilestones();
 
-    milestones.value = data.milestones.filter((m) => m.type === 'session');
+    milestones.value = data.milestones.filter(
+      (m) => m.type === 'session' && m.isActive,
+    );
   } catch (e) {
     console.error('error getting milestones', e);
   }
@@ -63,8 +67,8 @@ const persistSession = async (
   type: 'save' | 'submit',
   data: Partial<ITrainingSession>,
 ) => {
-  if (type === 'submit') {
-    try {
+  await execute(async () => {
+    if (type === 'submit') {
       await trainingService.submitSessionEdit(session.value!._id, data);
 
       router.push('/ins/sessions');
@@ -72,19 +76,13 @@ const persistSession = async (
         'Session Submitted!',
         'Successfully submitted session to VATUSA.',
       );
-    } catch (err) {
-      console.error('error submitting form', err);
-    }
-  } else {
-    try {
+    } else {
       await trainingService.saveSessionEdit(session.value!._id, data);
 
       router.push('/ins/sessions');
       toastSuccess('Session Saved!', 'Successfully saved session notes.');
-    } catch (e) {
-      console.error('error saving session', e);
     }
-  }
+  });
 };
 </script>
 

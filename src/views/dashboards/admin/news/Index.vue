@@ -3,6 +3,7 @@ import { dateAsMMDD } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { newsService } from '@/services/news/news.service';
 import type { INewsArticle } from '@/services/news/news.types';
 import { useUserStore } from '@/stores/user';
@@ -66,18 +67,20 @@ const closeDelete = () => {
   deleteVisible.value = false;
   deleteData.value = null;
 };
+
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const confirmDelete = async () => {
   if (!deleteData.value) return;
+  const uriSlug = deleteData.value.uriSlug;
 
-  try {
-    await newsService.deleteArticle(deleteData.value.uriSlug);
+  await execute(async () => {
+    await newsService.deleteArticle(uriSlug);
 
     toastSuccess('Article Deleted!', 'Article was successfully deleted.');
     loadLazyArchive();
     closeDelete();
-  } catch (e) {
-    console.error('error deleting news article', e);
-  }
+  });
 };
 </script>
 
@@ -156,7 +159,11 @@ const confirmDelete = async () => {
       article.
     </p>
     <template #footer>
-      <Button severity="danger" label="Delete" @click="confirmDelete" />
+      <Button
+        severity="danger"
+        label="Delete"
+        @click="confirmDelete"
+        :loading="isSubmitting" />
       <Button outlined label="Cancel" @click="closeDelete" />
     </template>
   </Dialog>

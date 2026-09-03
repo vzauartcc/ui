@@ -1,18 +1,29 @@
 export interface IOwnershipResponse {
-  positions: IPosition[];
+  positions: {
+    zau: ISplitPosition[];
+    zmp: ISplitPosition[];
+    zob: ISplitPosition[];
+    zid: ISplitPosition[];
+    zkc: ISplitPosition[];
+  };
   ownership: IOwnership;
 }
 
 export interface IOwnership {
-  high: Record<string, string>;
-  low: Record<string, string>;
+  zau: {
+    high: Record<string, string>;
+    low: Record<string, string>;
+  };
+  zmp: Record<string, string>;
+  zob: Record<string, string>;
+  zid: Record<string, string>;
+  zkc: Record<string, string>;
 }
 
-export interface IPosition {
+export interface ISplitPosition {
   id: string;
   name: string;
   frequency: string;
-  color: string; // Hex color
 }
 
 export interface IGeojsonResponse {
@@ -20,6 +31,22 @@ export interface IGeojsonResponse {
   sectors: {
     high: IGeojson;
     low: IGeojson;
+  };
+  zob: {
+    high: INeighborGeojson;
+    low: INeighborGeojson;
+  };
+  zmp: {
+    high: INeighborGeojson;
+    low: INeighborGeojson;
+  };
+  zid: {
+    high: INeighborGeojson;
+    low: INeighborGeojson;
+  };
+  zkc: {
+    high: INeighborGeojson;
+    low: INeighborGeojson;
   };
 }
 
@@ -35,11 +62,27 @@ export interface IGeojsonFeature {
     name: string;
     area: string;
     special: boolean;
-    level: 'hi' | 'lo';
+    level: 'high' | 'low';
     labelAnchor: number[];
   };
   geometry: {
     type: string;
     coordinates: number[][];
   };
+}
+
+interface INeighborGeojson {
+  type: string;
+  features: [
+    {
+      type: string;
+      properties: {
+        id: string;
+      };
+      geometry: {
+        type: string;
+        coordinates: number[][];
+      };
+    },
+  ];
 }

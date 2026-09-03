@@ -5,6 +5,7 @@ import { trainingService } from '@/services/training/training.service';
 import type { ITrainingMilestone } from '@/services/training/training.types';
 import { ratingShort } from '@/utils/ratings';
 import { useTitle } from '@/utils/title';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -40,6 +41,9 @@ const edit = ref({
   active: true,
 });
 
+const { isSubmitting, execute } = useAsyncSubmit();
+const { execute: executeReorder } = useAsyncSubmit();
+
 onMounted(async () => {
   await getMilestones();
 
@@ -68,13 +72,11 @@ const getMilestones = async () => {
 };
 
 const updateMilestones = async (newArray: ITrainingMilestone[]) => {
-  try {
+  await executeReorder(async () => {
     await trainingService.reorderMilestones(newArray);
 
     getMilestones();
-  } catch (e) {
-    console.error('error updating milestone order', e);
-  }
+  });
 };
 
 const moveUp = (id: string, milestoneType: string) => {
@@ -157,7 +159,8 @@ const closeModal = () => {
 
 const saveEdit = async () => {
   const values = edit.value;
-  try {
+
+  await execute(async () => {
     if (values.id) {
       await trainingService.editMilestone(values.id, {
         code: values.code.toUpperCase(),
@@ -177,12 +180,9 @@ const saveEdit = async () => {
         isActive: values.active,
       });
     }
-  } catch (e) {
-    console.error('error saving milestone edit', e);
-    return;
-  }
 
-  getMilestones();
+    getMilestones();
+  });
 };
 </script>
 
@@ -330,7 +330,7 @@ const saveEdit = async () => {
       </template>
     </div>
     <template #footer>
-      <Button @click="saveEdit" label="Save" />
+      <Button @click="saveEdit" label="Save" :loading="isSubmitting" />
       <Button @click="closeModal" outlined label="Cancel" severity="contrast" />
     </template>
   </Dialog>

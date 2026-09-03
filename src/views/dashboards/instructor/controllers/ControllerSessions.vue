@@ -63,7 +63,10 @@ const onPage = (event: DataTablePageEvent) => {
 <template>
   <ProgressSpinner v-if="!sessionData" />
   <Card v-else>
-    <template #title>Training Sessions - {{ sessionData.controller }}</template>
+    <template #title
+      >Training Sessions -
+      {{ compileUsersName(sessionData.controller) }}</template
+    >
     <template #content>
       <DataTable
         :value="sessionData.sessions"

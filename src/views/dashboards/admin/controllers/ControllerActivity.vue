@@ -10,6 +10,7 @@ import { dateAsMMDD } from '@/utils/date';
 import { secToHHMM } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import Button from 'primevue/button';
@@ -121,25 +122,26 @@ const closeDelete = () => {
   };
 };
 
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const submitDelete = async () => {
   if (!deleteData.value.confirmed) return;
-  try {
-    await controllerService.removeController(
-      deleteData.value.controller.cid,
-      deleteData.value.reason,
-    );
+  const controllerCid = deleteData.value.controller.cid;
+  const reason = deleteData.value.reason;
+  const controllerName = deleteData.value.controller.name;
+
+  await execute(async () => {
+    await controllerService.removeController(controllerCid, reason);
 
     toastSuccess(
       'Controller Removed!',
-      `${deleteData.value.controller.name} has been removed from the roster.`,
+      `${controllerName} has been removed from the roster.`,
     );
 
     closeDelete();
 
     loadData();
-  } catch (e) {
-    console.error('error removing controller', e);
-  }
+  });
 };
 </script>
 
@@ -311,7 +313,8 @@ const submitDelete = async () => {
         severity="danger"
         label="Remove"
         :disabled="!deleteData.confirmed"
-        @click="submitDelete" />
+        @click="submitDelete"
+        :loading="isSubmitting" />
       <Button outlined label="Cancel" @click="closeDelete" />
     </template>
   </Dialog>

@@ -5,6 +5,7 @@ import { dateAsMMDDHHMM } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -44,6 +45,9 @@ interface Feedback extends IFeedback {
 
 const feedback = ref<Feedback | null>(null);
 const feedbackVisible = ref(false);
+
+const { isSubmitting: isApproving, execute: executeApprove } = useAsyncSubmit();
+const { isSubmitting: isRejecting, execute: executeReject } = useAsyncSubmit();
 
 onMounted(async () => {
   loadLazyArchive();
@@ -119,34 +123,32 @@ const getFeedbackStatus = computed(() => {
 
 const approveFeedback = async () => {
   if (!feedback.value) return;
+  const fb = feedback.value;
 
-  try {
-    await feedbackService.approveFeedback(feedback.value._id);
+  await executeApprove(async () => {
+    await feedbackService.approveFeedback(fb._id);
 
     toastSuccess('Feedback Approved!', `The feedback item has been approved.`);
     feedbackVisible.value = false;
 
     getUnapprovedFeedback();
     loadLazyArchive();
-  } catch (e) {
-    console.error('error approving feedback', e);
-  }
+  });
 };
 
 const rejectFeedback = async () => {
   if (!feedback.value) return;
+  const fb = feedback.value;
 
-  try {
-    await feedbackService.rejectFeedback(feedback.value._id);
+  await executeReject(async () => {
+    await feedbackService.rejectFeedback(fb._id);
 
     toastSuccess('Feedback Rejected!', `The feedback item has been rejected.`);
     feedbackVisible.value = false;
 
     getUnapprovedFeedback();
     loadLazyArchive();
-  } catch (e) {
-    console.error('error rejecting feedback', e);
-  }
+  });
 };
 </script>
 
@@ -301,12 +303,22 @@ const rejectFeedback = async () => {
       </FloatLabel>
     </div>
     <p>Comments</p>
-    <p id="comments">{{ feedback!.comments }}</p>
+    <p id="comments" class="whitespace-pre-line break-words">
+      {{ feedback!.comments }}
+    </p>
 
     <template #footer>
       <template v-if="feedback!.pending">
-        <Button severity="success" label="Approve" @click="approveFeedback" />
-        <Button severity="danger" label="Reject" @click="rejectFeedback" />
+        <Button
+          severity="success"
+          label="Approve"
+          @click="approveFeedback"
+          :loading="isApproving" />
+        <Button
+          severity="danger"
+          label="Reject"
+          @click="rejectFeedback"
+          :loading="isRejecting" />
       </template>
       <Button outlined label="Close" @click="feedbackVisible = false" />
     </template>

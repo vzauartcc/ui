@@ -7,6 +7,7 @@ import type { ITrainingWaitlist } from '@/services/training/training.types';
 import { useUserStore } from '@/stores/user';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -31,6 +32,7 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const waitlist = ref<ITrainingWaitlist[] | null>(null);
 const endorsements = ref<ICertification[]>([]);
@@ -90,11 +92,11 @@ const resolver = ({ values }: FormResolverOptions) => {
 };
 
 const saveForm = async (event: FormSubmitEvent) => {
-  try {
-    if (!event.valid) return;
+  if (!event.valid) return;
 
-    const { values } = event;
+  const { values } = event;
 
+  await execute(async () => {
     await trainingService.createWaitlistEntry({
       student: user.value!.cid,
       certification: values.endorsement,
@@ -109,9 +111,7 @@ const saveForm = async (event: FormSubmitEvent) => {
     visible.value = false;
 
     router.push('/dash/training/waitlist');
-  } catch (e) {
-    console.error('error saving form', e);
-  }
+  });
 };
 </script>
 
@@ -200,7 +200,8 @@ const saveForm = async (event: FormSubmitEvent) => {
             !$form?.valid ||
             $form?.certCode?.pristine ||
             $form.availability?.pristine
-          " />
+          "
+          :loading="isSubmitting" />
       </div>
     </Form>
   </Dialog>

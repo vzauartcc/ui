@@ -4,6 +4,7 @@ import { controllerService } from '@/services/controller/controller.service';
 import { useUserStore } from '@/stores/user';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -101,15 +102,19 @@ const resolver = ({ values }: FormResolverOptions) => {
 };
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const submitApplication = async (event: FormSubmitEvent) => {
   if (!event.valid || !user.value) return;
 
   const { values } = event;
-  try {
+  const userEmail = user.value.email;
+
+  await execute(async () => {
     await controllerService.submitVisitApplication(
       values.facility,
       values.reason,
-      user.value.email,
+      userEmail,
     );
 
     toastSuccess(
@@ -118,9 +123,7 @@ const submitApplication = async (event: FormSubmitEvent) => {
     );
 
     router.push('/');
-  } catch (e) {
-    console.error('error submitting application', e);
-  }
+  });
 };
 </script>
 
@@ -247,7 +250,8 @@ const submitApplication = async (event: FormSubmitEvent) => {
               !$form?.valid ||
               $form?.reason?.pristine ||
               $form?.facility?.pristine
-            " />
+            "
+            :loading="isSubmitting" />
         </Form>
       </template>
     </template>

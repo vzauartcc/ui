@@ -5,6 +5,8 @@ import type {
   INotificationResponse,
 } from '@/services/notification/notification.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
+import { sanitize } from '@/utils/sanitize';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -15,34 +17,35 @@ const props = defineProps<{ notifications: INotificationResponse }>();
 const emit = defineEmits(['updateNotifications']);
 const router = useRouter();
 
+const { isSubmitting: isDeletingAll, execute: executeDeleteAll } =
+  useAsyncSubmit();
+const { isSubmitting: isMarkingAllRead, execute: executeMarkAllRead } =
+  useAsyncSubmit();
+const { execute: executeReadOne } = useAsyncSubmit({ blockNavigation: false });
+const { execute: executeDeleteOne } = useAsyncSubmit();
+
 const deleteAll = async () => {
-  try {
+  await executeDeleteAll(async () => {
     await notificationService.deleteAllNotifications();
 
     emit('updateNotifications');
-  } catch (e) {
-    console.error('error deleting notifications', e);
-  }
+  });
 };
 
 const markAllRead = async () => {
-  try {
+  await executeMarkAllRead(async () => {
     await notificationService.readAllNotifications();
 
     emit('updateNotifications');
-  } catch (e) {
-    console.error('error marking all notifications as read', e);
-  }
+  });
 };
 
 const readNotification = async (notification: INotification) => {
-  try {
+  await executeReadOne(async () => {
     await notificationService.readNotification(notification._id);
 
     emit('updateNotifications');
-  } catch (e) {
-    console.error('error marking notification as read', e);
-  }
+  });
 
   if (notification.link) {
     router.push(notification.link);
@@ -50,13 +53,11 @@ const readNotification = async (notification: INotification) => {
 };
 
 const deleteNotification = async (notification: INotification) => {
-  try {
+  await executeDeleteOne(async () => {
     await notificationService.deleteNotification(notification._id);
 
     emit('updateNotifications');
-  } catch (e) {
-    console.error('error deleting notification', e);
-  }
+  });
 };
 </script>
 
@@ -99,7 +100,7 @@ const deleteNotification = async (notification: INotification) => {
               </div>
             </template>
             <template #content>
-              <span v-html="notification.content"></span>
+              <span v-html="sanitize(notification.content)"></span>
             </template>
             <template #footer>
               <span class="text-xs">{{
@@ -117,14 +118,16 @@ const deleteNotification = async (notification: INotification) => {
           label="Delete All"
           class="text-xs"
           severity="danger"
-          @click.prevent="deleteAll" />
+          @click.prevent="deleteAll"
+          :loading="isDeletingAll" />
         <Button
           text
           type="button"
           rounded
           label="Mark All as Read"
           class="text-xs"
-          @click.prevent="markAllRead" />
+          @click.prevent="markAllRead"
+          :loading="isMarkingAllRead" />
       </div>
     </div>
   </div>

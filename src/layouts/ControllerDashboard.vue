@@ -2,6 +2,8 @@
 import AppFooter from '@/components/layout/Footer.vue';
 import AppHeader from '@/components/layout/Header.vue';
 import ControllerMenu from '@/components/menu/ControllerMenu.vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 </script>
 
 <template>
@@ -13,7 +15,7 @@ import ControllerMenu from '@/components/menu/ControllerMenu.vue';
           <ControllerMenu />
         </div>
         <div class="main_content md:w-3/4">
-          <router-view></router-view>
+          <router-view :key="route.fullPath"></router-view>
         </div>
       </div>
     </main>

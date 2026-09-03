@@ -8,6 +8,7 @@ import type { IInstructor } from '@/services/training/training.types';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -28,6 +29,7 @@ import { useRouter } from 'vue-router';
 useTitle('Create Waitlist Signup');
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 const controllers = ref<IFeedbackController[] | null>(null);
 const endorsements = ref<ICertification[] | null>(null);
 const instructors = ref<IInstructor[] | null>(null);
@@ -102,11 +104,11 @@ const resolver = ({ values }: FormResolverOptions) => {
 };
 
 const saveForm = async (event: FormSubmitEvent) => {
-  try {
-    if (!event.valid) return;
+  if (!event.valid) return;
 
-    const { values } = event;
+  const { values } = event;
 
+  await execute(async () => {
     await trainingService.createWaitlistEntryManual({
       student: values.controller.cid,
       instructor: values.instructor,
@@ -121,9 +123,7 @@ const saveForm = async (event: FormSubmitEvent) => {
     );
 
     router.push('/ins/waitlist');
-  } catch (e) {
-    console.error('error saving form', e);
-  }
+  });
 };
 </script>
 
@@ -250,7 +250,8 @@ const saveForm = async (event: FormSubmitEvent) => {
               $form?.controller?.pristine ||
               $form?.certCode?.pristine ||
               $form.availability?.pristine
-            " />
+            "
+            :loading="isSubmitting" />
         </div>
       </Form>
     </template>

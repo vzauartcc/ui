@@ -3,6 +3,7 @@ import { controllerService } from '@/services/controller/controller.service';
 import type { IDossier } from '@/services/controller/controller.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
+import { sanitize } from '@/utils/sanitize';
 import { useTitle } from '@/utils/title';
 import { FilterMatchMode } from '@primevue/core/api';
 import Card from 'primevue/card';
@@ -26,10 +27,6 @@ const totalItems = ref(0);
 const dossierTypes = ref<{ value: number; label: string }[]>([]);
 const filters = ref({
   actionType: { value: 0, matchMode: FilterMatchMode.EQUALS },
-});
-
-onMounted(async () => {
-  loadLazyArchive();
 });
 
 const loadLazyArchive = async () => {
@@ -132,12 +129,14 @@ onMounted(async () => {
           <template #body="{ data }">
             <div
               v-html="
-                data.action
-                  .replaceAll('%b', `<b>${compileUsersName(data.userBy)}</b>`)
-                  .replaceAll(
-                    '%a',
-                    `<b>${compileUsersName(data.userAffected)}</b>`,
-                  )
+                sanitize(
+                  data.action
+                    .replaceAll('%b', `<b>${compileUsersName(data.userBy)}</b>`)
+                    .replaceAll(
+                      '%a',
+                      `<b>${compileUsersName(data.userAffected)}</b>`,
+                    ),
+                )
               " />
           </template>
         </Column>

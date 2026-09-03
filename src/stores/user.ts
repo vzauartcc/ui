@@ -68,21 +68,29 @@ export const useUserStore = defineStore('user', () => {
     () => !!user.value?.isInstructor || !!user.value?.isManagement,
   );
 
-  async function getUser(force = false) {
-    if (hasQueryCompleted.value && !force) return;
+  async function getUser(force = false): Promise<IUser | null> {
+    if (hasQueryCompleted.value && !force) {
+      return user.value;
+    }
 
     try {
       const data = await userService.getSelf();
       user.value = data;
+      userQueryComplete.value = true;
+      return data;
     } catch (e) {
-      if (e instanceof HTTPError && e.response.status !== 401) {
+      if (e instanceof HTTPError) {
+        if (e.response.status === 401) {
+          user.value = null;
+          userQueryComplete.value = true;
+          return null;
+        }
         console.error('[store] error getting user', e);
       } else {
         console.error('[store] non-http error getting user', e);
       }
+      throw e;
     }
-
-    userQueryComplete.value = true;
   }
 
   async function logout() {

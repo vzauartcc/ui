@@ -5,6 +5,7 @@ import { examService } from '@/services/exam/exam.service';
 import type { IExam, IQuestion } from '@/services/exam/exam.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import {
   Form,
@@ -31,7 +32,7 @@ import { useRoute, useRouter } from 'vue-router';
 useTitle('Edit Exam');
 
 interface IOption {
-  _id: string;
+  _id?: string;
   text: string;
   isCorrect: boolean;
 }
@@ -47,6 +48,8 @@ const id = Array.isArray(route.params.id)
   ? route.params.id[0]
   : route.params.id;
 const loading = ref(true);
+
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const milestones = ref<ICertification[]>([]);
 
@@ -257,16 +260,24 @@ const saveExam = async (event: FormSubmitEvent) => {
   const { values } = event;
 
   values.questions = values.questions.map((q: IQuestion) => {
-    if (q._id === '') {
-      const { _id, ...rest } = q;
-      return rest;
-    }
-    return q;
+    const question = q._id === '' ? (({ _id, ...rest }) => rest)(q) : q;
+
+    question.options = question.options.map((o) => {
+      if (!o._id || o._id === '') {
+        const { _id, ...rest } = o;
+        return rest;
+      }
+      return o;
+    });
+
+    return question;
   });
 
-  try {
-    if (values._id !== '') {
-      await examService.editExam(values._id, values as IExam);
+  const examId = values._id;
+
+  await execute(async () => {
+    if (examId !== '') {
+      await examService.editExam(examId, values as IExam);
 
       toastSuccess('Exam Saved!', 'Changes to the exam have been saved.');
     } else {
@@ -276,9 +287,7 @@ const saveExam = async (event: FormSubmitEvent) => {
     }
 
     router.push('/ins/exams');
-  } catch (e) {
-    console.error('error saving exam', e);
-  }
+  });
 };
 </script>
 
@@ -362,7 +371,13 @@ const saveExam = async (event: FormSubmitEvent) => {
               <template #header>
                 <Button label="Add Question" @click="questionVisible = true" />
               </template>
-              <Column field="text" header="Question" />
+              <Column field="text" header="Question">
+                <template #body="{ data }">
+                  <span class="whitespace-pre-line break-words">{{
+                    data.text
+                  }}</span>
+                </template>
+              </Column>
               <Column field="isActive" header="Active">
                 <template #body="{ data }">
                   {{ data.isActive ? 'Active' : 'Inactive' }}
@@ -401,7 +416,8 @@ const saveExam = async (event: FormSubmitEvent) => {
           <Button
             type="submit"
             severity="success"
-            :disabled="!$form?.valid || initialValues.questions.length < 1">
+            :disabled="!$form?.valid || initialValues.questions.length < 1"
+            :loading="isSubmitting">
             <span v-if="id">Save!</span>
             <span v-else>Create!</span>
           </Button>

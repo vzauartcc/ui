@@ -6,6 +6,7 @@ import type {
   ISignup,
 } from '@/services/events/events.types';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import MultiSelect from 'primevue/multiselect';
@@ -18,6 +19,8 @@ const props = defineProps<{
   cid: number;
 }>();
 const emit = defineEmits(['signedUp']);
+
+const { isSubmitting, execute } = useAsyncSubmit();
 
 // const props = defineProps(['event', 'positions', 'signups', 'cid']);
 const visible = defineModel<boolean>('visible');
@@ -50,8 +53,11 @@ onMounted(() => {
 });
 
 const savePositions = async () => {
-  try {
-    await eventService.submitSignup(props.event.url, selectedPositions.value);
+  const positions = selectedPositions.value;
+  const eventUrl = props.event.url;
+
+  await execute(async () => {
+    await eventService.submitSignup(eventUrl, positions);
 
     toastSuccess(
       'Signup submitted!',
@@ -60,9 +66,7 @@ const savePositions = async () => {
 
     emit('signedUp');
     selectedPositions.value = [];
-  } catch (e) {
-    console.error('Error submitting event signup', e);
-  }
+  });
 };
 </script>
 
@@ -104,7 +108,11 @@ const savePositions = async () => {
           label="Cancel"
           outlined
           @click="visible = false" />
-        <Button type="button" label="Submit" @click="savePositions" />
+        <Button
+          type="button"
+          label="Submit"
+          @click="savePositions"
+          :loading="isSubmitting" />
       </div>
     </template>
   </Dialog>

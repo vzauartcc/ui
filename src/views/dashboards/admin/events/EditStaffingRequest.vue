@@ -4,6 +4,7 @@ import type { IStaffingRequest } from '@/services/staffingRequest/staffingReques
 import { utcToLocal } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -30,6 +31,7 @@ const id =
   (Array.isArray(route.params.id) ? route.params.id[0] : route.params.id) || '';
 
 const router = useRouter();
+const { isSubmitting, execute } = useAsyncSubmit();
 
 const staffingRequest = ref<IStaffingRequest | null>(null);
 const initialValues = ref<IStaffingRequest>({
@@ -85,17 +87,16 @@ const onSubmit = async (event: FormSubmitEvent) => {
   const { values } = event;
 
   const data = { ...staffingRequest.value, ...values };
+  const requestId = staffingRequest.value._id;
 
-  try {
-    await staffingRequestService.editRequest(staffingRequest.value._id, data);
+  await execute(async () => {
+    await staffingRequestService.editRequest(requestId, data);
     toastSuccess(
       'Staffing Request Saved!',
       'The changes to the staffing request have been saved.',
     );
     router.push('/admin/events');
-  } catch (e) {
-    console.error('error saving staffing request', e);
-  }
+  });
 };
 </script>
 
@@ -191,7 +192,11 @@ const onSubmit = async (event: FormSubmitEvent) => {
           </FormField>
         </div>
         <div class="flex justify-end mt-5">
-          <Button type="submit" label="Save!" :disabled="!$form?.valid" />
+          <Button
+            type="submit"
+            label="Save!"
+            :disabled="!$form?.valid"
+            :loading="isSubmitting" />
         </div>
       </Form>
     </template>

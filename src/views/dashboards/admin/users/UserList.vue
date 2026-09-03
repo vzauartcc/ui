@@ -5,6 +5,7 @@ import type { IUser } from '@/services/user/user.types';
 import { dateAsMMDD } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import Button from 'primevue/button';
@@ -61,18 +62,19 @@ const closeDelete = () => {
   deleteData.value = null;
 };
 
+const { isSubmitting, execute } = useAsyncSubmit();
+
 const doDelete = async () => {
   if (!deleteData.value) return;
+  const cid = deleteData.value.cid;
 
-  try {
-    await userService.deleteUser(deleteData.value.cid);
+  await execute(async () => {
+    await userService.deleteUser(cid);
 
     toastSuccess('User Deleted!', 'User deleted successfully!');
     closeDelete();
     getUsers();
-  } catch (e) {
-    console.error('error deleting user', e);
-  }
+  });
 };
 
 const detailsVisible = ref(false);
@@ -204,7 +206,11 @@ const showDetails = (data: IUser) => {
       instructor will be retained and reassigned to the placeholder user.
     </p>
     <template #footer>
-      <Button severity="danger" label="Delete" @click="doDelete" />
+      <Button
+        severity="danger"
+        label="Delete"
+        @click="doDelete"
+        :loading="isSubmitting" />
       <Button outlined label="Cancel" @click="closeDelete" />
     </template>
   </Dialog>
