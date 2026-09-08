@@ -20,6 +20,23 @@ const seniorStaff = ref<OrganizationChartNode[] | null>(null);
 const staff = ref<OrganizationChartNode[] | null>(null);
 const trainingStaff = ref<OrganizationChartNode[] | null>(null);
 
+const juniorEmailMap: Record<string, string> = {
+  ec: 'events@zauartcc.org',
+  fe: 'facilities@zauartcc.org',
+  wm: 'wm@zauartcc.org',
+};
+
+const seniorEmailMap: Record<string, string> = {
+  atm: 'atm@zauartcc.org',
+  datm: 'datm@zauartcc.org',
+  ta: 'ta@zauartcc.org',
+};
+
+const getNodeEmail = (node: OrganizationChartNode): string => {
+  const code = node.key;
+  return juniorEmailMap[code] || seniorEmailMap[code] || '';
+};
+
 const buildHierarchyByClass = (
   data: IStaffPosition[],
   targetClass: string,
@@ -121,6 +138,13 @@ onMounted(async () => {
             node.title
           }}</span>
           <br />
+          <a
+            v-if="getNodeEmail(node)"
+            :href="`mailto:${getNodeEmail(node)}`"
+            class="text-sm text-primary">
+            {{ getNodeEmail(node) }}
+          </a>
+          <br v-if="getNodeEmail(node)" />
           <template v-for="user in node.users" :key="user._id">
             <router-link :to="`/controllers/${user.cid}`">
               {{ compileUsersName(user) }}
@@ -132,6 +156,12 @@ onMounted(async () => {
       <Tree :value="seniorStaff" class="w-full md:hidden">
         <template #default="{ node }">
           <span class="font-bold">{{ node.title }}</span>
+          <a
+            v-if="getNodeEmail(node)"
+            :href="`mailto:${getNodeEmail(node)}`"
+            class="text-sm text-primary ml-2">
+            {{ getNodeEmail(node) }}
+          </a>
           <span v-if="node.users?.length > 0"
             >&nbsp;-
             {{
@@ -155,6 +185,13 @@ onMounted(async () => {
             node.title
           }}</span>
           <br />
+          <a
+            v-if="getNodeEmail(node)"
+            :href="`mailto:${getNodeEmail(node)}`"
+            class="text-sm text-primary">
+            {{ getNodeEmail(node) }}
+          </a>
+          <br v-if="getNodeEmail(node)" />
           <template v-for="user in node.users" :key="user._id">
             <router-link :to="`/controllers/${user.cid}`">
               {{ compileUsersName(user) }}
@@ -166,6 +203,12 @@ onMounted(async () => {
       <Tree :value="staff" class="w-full md:hidden">
         <template #default="{ node }">
           <span class="font-bold">{{ node.title }}</span>
+          <a
+            v-if="getNodeEmail(node)"
+            :href="`mailto:${getNodeEmail(node)}`"
+            class="text-sm text-primary ml-2">
+            {{ getNodeEmail(node) }}
+          </a>
           <span v-if="node.users?.length > 0"
             >&nbsp;-
             {{
@@ -189,6 +232,13 @@ onMounted(async () => {
             node.title
           }}</span>
           <br />
+          <a
+            v-if="getNodeEmail(node)"
+            :href="`mailto:${getNodeEmail(node)}`"
+            class="text-sm text-primary">
+            {{ getNodeEmail(node) }}
+          </a>
+          <br v-if="getNodeEmail(node)" />
           <template v-for="user in node.users" :key="user._id">
             <router-link :to="`/controllers/${user.cid}`">
               {{ compileUsersName(user) }}
@@ -200,6 +250,12 @@ onMounted(async () => {
       <Tree :value="trainingStaff" class="w-full md:hidden">
         <template #default="{ node }">
           <span class="font-bold">{{ node.title }}</span>
+          <a
+            v-if="getNodeEmail(node)"
+            :href="`mailto:${getNodeEmail(node)}`"
+            class="text-sm text-primary ml-2">
+            {{ getNodeEmail(node) }}
+          </a>
           <span v-if="node.users?.length > 0"
             >&nbsp;-
             {{
