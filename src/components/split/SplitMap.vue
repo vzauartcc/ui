@@ -319,7 +319,7 @@ const getOwner = (sectorFeature: any): Owner => {
   const owner = sectorOwner.value[level].get(id);
   const color = sectorFeature.properties.ownerColor || '#808080';
   return owner
-    ? { id, name: owner.name, color }
+    ? { id: owner.id, name: owner.name, color }
     : { id: '0', name: 'N/A', color };
 };
 
