@@ -12,6 +12,7 @@ export function useAsyncSubmit(
 ) {
   const isSubmitting = ref(false);
   let navigationBlocked = false;
+  let deferredNavigation: (() => void) | null = null;
 
   const execute = async <T>(
     handler: () => Promise<T>,
@@ -30,13 +31,15 @@ export function useAsyncSubmit(
       isSubmitting.value = false;
       options.onFinish?.();
       navigationBlocked = false;
+      deferredNavigation?.();
+      deferredNavigation = null;
     }
   };
 
   if (options.blockNavigation) {
     onBeforeRouteLeave((_to, _from, next) => {
       if (navigationBlocked) {
-        next(false);
+        deferredNavigation = () => next();
       } else {
         next();
       }
