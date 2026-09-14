@@ -745,7 +745,7 @@ const filterOwnershipByLevel = (
 const legendGroups = computed<LegendGroup[]>(() => {
   const groups: LegendGroup[] = [];
 
-  const zauOwnership = props.ownershipData.zau[activeLevel.value] ?? {};
+  const zauOwnership = props.ownershipData.zau[activeLevel.value];
   const zau = buildLegendGroup(
     'zau',
     filterOwnershipByLevel(

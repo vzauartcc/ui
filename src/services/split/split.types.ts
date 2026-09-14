@@ -14,10 +14,10 @@ export interface IOwnership {
     high: Record<string, string>;
     low: Record<string, string>;
   };
-  zmp: Record<string, string>;
-  zob: Record<string, string>;
-  zid: Record<string, string>;
-  zkc: Record<string, string>;
+  zmp?: Record<string, string>;
+  zob?: Record<string, string>;
+  zid?: Record<string, string>;
+  zkc?: Record<string, string>;
 }
 
 export interface ISplitPosition {
