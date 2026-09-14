@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { controllerService } from '@/services/controller/controller.service';
 import type { ICertification } from '@/services/controller/controller.types';
 import { trainingService } from '@/services/training/training.service';
 import type { ITrainingMilestone } from '@/services/training/training.types';
 import { ratingShort } from '@/utils/ratings';
 import { useTitle } from '@/utils/title';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -182,6 +182,7 @@ const saveEdit = async () => {
     }
 
     getMilestones();
+    visible.value = false;
   });
 };
 </script>
