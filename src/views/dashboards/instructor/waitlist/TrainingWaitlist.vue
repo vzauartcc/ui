@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import TrainingWaitlist from '@/components/training/TrainingWaitlist.vue';
-import { controllerService } from '@/services/controller/controller.service';
-import type { ICertification } from '@/services/controller/controller.types';
 import { trainingService } from '@/services/training/training.service';
 import type {
   IInstructor,
+  ITrainingMilestone,
   ITrainingWaitlist,
 } from '@/services/training/training.types';
 import { useUserStore } from '@/stores/user';
@@ -31,7 +30,7 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const waitlist = ref<ITrainingWaitlist[] | null>(null);
-const endorsements = ref<ICertification[] | null>(null);
+const endorsements = ref<ITrainingMilestone[] | null>(null);
 const instructors = ref<IInstructor[] | null>(null);
 
 onMounted(async () => {
@@ -52,9 +51,11 @@ onMounted(async () => {
   }
 
   try {
-    const data = await controllerService.getCertifications();
+    const data = await trainingService.getMilestones();
 
-    endorsements.value = data.sort((a, b) => a.order - b.order);
+    endorsements.value = data.milestones
+      .filter((m) => m.type === 'waitlist')
+      .sort((a, b) => a.order - b.order);
   } catch (e) {
     console.error('error getting certifications', e);
   }

@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { controllerService } from '@/services/controller/controller.service';
-import type { ICertification } from '@/services/controller/controller.types';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { trainingService } from '@/services/training/training.service';
 import type {
   IInstructor,
+  ITrainingMilestone,
   ITrainingWaitlist,
 } from '@/services/training/training.types';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,
@@ -35,7 +34,7 @@ const id =
 
 const router = useRouter();
 const { isSubmitting, execute } = useAsyncSubmit();
-const endorsements = ref<ICertification[] | null>(null);
+const endorsements = ref<ITrainingMilestone[] | null>(null);
 const instructors = ref<IInstructor[] | null>(null);
 
 const signup = ref<ITrainingWaitlist | null>(null);
@@ -75,9 +74,11 @@ onMounted(async () => {
   }
 
   try {
-    const data = await controllerService.getCertifications();
+    const data = await trainingService.getMilestones();
 
-    endorsements.value = data;
+    endorsements.value = data.milestones
+      .filter((m) => m.type === 'waitlist')
+      .sort((a, b) => a.order - b.order);
   } catch (e) {
     console.error('error getting certifications', e);
   }
