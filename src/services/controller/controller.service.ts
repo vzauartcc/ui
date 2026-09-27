@@ -71,12 +71,12 @@ export const controllerService = {
   getVisitApplications(): Promise<IVisitApplication[]> {
     return zauApi.get('controller/visit').json();
   },
-  acceptVisitApplication(cid: number) {
-    return zauApi.patch(`controller/visit/${cid}`).json();
+  acceptVisitApplication(id: string): Promise<{ message: string }> {
+    return zauApi.patch(`controller/visit/${id}`).json();
   },
-  rejectVisitApplication(cid: number, reason: string) {
+  rejectVisitApplication(id: string, reason: string) {
     return zauApi
-      .delete(`controller/visit/${cid}`, {
+      .delete(`controller/visit/${id}`, {
         json: { reason },
       })
       .json();
