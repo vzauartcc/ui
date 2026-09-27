@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { controllerService } from '@/services/controller/controller.service';
 import type {
   IVisitApplication,
@@ -7,7 +8,6 @@ import type {
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -68,11 +68,15 @@ const needsBasic = computed(() => !!editData.value?.statusChecks.needsBasic);
 
 const accept = async () => {
   if (!editData.value) return;
-  const cid = editData.value.application.cid;
+  const id = editData.value.application._id;
   const name = compileUsersName(editData.value.application);
 
   await executeAccept(async () => {
-    await controllerService.acceptVisitApplication(cid);
+    const response = await controllerService.acceptVisitApplication(id);
+
+    if (response.message !== '') {
+      alert(response.message);
+    }
 
     toastSuccess(
       'Visit Application Accepted!',
@@ -124,12 +128,11 @@ const rejectApplication = async () => {
   }
 
   const application = rejectData.value.application;
-  const cid = application.cid;
   const name = compileUsersName(application);
   const reason = rejectData.value.reason;
 
   await executeReject(async () => {
-    await controllerService.rejectVisitApplication(cid, reason);
+    await controllerService.rejectVisitApplication(application._id, reason);
 
     toastSuccess(
       'Visit Application Rejected!',
