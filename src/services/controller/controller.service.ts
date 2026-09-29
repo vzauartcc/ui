@@ -5,6 +5,7 @@ import type {
   IController,
   IControllersResponse,
   IControllerStats,
+  ILeaveOfAbsence,
   IOwnVisitingStatus,
   IRole,
   IStaff,
@@ -90,5 +91,22 @@ export const controllerService = {
         json: { facility, reason, email },
       })
       .json();
+  },
+  getAbsences(): Promise<ILeaveOfAbsence[]> {
+    return zauApi.get('controller/absence').json();
+  },
+  createAbsence(cid: number, endDate: Date, reason: string) {
+    return zauApi
+      .post('controller/absence', {
+        json: {
+          controller: cid,
+          reason: reason,
+          expirationDate: endDate,
+        },
+      })
+      .json();
+  },
+  deleteAbsence(id: string) {
+    return zauApi.delete(`controller/absence/${id}`).json();
   },
 };

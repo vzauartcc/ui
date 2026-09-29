@@ -210,7 +210,10 @@ const ptColumn = ref({
       <template #body="{ data }">
         <div class="flex justify-center">
           <span
-            v-if="data.certCodes.includes('ordgnde')"
+            v-if="
+              data.certCodes.includes('ordgnde') ||
+              data.certCodes.includes('ordtwre')
+            "
             v-tooltip.top="`Event Endorsed`"
             ><Icon icon="heroicons:calendar-days" />
           </span>

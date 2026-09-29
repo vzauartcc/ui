@@ -113,6 +113,11 @@ const routes: RouteRecordRaw[] = [
         meta: {},
       },
       {
+        path: '/files/documents/:slug',
+        component: () => import('@/views/files/ViewDocument.vue'),
+        meta: {},
+      },
+      {
         path: '/files/downloads',
         component: () => import('@/views/files/DownloadList.vue'),
         meta: {},
@@ -456,6 +461,14 @@ const routes: RouteRecordRaw[] = [
         path: 'visitors',
         component: () =>
           import('@/views/dashboards/admin/VisitApplications.vue'),
+        meta: {
+          requiredRoles: ['datm'],
+        },
+      },
+
+      {
+        path: 'absences',
+        component: () => import('@/views/dashboards/admin/LeaveOfAbsences.vue'),
         meta: {
           requiredRoles: ['datm'],
         },
