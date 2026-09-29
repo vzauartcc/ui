@@ -35,6 +35,7 @@ export const filesService = {
           fileName: fileData?.name || '',
           fileType: fileData?.type || '',
           fileSize: fileData?.size || 0,
+          content: data.content || '',
         },
       })
       .json();
@@ -53,6 +54,7 @@ export const filesService = {
           fileName: fileData?.name || '',
           fileType: fileData?.type || '',
           fileSize: fileData?.size || 0,
+          content: data.content || '',
         },
       })
       .json();

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import SingleFileUpload from '@/components/admin/SingleFileUpload.vue';
 import RichEditor from '@/components/RichEditor.vue';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { filesService } from '@/services/files/files.service';
 import type { IDocument } from '@/services/files/files.types';
 import { s3Service } from '@/services/s3.service';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,

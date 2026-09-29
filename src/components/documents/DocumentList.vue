@@ -69,7 +69,18 @@ const tagDate = ref(Date.now() - 1000 * 60 * 60 * 24 * 61);
                   props.isDownload ? 'Download File' : 'View Document'
                 ">
                 <Button>
+                  <router-link
+                    :to="`/files/documents/${item.slug}`"
+                    v-if="!props.isDownload && !item.fileName">
+                    <Icon
+                      icon="heroicons:magnifying-glass"
+                      class="text-2xl hidden md:block" />
+                    <span class="md:hidden font-bold w-full text-center">{{
+                      'View Document'
+                    }}</span>
+                  </router-link>
                   <a
+                    v-else
                     :href="`${s3Url}/${props.isDownload ? 'downloads' : 'documents'}/${item.fileName}`"
                     target="_blank"
                     rel="noopener noreferrer"

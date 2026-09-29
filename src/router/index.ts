@@ -113,6 +113,11 @@ const routes: RouteRecordRaw[] = [
         meta: {},
       },
       {
+        path: '/files/documents/:slug',
+        component: () => import('@/views/files/ViewDocument.vue'),
+        meta: {},
+      },
+      {
         path: '/files/downloads',
         component: () => import('@/views/files/DownloadList.vue'),
         meta: {},
