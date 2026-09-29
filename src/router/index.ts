@@ -462,6 +462,14 @@ const routes: RouteRecordRaw[] = [
       },
 
       {
+        path: 'absences',
+        component: () => import('@/views/dashboards/admin/LeaveOfAbsences.vue'),
+        meta: {
+          requiredRoles: ['datm'],
+        },
+      },
+
+      {
         path: 'action-log',
         component: () => import('@/views/dashboards/admin/users/ActionLog.vue'),
         meta: {

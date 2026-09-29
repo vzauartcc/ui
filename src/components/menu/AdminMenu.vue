@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import SidebarMenu from '@/components/layout/SidebarMenu.vue';
 import { useUserStore } from '@/stores/user';
 import type { MenuItem } from 'primevue/menuitem';
 import { computed, ref } from 'vue';
-import SidebarMenu from '@/components/layout/SidebarMenu.vue';
 
 const userStore = useUserStore();
 
@@ -82,6 +82,11 @@ const items = ref<MenuItem[]>([
         label: 'Visitor Applications',
         url: '/admin/visitors',
         icon: 'heroicons:user-plus',
+      },
+      {
+        label: 'Leave of Absences',
+        url: '/admin/absences',
+        icon: 'heroicons:arrow-right-end-on-rectangle',
       },
       {
         label: 'Action Log',

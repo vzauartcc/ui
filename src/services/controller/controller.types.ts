@@ -152,3 +152,17 @@ export interface IOwnVisitingStatus {
     promoDays: number;
   };
 }
+
+export interface ILeaveOfAbsence {
+  _id: string;
+
+  controller: number;
+  reason: string;
+  expirationDate: string;
+  createdAt: string; // ISO date
+  updatedAt: string; // ISO date
+  deleted: boolean;
+
+  // Virtuals
+  user?: IFeedbackController;
+}
