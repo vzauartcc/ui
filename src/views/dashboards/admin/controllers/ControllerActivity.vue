@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { controllerService } from '@/services/controller/controller.service';
 import { statsService } from '@/services/stats/stats.service';
 import type {
@@ -10,7 +11,6 @@ import { dateAsMMDD } from '@/utils/date';
 import { secToHHMM } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import Button from 'primevue/button';
@@ -212,8 +212,20 @@ const submitDelete = async () => {
         <Column field="tooLow" header="Active?" sortable>
           <template #body="{ data }">
             <span
+              class="text-primary"
+              v-if="data.protected || data.exempt"
+              v-tooltip.top="
+                data.protected
+                  ? data.absence.length > 0
+                    ? 'Exempt - LOA'
+                    : 'Exempt - Staff'
+                  : 'Exempt - OBS Promoted/Joined Roster'
+              ">
+              <Icon class="no-pointer" icon="heroicons:minus" />
+            </span>
+            <span
               class="text-red-500"
-              v-if="data.tooLow === true"
+              v-else-if="data.tooLow === true"
               v-tooltip.top="'Does not meet Activity Requirements'">
               <Icon class="no-pointer" icon="heroicons:x-mark" />
             </span>
