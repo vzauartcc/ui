@@ -139,6 +139,7 @@ const saveForm = async (event: FormSubmitEvent) => {
   </Card>
   <Dialog
     modal
+    dismissableMask
     v-model:visible="visible"
     class="w-1/2"
     header="Waitlist Signup">

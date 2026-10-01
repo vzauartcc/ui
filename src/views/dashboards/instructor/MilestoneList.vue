@@ -277,6 +277,7 @@ const saveEdit = async () => {
   <Dialog
     v-model:visible="visible"
     modal
+    dismissableMask
     header="Edit Milestone"
     class="w-1/2"
     @hide="closeModal">

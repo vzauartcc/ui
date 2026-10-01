@@ -403,6 +403,7 @@ const deleteExamAttempt = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="assignVisible"
     header="Assign Exam"
     class="w-1/2">
@@ -467,6 +468,7 @@ const deleteExamAttempt = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="deleteVisible"
     header="Delete Exam Attempt"
     @hide="closeDelete"

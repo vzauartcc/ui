@@ -65,6 +65,7 @@ const deleteDownload = async () => {
     @loadDelete="loadDelete" />
   <Dialog
     modal
+    dismissableMask
     v-model:visible="deleteVisible"
     class="w-1/2"
     @hide="closeDelete"

@@ -191,6 +191,7 @@ const rejectApplication = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="editVisible"
     class="w-1/2"
     header="Visiting Application"
@@ -332,6 +333,7 @@ const rejectApplication = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="rejectVisible"
     header="Reject Visitor Application"
     @hide="closeReject">

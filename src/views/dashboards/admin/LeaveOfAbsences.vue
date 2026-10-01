@@ -248,6 +248,7 @@ const createLoa = async (event: FormSubmitEvent) => {
   <Dialog
     v-model:visible="deleteVisible"
     modal
+    dismissableMask
     header="Leave of Absence Details"
     class="w-3/4">
     <div class="grid grid-cols-3 gap-5 mt-5">
@@ -283,6 +284,7 @@ const createLoa = async (event: FormSubmitEvent) => {
   <Dialog
     v-model:visible="createVisible"
     modal
+    dismissableMask
     header="New Leave of Absence"
     class="w-3/4">
     <Form

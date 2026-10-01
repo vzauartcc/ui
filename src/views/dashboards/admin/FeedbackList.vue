@@ -263,6 +263,7 @@ const rejectFeedback = async () => {
   <Dialog
     v-model:visible="feedbackVisible"
     modal
+    dismissableMask
     header="Feedback Details"
     class="w-3/4">
     <div class="grid grid-cols-2 gap-5">

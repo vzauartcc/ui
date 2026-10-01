@@ -301,6 +301,7 @@ const submitDelete = async () => {
     class="w-1/2"
     header="Remove Controller?"
     modal
+    dismissableMask
     v-model:visible="deleteVisible"
     @hide="closeDelete">
     <div class="grid grid-cols-1 gap-5">

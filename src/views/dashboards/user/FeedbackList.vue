@@ -129,6 +129,7 @@ const viewFeedback = (data: IFeedback) => {
   <Dialog
     v-model:visible="feedbackVisible"
     modal
+    dismissableMask
     header="Feedback Details"
     class="w-1/2">
     <p class="whitespace-pre-line break-words">{{ feedback?.comments }}</p>

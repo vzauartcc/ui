@@ -189,6 +189,7 @@ const getMaxExpiration = (issuedAt: string): Date => {
   <Dialog
     v-model:visible="editVisible"
     modal
+    dismissableMask
     class="w-1/2"
     header="Edit Solo Endorsement"
     @hide="clearEdit">
@@ -252,6 +253,7 @@ const getMaxExpiration = (issuedAt: string): Date => {
   <Dialog
     v-model:visible="deleteVisible"
     modal
+    dismissableMask
     class="w-1/2"
     header="Revoke Solo Endorsement"
     @hide="clearDelete">

@@ -199,6 +199,7 @@ const getChannelFromId = (id: string) => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="editCleanupChannelVisible"
     :header="
       editCleanupChannelData.edit

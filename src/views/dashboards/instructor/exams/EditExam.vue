@@ -427,6 +427,7 @@ const saveExam = async (event: FormSubmitEvent) => {
   </Card>
   <Dialog
     modal
+    dismissableMask
     v-model:visible="questionVisible"
     class="md:w-1/2"
     @hide="closeDialog"

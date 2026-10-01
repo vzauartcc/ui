@@ -71,6 +71,7 @@ const history = computed(() => {
 <template>
   <Dialog
     modal
+    dismissableMask
     v-if="user"
     v-model:visible="isVisible"
     header="User Details"

@@ -338,6 +338,7 @@ const openSignups = async () => {
   </Card>
   <Dialog
     modal
+    dismissableMask
     class="w-1/2"
     v-model:visible="deleteSignupVisible"
     header="Delete Sign Up"
@@ -358,6 +359,7 @@ const openSignups = async () => {
 
   <Dialog
     modal
+    dismissableMask
     class="w-1/2"
     v-model:visible="manualSignupVisible"
     header="Manual Sign Up"
@@ -391,6 +393,7 @@ const openSignups = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="sendEventVisible"
     class="w-1/2"
     header="Confirm Send Event"
