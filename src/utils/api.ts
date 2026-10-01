@@ -1,8 +1,8 @@
-import ky from 'ky';
+import ky, { isHTTPError } from 'ky';
 import { toastError } from './toast';
 
 export const zauApi = ky.create({
-  prefixUrl: isRunningOnDev() ? '/devapi' : '/api',
+  prefix: isRunningOnDev() ? '/devapi' : '/api',
   credentials: 'include',
   retry: {
     limit: 3,
@@ -12,22 +12,26 @@ export const zauApi = ky.create({
   },
   hooks: {
     beforeError: [
-      async (error) => {
-        const silent = !!error.options.context.silent;
+      async ({ options, error }) => {
+        const silent = !!options.context.silent;
 
         if (!silent) {
           let message = 'Something went wrong, please try again later.';
 
-          try {
-            const data = await error.response.clone().json();
-            if (data && typeof data.message === 'string') {
-              message = data.message;
+          if (isHTTPError(error)) {
+            if (
+              typeof error.data === 'object' &&
+              error.data !== null &&
+              'message' in error.data &&
+              typeof error.data.message === 'string'
+            ) {
+              message = error.data.message;
             }
-          } catch {
-            // Do nothing.
-          }
 
-          toastError(`Error ${error.response.status}!`, message);
+            toastError(`Error ${error.response.status}!`, message);
+          } else {
+            toastError('Error!', message);
+          }
         }
 
         return error;
