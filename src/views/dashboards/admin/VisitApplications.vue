@@ -5,6 +5,7 @@ import type {
   IVisitApplication,
   IVisitorApplication,
 } from '@/services/controller/controller.types';
+import { dateAsMMDD } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
@@ -13,12 +14,10 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import DatePicker from 'primevue/datepicker';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
@@ -197,55 +196,36 @@ const rejectApplication = async () => {
     header="Visiting Application"
     @hide="close">
     <div class="grid grid-cols-2 gap-5">
-      <FloatLabel variant="on">
-        <InputText name="name" v-model="getName" disabled />
-        <label for="name">Name</label>
-      </FloatLabel>
+      <Fieldset legend="Name">
+        <span>{{ getName }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText
-          name="email"
-          v-model="editData!.application.email"
-          disabled />
-        <label for="email">Email</label>
-      </FloatLabel>
+      <Fieldset legend="Email">
+        <span>{{ editData!.application.email }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputNumber
-          name="cid"
-          v-model="editData!.application.cid"
-          :useGrouping="false"
-          disabled />
-        <label for="cid">CID</label>
-      </FloatLabel>
+      <Fieldset legend="CID">
+        <span>{{ editData!.application.cid }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText
-          name="rating"
-          v-model="editData!.application.rating"
-          disabled />
-        <label for="rating">Rating</label>
-      </FloatLabel>
+      <Fieldset legend="Rating">
+        <span>{{ editData!.application.rating }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText name="home" v-model="editData!.application.home" disabled />
-        <label for="home">Home Facility</label>
-      </FloatLabel>
+      <Fieldset legend="Home Facility">
+        <span>{{ editData!.application.home }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <DatePicker name="createdAt" v-model="getDate" disabled />
-        <label for="createdAt">Submission Date</label>
-      </FloatLabel>
+      <Fieldset legend="Submission Date">
+        <span>{{ dateAsMMDD(getDate) }}</span>
+      </Fieldset>
 
       <div class="col-span-2">
-        <FloatLabel variant="on">
-          <Textarea
-            name="reason"
-            v-model="editData!.application.reason"
-            disabled
-            class="w-full" />
-          <label for="reason">Reason to Visit</label>
-        </FloatLabel>
+        <Fieldset legend="Reason to Visit">
+          <span class="whitespace-pre-line break-words">{{
+            editData!.application.reason
+          }}</span>
+        </Fieldset>
       </div>
     </div>
 

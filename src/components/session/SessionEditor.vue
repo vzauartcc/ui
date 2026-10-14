@@ -19,6 +19,7 @@ import {
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
 import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
@@ -205,9 +206,15 @@ const maxEndTime = (startTime?: string | Date) => {
     :resolver
     @submit="submitSession">
     <div class="grid grid-cols-1 gap-5">
-      <div class="grid md:grid-cols-2 gap-5">
-        <div class="">
-          <FormField v-slot="$field" name="studentCid">
+      <Fieldset legend="Participants">
+        <div class="grid md:grid-cols-2 gap-5">
+          <div v-if="edit" class="flex items-center">
+            <span>
+              <span class="font-semibold">Student:</span>
+              {{ compileUsersName(edit.student) }} ({{ edit.student.cid }})
+            </span>
+          </div>
+          <FormField v-else v-slot="$field" name="studentCid">
             <FloatLabel variant="on">
               <Select
                 id="controller"
@@ -215,8 +222,7 @@ const maxEndTime = (startTime?: string | Date) => {
                 optionLabel="name"
                 optionValue="cid"
                 filter
-                class="w-full h-10"
-                :disabled="edit !== null" />
+                class="w-full h-10" />
               <label for="controller" class="required-field">Student</label>
             </FloatLabel>
             <Message
@@ -227,111 +233,29 @@ const maxEndTime = (startTime?: string | Date) => {
               >{{ $field.error?.message }}</Message
             >
           </FormField>
-        </div>
-        <div class="">
-          <FloatLabel variant="on">
-            <InputText
-              id="instructor"
-              type="text"
-              :modelValue="compileUsersName(user!)"
-              disabled
-              class="w-full" />
-            <label for="email">Instructor</label>
-          </FloatLabel>
-        </div>
-
-        <FormField v-slot="$field" name="startTime">
-          <FloatLabel variant="on">
-            <DatePicker
-              id="startTime"
-              hourFormat="24"
-              showTime
-              :stepMinute="15"
-              :maxDate="roundToNearest15Minutes(utcToLocal(new Date()))"
-              :modelValue="initialValues.startTime"
-              class="w-full" />
-            <label for="startTime" class="required-field"
-              >Start Time (Zulu)</label
-            >
-          </FloatLabel>
-          <Message
-            v-if="$field?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $field.error?.message }}</Message
-          >
-        </FormField>
-
-        <FormField v-slot="$field" name="endTime">
-          <FloatLabel variant="on">
-            <DatePicker
-              id="endTime"
-              hourFormat="24"
-              :minDate="
-                $form.startTime?.value
-                  ? new Date($form?.startTime.value)
-                  : initialValues.startTime
-              "
-              :maxDate="utcToLocal(maxEndTime($form?.startTime?.value))"
-              :stepMinute="15"
-              showTime
-              :modelValue="initialValues.endTime"
-              class="w-full" />
-            <label for="endTime" class="required-field">End Time (Zulu)</label>
-          </FloatLabel>
-          <Message
-            v-if="$field?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $field.error?.message }}</Message
-          >
-        </FormField>
-
-        <FormField v-slot="$field" name="milestoneCode">
-          <FloatLabel variant="on">
-            <Select
-              id="milestoneCode"
-              :options="milestones"
-              optionLabel="name"
-              optionValue="code"
-              filter
-              class="w-full h-10"
-              :disabled="edit !== null" />
-            <label for="milestoneCode" class="required-field">Milestone</label>
-          </FloatLabel>
-          <Message
-            v-if="$field?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $field.error?.message }}</Message
-          >
-        </FormField>
-
-        <FormField v-slot="$field" name="position">
-          <div class="">
-            <FloatLabel variant="on">
-              <InputText id="position" type="string" class="w-full" />
-              <label for="position" class="required-field">Position</label>
-            </FloatLabel>
-            <Message
-              v-if="$field?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              >{{ $field.error?.message }}</Message
-            >
+          <div class="flex items-center">
+            <span>
+              <span class="font-semibold">Instructor:</span>
+              {{ compileUsersName(user!) }}
+            </span>
           </div>
-        </FormField>
+        </div>
+      </Fieldset>
 
-        <FormField v-slot="$field" name="movements">
-          <div class="">
+      <Fieldset legend="Session Details">
+        <div class="grid md:grid-cols-2 gap-5">
+          <FormField v-slot="$field" name="startTime">
             <FloatLabel variant="on">
-              <InputNumber id="movements" type="string" class="w-full" />
-              <label for="movements" class="required-field"
-                ># of Movements</label
+              <DatePicker
+                id="startTime"
+                hourFormat="24"
+                showTime
+                :stepMinute="15"
+                :maxDate="roundToNearest15Minutes(utcToLocal(new Date()))"
+                :modelValue="initialValues.startTime"
+                class="w-full" />
+              <label for="startTime" class="required-field"
+                >Start Time (Zulu)</label
               >
             </FloatLabel>
             <Message
@@ -341,97 +265,192 @@ const maxEndTime = (startTime?: string | Date) => {
               variant="simple"
               >{{ $field.error?.message }}</Message
             >
-          </div>
-        </FormField>
+          </FormField>
 
-        <FormField v-slot="$field" name="location">
-          <FloatLabel variant="on">
-            <Select
-              id="location"
-              :options="locations"
-              class="w-full h-10"
-              :optionValue="(option) => locations.indexOf(option)" />
-            <label for="location" class="required-field">Location</label>
-          </FloatLabel>
-          <Message
-            v-if="$field?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $field.error?.message }}</Message
-          >
-        </FormField>
+          <FormField v-slot="$field" name="endTime">
+            <FloatLabel variant="on">
+              <DatePicker
+                id="endTime"
+                hourFormat="24"
+                :minDate="
+                  $form.startTime?.value
+                    ? new Date($form?.startTime.value)
+                    : initialValues.startTime
+                "
+                :maxDate="utcToLocal(maxEndTime($form?.startTime?.value))"
+                :stepMinute="15"
+                showTime
+                :modelValue="initialValues.endTime"
+                class="w-full" />
+              <label for="endTime" class="required-field"
+                >End Time (Zulu)</label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$field?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $field.error?.message }}</Message
+            >
+          </FormField>
 
-        <FormField v-slot="$field" name="progress">
-          <FloatLabel variant="on">
-            <Select
-              id="progress"
-              :options="progressOptions"
-              class="w-full"
-              optionValue="value"
-              optionLabel="name" />
-            <label for="progress" class="required-field">Progress</label>
-          </FloatLabel>
-          <Message
-            v-if="$field?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $field.error?.message }}</Message
-          >
-        </FormField>
+          <FormField v-slot="$field" name="milestoneCode">
+            <FloatLabel variant="on">
+              <Select
+                id="milestoneCode"
+                :options="milestones"
+                optionLabel="name"
+                optionValue="code"
+                filter
+                class="w-full h-10"
+                :disabled="edit !== null" />
+              <label for="milestoneCode" class="required-field"
+                >Milestone</label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$field?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $field.error?.message }}</Message
+            >
+          </FormField>
 
-        <FormField v-slot="$field" name="ots">
-          <FloatLabel variant="on">
-            <Select
-              id="ots"
-              :options="otsOptions"
-              class="w-full"
-              :optionValue="(option) => otsOptions.indexOf(option)" />
-            <label for="ots" class="required-field">OTS</label>
-          </FloatLabel>
-          <Message
-            v-if="$field?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $field.error?.message }}</Message
-          >
-        </FormField>
-      </div>
+          <FormField v-slot="$field" name="position">
+            <div class="">
+              <FloatLabel variant="on">
+                <InputText id="position" type="string" class="w-full" />
+                <label for="position" class="required-field">Position</label>
+              </FloatLabel>
+              <Message
+                v-if="$field?.invalid"
+                severity="error"
+                size="small"
+                variant="simple"
+                >{{ $field.error?.message }}</Message
+              >
+            </div>
+          </FormField>
 
-      <FormField v-slot="$field" name="studentNotes">
-        <label for="studentNotes" class="required-field">Student Notes</label>
-        <RichEditor
-          :content="$field.value"
-          @updateEditor="$form.studentNotes!.value = $event" />
-        <Message
-          v-if="$field?.invalid"
-          severity="error"
-          size="small"
-          variant="simple"
-          >{{ $field.error?.message }}</Message
-        >
-      </FormField>
+          <FormField v-slot="$field" name="movements">
+            <div class="">
+              <FloatLabel variant="on">
+                <InputNumber id="movements" type="string" class="w-full" />
+                <label for="movements" class="required-field"
+                  ># of Movements</label
+                >
+              </FloatLabel>
+              <Message
+                v-if="$field?.invalid"
+                severity="error"
+                size="small"
+                variant="simple"
+                >{{ $field.error?.message }}</Message
+              >
+            </div>
+          </FormField>
 
-      <FormField v-slot="$field" name="insNotes">
-        <FloatLabel variant="on">
-          <Textarea id="insNotes" maxlength="5000" autoResize class="w-full" />
-          <span
-            class="char-counter"
-            :class="{ 'text-red-500': $field?.value?.length === 5000 }"
-            >{{ $field?.value?.length || 0 }}/5000</span
-          >
-          <label for="insNotes" class="">Instructor Notes (Optional)</label>
-        </FloatLabel>
-        <Message
-          v-if="$field?.invalid"
-          severity="error"
-          size="small"
-          variant="simple"
-          >{{ $field.error?.message }}</Message
-        >
-      </FormField>
+          <FormField v-slot="$field" name="location">
+            <FloatLabel variant="on">
+              <Select
+                id="location"
+                :options="locations"
+                class="w-full h-10"
+                :optionValue="(option) => locations.indexOf(option)" />
+              <label for="location" class="required-field">Location</label>
+            </FloatLabel>
+            <Message
+              v-if="$field?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $field.error?.message }}</Message
+            >
+          </FormField>
+
+          <FormField v-slot="$field" name="progress">
+            <FloatLabel variant="on">
+              <Select
+                id="progress"
+                :options="progressOptions"
+                class="w-full"
+                optionValue="value"
+                optionLabel="name" />
+              <label for="progress" class="required-field">Progress</label>
+            </FloatLabel>
+            <Message
+              v-if="$field?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $field.error?.message }}</Message
+            >
+          </FormField>
+
+          <FormField v-slot="$field" name="ots">
+            <FloatLabel variant="on">
+              <Select
+                id="ots"
+                :options="otsOptions"
+                class="w-full"
+                :optionValue="(option) => otsOptions.indexOf(option)" />
+              <label for="ots" class="required-field">OTS</label>
+            </FloatLabel>
+            <Message
+              v-if="$field?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $field.error?.message }}</Message
+            >
+          </FormField>
+        </div>
+      </Fieldset>
+
+      <Fieldset legend="Notes">
+        <div class="grid grid-cols-1 gap-5">
+          <FormField v-slot="$field" name="studentNotes">
+            <label for="studentNotes" class="required-field"
+              >Student Notes</label
+            >
+            <RichEditor
+              :content="$field.value"
+              @updateEditor="$form.studentNotes!.value = $event" />
+            <Message
+              v-if="$field?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $field.error?.message }}</Message
+            >
+          </FormField>
+
+          <FormField v-slot="$field" name="insNotes">
+            <FloatLabel variant="on">
+              <Textarea
+                id="insNotes"
+                maxlength="5000"
+                autoResize
+                class="w-full" />
+              <span
+                class="char-counter"
+                :class="{ 'text-red-500': $field?.value?.length === 5000 }"
+                >{{ $field?.value?.length || 0 }}/5000</span
+              >
+              <label for="insNotes" class="">Instructor Notes (Optional)</label>
+            </FloatLabel>
+            <Message
+              v-if="$field?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $field.error?.message }}</Message
+            >
+          </FormField>
+        </div>
+      </Fieldset>
 
       <Message
         severity="warn"

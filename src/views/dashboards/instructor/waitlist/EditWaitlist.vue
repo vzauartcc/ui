@@ -17,6 +17,7 @@ import {
 } from '@primevue/forms';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
@@ -158,93 +159,88 @@ const saveForm = async (event: FormSubmitEvent) => {
         :resolver
         @submit="saveForm">
         <div class="grid grid-cols-1 gap-2">
-          <div class="grid md:grid-cols-2 gap-5">
-            <FormField name="controller">
-              <FloatLabel variant="on">
-                <InputText
-                  id="controller"
-                  class="w-full"
-                  disabled
-                  :modelValue="compileUsersName(signup.student)" />
-                <label for="controller" class="required-field">Student</label>
-              </FloatLabel>
-            </FormField>
-
-            <FormField v-slot="$field" name="instructor">
-              <FloatLabel variant="on">
-                <Select
-                  id="instructor"
-                  :options="instructors"
-                  optionLabel="name"
-                  optionValue="cid"
-                  class="w-full" />
-                <label for="instructor" class="required-field"
-                  >Assigned Instructor</label
+          <Fieldset legend="Waitlist Entry">
+            <div class="mb-5">
+              <span class="font-semibold">Student:</span>
+              {{ compileUsersName(signup.student) }}
+            </div>
+            <div class="grid md:grid-cols-2 gap-5">
+              <FormField v-slot="$field" name="instructor">
+                <FloatLabel variant="on">
+                  <Select
+                    id="instructor"
+                    :options="instructors"
+                    optionLabel="name"
+                    optionValue="cid"
+                    class="w-full" />
+                  <label for="instructor" class="required-field"
+                    >Assigned Instructor</label
+                  >
+                </FloatLabel>
+                <Message
+                  v-if="$field?.invalid"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{ $field.error?.message }}</Message
                 >
-              </FloatLabel>
-              <Message
-                v-if="$field?.invalid"
-                severity="error"
-                size="small"
-                variant="simple"
-                >{{ $field.error?.message }}</Message
-              >
-            </FormField>
+              </FormField>
 
-            <FormField v-slot="$field" name="endorsement">
-              <FloatLabel variant="on">
-                <Select
-                  id="endorsement"
-                  :options="endorsements"
-                  optionLabel="name"
-                  optionValue="code"
-                  class="w-full" />
-                <label for="endorsement" class="required-field"
-                  >Milestone</label
+              <FormField v-slot="$field" name="endorsement">
+                <FloatLabel variant="on">
+                  <Select
+                    id="endorsement"
+                    :options="endorsements"
+                    optionLabel="name"
+                    optionValue="code"
+                    class="w-full" />
+                  <label for="endorsement" class="required-field"
+                    >Milestone</label
+                  >
+                </FloatLabel>
+                <Message
+                  v-if="$field?.invalid"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{ $field.error?.message }}</Message
                 >
-              </FloatLabel>
-              <Message
-                v-if="$field?.invalid"
-                severity="error"
-                size="small"
-                variant="simple"
-                >{{ $field.error?.message }}</Message
-              >
-            </FormField>
+              </FormField>
 
-            <FormField v-slot="$field" name="availability">
-              <FloatLabel variant="on">
-                <MultiSelect
-                  id="availability"
-                  :options="availabilityOptions"
-                  class="w-full" />
-                <label for="availability" class="required-field"
-                  >Availability</label
+              <FormField v-slot="$field" name="availability">
+                <FloatLabel variant="on">
+                  <MultiSelect
+                    id="availability"
+                    :options="availabilityOptions"
+                    class="w-full" />
+                  <label for="availability" class="required-field"
+                    >Availability</label
+                  >
+                </FloatLabel>
+                <Message
+                  v-if="$field?.invalid"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{ $field.error?.message }}</Message
                 >
-              </FloatLabel>
-              <Message
-                v-if="$field?.invalid"
-                severity="error"
-                size="small"
-                variant="simple"
-                >{{ $field.error?.message }}</Message
-              >
-            </FormField>
+              </FormField>
 
-            <FormField v-slot="$field" name="notes" class="col-span-2">
-              <FloatLabel variant="on">
-                <InputText type="text" id="notes" class="w-full" />
-                <label for="notes">Notes (Optional)</label>
-              </FloatLabel>
-              <Message
-                v-if="$field?.invalid"
-                severity="error"
-                size="small"
-                variant="simple"
-                >{{ $field.error?.message }}</Message
-              >
-            </FormField>
-          </div>
+              <FormField v-slot="$field" name="notes" class="col-span-2">
+                <FloatLabel variant="on">
+                  <InputText type="text" id="notes" class="w-full" />
+                  <label for="notes">Notes (Optional)</label>
+                </FloatLabel>
+                <Message
+                  v-if="$field?.invalid"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{ $field.error?.message }}</Message
+                >
+              </FormField>
+            </div>
+          </Fieldset>
 
           <Button
             type="submit"

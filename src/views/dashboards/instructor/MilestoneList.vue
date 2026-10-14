@@ -13,6 +13,7 @@ import Checkbox from 'primevue/checkbox';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -281,56 +282,61 @@ const saveEdit = async () => {
     header="Edit Milestone"
     class="w-1/2"
     @hide="closeModal">
-    <div class="grid grid-cols-1 gap-3 my-3">
-      <FloatLabel variant="on">
+    <Fieldset legend="Milestone" class="my-3">
+      <div v-if="edit.id" class="mb-5">
+        <span class="font-semibold">Short code:</span>
+        {{ edit.code }}
+      </div>
+      <FloatLabel v-else variant="on">
         <InputText
           name="code"
           v-model="edit.code"
           :maxlength="4"
-          :disabled="!!edit.id"
           class="w-full" />
         <label for="code">Short code (4 chars max). Cannot be modified.</label>
       </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText name="name" v-model="edit.name" class="w-full" />
-        <label for="name">Display Name</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <Select
-          name="type"
-          v-model="edit.type"
-          class="w-1/2"
-          :options="milestoneTypes"
-          :optionLabel="(val) => capitalize(val)" />
-        <label for="type">Milestone Type</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <Select
-          name="endorsement"
-          v-model="edit.endorsement"
-          class="w-1/2"
-          :options="endorsements"
-          optionLabel="name"
-          optionValue="code" />
-        <label for="endorsement">Associated Endorsement</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <Select
-          name="rating"
-          v-model="edit.rating"
-          class="w-1/2"
-          :options="ratingShort"
-          :optionValue="(option) => ratingShort.indexOf(option)" />
-        <label for="rating">Associated Rating</label>
-      </FloatLabel>
-      <template v-if="edit.id">
-        <div class="flex flex-row gap-2">
-          <Checkbox v-model="edit.active" binary size="large" />
-          <span>Active</span>
-        </div>
-        <span>Milestones cannot be deleted, only deactivated.</span>
-      </template>
-    </div>
+      <div class="grid grid-cols-1 gap-5">
+        <FloatLabel variant="on">
+          <InputText name="name" v-model="edit.name" class="w-full" />
+          <label for="name">Display Name</label>
+        </FloatLabel>
+        <FloatLabel variant="on">
+          <Select
+            name="type"
+            v-model="edit.type"
+            class="w-1/2"
+            :options="milestoneTypes"
+            :optionLabel="(val) => capitalize(val)" />
+          <label for="type">Milestone Type</label>
+        </FloatLabel>
+        <FloatLabel variant="on">
+          <Select
+            name="endorsement"
+            v-model="edit.endorsement"
+            class="w-1/2"
+            :options="endorsements"
+            optionLabel="name"
+            optionValue="code" />
+          <label for="endorsement">Associated Endorsement</label>
+        </FloatLabel>
+        <FloatLabel variant="on">
+          <Select
+            name="rating"
+            v-model="edit.rating"
+            class="w-1/2"
+            :options="ratingShort"
+            :optionValue="(option) => ratingShort.indexOf(option)" />
+          <label for="rating">Associated Rating</label>
+        </FloatLabel>
+        <template v-if="edit.id">
+          <div class="flex flex-row gap-2">
+            <Checkbox v-model="edit.active" binary size="large" />
+            <span>Active</span>
+          </div>
+          <span>Milestones cannot be deleted, only deactivated.</span>
+        </template>
+      </div>
+    </Fieldset>
     <template #footer>
       <Button @click="saveEdit" label="Save" :loading="isSubmitting" />
       <Button @click="closeModal" outlined label="Cancel" severity="contrast" />

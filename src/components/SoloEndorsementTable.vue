@@ -12,8 +12,8 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import DatePicker from 'primevue/datepicker';
 import Dialog from 'primevue/dialog';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
-import InputText from 'primevue/inputtext';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -202,43 +202,49 @@ const getMaxExpiration = (issuedAt: string): Date => {
       of issuance.
     </p>
 
-    <div class="grid grid-cols-1 gap-5">
-      <FloatLabel variant="on">
-        <InputText v-model="editVal.name" disabled name="student" />
-        <label for="student">Student Name</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText v-model="editVal.position" disabled name="position" />
-        <label for="position">Position</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <DatePicker
-          v-model="editVal.issuedAt"
-          disabled
-          dateFormat="mm/dd/y"
-          name="issued" />
-        <label for="issued">Issued On</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <DatePicker v-model="editVal.expires" disabled name="current" />
-        <label for="current">Current Expiration</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <DatePicker
-          v-model="editVal.newExpiration"
-          :maxDate="editVal.maxExpiration"
-          :minDate="editVal.expires"
-          name="new" />
-        <label for="new">New Expiration</label>
-      </FloatLabel>
+    <div class="flex flex-col gap-5">
+      <Fieldset legend="Endorsement">
+        <div class="grid grid-cols-2 gap-x-5 gap-y-3">
+          <div>
+            <span class="font-semibold">Student Name:</span>
+            {{ editVal.name }}
+          </div>
+          <div>
+            <span class="font-semibold">Position:</span>
+            {{ editVal.position }}
+          </div>
+          <div>
+            <span class="font-semibold">Issued On:</span>
+            {{ dateAsMMDD(editVal.issuedAt) }}
+          </div>
+          <div>
+            <span class="font-semibold">Current Expiration:</span>
+            {{ dateAsMMDD(editVal.expires) }}
+          </div>
+        </div>
+      </Fieldset>
 
-      <div class="flex flex-row gap-2">
-        <Checkbox v-model="editVal.acknowledgement" binary />
-        <span
-          >I acknowledge that by submitting this extension, VATUSA has approved
-          of this Solo Endorsement extension per VATUSA DP002.</span
-        >
-      </div>
+      <Fieldset legend="Extension">
+        <div class="grid grid-cols-1 gap-5">
+          <FloatLabel variant="on">
+            <DatePicker
+              v-model="editVal.newExpiration"
+              :maxDate="editVal.maxExpiration"
+              :minDate="editVal.expires"
+              name="new" />
+            <label for="new">New Expiration</label>
+          </FloatLabel>
+
+          <div class="flex flex-row gap-2">
+            <Checkbox v-model="editVal.acknowledgement" binary />
+            <span
+              >I acknowledge that by submitting this extension, VATUSA has
+              approved of this Solo Endorsement extension per VATUSA
+              DP002.</span
+            >
+          </div>
+        </div>
+      </Fieldset>
     </div>
     <template #footer>
       <Button

@@ -12,9 +12,7 @@ import Card from 'primevue/card';
 import Column from 'primevue/column';
 import DataTable, { type DataTablePageEvent } from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
-import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
+import Fieldset from 'primevue/fieldset';
 import ProgressSpinner from 'primevue/progressspinner';
 import Rating from 'primevue/rating';
 import { capitalize, computed, onMounted, ref } from 'vue';
@@ -267,46 +265,36 @@ const rejectFeedback = async () => {
     header="Feedback Details"
     class="w-3/4">
     <div class="grid grid-cols-2 gap-5">
-      <FloatLabel variant="on">
-        <InputText id="name" v-model="feedback!.name" disabled />
-        <label for="name">Submitter Name</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputNumber
-          v-model="feedback!.submitter"
-          disabled
-          :useGrouping="false" />
-        <label for="cid">Submitter CID</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText id="email" v-model="feedback!.email" disabled />
-        <label for="email">Submitter Email</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText id="createdAt" v-model="dateToString" disabled />
-        <label for="createdAt">Submission Date</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText id="controller" v-model="getControllerName" disabled />
-        <label for="controller">Controller</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText id="position" v-model="feedback!.position" disabled />
-        <label for="position">Position</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText id="rating" v-model="getFeedbackRating" disabled />
-        <label for="rating">Rating</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText id="status" v-model="getFeedbackStatus" disabled />
-        <label for="status">Status</label>
-      </FloatLabel>
+      <Fieldset legend="Submitter Name">
+        <span>{{ feedback!.name }}</span>
+      </Fieldset>
+      <Fieldset legend="Submitter CID">
+        <span>{{ feedback!.submitter }}</span>
+      </Fieldset>
+      <Fieldset legend="Submitter Email">
+        <span>{{ feedback!.email }}</span>
+      </Fieldset>
+      <Fieldset legend="Submission Date">
+        <span>{{ dateToString }}</span>
+      </Fieldset>
+      <Fieldset legend="Controller">
+        <span>{{ getControllerName }}</span>
+      </Fieldset>
+      <Fieldset legend="Position">
+        <span>{{ feedback!.position }}</span>
+      </Fieldset>
+      <Fieldset legend="Rating">
+        <span>{{ getFeedbackRating }}</span>
+      </Fieldset>
+      <Fieldset legend="Status">
+        <span>{{ getFeedbackStatus }}</span>
+      </Fieldset>
     </div>
-    <p>Comments</p>
-    <p id="comments" class="whitespace-pre-line break-words">
-      {{ feedback!.comments }}
-    </p>
+    <Fieldset legend="Comments">
+      <span class="whitespace-pre-line break-words">
+        {{ feedback!.comments }}
+      </span>
+    </Fieldset>
 
     <template #footer>
       <template v-if="feedback!.pending">

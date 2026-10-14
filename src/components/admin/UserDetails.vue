@@ -5,9 +5,7 @@ import { dateAsMMDD } from '@/utils/date';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
-import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
+import Fieldset from 'primevue/fieldset';
 import Timeline from 'primevue/timeline';
 import { computed } from 'vue';
 
@@ -77,39 +75,29 @@ const history = computed(() => {
     header="User Details"
     class="w-1/2">
     <div class="grid grid-cols-2 gap-5 mb-5">
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.fname" id="fname" />
-        <label for="fname">First Name</label>
-      </FloatLabel>
+      <Fieldset legend="First Name">
+        <span>{{ user.fname }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.lname" id="lname" />
-        <label for="lname">Last Name</label>
-      </FloatLabel>
+      <Fieldset legend="Last Name">
+        <span>{{ user.lname }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputNumber
-          disabled
-          :modelValue="user.cid"
-          :useGrouping="false"
-          id="cid" />
-        <label for="cid">Certificate ID</label>
-      </FloatLabel>
+      <Fieldset legend="Certificate ID">
+        <span>{{ user.cid }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.email" id="email" />
-        <label for="email">E-Mail Address</label>
-      </FloatLabel>
+      <Fieldset legend="E-Mail Address">
+        <span>{{ user.email }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.ratingShort" id="rating" />
-        <label for="rating">Controller Rating</label>
-      </FloatLabel>
+      <Fieldset legend="Controller Rating">
+        <span>{{ user.ratingShort }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.oi" id="oi" />
-        <label for="oi">Operating Initials</label>
-      </FloatLabel>
+      <Fieldset legend="Operating Initials">
+        <span>{{ user.oi }}</span>
+      </Fieldset>
     </div>
 
     <Divider />
