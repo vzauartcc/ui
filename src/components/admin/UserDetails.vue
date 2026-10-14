@@ -2,6 +2,10 @@
 import type { IController } from '@/services/controller/controller.types';
 import type { IUser } from '@/services/user/user.types';
 import { dateAsMMDD } from '@/utils/date';
+import Accordion from 'primevue/accordion';
+import AccordionContent from 'primevue/accordioncontent';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionPanel from 'primevue/accordionpanel';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
@@ -102,33 +106,38 @@ const history = computed(() => {
 
     <Divider />
 
-    <p class="text-center text-lg">Facility History</p>
-
-    <Timeline
-      v-if="history.length > 0"
-      :value="history"
-      class="overflow-y-auto">
-      <template #opposite="{ item }">
-        <span
-          v-if="!item.isStart"
-          class="text-surface-500 dark:text-surface-400">
-          {{ dateAsMMDD(item.date) }}
-        </span>
-        <span v-else class="whitespace-pre-line break-words">
-          {{ item.reason }}
-        </span>
-      </template>
-      <template #content="{ item }">
-        <span
-          v-if="item.isStart"
-          class="text-surface-500 dark:text-surface-400">
-          {{ dateAsMMDD(item.date) }}
-        </span>
-        <span v-else class="whitespace-pre-line break-words">
-          {{ item.reason }}
-        </span>
-      </template>
-    </Timeline>
+    <Accordion>
+      <AccordionPanel value="0">
+        <AccordionHeader>Facility History</AccordionHeader>
+        <AccordionContent>
+          <Timeline
+            v-if="history.length > 0"
+            :value="history"
+            class="overflow-y-auto">
+            <template #opposite="{ item }">
+              <span
+                v-if="!item.isStart"
+                class="text-surface-500 dark:text-surface-400">
+                {{ dateAsMMDD(item.date) }}
+              </span>
+              <span v-else class="whitespace-pre-line break-words">
+                {{ item.reason }}
+              </span>
+            </template>
+            <template #content="{ item }">
+              <span
+                v-if="item.isStart"
+                class="text-surface-500 dark:text-surface-400">
+                {{ dateAsMMDD(item.date) }}
+              </span>
+              <span v-else class="whitespace-pre-line break-words">
+                {{ item.reason }}
+              </span>
+            </template>
+          </Timeline>
+        </AccordionContent>
+      </AccordionPanel>
+    </Accordion>
     <template #footer>
       <Button outlines label="Close" @click="isVisible = false" />
     </template>
