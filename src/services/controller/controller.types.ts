@@ -135,6 +135,18 @@ export interface IVisitorApplication {
   reason: string;
   createdAt: string; // ISO date
   updatedAt: string; // ISO date
+
+  // Virtuals
+  user?: {
+    cid: number;
+    fname: string;
+    lname: string;
+    history: {
+      start: string; // ISO date
+      end: string; // ISO date
+      reason: string;
+    }[];
+  };
 }
 
 export interface IOwnVisitingStatus {

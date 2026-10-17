@@ -54,15 +54,15 @@ const history = computed(() => {
 
   sorted.forEach((h) => {
     tmp.push({
-      date: new Date(h.end),
-      reason: h.reason,
-      isStart: false,
-    });
-
-    tmp.push({
       date: new Date(h.start),
       reason: 'Transferred into facility',
       isStart: true,
+    });
+
+    tmp.push({
+      date: new Date(h.end),
+      reason: h.reason,
+      isStart: false,
     });
   });
 
