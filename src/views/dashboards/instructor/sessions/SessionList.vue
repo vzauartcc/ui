@@ -254,6 +254,7 @@ const canDelete = (session: ITrainingSession) => {
 
   <Dialog
     modal
+    dismissableMask
     header="Delete Training Session"
     v-model:visible="visible"
     @hide="closeDelete">
@@ -268,7 +269,7 @@ const canDelete = (session: ITrainingSession) => {
         @click="confirmDelete"
         label="Delete"
         :loading="isSubmitting" />
-      <Button severity="secondary" @click="closeDelete" label="Cancel" />
+      <Button outlined @click="closeDelete" label="Cancel" />
     </template>
   </Dialog>
 </template>

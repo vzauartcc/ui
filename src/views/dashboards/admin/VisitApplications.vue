@@ -5,23 +5,27 @@ import type {
   IVisitApplication,
   IVisitorApplication,
 } from '@/services/controller/controller.types';
+import { dateAsMMDD } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
 import { Icon } from '@iconify/vue';
+import Accordion from 'primevue/accordion';
+import AccordionContent from 'primevue/accordioncontent';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionPanel from 'primevue/accordionpanel';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import DatePicker from 'primevue/datepicker';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
+import Timeline from 'primevue/timeline';
 import { computed, nextTick, onMounted, ref } from 'vue';
 
 useTitle('Visit Applications');
@@ -65,6 +69,39 @@ const recentlyRostered = computed(
 );
 const hasHome = computed(() => !!editData.value?.statusChecks.hasHome);
 const needsBasic = computed(() => !!editData.value?.statusChecks.needsBasic);
+
+interface IHistory {
+  date: Date;
+  reason: string;
+  isStart: boolean;
+}
+const history = computed(() => {
+  const userHistory = editData.value?.application.user?.history;
+
+  if (!userHistory || userHistory.length === 0) return [];
+
+  const sorted = [...userHistory].sort(
+    (a, b) => new Date(a.end).getTime() - new Date(b.end).getTime(),
+  );
+
+  const tmp: IHistory[] = [];
+
+  sorted.forEach((h) => {
+    tmp.push({
+      date: new Date(h.start),
+      reason: 'Transferred into facility',
+      isStart: true,
+    });
+
+    tmp.push({
+      date: new Date(h.end),
+      reason: h.reason,
+      isStart: false,
+    });
+  });
+
+  return tmp;
+});
 
 const accept = async () => {
   if (!editData.value) return;
@@ -191,133 +228,153 @@ const rejectApplication = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="editVisible"
     class="w-1/2"
     header="Visiting Application"
     @hide="close">
     <div class="grid grid-cols-2 gap-5">
-      <FloatLabel variant="on">
-        <InputText name="name" v-model="getName" disabled />
-        <label for="name">Name</label>
-      </FloatLabel>
+      <Fieldset legend="Name">
+        <span>{{ getName }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText
-          name="email"
-          v-model="editData!.application.email"
-          disabled />
-        <label for="email">Email</label>
-      </FloatLabel>
+      <Fieldset legend="Email">
+        <span>{{ editData!.application.email }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputNumber
-          name="cid"
-          v-model="editData!.application.cid"
-          :useGrouping="false"
-          disabled />
-        <label for="cid">CID</label>
-      </FloatLabel>
+      <Fieldset legend="CID">
+        <span>{{ editData!.application.cid }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText
-          name="rating"
-          v-model="editData!.application.rating"
-          disabled />
-        <label for="rating">Rating</label>
-      </FloatLabel>
+      <Fieldset legend="Rating">
+        <span>{{ editData!.application.rating }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText name="home" v-model="editData!.application.home" disabled />
-        <label for="home">Home Facility</label>
-      </FloatLabel>
+      <Fieldset legend="Home Facility">
+        <span>{{ editData!.application.home }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <DatePicker name="createdAt" v-model="getDate" disabled />
-        <label for="createdAt">Submission Date</label>
-      </FloatLabel>
+      <Fieldset legend="Submission Date">
+        <span>{{ dateAsMMDD(getDate) }}</span>
+      </Fieldset>
 
       <div class="col-span-2">
-        <FloatLabel variant="on">
-          <Textarea
-            name="reason"
-            v-model="editData!.application.reason"
-            disabled
-            class="w-full" />
-          <label for="reason">Reason to Visit</label>
-        </FloatLabel>
+        <Fieldset legend="Reason to Visit">
+          <span class="whitespace-pre-line break-words">{{
+            editData!.application.reason
+          }}</span>
+        </Fieldset>
       </div>
     </div>
 
     <Divider />
 
-    <div class="flex flex-col gap-5">
-      <div class="gap-5">
-        <Icon
-          :icon="`heroicons:${ratingConsolidation ? 'check' : 'x-mark'}`"
-          :class="{
-            'text-red-500': !ratingConsolidation,
-            'text-green-500': ratingConsolidation,
-          }" />
-        <span>Rating Consolidation (50 hours in rating)</span>
-      </div>
+    <Accordion>
+      <AccordionPanel value="0" v-if="history.length > 0">
+        <AccordionHeader>Facility History</AccordionHeader>
+        <AccordionContent>
+          <Timeline :value="history" class="overflow-y-auto">
+            <template #opposite="{ item }">
+              <span
+                v-if="!item.isStart"
+                class="text-surface-500 dark:text-surface-400">
+                {{ dateAsMMDD(item.date) }}
+              </span>
+              <span v-else class="whitespace-pre-line break-words">
+                {{ item.reason }}
+              </span>
+            </template>
+            <template #content="{ item }">
+              <span
+                v-if="item.isStart"
+                class="text-surface-500 dark:text-surface-400">
+                {{ dateAsMMDD(item.date) }}
+              </span>
+              <span v-else class="whitespace-pre-line break-words">
+                {{ item.reason }}
+              </span>
+            </template>
+          </Timeline>
+        </AccordionContent>
+      </AccordionPanel>
 
-      <div>
-        <Icon
-          :icon="`heroicons:${promo ? 'check' : 'x-mark'}`"
-          :class="{
-            'text-red-500': !promo,
-            'text-green-500': promo,
-          }" />
-        <span>90 days in rating</span>
-      </div>
+      <AccordionPanel value="1">
+        <AccordionHeader>VATUSA Status Checks</AccordionHeader>
+        <AccordionContent>
+          <div class="flex flex-col gap-5">
+            <div class="gap-5">
+              <Icon
+                :icon="`heroicons:${ratingConsolidation ? 'check' : 'x-mark'}`"
+                :class="{
+                  'text-red-500': !ratingConsolidation,
+                  'text-green-500': ratingConsolidation,
+                }" />
+              <span>Rating Consolidation (50 hours in rating)</span>
+            </div>
 
-      <div>
-        <Icon
-          :icon="`heroicons:${hasRating ? 'check' : 'x-mark'}`"
-          :class="{
-            'text-red-500': !hasRating,
-            'text-green-500': hasRating,
-          }" />
-        <span>S3+ Rating</span>
-      </div>
+            <div>
+              <Icon
+                :icon="`heroicons:${promo ? 'check' : 'x-mark'}`"
+                :class="{
+                  'text-red-500': !promo,
+                  'text-green-500': promo,
+                }" />
+              <span>90 days in rating</span>
+            </div>
 
-      <div>
-        <Icon
-          :icon="`heroicons:${recentlyRostered ? 'check' : 'x-mark'}`"
-          :class="{
-            'text-red-500': !recentlyRostered,
-            'text-green-500': recentlyRostered,
-          }" />
-        <span>60 days since added to a VATUSA subdivision</span>
-      </div>
+            <div>
+              <Icon
+                :icon="`heroicons:${hasRating ? 'check' : 'x-mark'}`"
+                :class="{
+                  'text-red-500': !hasRating,
+                  'text-green-500': hasRating,
+                }" />
+              <span>S3+ Rating</span>
+            </div>
 
-      <div>
-        <Icon
-          :icon="`heroicons:${hasHome ? 'check' : 'x-mark'}`"
-          :class="{
-            'text-red-500': !hasHome,
-            'text-green-500': hasHome,
-          }" />
-        <span>Has Home Facility</span>
-      </div>
+            <div>
+              <Icon
+                :icon="`heroicons:${recentlyRostered ? 'check' : 'x-mark'}`"
+                :class="{
+                  'text-red-500': !recentlyRostered,
+                  'text-green-500': recentlyRostered,
+                }" />
+              <span>60 days since added to a VATUSA subdivision</span>
+            </div>
 
-      <div>
-        <Icon
-          :icon="`heroicons:${needsBasic ? 'check' : 'x-mark'}`"
-          :class="{
-            'text-red-500': !needsBasic,
-            'text-green-500': needsBasic,
-          }" />
-        <span>Needs Basic Training</span>
-      </div>
+            <div>
+              <Icon
+                :icon="`heroicons:${hasHome ? 'check' : 'x-mark'}`"
+                :class="{
+                  'text-red-500': !hasHome,
+                  'text-green-500': hasHome,
+                }" />
+              <span>Has Home Facility</span>
+            </div>
 
-      <Message severity="success" v-if="editData!.statusChecks.visiting">
-        Meets VATUSA requirements.
-      </Message>
-      <Message severity="warn" v-else>
-        Does not meet VATUSA requirements.
-      </Message>
-    </div>
+            <div>
+              <Icon
+                :icon="`heroicons:${needsBasic ? 'check' : 'x-mark'}`"
+                :class="{
+                  'text-red-500': !needsBasic,
+                  'text-green-500': needsBasic,
+                }" />
+              <span>Needs Basic Training</span>
+            </div>
+          </div>
+        </AccordionContent>
+      </AccordionPanel>
+    </Accordion>
+
+    <Message
+      class="mt-5"
+      severity="success"
+      v-if="editData!.statusChecks.visiting">
+      Meets VATUSA requirements.
+    </Message>
+    <Message class="mt-5" severity="warn" v-else>
+      Does not meet VATUSA requirements.
+    </Message>
 
     <template #footer>
       <Button
@@ -332,6 +389,7 @@ const rejectApplication = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="rejectVisible"
     header="Reject Visitor Application"
     @hide="closeReject">

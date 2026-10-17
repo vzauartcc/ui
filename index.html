@@ -8,6 +8,19 @@
       name="description"
       content="Virtual Chicago ARTCC is one of the 22 regional ARTCCs in the US and provides virtual ATC services on the VATSIM network. Not affiliated with the FAA." />
     <link rel="icon" href="/favicon.ico" />
+    <script>
+      // Apply the persisted theme before first paint so dark mode doesn't
+      // flash the browser's white canvas while the app boots.
+      if (/(?:^|;\s*)theme=dark(?:;|$)/.test(document.cookie)) {
+        document.documentElement.classList.add('app-dark');
+      }
+    </script>
+    <style>
+      /* Fallback for the brief window before PrimeVue injects --p-surface-950. */
+      html.app-dark {
+        background-color: var(--p-surface-950, #0d1728);
+      }
+    </style>
   </head>
   <body style="overflow-y: scroll">
     <noscript>

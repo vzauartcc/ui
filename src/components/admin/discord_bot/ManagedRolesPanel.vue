@@ -138,6 +138,7 @@ const deleteManagedRole = (idx: number) => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="editRoleVisible"
     :header="
       editRoleData.index < 0 ? 'Create Managed Role' : 'Edit Managed Role'

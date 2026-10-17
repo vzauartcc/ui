@@ -14,8 +14,8 @@ import {
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -174,43 +174,21 @@ const submitApplication = async (event: FormSubmitEvent) => {
           :resolver
           @submit="submitApplication">
           <div class="grid grid-cols-2 gap-5">
-            <FloatLabel variant="on">
-              <InputNumber
-                name="cid"
-                v-model="user!.cid"
-                disabled
-                readonly
-                :useGrouping="false" />
-              <label for="cid">CID</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-              <InputText name="email" v-model="user!.email" disabled readonly />
-              <label for="email">Email Address</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-              <InputText
-                name="firstName"
-                v-model="user!.fname"
-                disabled
-                readonly />
-              <label for="firstName">First Name</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-              <InputText
-                name="lastName"
-                v-model="user!.lname"
-                disabled
-                readonly />
-              <label for="lastName">Last Name</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-              <InputText
-                name="ratingLong"
-                v-model="user!.ratingLong"
-                disabled
-                readonly />
-              <label for="ratingLong">Rating</label>
-            </FloatLabel>
+            <Fieldset legend="CID">
+              <span>{{ user!.cid }}</span>
+            </Fieldset>
+            <Fieldset legend="Email Address">
+              <span>{{ user!.email }}</span>
+            </Fieldset>
+            <Fieldset legend="First Name">
+              <span>{{ user!.fname }}</span>
+            </Fieldset>
+            <Fieldset legend="Last Name">
+              <span>{{ user!.lname }}</span>
+            </Fieldset>
+            <Fieldset legend="Rating">
+              <span>{{ user!.ratingLong }}</span>
+            </Fieldset>
 
             <FormField v-slot="$field" name="facility" class="col-span-2">
               <FloatLabel variant="on">

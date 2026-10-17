@@ -42,7 +42,12 @@ const checkAcknowledgement = () => {
 </script>
 
 <template>
-  <Dialog v-model:visible="showNotice" modal header="Notice" class="md:w-1/2">
+  <Dialog
+    v-model:visible="showNotice"
+    modal
+    dismissableMask
+    header="Notice"
+    class="md:w-1/2">
     <span>
       All information contained on this website is intended for flight
       simulation purposes only and

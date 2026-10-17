@@ -137,9 +137,27 @@ const closeManualSignup = () => {
   manualSignupData.value = { cid: 0 };
 };
 
+const duplicatedAssignments = computed(() => {
+  const counts = new Map<number, number>();
+
+  for (const position of eventData.value?.positions ?? []) {
+    if (!position.takenBy) continue;
+
+    counts.set(position.takenBy, (counts.get(position.takenBy) ?? 0) + 1);
+  }
+
+  return new Set(
+    [...counts].filter(([, count]) => count > 1).map(([cid]) => cid),
+  );
+});
+
 const getRowColor = (data: IPosition) => {
+  if (data.takenBy && duplicatedAssignments.value.has(data.takenBy)) {
+    return 'bg-amber-100 dark:bg-amber-900/50';
+  }
+
   if (!data.takenBy) {
-    return 'bg-red-100';
+    return 'bg-red-100 dark:bg-red-950/40';
   }
 };
 
@@ -328,7 +346,10 @@ const openSignups = async () => {
       </div>
     </template>
     <template #footer>
-      <div class="flex justify-end items-center">
+      <div class="flex justify-between items-center">
+        <span class="text-sm italic text-surface-500"
+          >Position assignments are saved automatically.</span
+        >
         <Button @click="sendEventVisible = true" severity="success">
           <Icon icon="mdi:discord" />
           <span>Send Event</span>
@@ -338,6 +359,7 @@ const openSignups = async () => {
   </Card>
   <Dialog
     modal
+    dismissableMask
     class="w-1/2"
     v-model:visible="deleteSignupVisible"
     header="Delete Sign Up"
@@ -358,6 +380,7 @@ const openSignups = async () => {
 
   <Dialog
     modal
+    dismissableMask
     class="w-1/2"
     v-model:visible="manualSignupVisible"
     header="Manual Sign Up"
@@ -391,6 +414,7 @@ const openSignups = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="sendEventVisible"
     class="w-1/2"
     header="Confirm Send Event"

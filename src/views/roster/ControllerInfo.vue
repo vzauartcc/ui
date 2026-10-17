@@ -174,6 +174,7 @@ const randomAvatarColor = (): string => {
 .fe,
 .wm {
   background-color: var(--p-sec-gold-900);
+  color: initial;
 }
 
 .ins,

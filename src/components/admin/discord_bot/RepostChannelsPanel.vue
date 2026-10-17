@@ -132,6 +132,7 @@ const closeEditRepostChannel = () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="editRepostChannelVisible"
     :header="
       editRepostChannelData.edit

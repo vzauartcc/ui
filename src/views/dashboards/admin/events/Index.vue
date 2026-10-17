@@ -317,6 +317,7 @@ const isInPast = (date?: Date | string) => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="eventDeleteVisible"
     class="w-1/2"
     header="Confirm Deletion"
@@ -336,6 +337,7 @@ const isInPast = (date?: Date | string) => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="staffingDeleteVisible"
     class="w-1/2"
     header="Confirm Deletion"

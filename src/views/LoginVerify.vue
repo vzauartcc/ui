@@ -42,12 +42,15 @@ onMounted(async () => {
     let errorMessage = 'Something went wrong, please try again later.';
 
     if (e instanceof HTTPError) {
-      try {
-        const data = await e.response.json();
-        if (data && typeof data.message === 'string') {
-          errorMessage = data.message;
-        }
-      } catch {
+      const data = e.data;
+      if (
+        typeof data === 'object' &&
+        data !== null &&
+        'message' in data &&
+        typeof data.message === 'string'
+      ) {
+        errorMessage = data.message;
+      } else {
         // Non-JSON error body (e.g., nginx 502/504 HTML page)
         errorMessage = `Server error (${e.response.status}). Please try again later.`;
       }

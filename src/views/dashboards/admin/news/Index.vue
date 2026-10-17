@@ -150,6 +150,7 @@ const confirmDelete = async () => {
 
   <Dialog
     modal
+    dismissableMask
     class="w-1/2"
     v-model:visible="deleteVisible"
     @hide="closeDelete"

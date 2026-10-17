@@ -325,7 +325,11 @@ const averageInstructorLoad = () => {
     </template>
   </DataTable>
 
-  <Dialog v-model:visible="deleteVisible" modal header="Delete Waitlist Entry">
+  <Dialog
+    v-model:visible="deleteVisible"
+    modal
+    dismissableMask
+    header="Delete Waitlist Entry">
     <p>
       Confirm the deletion of
       <b>{{ compileUsersName(deleteEntry?.student) }}</b
