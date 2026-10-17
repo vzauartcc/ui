@@ -120,10 +120,12 @@ const scrollToOverview = () => {
       <Card>
         <template #title>
           <span class="text-2xl font-bold">
-            <span v-if="attempt.grade >= 80" class="text-green-500"
+            <span
+              v-if="attempt.grade >= 80"
+              class="text-green-600 dark:text-green-400"
               >Passed</span
             >
-            <span v-else class="text-red-500"
+            <span v-else class="text-red-600 dark:text-red-400"
               >Failed<span
                 v-if="attempt.status === 'timed_out'"
                 class="text-base">
@@ -190,8 +192,10 @@ const scrollToOverview = () => {
                 v-for="(question, idx) of questions"
                 :key="idx"
                 :class="{
-                  'bg-green-500': question.response.isCorrect,
-                  'bg-red-500': !question.response.isCorrect,
+                  'bg-green-500 dark:bg-green-500/20 dark:text-green-300':
+                    question.response.isCorrect,
+                  'bg-red-500 dark:bg-red-500/20 dark:text-red-300':
+                    !question.response.isCorrect,
                 }"
                 class="w-12 border rounded-xl px-3 py-1 text-xl cursor-pointer justify-center inline-flex"
                 v-tooltip.top="`Jump to question ${idx + 1}`"
@@ -202,7 +206,7 @@ const scrollToOverview = () => {
           </template>
         </Card>
 
-        <Card class="my-5 bg-bg-3 dark:text-black">
+        <Card class="my-5 bg-bg-3 dark:bg-surface-800">
           <template #title>Answer Key</template>
           <template #content>
             <div class="grid grid-cols-1 gap-2">
@@ -315,5 +319,17 @@ const scrollToOverview = () => {
 
 .incorrect {
   background-color: var(--color-red-500);
+}
+
+:global(.app-dark .missed) {
+  border-color: color-mix(in srgb, var(--color-green-500) 50%, transparent);
+}
+
+:global(.app-dark .correct) {
+  background-color: color-mix(in srgb, var(--color-green-500) 20%, transparent);
+}
+
+:global(.app-dark .incorrect) {
+  background-color: color-mix(in srgb, var(--color-red-500) 20%, transparent);
 }
 </style>

@@ -339,7 +339,7 @@ const saveEdit = async () => {
     </Fieldset>
     <template #footer>
       <Button @click="saveEdit" label="Save" :loading="isSubmitting" />
-      <Button @click="closeModal" outlined label="Cancel" severity="contrast" />
+      <Button @click="closeModal" outlined label="Cancel" />
     </template>
   </Dialog>
 </template>

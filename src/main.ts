@@ -54,6 +54,31 @@ const MyPreset = definePreset(Aura, {
       900: '{primitive.sec.blue.900}',
       950: '{primitive.sec.blue.900}',
     },
+    colorScheme: {
+      dark: {
+        // Blue-tinted "midnight" surfaces to match the brand instead of
+        // the neutral zinc palette Aura ships with. 0 = lightest (text),
+        // 950 = darkest (form fields / page canvas).
+        surface: {
+          0: '#e9f0f8',
+          50: '#d6e2f0',
+          100: '#bdd0e6',
+          200: '#9fb8d6',
+          300: '#809dc4',
+          400: '#7190b6',
+          500: '#577299',
+          600: '#41597a',
+          700: '#2e4260',
+          800: '#1f3049',
+          900: '#152238',
+          950: '#0d1728',
+        },
+        highlight: {
+          color: '#d7ecf8',
+          focusColor: '#e9f0f8',
+        },
+      },
+    },
   },
 });
 

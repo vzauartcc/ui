@@ -23,7 +23,7 @@ import { useRoute } from 'vue-router';
 const s3Url = getS3Url();
 
 const route = useRoute();
-const isDark = ref(false);
+const isDark = ref(document.documentElement.classList.contains('app-dark'));
 const userStore = useUserStore();
 const { user, isLoggedIn } = storeToRefs(userStore);
 const notificationPopover = useTemplateRef<
@@ -138,17 +138,6 @@ const userItems = computed(() => [
 ]);
 
 onMounted(async () => {
-  const cookies = document.cookie.split(';');
-  const themeCookie = cookies.find((c) => c.trim().startsWith('theme'));
-
-  if (themeCookie) {
-    const parts = themeCookie.split('=');
-    if (parts[1] === 'dark') {
-      document.documentElement.classList.add('app-dark');
-      isDark.value = true;
-    }
-  }
-
   getNotifications();
 });
 

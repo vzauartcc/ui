@@ -252,7 +252,7 @@ const getMaxExpiration = (issuedAt: string): Date => {
         @click="saveEdit"
         :disabled="!editVal.acknowledgement"
         :loading="isSavingEdit" />
-      <Button label="Cancel" @click="clearEdit" severity="secondary" />
+      <Button outlined label="Cancel" @click="clearEdit" />
     </template>
   </Dialog>
 
@@ -275,7 +275,7 @@ const getMaxExpiration = (issuedAt: string): Date => {
         @click="deleteEndorsement"
         severity="danger"
         :loading="isDeleting" />
-      <Button label="Cancel" @click="clearDelete" severity="secondary" />
+      <Button outlined label="Cancel" @click="clearDelete" />
     </template>
   </Dialog>
 </template>

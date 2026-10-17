@@ -409,7 +409,7 @@ const updateOwnershipHi = (d: { sectorId: number; value: string }) => {
 
 <template>
   <ProgressSpinner v-if="!currentSplit" />
-  <Card v-else :class="{ 'bg-red-100': isChanged }">
+  <Card v-else :class="{ 'bg-red-100 dark:bg-red-950/40': isChanged }">
     <template #title>Edit Center Split</template>
     <template #content>
       <Tabs value="0">

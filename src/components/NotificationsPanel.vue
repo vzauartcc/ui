@@ -73,7 +73,7 @@ const deleteNotification = async (notification: INotification) => {
           v-for="(notification, index) in props.notifications.notif"
           :key="index">
           <Card
-            class="dark:odd:bg-surface-700 dark:even:bg-surface-800 odd:bg-surface-100 even:bg-surface-300"
+            class="dark:odd:bg-surface-600 dark:even:bg-surface-700 odd:bg-surface-100 even:bg-surface-300"
             @click.prevent="readNotification(notification)">
             <template #title>
               <div class="flex items-center justify-between w-full">

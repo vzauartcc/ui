@@ -36,7 +36,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <footer class="bg-bg-5 text-white">
+  <footer
+    class="bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-t border-surface-200 dark:border-surface-800">
     <div class="md:w-10/12 mx-auto text-center">
       <div class="m-5">
         <p>
@@ -56,15 +57,25 @@ onUnmounted(() => {
           </router-link>
           <a href="https://vatusa.net" class="flex justify-center">
             <img
-              class="h-16 object-contain"
+              class="h-16 object-contain dark:hidden"
               :src="`${s3Url}/site-logo/vatusa.svg`"
+              :draggable="false"
+              alt="VATUSA Subdivision Logo" />
+            <img
+              class="h-16 object-contain hidden dark:block"
+              :src="`${s3Url}/site-logo/vatusa-alt.svg`"
               :draggable="false"
               alt="VATUSA Subdivision Logo" />
           </a>
           <a href="https://vatsim.net" class="flex justify-center">
             <img
-              class="h-16 object-contain"
+              class="h-16 object-contain dark:hidden"
               :src="`${s3Url}/site-logo/vatsim.png`"
+              :draggable="false"
+              alt="VATSIM Network Logo" />
+            <img
+              class="h-16 object-contain hidden dark:block"
+              :src="`${s3Url}/site-logo/vatsim-alt.png`"
               :draggable="false"
               alt="VATSIM Network Logo" />
           </a>
@@ -89,7 +100,7 @@ onUnmounted(() => {
           Open source on
           <a
             href="https://github.com/vzauartcc"
-            class="inline-flex gap-1 items-center text-white"
+            class="inline-flex gap-1 items-center hover:underline"
             target="_blank"
             rel="noopener noreferrer">
             <Icon icon="mdi:github" class="text-lg! mt-0!" />

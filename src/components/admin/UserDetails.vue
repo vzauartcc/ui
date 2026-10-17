@@ -139,7 +139,7 @@ const history = computed(() => {
       </AccordionPanel>
     </Accordion>
     <template #footer>
-      <Button outlines label="Close" @click="isVisible = false" />
+      <Button outlined label="Close" @click="isVisible = false" />
     </template>
   </Dialog>
 </template>

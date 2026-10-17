@@ -363,11 +363,13 @@ const ptColumn = ref({
 .fe,
 .wm {
   background-color: yellow;
+  color: #111827;
 }
 
 .ins,
 .mtr,
 .ia {
   background-color: var(--p-core-blue);
+  color: #111827;
 }
 </style>

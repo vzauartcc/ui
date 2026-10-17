@@ -134,7 +134,7 @@ const viewFeedback = (data: IFeedback) => {
     class="w-1/2">
     <p class="whitespace-pre-line break-words">{{ feedback?.comments }}</p>
     <template #footer>
-      <Button label="Close" @click="feedbackVisible = false" />
+      <Button outlined label="Close" @click="feedbackVisible = false" />
     </template>
   </Dialog>
 </template>
