@@ -72,7 +72,8 @@ const onPage = (event: DataTablePageEvent) => {
       <template #header>
         <img
           :src="`${s3Url}/events/${event.bannerUrl}`"
-          alt="Event banner showing the date and time of the event and the airports involved." />
+          alt="Event banner showing the date and time of the event and the airports involved."
+          class="mx-auto block" />
       </template>
       <template #title>
         <div class="flex items-center justify-between w-full">
