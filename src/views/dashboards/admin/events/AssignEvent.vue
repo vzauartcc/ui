@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { controllerService } from '@/services/controller/controller.service';
 import type { ICertification } from '@/services/controller/controller.types';
 import { eventService } from '@/services/events/events.service';
@@ -11,7 +12,6 @@ import { feedbackService } from '@/services/feedback/feedback.service';
 import type { IFeedbackController } from '@/services/feedback/feedback.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -66,6 +66,15 @@ const signupData = computed(() => {
   }));
   return [{ cid: null, name: 'Unassigned' }, ...list];
 });
+
+const assignedCids = computed(
+  () =>
+    new Set(
+      (eventData.value?.positions ?? [])
+        .map((p) => p.takenBy)
+        .filter((cid): cid is number => cid != null),
+    ),
+);
 
 const getEventData = async () => {
   try {
@@ -136,6 +145,9 @@ const closeManualSignup = () => {
   manualSignupVisible.value = false;
   manualSignupData.value = { cid: 0 };
 };
+
+const getAssignedPosition = (cid: number) =>
+  eventData.value?.positions.find((p) => p.takenBy === cid)?.pos ?? 'None';
 
 const duplicatedAssignments = computed(() => {
   const counts = new Map<number, number>();
@@ -290,6 +302,11 @@ const openSignups = async () => {
               class="mx-1 my-1" />
           </template>
         </Column>
+        <Column field="assignedPosition" header="Assigned Position">
+          <template #body="{ data }">
+            {{ getAssignedPosition(data.cid) }}
+          </template>
+        </Column>
         <Column
           field="options"
           header="Options"
@@ -339,7 +356,16 @@ const openSignups = async () => {
                 :filterFields="['name', 'cid']"
                 class="w-full"
                 placeholder="Unassigned"
-                @change="(e) => assignPosition(e.value, data)" />
+                @change="(e) => assignPosition(e.value, data)">
+                <template #option="{ option }">
+                  <span
+                    :class="{
+                      'text-amber-500': assignedCids.has(option.cid),
+                    }"
+                    >{{ option.name }}</span
+                  >
+                </template>
+              </Select>
             </template>
           </Column>
         </DataTable>
@@ -387,7 +413,7 @@ const openSignups = async () => {
     @hide="closeManualSignup">
     <p>
       Select a controller to manually sign them up for this event. They must be
-      on the roster.
+      on the roster or an ACE team member.
     </p>
     <div class="w-full flex justify-center">
       <FloatLabel variant="on" class="w-1/2">
@@ -420,7 +446,8 @@ const openSignups = async () => {
     header="Confirm Send Event"
     @hide="sendEventVisible = false">
     <p>
-      This will send <b>{{ eventData?.name }}</b> to the Discord channel.
+      This will send <b>{{ eventData?.name }}</b> to the #event-announcements
+      Discord channel.
     </p>
     <template #footer>
       <Button @click="sendEvent" label="Send!" :loading="isSendingEvent" />

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import SingleFileUpload from '@/components/admin/SingleFileUpload.vue';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { eventService } from '@/services/events/events.service';
 import type { IEvent, IPosition } from '@/services/events/events.types';
 import { s3Service } from '@/services/s3.service';
 import { localToUTC, roundToNearest15Minutes, utcToLocal } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import {
   Form,
@@ -25,6 +25,7 @@ import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
+import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
 import {
   nextTick,
@@ -132,6 +133,82 @@ const deletePosition = (index: number) => {
 const positionInput = useTemplateRef<
   InstanceType<typeof InputText> & ComponentPublicInstance
 >('positionInput');
+type PositionPreset = {
+  name: string;
+  positions: string[];
+};
+
+const positionPresets: PositionPreset[] = [
+  {
+    name: 'Small C90 Event',
+    positions: [
+      'CHI_35_CTR',
+      'CHI_89_CTR',
+      'CHI_Z_APP',
+      'CHI_S_APP',
+      'ORD_S_TWR',
+      'ORD_I_GND',
+      'MDW_TWR',
+      'MDW_GND',
+    ],
+  },
+  {
+    name: 'FNO',
+    positions: [
+      'CHI_35_CTR',
+      'CHI_89_CTR',
+      'CHI_25_CTR',
+      'CHI_60_CTR',
+      'CHI_75_CTR',
+      'CHI_52_CTR',
+      'CHI_46_CTR',
+      'CHI_Z_APP',
+      'CHI_F_APP',
+      'CHI_W_APP',
+      'CHI_X_APP',
+      'CHI_Y_APP',
+      'CHI_J_APP',
+      'CHI_S_APP',
+      'CHI_B_DEP',
+      'SBN_N_APP',
+      'MKE_E_APP',
+      'ORD_N_TWR',
+      'ORD_C_TWR',
+      'ORD_S_TWR',
+      'MDW_TWR',
+      'MKE_TWR',
+      'ORD_I_GND',
+      'ORD_O_GND',
+      'ORD_E_DEL',
+      'MDW_GND',
+    ],
+  },
+  {
+    name: 'TRACON Tuesdays',
+    positions: [
+      'CHI_35_CTR',
+      'CHI_89_CTR',
+      'CHI_Z_APP',
+      'MKE_E_APP',
+      'RFD_E_APP',
+      'ORD_S_TWR',
+      'MDW_TWR',
+      'MKE_TWR',
+    ],
+  },
+];
+
+const selectedPreset = ref<PositionPreset | null>(null);
+
+const applyPositionPreset = () => {
+  if (!formRef.value || !selectedPreset.value) return;
+
+  formRef.value.setFieldValue(
+    'positions',
+    selectedPreset.value.positions.map((pos) => ({ pos }) as IPosition),
+  );
+};
+
 const addPositionData = ref('');
 const addPosition = async () => {
   if (!formRef.value) return;
@@ -345,6 +422,18 @@ const minEndTime = (startTime?: string | Date) => {
           <template #title>Positions</template>
           <template #content>
             <FormField v-slot="$field" name="positions">
+              <div v-if="!$field.value?.length" class="mb-3">
+                <FloatLabel variant="on">
+                  <Select
+                    id="positionPreset"
+                    v-model="selectedPreset"
+                    :options="positionPresets"
+                    optionLabel="name"
+                    class="w-full"
+                    @change="applyPositionPreset" />
+                  <label for="positionPreset">Position Preset</label>
+                </FloatLabel>
+              </div>
               <DataTable :value="$field.value" stripedRows size="small">
                 <Column field="pos" header="Position" />
                 <Column
