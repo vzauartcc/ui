@@ -17,6 +17,7 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
+import Tag from 'primevue/tag';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -41,6 +42,11 @@ const isSignedUp = computed(() =>
 );
 const isAssignedPosition = computed(() =>
   positions.value?.positions.some((p) => p.takenBy === user.value?.cid),
+);
+const signupRequests = computed(
+  () =>
+    positions.value?.signups.find((s) => s.cid === user.value?.cid)?.requests ??
+    [],
 );
 const slug =
   (Array.isArray(route.params.slug)
@@ -123,7 +129,8 @@ const reloadEventData = async () => {
       <template #header>
         <img
           :src="`${s3Url}/events/${eventData.bannerUrl}`"
-          alt="Event banner with the event name, start and end times, and involved airports or ARTCCs." />
+          alt="Event banner with the event name, start and end times, and involved airports or ARTCCs."
+          class="mx-auto block" />
       </template>
       <template #title>
         <span class="font-bold">{{ eventData.name }}</span>
@@ -188,14 +195,18 @@ const reloadEventData = async () => {
                 severity="warn"
                 v-if="isSignedUp && !isAssignedPosition && !isEventInPast()"
                 class="mt-2">
-                You have signed up for
-                <pre class="inline-flex">{{
-                  positions.signups
-                    .find((p) => p.cid === user?.cid)
-                    ?.requests.join(', ')
-                }}</pre>
-                . The Events Coordinator has not yet assigned you a position.
-                Check back soon!
+                <p>You have signed up for the following positions:</p>
+                <div class="flex flex-wrap gap-1 my-1">
+                  <Tag
+                    v-for="request of signupRequests"
+                    :key="request"
+                    :severity="request.includes('Any') ? 'warn' : 'info'"
+                    :value="request" />
+                </div>
+                <p>
+                  The Events Coordinator has not yet assigned you a position.
+                  Check back soon!
+                </p>
               </Message>
 
               <p class="" v-if="!isEventInPast() && positions.open === false">
