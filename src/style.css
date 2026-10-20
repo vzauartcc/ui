@@ -58,6 +58,15 @@ p {
 
 body {
   font-family: var(--p-font-family);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#app {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
 }
 
 .p-progressspinner {

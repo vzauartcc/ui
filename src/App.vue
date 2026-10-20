@@ -55,18 +55,20 @@ const dismissSplit = () => {
 <template>
   <Toast />
   <template v-if="hasQueryCompleted">
-    <Message
-      v-if="isSplit && !splitStore.isDismissed()"
-      closable
-      @close="dismissSplit"
-      severity="error"
-      class="w-full justify-center"
-      >Chicago Center is split! Check out the
-      <router-link to="/split" class="underline">split map</router-link>.
-    </Message>
-    <router-view />
+    <div class="flex flex-1 flex-col">
+      <Message
+        v-if="isSplit && !splitStore.isDismissed()"
+        closable
+        @close="dismissSplit"
+        severity="error"
+        class="w-full justify-center shrink-0"
+        >Chicago Center is split! Check out the
+        <router-link to="/split" class="underline">split map</router-link>.
+      </Message>
+      <router-view />
+    </div>
   </template>
-  <div v-else id="loading" class="flex justify-center items-center h-screen">
+  <div v-else id="loading" class="flex flex-1 justify-center items-center">
     <div id="loading_box" class="text-center p-3">
       <img
         style="height: 100px"

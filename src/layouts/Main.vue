@@ -69,9 +69,9 @@ const checkAcknowledgement = () => {
     </template>
   </Dialog>
 
-  <div id="container" class="flex h-screen flex-col">
+  <div id="container" class="flex flex-1 flex-col">
     <AppHeader />
-    <main class="mt-2 flex-1-0-auto my-5 mx-auto md:w-10/12">
+    <main class="mt-2 flex-1 my-5 mx-auto md:w-10/12">
       <div class="row main-content wrapper">
         <div class="main_content col s12 18 push-14">
           <router-view :key="route.fullPath"></router-view>
