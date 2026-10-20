@@ -42,7 +42,12 @@ const checkAcknowledgement = () => {
 </script>
 
 <template>
-  <Dialog v-model:visible="showNotice" modal header="Notice" class="md:w-1/2">
+  <Dialog
+    v-model:visible="showNotice"
+    modal
+    dismissableMask
+    header="Notice"
+    class="md:w-1/2">
     <span>
       All information contained on this website is intended for flight
       simulation purposes only and
@@ -64,9 +69,9 @@ const checkAcknowledgement = () => {
     </template>
   </Dialog>
 
-  <div id="container" class="flex h-screen flex-col">
+  <div id="container" class="flex flex-1 flex-col">
     <AppHeader />
-    <main class="mt-2 flex-1-0-auto my-5 mx-auto md:w-10/12">
+    <main class="mt-2 flex-1 my-5 mx-auto md:w-10/12">
       <div class="row main-content wrapper">
         <div class="main_content col s12 18 push-14">
           <router-view :key="route.fullPath"></router-view>

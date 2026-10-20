@@ -145,14 +145,14 @@ const onFilter = (event: any) => {
 const getRowColor = (data: IExamAttempt) => {
   if (data.status === 'completed') {
     if (data.grade >= 80) {
-      return 'bg-green-300 dark:bg-green-500';
+      return 'bg-green-300 dark:bg-green-500/20';
     } else {
-      return 'bg-red-300 dark:bg-red-700';
+      return 'bg-red-300 dark:bg-red-500/20';
     }
   } else if (data.status === 'in_progress') {
-    return 'bg-yellow-500 dark:bg-yellow-700';
+    return 'bg-yellow-500 dark:bg-yellow-500/20';
   } else if (data.status === 'timed_out') {
-    return 'bg-gray-300 dark:bg-gray-500';
+    return 'bg-gray-300 dark:bg-gray-500/20';
   }
   return '';
 };
@@ -403,6 +403,7 @@ const deleteExamAttempt = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="assignVisible"
     header="Assign Exam"
     class="w-1/2">
@@ -467,6 +468,7 @@ const deleteExamAttempt = async () => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="deleteVisible"
     header="Delete Exam Attempt"
     @hide="closeDelete"

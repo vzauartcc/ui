@@ -21,8 +21,8 @@ import {
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Divider from 'primevue/divider';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -190,48 +190,36 @@ const updateController = async (event: FormSubmitEvent) => {
         :initialValues="initialValues"
         :resolver
         @submit="updateController">
-        <div class="grid md:grid-cols-3 gap-5">
-          <FloatLabel variant="on">
-            <InputText
-              name="firstName"
-              v-model="controller.fname"
-              disabled
-              readonly />
-            <label for="firstName">First Name</label>
-          </FloatLabel>
-          <FloatLabel variant="on">
-            <InputText
-              name="lastName"
-              v-model="controller.lname"
-              disabled
-              readonly />
-            <label for="lastName">Last Name</label>
-          </FloatLabel>
+        <Fieldset legend="Controller">
+          <div class="grid md:grid-cols-3 gap-5">
+            <div>
+              <span class="font-semibold">First Name:</span>
+              {{ controller.fname }}
+            </div>
+            <div>
+              <span class="font-semibold">Last Name:</span>
+              {{ controller.lname }}
+            </div>
+            <div>
+              <span class="font-semibold">CID:</span>
+              {{ controller.cid }}
+            </div>
+            <div v-if="userStore.isStaff">
+              <span class="font-semibold">Email Address:</span>
+              {{ controller.email }}
+            </div>
+            <div>
+              <span class="font-semibold">Rating:</span>
+              {{ controller.ratingLong }}
+            </div>
+          </div>
+        </Fieldset>
 
-          <FloatLabel variant="on">
-            <InputNumber
-              :useGrouping="false"
-              name="cid"
-              v-model="controller.cid"
-              disabled
-              readonly />
-            <label for="cid">CID</label>
-          </FloatLabel>
-          <FloatLabel variant="on" v-if="userStore.isStaff">
-            <InputText
-              name="email"
-              v-model="controller.email"
-              disabled
-              readonly />
-            <label for="email">Email Address</label>
-          </FloatLabel>
-
-          <FloatLabel variant="on">
-            <InputText name="rating" v-model="controller.ratingLong" disabled />
-            <label for="rating">Rating</label>
-          </FloatLabel>
-
-          <FormField v-slot="$field" name="oi" v-if="controller.member">
+        <Fieldset
+          legend="Operating Initials"
+          v-if="controller.member"
+          class="mt-5">
+          <FormField v-slot="$field" name="oi">
             <FloatLabel variant="on">
               <InputText
                 class="uppercase"
@@ -265,38 +253,44 @@ const updateController = async (event: FormSubmitEvent) => {
               >{{ $field.error?.message }}</Message
             >
           </FormField>
-        </div>
+        </Fieldset>
         <template v-if="certifications && controller.member">
-          <Divider />
-          <p class="text-xl">Certifications</p>
-          <div v-for="(opts, level) of certOptions" :key="level" class="my-2.5">
-            <p>{{ capitalize(level) }} Endorsements</p>
-            <SelectButton
-              name="certCodes"
-              :class="level"
-              :options="opts"
-              optionLabel="name"
-              optionValue="value"
-              multiple
-              ariaLabelledby="multiple"
-              class="mybuttons" />
-          </div>
+          <Fieldset legend="Certifications" class="mt-5">
+            <div
+              v-for="(opts, level) of certOptions"
+              :key="level"
+              class="my-2.5">
+              <p>{{ capitalize(level) }} Endorsements</p>
+              <SelectButton
+                name="certCodes"
+                :class="level"
+                :options="opts"
+                optionLabel="name"
+                optionValue="value"
+                multiple
+                ariaLabelledby="multiple"
+                class="mybuttons" />
+            </div>
+          </Fieldset>
         </template>
         <template v-if="userStore.isStaff && roles">
-          <Divider />
-          <p class="text-xl">Roles</p>
-          <div v-for="(opts, level) of roleOptions" :key="level" class="my-2.5">
-            <p>{{ capitalize(level) }} Roles</p>
-            <SelectButton
-              name="roleCodes"
-              :class="level"
-              :options="opts"
-              optionLabel="name"
-              optionValue="value"
-              multiple
-              ariaLabelledby="multiple"
-              class="mybuttons" />
-          </div>
+          <Fieldset legend="Roles" class="mt-5">
+            <div
+              v-for="(opts, level) of roleOptions"
+              :key="level"
+              class="my-2.5">
+              <p>{{ capitalize(level) }} Roles</p>
+              <SelectButton
+                name="roleCodes"
+                :class="level"
+                :options="opts"
+                optionLabel="name"
+                optionValue="value"
+                multiple
+                ariaLabelledby="multiple"
+                class="mybuttons" />
+            </div>
+          </Fieldset>
         </template>
         <Divider />
         <Button

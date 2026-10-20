@@ -2,12 +2,14 @@
 import type { IController } from '@/services/controller/controller.types';
 import type { IUser } from '@/services/user/user.types';
 import { dateAsMMDD } from '@/utils/date';
+import Accordion from 'primevue/accordion';
+import AccordionContent from 'primevue/accordioncontent';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionPanel from 'primevue/accordionpanel';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
-import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
+import Fieldset from 'primevue/fieldset';
 import Timeline from 'primevue/timeline';
 import { computed } from 'vue';
 
@@ -52,15 +54,15 @@ const history = computed(() => {
 
   sorted.forEach((h) => {
     tmp.push({
-      date: new Date(h.end),
-      reason: h.reason,
-      isStart: false,
-    });
-
-    tmp.push({
       date: new Date(h.start),
       reason: 'Transferred into facility',
       isStart: true,
+    });
+
+    tmp.push({
+      date: new Date(h.end),
+      reason: h.reason,
+      isStart: false,
     });
   });
 
@@ -71,77 +73,73 @@ const history = computed(() => {
 <template>
   <Dialog
     modal
+    dismissableMask
     v-if="user"
     v-model:visible="isVisible"
     header="User Details"
     class="w-1/2">
     <div class="grid grid-cols-2 gap-5 mb-5">
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.fname" id="fname" />
-        <label for="fname">First Name</label>
-      </FloatLabel>
+      <Fieldset legend="First Name">
+        <span>{{ user.fname }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.lname" id="lname" />
-        <label for="lname">Last Name</label>
-      </FloatLabel>
+      <Fieldset legend="Last Name">
+        <span>{{ user.lname }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputNumber
-          disabled
-          :modelValue="user.cid"
-          :useGrouping="false"
-          id="cid" />
-        <label for="cid">Certificate ID</label>
-      </FloatLabel>
+      <Fieldset legend="Certificate ID">
+        <span>{{ user.cid }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.email" id="email" />
-        <label for="email">E-Mail Address</label>
-      </FloatLabel>
+      <Fieldset legend="E-Mail Address">
+        <span>{{ user.email }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.ratingShort" id="rating" />
-        <label for="rating">Controller Rating</label>
-      </FloatLabel>
+      <Fieldset legend="Controller Rating">
+        <span>{{ user.ratingShort }}</span>
+      </Fieldset>
 
-      <FloatLabel variant="on">
-        <InputText disabled :modelValue="user.oi" id="oi" />
-        <label for="oi">Operating Initials</label>
-      </FloatLabel>
+      <Fieldset legend="Operating Initials">
+        <span>{{ user.oi }}</span>
+      </Fieldset>
     </div>
 
     <Divider />
 
-    <p class="text-center text-lg">Facility History</p>
-
-    <Timeline
-      v-if="history.length > 0"
-      :value="history"
-      class="overflow-y-auto">
-      <template #opposite="{ item }">
-        <span
-          v-if="!item.isStart"
-          class="text-surface-500 dark:text-surface-400">
-          {{ dateAsMMDD(item.date) }}
-        </span>
-        <span v-else class="whitespace-pre-line break-words">
-          {{ item.reason }}
-        </span>
-      </template>
-      <template #content="{ item }">
-        <span
-          v-if="item.isStart"
-          class="text-surface-500 dark:text-surface-400">
-          {{ dateAsMMDD(item.date) }}
-        </span>
-        <span v-else class="whitespace-pre-line break-words">
-          {{ item.reason }}
-        </span>
-      </template>
-    </Timeline>
+    <Accordion>
+      <AccordionPanel value="0">
+        <AccordionHeader>Facility History</AccordionHeader>
+        <AccordionContent>
+          <Timeline
+            v-if="history.length > 0"
+            :value="history"
+            class="overflow-y-auto">
+            <template #opposite="{ item }">
+              <span
+                v-if="!item.isStart"
+                class="text-surface-500 dark:text-surface-400">
+                {{ dateAsMMDD(item.date) }}
+              </span>
+              <span v-else class="whitespace-pre-line break-words">
+                {{ item.reason }}
+              </span>
+            </template>
+            <template #content="{ item }">
+              <span
+                v-if="item.isStart"
+                class="text-surface-500 dark:text-surface-400">
+                {{ dateAsMMDD(item.date) }}
+              </span>
+              <span v-else class="whitespace-pre-line break-words">
+                {{ item.reason }}
+              </span>
+            </template>
+          </Timeline>
+        </AccordionContent>
+      </AccordionPanel>
+    </Accordion>
     <template #footer>
-      <Button outlines label="Close" @click="isVisible = false" />
+      <Button outlined label="Close" @click="isVisible = false" />
     </template>
   </Dialog>
 </template>

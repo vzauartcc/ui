@@ -16,6 +16,7 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import DatePicker from 'primevue/datepicker';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
@@ -113,28 +114,12 @@ const requestStaffing = async (event: FormSubmitEvent) => {
         <Form v-slot="$form" :resolver @submit="requestStaffing" class="mt-10">
           <div class="grid md:grid-cols-1 gap-2">
             <div class="grid md:grid-cols-2 gap-5">
-              <div class="">
-                <FloatLabel variant="on">
-                  <InputText
-                    id="username"
-                    type="text"
-                    v-model="user.name"
-                    disabled
-                    class="w-full" />
-                  <label for="username">Your Name</label>
-                </FloatLabel>
-              </div>
-              <div class="">
-                <FloatLabel variant="on">
-                  <InputText
-                    id="email"
-                    type="text"
-                    v-model="user.email"
-                    disabled
-                    class="w-full" />
-                  <label for="email">Your Email Address</label>
-                </FloatLabel>
-              </div>
+              <Fieldset legend="Your Name">
+                <span>{{ user.name }}</span>
+              </Fieldset>
+              <Fieldset legend="Your Email Address">
+                <span>{{ user.email }}</span>
+              </Fieldset>
             </div>
             <div class="grid md:grid-cols-3 gap-5">
               <div class="">

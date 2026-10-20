@@ -58,8 +58,9 @@ const setLink = () => {
 </script>
 
 <template>
-  <div class="control-group bg-sec-gray-600 border">
-    <div class="button-group flex flex-wrap gap-x-3 items-center">
+  <div
+    class="control-group bg-sec-gray-600 dark:bg-surface-700 border border-b-2 border-surface-500">
+    <div class="button-group flex flex-wrap gap-x-3 items-center pl-3">
       <span v-tooltip.top="'Bold'">
         <Icon
           @click="editor?.chain().focus().toggleBold().run()"
@@ -161,7 +162,7 @@ const setLink = () => {
   </div>
   <editor-content
     :editor="editor"
-    class="editor prose dark:prose-invert max-w-none w-full border p-1" />
+    class="editor prose dark:prose-invert max-w-none w-full border border-surface-500 p-1" />
 </template>
 
 <style lang="css" scoped>
@@ -171,11 +172,10 @@ const setLink = () => {
 }
 
 .control-group {
-  border-bottom: 1px solid black !important;
   border-radius: var(--radius-xl) var(--radius-xl) 0px 0px;
 }
 .is-active {
-  border: 1px solid black;
+  border: 1px solid currentColor;
   border-radius: 2px;
 }
 

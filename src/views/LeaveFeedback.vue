@@ -17,9 +17,8 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Checkbox from 'primevue/checkbox';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Select from 'primevue/select';
@@ -156,40 +155,15 @@ const sendFeedback = async (event: FormSubmitEvent) => {
             class="mt-10">
             <div class="grid grid-cols-1 gap-2">
               <div class="grid md:grid-cols-3 gap-5">
-                <div class="">
-                  <FloatLabel variant="on">
-                    <InputText
-                      id="username"
-                      type="text"
-                      v-model="user.name"
-                      disabled
-                      class="w-full" />
-                    <label for="username">Your Name</label>
-                  </FloatLabel>
-                </div>
-                <div class="">
-                  <FloatLabel variant="on">
-                    <InputText
-                      id="email"
-                      type="text"
-                      v-model="user.email"
-                      disabled
-                      class="w-full" />
-                    <label for="email">Your Email Address</label>
-                  </FloatLabel>
-                </div>
-                <div class="">
-                  <FloatLabel variant="on">
-                    <InputNumber
-                      id="cid"
-                      type="string"
-                      v-model="user.cid"
-                      disabled
-                      class="w-full"
-                      :useGrouping="false" />
-                    <label for="cid">Your CID</label>
-                  </FloatLabel>
-                </div>
+                <Fieldset legend="Your Name">
+                  <span>{{ user.name }}</span>
+                </Fieldset>
+                <Fieldset legend="Your Email Address">
+                  <span>{{ user.email }}</span>
+                </Fieldset>
+                <Fieldset legend="Your CID">
+                  <span>{{ user.cid }}</span>
+                </Fieldset>
               </div>
 
               <div class="grid md:grid-cols-3 gap-5">

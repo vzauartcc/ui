@@ -27,6 +27,8 @@ export function useAsyncSubmit(
 
     try {
       return await handler();
+    } catch (error) {
+      console.error(error);
     } finally {
       isSubmitting.value = false;
       options.onFinish?.();

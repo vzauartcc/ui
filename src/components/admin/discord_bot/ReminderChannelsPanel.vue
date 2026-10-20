@@ -144,6 +144,7 @@ const deleteReminderChannel = (channelId: string) => {
 
   <Dialog
     modal
+    dismissableMask
     v-model:visible="editReminderChannelVisible"
     :header="
       editReminderChannelData.edit

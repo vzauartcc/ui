@@ -7,6 +7,9 @@
   "prConcurrentLimit": 5,
   "minimumReleaseAge": "21 days",
   "internalChecksFilter": "strict",
+  "constraints": {
+    "npm": "<12"
+  },
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true,
@@ -102,6 +105,63 @@
       "description": "Don't group major updates",
       "matchUpdateTypes": ["major"],
       "groupName": null
+    },
+    {
+      "description": "Group vite ecosystem major updates together",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "vite",
+        "@vitejs/plugin-vue",
+        "vite-plugin-vue-devtools"
+      ],
+      "groupName": "vite ecosystem major updates"
+    },
+    {
+      "description": "Group TypeScript ecosystem major updates together",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "typescript",
+        "vue-tsc",
+        "@vue/tsconfig",
+        "@tsconfig/node24",
+        "@tsconfig/*"
+      ],
+      "groupName": "typescript ecosystem major updates"
+    },
+    {
+      "description": "Group Tailwind ecosystem major updates together",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "tailwindcss",
+        "tailwindcss-primeui",
+        "/^@tailwindcss\\//"
+      ],
+      "groupName": "tailwind ecosystem major updates"
+    },
+    {
+      "description": "Group ESLint ecosystem major updates together",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "eslint",
+        "eslint-config-prettier",
+        "vue-eslint-parser",
+        "/^eslint-plugin-/",
+        "/^@eslint\\//",
+        "/^@vue\\/eslint-config/"
+      ],
+      "groupName": "eslint ecosystem major updates"
+    },
+    {
+      "description": "Group Tiptap ecosystem major updates together",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": ["/^@tiptap\\//"],
+      "groupName": "tiptap ecosystem major updates"
+    },
+    {
+      "description": "Group Vue core ecosystem major updates together",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": ["vue", "vue-router", "pinia", "@iconify/vue"],
+      "groupName": "vue core major updates"
     }
   ]
 }

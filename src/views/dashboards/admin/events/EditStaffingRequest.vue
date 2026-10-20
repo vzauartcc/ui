@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { staffingRequestService } from '@/services/staffingRequest/staffingRequest.service';
 import type { IStaffingRequest } from '@/services/staffingRequest/staffingRequest.types';
-import { utcToLocal } from '@/utils/date';
+import { dateAsMMDDHHMM, utcToLocal } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
 import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
@@ -14,9 +14,8 @@ import {
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Checkbox from 'primevue/checkbox';
-import DatePicker from 'primevue/datepicker';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -106,90 +105,92 @@ const onSubmit = async (event: FormSubmitEvent) => {
     <template #title>Edit Staffing Request</template>
     <template #content>
       <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
-        <div class="grid grid-cols-3 gap-5">
-          <FormField v-slot="$field" name="vaName">
-            <FloatLabel variant="on">
-              <InputText id="vaName" />
-              <label for="vaName" class="required-field">VA Name</label>
-            </FloatLabel>
-            <Message
-              v-if="$field?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              >{{ $field.error?.message }}</Message
-            >
-          </FormField>
-          <FloatLabel variant="on">
-            <InputText name="name" v-model="staffingRequest.name" disabled />
-            <label for="name">Requestor Name</label>
-          </FloatLabel>
-          <FloatLabel variant="on">
-            <InputText name="email" v-model="staffingRequest.email" disabled />
-            <label for="email">Requestor Email</label>
-          </FloatLabel>
-          <FloatLabel variant="on">
-            <DatePicker
-              :modelValue="new Date(initialValues.date)"
-              disabled
-              showTime />
-            <label for="date">Date</label>
-          </FloatLabel>
-          <FloatLabel variant="on">
-            <InputNumber
-              name="pilots"
-              v-model="staffingRequest.pilots"
-              :useGrouping="false"
-              disabled />
-            <label for="pilots">Number of Pilots</label>
-          </FloatLabel>
+        <div class="flex flex-col gap-5">
+          <Fieldset legend="Requestor">
+            <div class="grid md:grid-cols-2 gap-5">
+              <div>
+                <span class="font-semibold">Name:</span>
+                {{ staffingRequest.name }}
+              </div>
+              <div>
+                <span class="font-semibold">Email:</span>
+                {{ staffingRequest.email }}
+              </div>
+              <div>
+                <span class="font-semibold">Date:</span>
+                {{ dateAsMMDDHHMM(initialValues.date) }}
+              </div>
+              <div>
+                <span class="font-semibold">Number of Pilots:</span>
+                {{ staffingRequest.pilots }}
+              </div>
+            </div>
+          </Fieldset>
 
-          <div class="col-span-3">
-            <FormField v-slot="$field" name="route">
-              <FloatLabel variant="on">
-                <InputText id="route" class="w-full" />
-                <label for="route" class="required-field">Route</label>
-              </FloatLabel>
-              <Message
-                v-if="$field?.invalid"
-                severity="error"
-                size="small"
-                variant="simple"
-                >{{ $field.error?.message }}</Message
-              >
-            </FormField>
-          </div>
+          <Fieldset legend="Request">
+            <div class="grid grid-cols-3 gap-5">
+              <FormField v-slot="$field" name="vaName">
+                <FloatLabel variant="on">
+                  <InputText id="vaName" />
+                  <label for="vaName" class="required-field">VA Name</label>
+                </FloatLabel>
+                <Message
+                  v-if="$field?.invalid"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{ $field.error?.message }}</Message
+                >
+              </FormField>
 
-          <div class="col-span-3">
-            <FormField v-slot="$field" name="description">
-              <FloatLabel variant="on">
-                <Textarea id="description" class="w-full" />
-                <label for="description">Description (Optional)</label>
-              </FloatLabel>
-              <Message
-                v-if="$field?.invalid"
-                severity="error"
-                size="small"
-                variant="simple"
-                >{{ $field.error?.message }}</Message
-              >
-            </FormField>
-          </div>
+              <div class="col-span-3">
+                <FormField v-slot="$field" name="route">
+                  <FloatLabel variant="on">
+                    <InputText id="route" class="w-full" />
+                    <label for="route" class="required-field">Route</label>
+                  </FloatLabel>
+                  <Message
+                    v-if="$field?.invalid"
+                    severity="error"
+                    size="small"
+                    variant="simple"
+                    >{{ $field.error?.message }}</Message
+                  >
+                </FormField>
+              </div>
 
-          <FormField
-            v-slot="$field"
-            name="accepted"
-            class="flex flex-1 gap-2 items-center">
-            <Checkbox binary id="accepted" />
-            <span>Make visible to controllers</span>
-            <Message
-              v-if="$field?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              >{{ $field.error?.message }}</Message
-            >
-          </FormField>
+              <div class="col-span-3">
+                <FormField v-slot="$field" name="description">
+                  <FloatLabel variant="on">
+                    <Textarea id="description" class="w-full" />
+                    <label for="description">Description (Optional)</label>
+                  </FloatLabel>
+                  <Message
+                    v-if="$field?.invalid"
+                    severity="error"
+                    size="small"
+                    variant="simple"
+                    >{{ $field.error?.message }}</Message
+                  >
+                </FormField>
+              </div>
+
+              <FormField
+                v-slot="$field"
+                name="accepted"
+                class="flex flex-1 gap-2 items-center">
+                <Checkbox binary id="accepted" />
+                <span>Make visible to controllers</span>
+                <Message
+                  v-if="$field?.invalid"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{ $field.error?.message }}</Message
+                >
+              </FormField>
+            </div>
+          </Fieldset>
         </div>
         <div class="flex justify-end mt-5">
           <Button

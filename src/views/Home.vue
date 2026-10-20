@@ -96,7 +96,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
         <div
           class="lg:col-span-5 w-full lg:h-full flex flex-col justify-center">
           <div
-            class="bg-surface-0 dark:bg-surface-50/50 backdrop-blur-md rounded-2xl border border-surface-200/60 dark:border-surface-100/30 p-5 shadow-lg relative">
+            class="bg-surface-0 dark:bg-surface-900/60 backdrop-blur-md rounded-2xl border border-surface-200/60 dark:border-surface-100/30 p-5 shadow-lg relative">
             <div
               class="flex items-center justify-between mb-4 pb-2 border-b border-surface-100 dark:border-surface-200/10">
               <div class="flex items-center gap-2">
@@ -222,39 +222,3 @@ const { user, isLoggedIn } = storeToRefs(userStore);
     </div>
   </div>
 </template>
-
-<style scoped lang="css">
-/* Fix datatable coloring. */
-:deep(.p-datatable),
-:deep(.p-datatable-thead > tr > th),
-:deep(.p-datatable-tbody > tr),
-:deep(.p-datatable-tbody > tr > td),
-:deep(.p-datatable-tfoot > tr > td) {
-  background: transparent !important;
-}
-
-:deep(.p-datatable-tbody > tr:nth-child(even)) {
-  background-color: color-mix(
-    in srgb,
-    var(--p-core-blue) 20%,
-    transparent
-  ) !important;
-}
-
-.dark :deep(.p-datatable-thead > tr > th),
-.dark :deep(.p-datatable-tbody > tr > td) {
-  border-color: rgba(255, 255, 255, 0.06) !important;
-}
-
-.light :deep(.p-datatable-thead > tr > th),
-.light :deep(.p-datatable-tbody > tr > td) {
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-.dark :deep(.p-datatable-tbody > tr:hover) {
-  background: rgba(255, 255, 255, 0.05) !important;
-}
-.light :deep(.p-datatable-tbody > tr:hover) {
-  background: rgba(65, 182, 230, 0.08) !important;
-}
-</style>

@@ -22,8 +22,8 @@ import DataTable from 'primevue/datatable';
 import DatePicker from 'primevue/datepicker';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
+import Fieldset from 'primevue/fieldset';
 import FloatLabel from 'primevue/floatlabel';
-import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Select from 'primevue/select';
@@ -248,27 +248,26 @@ const createLoa = async (event: FormSubmitEvent) => {
   <Dialog
     v-model:visible="deleteVisible"
     modal
+    dismissableMask
     header="Leave of Absence Details"
     class="w-3/4">
     <div class="grid grid-cols-3 gap-5 mt-5">
-      <FloatLabel variant="on">
-        <InputText id="name" v-model="getControllerName" disabled />
-        <label for="name">Controller</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText id="createdAt" v-model="getCreatedAt" disabled />
-        <label for="createdAt">Submission Date</label>
-      </FloatLabel>
-      <FloatLabel variant="on">
-        <InputText id="expirationDate" v-model="getExpirationDate" disabled />
-        <label for="expirationDate">Expiration Date</label>
-      </FloatLabel>
+      <Fieldset legend="Controller">
+        <span>{{ getControllerName }}</span>
+      </Fieldset>
+      <Fieldset legend="Submission Date">
+        <span>{{ getCreatedAt }}</span>
+      </Fieldset>
+      <Fieldset legend="Expiration Date">
+        <span>{{ getExpirationDate }}</span>
+      </Fieldset>
     </div>
     <Divider />
-    <p>Reason</p>
-    <p id="comments" class="whitespace-pre-line break-words">
-      {{ deleteData!.reason }}
-    </p>
+    <Fieldset legend="Reason">
+      <span class="whitespace-pre-line break-words">
+        {{ deleteData!.reason }}
+      </span>
+    </Fieldset>
 
     <template #footer>
       <Button
@@ -283,6 +282,7 @@ const createLoa = async (event: FormSubmitEvent) => {
   <Dialog
     v-model:visible="createVisible"
     modal
+    dismissableMask
     header="New Leave of Absence"
     class="w-3/4">
     <Form

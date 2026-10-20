@@ -72,7 +72,7 @@ const randomAvatarColor = (): string => {
           </div>
         </div>
         <span class="ml-3">
-          <b>{{ user.name }}</b> - {{ user.cid }}
+          <b>{{ user.name }}</b> - {{ user.cid }} ({{ user.ratingShort }})
           <br />
           <Chip
             v-for="role in user.roles"
@@ -174,6 +174,7 @@ const randomAvatarColor = (): string => {
 .fe,
 .wm {
   background-color: var(--p-sec-gold-900);
+  color: initial;
 }
 
 .ins,

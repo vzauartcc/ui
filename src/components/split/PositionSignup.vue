@@ -74,6 +74,7 @@ const savePositions = async () => {
   <Dialog
     v-model:visible="visible"
     modal
+    dismissableMask
     :header="`Position Signup - ${event.name}`"
     class="max-w-xl">
     <span>
