@@ -98,11 +98,7 @@ export const useUserStore = defineStore('user', () => {
       await userService.processLogout();
       user.value = null;
 
-      const current = router.currentRoute.value;
-      await router.push({
-        path: current.path,
-        query: { ...current.query, _r: Date.now() },
-      });
+      await router.push('/');
     } catch (e) {
       console.error('[store] error logging out', e);
     }

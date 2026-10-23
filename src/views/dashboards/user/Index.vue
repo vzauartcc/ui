@@ -81,7 +81,7 @@ const unlinkDiscord = async () => {
 </script>
 
 <template>
-  <Card>
+  <Card v-if="user?.member">
     <template #title>Controller Dashboard</template>
     <template #content>
       <ProgressSpinner v-if="!sessionData" />
@@ -168,7 +168,7 @@ const unlinkDiscord = async () => {
       </template>
     </template>
   </Card>
-  <Card>
+  <Card v-if="user?.member">
     <template #title>Upcoming Staffing Requests</template>
     <template #content><StaffingRequests /></template>
   </Card>
