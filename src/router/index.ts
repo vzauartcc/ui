@@ -66,6 +66,14 @@ const routes: RouteRecordRaw[] = [
           return false;
         },
       },
+      {
+        path: '/discord',
+        component: { render: () => null },
+        beforeEnter() {
+          location.href = 'https://discord.com/invite/uvgjB5mJ25';
+          return false;
+        },
+      },
 
       {
         path: '/controllers',
