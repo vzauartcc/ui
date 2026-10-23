@@ -176,7 +176,9 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         component: () => import('@/views/dashboards/user/Index.vue'),
-        meta: {},
+        meta: {
+          allowNonMembers: true,
+        },
       },
       {
         path: 'feedback',
@@ -577,7 +579,9 @@ router.beforeEach(async (to, _from, next) => {
     } else if (to.meta.isTrainingStaff) {
       if (userStore.isTrainingStaff) return next();
     } else if (to.meta.loggedIn) {
-      if (userStore.user.member === true) return next();
+      if (userStore.user.member === true || to.meta.allowNonMembers === true) {
+        return next();
+      }
     }
 
     console.error(
