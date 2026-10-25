@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import TrainingWaitlist from '@/components/training/TrainingWaitlist.vue';
-import { controllerService } from '@/services/controller/controller.service';
-import type { ICertification } from '@/services/controller/controller.types';
 import { trainingService } from '@/services/training/training.service';
-import type { ITrainingWaitlist } from '@/services/training/training.types';
+import type {
+  ITrainingMilestone,
+  ITrainingWaitlist,
+} from '@/services/training/training.types';
 import { useUserStore } from '@/stores/user';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
@@ -35,7 +36,7 @@ const router = useRouter();
 const { isSubmitting, execute } = useAsyncSubmit();
 
 const waitlist = ref<ITrainingWaitlist[] | null>(null);
-const endorsements = ref<ICertification[]>([]);
+const endorsements = ref<ITrainingMilestone[]>([]);
 
 const visible = ref(false);
 
@@ -58,9 +59,11 @@ onMounted(async () => {
   }
 
   try {
-    const data = await controllerService.getCertifications();
+    const data = await trainingService.getMilestones();
 
-    endorsements.value = data;
+    endorsements.value = data.milestones
+      .filter((m) => m.type === 'waitlist')
+      .sort((a, b) => a.order - b.order);
   } catch (e) {
     console.error('error getting endorsements', e);
   }
