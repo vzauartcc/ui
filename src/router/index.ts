@@ -20,6 +20,7 @@ declare module 'vue-router' {
     isTrainingStaff?: boolean;
     isStaffOrTrainingStaff?: boolean;
     requiredRoles?: string[];
+    allowNonMembers?: boolean;
   }
 }
 
@@ -165,6 +166,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/ConnectDiscord.vue'),
         meta: {
           loggedIn: true,
+          allowNonMembers: true,
         },
       },
     ],
