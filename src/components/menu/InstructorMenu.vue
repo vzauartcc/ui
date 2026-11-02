@@ -39,6 +39,13 @@ const items = ref<MenuItem[]>([
     requiredRoles: 'ta',
   },
   {
+    key: 'rating-exam',
+    label: 'Rating Exam Center',
+    url: '/ins/rating-exams',
+    icon: 'heroicons:document-text',
+    requiredRoles: ['ta', 'ia'],
+  },
+  {
     key: 'solo',
     label: 'Solo Endorsements',
     url: '/ins/solo',

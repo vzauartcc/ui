@@ -193,6 +193,7 @@ const routes: RouteRecordRaw[] = [
           import('@/views/dashboards/user/AvailableOperatingInitials.vue'),
         meta: {},
       },
+
       {
         path: 'training',
         component: () =>
@@ -211,6 +212,7 @@ const routes: RouteRecordRaw[] = [
           import('@/views/dashboards/user/training/TrainingWaitlist.vue'),
         meta: {},
       },
+
       {
         path: 'training/exams',
         component: () =>
@@ -221,6 +223,19 @@ const routes: RouteRecordRaw[] = [
         path: 'training/exams/:id',
         component: () =>
           import('@/views/dashboards/user/training/ExamAttempt.vue'),
+        meta: {},
+      },
+
+      {
+        path: 'training/rating-exams',
+        component: () =>
+          import('@/views/dashboards/user/training/RatingExamCenter.vue'),
+        meta: {},
+      },
+      {
+        path: 'training/rating-exams/:id',
+        component: () =>
+          import('@/views/dashboards/instructor/ratingExams/ViewRatingExamAttempt.vue'),
         meta: {},
       },
 
@@ -362,6 +377,45 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import('@/views/dashboards/instructor/exams/ExamAttempt.vue'),
         meta: {},
+      },
+
+      {
+        path: 'rating-exams',
+        component: () =>
+          import('@/views/dashboards/instructor/ratingExams/RatingExamCenter.vue'),
+        meta: {},
+      },
+      {
+        path: 'rating-exams/new',
+        component: () =>
+          import('@/views/dashboards/instructor/ratingExams/EditRatingExam.vue'),
+        meta: {
+          requiredRoles: ['ia', 'ta'],
+        },
+      },
+      {
+        path: 'rating-exams/:id',
+        component: () =>
+          import('@/views/dashboards/instructor/ratingExams/EditRatingExam.vue'),
+        meta: {
+          requiredRoles: ['ia', 'ta'],
+        },
+      },
+
+      {
+        path: 'rating-exams/attempt/new',
+        component: () =>
+          import('@/views/dashboards/instructor/ratingExams/EditRatingExamAttempt.vue'),
+      },
+      {
+        path: 'rating-exams/attempt/view/:id',
+        component: () =>
+          import('@/views/dashboards/instructor/ratingExams/ViewRatingExamAttempt.vue'),
+      },
+      {
+        path: 'rating-exams/attempt/:id',
+        component: () =>
+          import('@/views/dashboards/instructor/ratingExams/EditRatingExamAttempt.vue'),
       },
     ],
     meta: {
