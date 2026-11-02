@@ -48,13 +48,13 @@ const studentFilter = ref<GenericFilter[]>([]);
 
 interface ExamFilters {
   ratingExam: DataTableFilterMetaData;
-  student: DataTableFilterMetaData;
+  studentCid: DataTableFilterMetaData;
   [key: string]: DataTableFilterMetaData;
 }
 const filters = ref<ExamFilters>({
   ratingExam: { value: null, matchMode: FilterMatchMode.EQUALS },
   status: { value: null, matchMode: FilterMatchMode.EQUALS },
-  student: { value: null, matchMode: FilterMatchMode.EQUALS },
+  studentCid: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
 
 const lazyParams = ref({ page: 1, rows: 10, filters: filters.value });
@@ -89,14 +89,14 @@ const loadLazyArchive = async () => {
       lazyParams.value.page,
       lazyParams.value.rows,
       lazyParams.value.filters.ratingExam.value || '',
-      lazyParams.value.filters.student.value || 0,
+      lazyParams.value.filters.studentCid.value || 0,
     );
 
     ratingExamAttempts.value = data.attempts;
     totalSessions.value = data.amount;
     studentFilter.value = data.students.map((s) => ({
-      name: s.student!.name,
-      value: s.student.cid,
+      name: compileUsersName(s),
+      value: s.cid,
     }));
 
     ratingExamFilterOptions.value = data.attempts.map((a) => ({

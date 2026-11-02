@@ -116,8 +116,8 @@ const loadLazyArchive = async () => {
     examAttempts.value = data.attempts;
     totalSessions.value = data.amount;
     studentFilter.value = data.students.map((s) => ({
-      name: s.user!.name,
-      value: s.user.cid,
+      name: compileUsersName(s),
+      value: s.cid,
     }));
   } catch (e) {
     console.error('error getting exam attempts', e);

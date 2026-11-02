@@ -75,6 +75,7 @@ export interface IRatingExamAttemptsResponse {
   students: {
     _id: string;
     cid: number;
-    student: IFeedbackController;
+    fname: string;
+    lname: string;
   }[];
 }
