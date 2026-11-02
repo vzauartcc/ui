@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { controllerService } from '@/services/controller/controller.service';
 import type { IController } from '@/services/controller/controller.types';
 import { useUserStore } from '@/stores/user';
 import { dateAsMMDD } from '@/utils/date';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import Button from 'primevue/button';
@@ -121,7 +121,7 @@ const showDetails = (data: IController) => {
               v-if="filters['global'].value"
               @click="filters['global'].value = null"
               class="pointer-events-auto inline-flex absolute right-3 z-10">
-              <Icon icon="heroicons:x-mark" />
+              <Icon icon="heroicons:x-mark" class="icon-with-text" />
             </InputIcon>
           </IconField>
         </FloatLabel>

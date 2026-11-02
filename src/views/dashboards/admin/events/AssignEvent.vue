@@ -377,7 +377,7 @@ const openSignups = async () => {
           >Position assignments are saved automatically.</span
         >
         <Button @click="sendEventVisible = true" severity="success">
-          <Icon icon="mdi:discord" />
+          <Icon icon="mdi:discord" class="icon-with-text" />
           <span>Send Event</span>
         </Button>
       </div>

@@ -103,7 +103,7 @@ onUnmounted(() => {
             class="inline-flex gap-1 items-center hover:underline"
             target="_blank"
             rel="noopener noreferrer">
-            <Icon icon="mdi:github" class="text-lg! mt-0!" />
+            <Icon icon="mdi:github" class="text-lg! icon-with-text" />
             <span>GitHub</span>
           </a>
         </div>

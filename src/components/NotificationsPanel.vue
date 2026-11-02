@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { notificationService } from '@/services/notification/notification.service';
 import type {
   INotification,
@@ -6,7 +7,6 @@ import type {
 } from '@/services/notification/notification.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
 import { sanitize } from '@/utils/sanitize';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -87,7 +87,7 @@ const deleteNotification = async (notification: INotification) => {
                   <span v-tooltip.top="'Visit'">
                     <Icon
                       icon="heroicons:arrow-top-right-on-square"
-                      class="text-lg -mt-2"
+                      class="text-lg my-auto"
                       v-if="notification.link" />
                   </span>
                 </div>

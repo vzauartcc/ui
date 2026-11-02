@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { controllerService } from '@/services/controller/controller.service';
 import type { ICertification } from '@/services/controller/controller.types';
 import { examService } from '@/services/exam/exam.service';
 import type { IExam, IQuestion } from '@/services/exam/exam.types';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import {
   Form,
@@ -373,7 +373,7 @@ const saveExam = async (event: FormSubmitEvent) => {
               </template>
               <Column field="text" header="Question">
                 <template #body="{ data }">
-                  <span class="whitespace-pre-line break-words">{{
+                  <span class="whitespace-pre-line wrap-break-word">{{
                     data.text
                   }}</span>
                 </template>

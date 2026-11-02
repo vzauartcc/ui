@@ -104,7 +104,7 @@ const loadDelete = (data: IDownload | IDocument) => {
                   v-if="filters['global'].value"
                   @click="filters['global'].value = null"
                   class="pointer-events-auto inline-flex absolute right-3 z-10 text-red-500">
-                  <Icon icon="heroicons:x-mark" />
+                  <Icon icon="heroicons:x-mark" class="icon-with-text" />
                 </InputIcon>
                 <label for="globalSearch">Search by Name or File Name</label>
               </IconField>

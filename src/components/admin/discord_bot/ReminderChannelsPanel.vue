@@ -95,7 +95,7 @@ const deleteReminderChannel = (channelId: string) => {
   <AccordionPanel value="3">
     <AccordionHeader>
       <span class="flex justify-between gap-5 items-center">
-        <Icon icon="heroicons:bell-alert" />
+        <Icon icon="heroicons:bell-alert" class="icon-with-text" />
         Reminder Channels ({{ reminderChannels.length }})
       </span>
     </AccordionHeader>
