@@ -459,7 +459,12 @@ const saveIndicator = (doAnother: boolean) => {
           label="Save"
           severity="success"
           @click="saveIndicator(false)"
-          :disabled="!indicatorDialog.name" />
+          :disabled="
+            !indicatorDialog.name ||
+            !indicatorDialog.category ||
+            indicatorDialog.failureThreshold < 1 ||
+            indicatorDialog.deduction < 1
+          " />
         <Button outlined @click="closeDialog" label="Cancel" />
       </div>
     </div>
