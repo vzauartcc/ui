@@ -12,6 +12,7 @@ import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
+import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Column from 'primevue/column';
@@ -31,6 +32,7 @@ import { onMounted, ref } from 'vue';
 
 useTitle('Rating Exam Center');
 const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 
 interface GenericFilter {
   name: string;
@@ -262,7 +264,9 @@ const canEdit = (data: IRatingExamAttempt) => {
             <DataTable v-model:value="ratingExams" stripedRows size="small">
               <template #header>
                 <div class="flex justify-between">
-                  <router-link to="/ins/rating-exams/new">
+                  <router-link
+                    to="/ins/rating-exams/new"
+                    v-if="!!user?.isInstructorAssistant">
                     <Button>
                       <Icon icon="heroicons:plus" class="icon-with-text" />
                       <span>Create Rating Exam</span>
