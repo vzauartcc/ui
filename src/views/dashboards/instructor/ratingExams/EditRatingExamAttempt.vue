@@ -560,7 +560,9 @@ const pointsDeducted = computed(() => {
                       <span
                         class="text-xs w-min absolute right-0 text-center"
                         v-if="
-                          indicator.occurrences >= indicator.failureThreshold ||
+                          (indicator.occurrences >=
+                            indicator.failureThreshold &&
+                            indicator.failureThreshold === 1) ||
                           (type === 'theory' &&
                             indicator.performance === 'unsatisfactory')
                         "
