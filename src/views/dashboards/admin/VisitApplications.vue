@@ -304,6 +304,7 @@ const rejectApplication = async () => {
           <div class="flex flex-col gap-5">
             <div class="gap-5">
               <Icon
+                class="icon-with-text"
                 :icon="`heroicons:${ratingConsolidation ? 'check' : 'x-mark'}`"
                 :class="{
                   'text-red-500': !ratingConsolidation,
@@ -314,6 +315,7 @@ const rejectApplication = async () => {
 
             <div>
               <Icon
+                class="icon-with-text"
                 :icon="`heroicons:${promo ? 'check' : 'x-mark'}`"
                 :class="{
                   'text-red-500': !promo,
@@ -324,6 +326,7 @@ const rejectApplication = async () => {
 
             <div>
               <Icon
+                class="icon-with-text"
                 :icon="`heroicons:${hasRating ? 'check' : 'x-mark'}`"
                 :class="{
                   'text-red-500': !hasRating,
@@ -334,6 +337,7 @@ const rejectApplication = async () => {
 
             <div>
               <Icon
+                class="icon-with-text"
                 :icon="`heroicons:${recentlyRostered ? 'check' : 'x-mark'}`"
                 :class="{
                   'text-red-500': !recentlyRostered,
@@ -344,6 +348,7 @@ const rejectApplication = async () => {
 
             <div>
               <Icon
+                class="icon-with-text"
                 :icon="`heroicons:${hasHome ? 'check' : 'x-mark'}`"
                 :class="{
                   'text-red-500': !hasHome,
@@ -354,6 +359,7 @@ const rejectApplication = async () => {
 
             <div>
               <Icon
+                class="icon-with-text"
                 :icon="`heroicons:${needsBasic ? 'check' : 'x-mark'}`"
                 :class="{
                   'text-red-500': !needsBasic,

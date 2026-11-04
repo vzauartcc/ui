@@ -1,5 +1,3 @@
-import type { IController } from '@/services/controller/controller.types';
-
 export interface IExamAttempt {
   _id: string;
   examId: string;
@@ -76,6 +74,7 @@ export interface IExamAttemptsResponse {
   students: {
     _id: string;
     cid: number;
-    user: IController;
+    fname: string;
+    lname: string;
   }[];
 }

@@ -86,9 +86,8 @@ const deleteManagedRole = (idx: number) => {
   <AccordionPanel value="0">
     <AccordionHeader>
       <span class="flex justify-between gap-5 items-center"
-        ><Icon icon="heroicons:user-plus" /> Managed Roles ({{
-          localConfig.managedRoles.length
-        }})</span
+        ><Icon icon="heroicons:user-plus" class="icon-with-text" /> Managed
+        Roles ({{ localConfig.managedRoles.length }})</span
       ></AccordionHeader
     >
     <AccordionContent>

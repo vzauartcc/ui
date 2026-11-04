@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import UserDetails from '@/components/admin/UserDetails.vue';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { userService } from '@/services/user/user.service';
 import type { IUser } from '@/services/user/user.types';
 import { dateAsMMDD } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import Button from 'primevue/button';
@@ -123,7 +123,7 @@ const showDetails = (data: IUser) => {
                   v-if="filters['global'].value"
                   @click="filters['global'].value = null"
                   class="pointer-events-auto inline-flex absolute right-3 z-10">
-                  <Icon icon="heroicons:x-mark" />
+                  <Icon icon="heroicons:x-mark" class="icon-with-text" />
                 </InputIcon>
               </IconField>
             </FloatLabel>

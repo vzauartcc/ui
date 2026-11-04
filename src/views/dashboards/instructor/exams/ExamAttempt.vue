@@ -212,13 +212,17 @@ const scrollToOverview = () => {
             <div class="grid grid-cols-1 gap-2">
               <div class="correct flex items-center gap-3">
                 <span class="text-center w-6"
-                  ><Icon icon="heroicons:check-20-solid" class="no-pointer"
+                  ><Icon
+                    icon="heroicons:check-20-solid"
+                    class="no-pointer icon-with-text"
                 /></span>
                 <span>Correct answer selected. (Points Awarded)</span>
               </div>
               <div class="incorrect flex items-center gap-3">
                 <span class="text-center w-6"
-                  ><Icon icon="heroicons:x-mark-20-solid" class="no-pointer"
+                  ><Icon
+                    icon="heroicons:x-mark-20-solid"
+                    class="no-pointer icon-with-text"
                 /></span>
                 <span>Incorrect answer selected. (No Points Awarded)</span>
               </div>
@@ -270,14 +274,14 @@ const scrollToOverview = () => {
                   <span class="w-6 text-center">
                     <Icon
                       icon="heroicons:x-mark-20-solid"
-                      class="no-pointer"
+                      class="no-pointer icon-with-text"
                       v-if="
                         !option.isCorrect &&
                         question.response.selectedOptions.includes(option._id!)
                       " />
                     <Icon
                       icon="heroicons:check-20-solid"
-                      class="no-pointer"
+                      class="no-pointer icon-with-text"
                       v-if="
                         option.isCorrect &&
                         question.response.selectedOptions.includes(option._id!)

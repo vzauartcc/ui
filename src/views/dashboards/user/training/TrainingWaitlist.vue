@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TrainingWaitlist from '@/components/training/TrainingWaitlist.vue';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { trainingService } from '@/services/training/training.service';
 import type {
   ITrainingMilestone,
@@ -8,7 +9,6 @@ import type {
 import { useUserStore } from '@/stores/user';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import {
   Form,
   FormField,

@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { examService } from '@/services/exam/exam.service';
 import type { IExamAttempt } from '@/services/exam/exam.types';
 import { useUserStore } from '@/stores/user';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -54,7 +54,6 @@ onMounted(async () => {
     attempt.value = data;
 
     if (data.status === 'not_started') {
-      console.log('updating status');
       // Force exam to enter in_progress state.
       await examService.saveAnswer(
         attempt.value._id,

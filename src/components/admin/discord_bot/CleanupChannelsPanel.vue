@@ -144,7 +144,7 @@ const getChannelFromId = (id: string) => {
   <AccordionPanel value="2">
     <AccordionHeader>
       <span class="flex justify-between gap-5 items-center">
-        <Icon icon="heroicons:trash" />
+        <Icon icon="heroicons:trash" class="icon-with-text" />
         Cleanup Channels ({{ cleanupChannels.length }})
       </span></AccordionHeader
     >

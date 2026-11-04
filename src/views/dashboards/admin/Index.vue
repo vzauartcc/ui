@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { secToHHMMSS } from '@/utils/text';
-import { useTitle } from '@/utils/title';
 import { statsService } from '@/services/stats/stats.service';
 import type { IAdminStatsResponse } from '@/services/stats/stats.types';
+import { secToHHMMSS } from '@/utils/text';
+import { useTitle } from '@/utils/title';
 import { Icon } from '@iconify/vue';
 import type { ChartData, ChartOptions } from 'chart.js';
 import Card from 'primevue/card';

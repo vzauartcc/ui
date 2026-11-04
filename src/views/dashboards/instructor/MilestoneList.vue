@@ -290,6 +290,7 @@ const saveEdit = async () => {
       <FloatLabel v-else variant="on">
         <InputText
           name="code"
+          autofocus
           v-model="edit.code"
           :maxlength="4"
           class="w-full" />

@@ -46,3 +46,7 @@ export const compileUsersName = (data?: {
 
   return `${data.fname} ${data.lname}`;
 };
+
+export const textSort = (a: string, b: string) => {
+  return (a || '').localeCompare(b || '', undefined, { numeric: true });
+};
