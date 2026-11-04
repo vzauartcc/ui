@@ -436,6 +436,7 @@ const saveExam = async (event: FormSubmitEvent) => {
       <FloatLabel variant="on" class="mt-2">
         <Textarea
           class="w-full"
+          autofocus
           v-model="questionDialog.text"
           name="text"
           maxlength="400" />

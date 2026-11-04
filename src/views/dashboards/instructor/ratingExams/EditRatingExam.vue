@@ -395,6 +395,7 @@ const saveIndicator = (doAnother: boolean) => {
       <FloatLabel variant="on" class="mt-2">
         <Textarea
           class="w-full"
+          autofocus
           v-model="indicatorDialog.name"
           name="name"
           maxlength="400" />

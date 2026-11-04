@@ -209,7 +209,7 @@ const showDetails = (data: IController) => {
         >
         from the vZAU roster. Please provide a reason below.
       </p>
-      <Textarea v-model="deleteData.reason" class="w-full" />
+      <Textarea v-model="deleteData.reason" autofocus class="w-full" />
       <div class="flex gap-3">
         <Checkbox binary v-model="deleteData.confirmed" />
         <span>Confirm roster removal.</span>
