@@ -31,7 +31,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
-import { capitalize, onMounted, ref, useTemplateRef } from 'vue';
+import { capitalize, computed, onMounted, ref, useTemplateRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 useTitle('New Rating Exam');
@@ -182,6 +182,34 @@ const indicatorTypes = ref([
   { value: 'theory', name: 'Theory' },
   { value: 'practical', name: 'Practical' },
 ]);
+
+const categoryOptions = computed(() => {
+  const indicators =
+    (formRef.value?.states.indicators?.value as
+      | IRatingExamIndicator[]
+      | undefined) ?? initialValues.value.indicators;
+
+  return [
+    ...new Set(
+      indicators
+        .filter((indicator) => indicator.type === indicatorDialog.value.type)
+        .map((indicator) => indicator.category)
+        .filter(Boolean),
+    ),
+  ].sort(textSort);
+});
+
+const categorySelect =
+  useTemplateRef<InstanceType<typeof Select>>('categorySelect');
+
+const openCategorySelect = (event: MouseEvent) => {
+  // Select in editable mode only opens the overlay from the chevron, clicking the
+  // input just focuses it. Open the list so a single click reveals the options.
+  if ((event.target as HTMLElement | null)?.tagName !== 'INPUT') return;
+
+  categorySelect.value?.show();
+};
+
 const editIndicator = (index: number) => {
   if (!formRef.value) return;
 
@@ -418,10 +446,14 @@ const saveIndicator = (doAnother: boolean) => {
           <label for="type" class="required-field">Type</label>
         </FloatLabel>
         <FloatLabel variant="on">
-          <InputText
+          <Select
+            ref="categorySelect"
             id="category"
             v-model="indicatorDialog.category"
-            maxlength="50" />
+            :options="categoryOptions"
+            :pt="{ label: { maxlength: 50 } }"
+            editable
+            @click="openCategorySelect" />
           <label for="category" class="required-field">Category</label>
         </FloatLabel>
         <FloatLabel variant="on">
