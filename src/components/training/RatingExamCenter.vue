@@ -70,7 +70,12 @@ onMounted(async () => {
   try {
     const data = await ratingExamService.getRatingExams();
 
-    ratingExams.value = data;
+    ratingExams.value = data.filter(
+      (e) =>
+        user.value?.isInstructor ||
+        user.value?.isInstructorAssistant ||
+        e.isActive,
+    );
   } catch (e) {
     console.error('error getting rating exams', e);
   }
@@ -304,7 +309,10 @@ const canEdit = (data: IRatingExamAttempt) => {
               </template>
 
               <Column field="name" header="Name" />
-              <Column field="user" header="Modified By">
+              <Column
+                v-if="route.path.includes('ins/')"
+                field="user"
+                header="Modified By">
                 <template #body="{ data }">
                   {{ compileUsersName(data.user) }}
                 </template>
