@@ -32,7 +32,7 @@ const items = ref([
         icon: 'heroicons:clipboard-document-check',
       },
       {
-        label: 'Rating Exam Attempts',
+        label: 'Rating Exams',
         url: '/dash/training/rating-exams',
         icon: 'heroicons:clipboard-document-list',
       },
