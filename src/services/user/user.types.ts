@@ -26,6 +26,7 @@ export interface IUser {
   isTrainingStaff: boolean;
   isEventsTeam: boolean;
   isFacilityTeam: boolean;
+  isInstructorAssistant: boolean;
   ratingShort: string;
   ratingLong: string;
 

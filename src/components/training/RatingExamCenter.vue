@@ -12,6 +12,7 @@ import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
+import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Column from 'primevue/column';
@@ -28,9 +29,13 @@ import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
 import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 useTitle('Rating Exam Center');
+
+const route = useRoute();
 const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 
 interface GenericFilter {
   name: string;
@@ -85,12 +90,25 @@ const loadLazyArchive = async () => {
   archiveLoading.value = true;
 
   try {
-    const data = await ratingExamService.getRatingExamAttempts(
-      lazyParams.value.page,
-      lazyParams.value.rows,
-      lazyParams.value.filters.ratingExam.value || '',
-      lazyParams.value.filters.studentCid.value || 0,
-    );
+    let data = null;
+
+    if (route.path.includes('/ins')) {
+      data = await ratingExamService.getRatingExamAttempts(
+        lazyParams.value.page,
+        lazyParams.value.rows,
+        lazyParams.value.filters.ratingExam.value || '',
+        lazyParams.value.filters.studentCid.value || 0,
+      );
+    } else {
+      const tmp = await ratingExamService.getOwnRatingExamAttempts(
+        user.value!.cid,
+      );
+      data = {
+        attempts: tmp,
+        amount: tmp.length,
+        students: [user.value!],
+      };
+    }
 
     ratingExamAttempts.value = data.attempts;
     totalSessions.value = data.amount;
@@ -243,13 +261,17 @@ const canEdit = (data: IRatingExamAttempt) => {
                 bodyClass="text-right">
                 <template #body="{ data }">
                   <router-link
-                    v-if="canEdit(data)"
+                    v-if="canEdit(data) && user?.isInstructor"
                     :to="`/ins/rating-exams/attempt/${data._id}`"
                     v-tooltip.top="'Edit Attempt'"
                     ><Icon icon="heroicons:pencil"
                   /></router-link>
                   <router-link
-                    :to="`/ins/rating-exams/attempt/view/${data._id}`"
+                    :to="
+                      route.path.includes('/ins')
+                        ? `/ins/rating-exams/attempt/view/${data._id}`
+                        : `/dash/training/rating-exams/attempt/${data._id}`
+                    "
                     v-tooltip.top="'View Attempt'">
                     <Icon icon="heroicons:magnifying-glass" />
                   </router-link>
@@ -262,13 +284,17 @@ const canEdit = (data: IRatingExamAttempt) => {
             <DataTable v-model:value="ratingExams" stripedRows size="small">
               <template #header>
                 <div class="flex justify-between">
-                  <router-link to="/ins/rating-exams/new">
+                  <router-link
+                    to="/ins/rating-exams/new"
+                    v-if="!!user?.isInstructorAssistant">
                     <Button>
                       <Icon icon="heroicons:plus" class="icon-with-text" />
                       <span>Create Rating Exam</span>
                     </Button>
                   </router-link>
-                  <router-link to="/ins/rating-exams/attempt/new">
+                  <router-link
+                    v-if="user?.isInstructor"
+                    to="/ins/rating-exams/attempt/new">
                     <Button label="Start Assessment" severity="success" />
                   </router-link>
                 </div>
@@ -302,8 +328,20 @@ const canEdit = (data: IRatingExamAttempt) => {
                   <router-link
                     :to="`/ins/rating-exams/${data._id}`"
                     v-tooltip.top="'Edit Rating Exam'"
-                    v-if="userStore.isSeniorStaff || userStore.hasRoles('ia')">
+                    v-if="
+                      route.path.includes('ins/') &&
+                      (userStore.isSeniorStaff || userStore.hasRoles('ia'))
+                    ">
                     <Icon icon="heroicons:pencil" />
+                  </router-link>
+                  <router-link
+                    v-tooltip.top="'View Rating Exam'"
+                    :to="
+                      route.path.includes('/ins')
+                        ? `/ins/rating-exams/view/${data._id}`
+                        : `/dash/training/rating-exams/view/${data._id}`
+                    ">
+                    <Icon icon="heroicons:magnifying-glass" />
                   </router-link>
                 </template>
               </Column>

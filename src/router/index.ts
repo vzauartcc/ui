@@ -228,14 +228,18 @@ const routes: RouteRecordRaw[] = [
 
       {
         path: 'training/rating-exams',
-        component: () =>
-          import('@/views/dashboards/user/training/RatingExamCenter.vue'),
+        component: () => import('@/components/training/RatingExamCenter.vue'),
         meta: {},
       },
       {
-        path: 'training/rating-exams/:id',
+        path: 'training/rating-exams/view/:id',
+        component: () => import('@/components/training/ViewRatingExam.vue'),
+        meta: {},
+      },
+      {
+        path: 'training/rating-exams/attempt/:id',
         component: () =>
-          import('@/views/dashboards/instructor/ratingExams/ViewRatingExamAttempt.vue'),
+          import('@/components/training/ViewRatingExamAttempt.vue'),
         meta: {},
       },
 
@@ -381,8 +385,7 @@ const routes: RouteRecordRaw[] = [
 
       {
         path: 'rating-exams',
-        component: () =>
-          import('@/views/dashboards/instructor/ratingExams/RatingExamCenter.vue'),
+        component: () => import('@/components/training/RatingExamCenter.vue'),
         meta: {},
       },
       {
@@ -392,6 +395,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiredRoles: ['ia', 'ta'],
         },
+      },
+      {
+        path: 'rating-exams/view/:id',
+        component: () => import('@/components/training/ViewRatingExam.vue'),
+        meta: {},
       },
       {
         path: 'rating-exams/:id',
@@ -410,7 +418,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'rating-exams/attempt/view/:id',
         component: () =>
-          import('@/views/dashboards/instructor/ratingExams/ViewRatingExamAttempt.vue'),
+          import('@/components/training/ViewRatingExamAttempt.vue'),
       },
       {
         path: 'rating-exams/attempt/:id',

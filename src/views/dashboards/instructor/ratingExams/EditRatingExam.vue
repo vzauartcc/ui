@@ -31,7 +31,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
-import { capitalize, onMounted, ref, useTemplateRef } from 'vue';
+import { capitalize, computed, onMounted, ref, useTemplateRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 useTitle('New Rating Exam');
@@ -182,6 +182,34 @@ const indicatorTypes = ref([
   { value: 'theory', name: 'Theory' },
   { value: 'practical', name: 'Practical' },
 ]);
+
+const categoryOptions = computed(() => {
+  const indicators =
+    (formRef.value?.states.indicators?.value as
+      | IRatingExamIndicator[]
+      | undefined) ?? initialValues.value.indicators;
+
+  return [
+    ...new Set(
+      indicators
+        .filter((indicator) => indicator.type === indicatorDialog.value.type)
+        .map((indicator) => indicator.category)
+        .filter(Boolean),
+    ),
+  ].sort(textSort);
+});
+
+const categorySelect =
+  useTemplateRef<InstanceType<typeof Select>>('categorySelect');
+
+const openCategorySelect = (event: MouseEvent) => {
+  // Select in editable mode only opens the overlay from the chevron, clicking the
+  // input just focuses it. Open the list so a single click reveals the options.
+  if ((event.target as HTMLElement | null)?.tagName !== 'INPUT') return;
+
+  categorySelect.value?.show();
+};
+
 const editIndicator = (index: number) => {
   if (!formRef.value) return;
 
@@ -344,8 +372,10 @@ const saveIndicator = (doAnother: boolean) => {
                 </template>
               </Column>
               <Column field="category" header="Category" />
-              <Column field="deduction" header="Deduction per Occurrence" />
-              <Column field="failureThreshold" header="Failure Threshold" />
+              <Column
+                field="deduction"
+                header="Points Deduction per Occurrence" />
+              <Column field="failureThreshold" header="Error Threshold" />
               <Column
                 field="options"
                 header="Options"
@@ -414,14 +444,20 @@ const saveIndicator = (doAnother: boolean) => {
             v-model="indicatorDialog.type"
             optionValue="value"
             optionLabel="name"
+            class="w-full"
             id="type" />
           <label for="type" class="required-field">Type</label>
         </FloatLabel>
         <FloatLabel variant="on">
-          <InputText
+          <Select
+            ref="categorySelect"
             id="category"
             v-model="indicatorDialog.category"
-            maxlength="50" />
+            :options="categoryOptions"
+            :pt="{ label: { maxlength: 50 } }"
+            class="w-full"
+            editable
+            @click="openCategorySelect" />
           <label for="category" class="required-field">Category</label>
         </FloatLabel>
         <FloatLabel variant="on">
@@ -429,6 +465,7 @@ const saveIndicator = (doAnother: boolean) => {
             showButtons
             :max="500"
             :min="0"
+            class="w-full"
             id="deduction"
             v-model="indicatorDialog.deduction" />
           <label for="deduction" class="required-field"
@@ -440,11 +477,14 @@ const saveIndicator = (doAnother: boolean) => {
             :max="100"
             :min="0"
             showButtons
+            class="w-full"
             id="failureThreshold"
             v-model="indicatorDialog.failureThreshold" />
           <label for="failureThreshold" class="required-field"
-            >Failure Threshold
+            >Error Threshold
           </label>
+          <br />
+          <span class="text-xs">Set to 1 for automatic exam failure</span>
         </FloatLabel>
       </div>
     </div>
@@ -459,7 +499,12 @@ const saveIndicator = (doAnother: boolean) => {
           label="Save"
           severity="success"
           @click="saveIndicator(false)"
-          :disabled="!indicatorDialog.name" />
+          :disabled="
+            !indicatorDialog.name ||
+            !indicatorDialog.category ||
+            indicatorDialog.failureThreshold < 1 ||
+            indicatorDialog.deduction < 1
+          " />
         <Button outlined @click="closeDialog" label="Cancel" />
       </div>
     </div>
