@@ -325,8 +325,9 @@ const saveEdit = async () => {
             name="rating"
             v-model="edit.rating"
             class="w-1/2"
-            :options="ratingShort"
-            :optionValue="(option) => ratingShort.indexOf(option)" />
+            :options="ratingShort.map((r, i) => ({ value: i + 1, label: r }))"
+            optionValue="value"
+            optionLabel="label" />
           <label for="rating">Associated Rating</label>
         </FloatLabel>
         <template v-if="edit.id">
