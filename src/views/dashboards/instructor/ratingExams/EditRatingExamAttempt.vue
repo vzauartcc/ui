@@ -432,7 +432,7 @@ const pointsDeducted = computed(() => {
                     ></span
                   ></span
                 >
-                <span>Occurrences</span>
+                <span>Errors</span>
                 <span>Notes</span>
               </div>
             </div>
@@ -520,7 +520,7 @@ const pointsDeducted = computed(() => {
                     <FormField
                       :name="`indicators.${getIndicatorIndex(indicator.indicatorId)}.occurrences`"
                       class="justify-center flex items-center">
-                      <div class="relative w-20" v-if="type !== 'theory'">
+                      <div class="relative w-24" v-if="type !== 'theory'">
                         <InputNumber
                           :modelValue="indicator.occurrences"
                           @update:modelValue="
@@ -631,7 +631,9 @@ const pointsDeducted = computed(() => {
                     ? 'Failed'
                     : 'Passed'
                 }}
-                {{ `(${Math.round(((100 - pointsDeducted) / 100) * 100)}%)` }}
+                {{
+                  `(${Math.max(0, Math.round(((100 - pointsDeducted) / 100) * 100))}%)`
+                }}
               </Fieldset>
             </div>
             <div>

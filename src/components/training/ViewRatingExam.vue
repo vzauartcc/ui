@@ -79,8 +79,8 @@ const getTotalIndicators = (
         <span class="p-3 grid grid-cols-1">Category</span>
         <div class="text-center grid grid-cols-3 p-3 items-end">
           <span>Performance Indicator</span>
-          <span>Deduction per Occurrence</span>
-          <span>Error Threshold</span>
+          <span>Deduction per Error</span>
+          <span>Maximum Errors Allowed</span>
         </div>
       </div>
       <div

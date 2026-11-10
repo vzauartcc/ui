@@ -157,7 +157,7 @@ const closeNote = () => {
                   ></span
                 ></span
               >
-              <span>Occurrences</span>
+              <span>Errors</span>
               <span>Notes</span>
             </div>
           </div>

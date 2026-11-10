@@ -372,9 +372,7 @@ const saveIndicator = (doAnother: boolean) => {
                 </template>
               </Column>
               <Column field="category" header="Category" />
-              <Column
-                field="deduction"
-                header="Points Deduction per Occurrence" />
+              <Column field="deduction" header="Points Deducted per Error" />
               <Column field="failureThreshold" header="Error Threshold" />
               <Column
                 field="options"
