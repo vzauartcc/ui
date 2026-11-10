@@ -11,9 +11,7 @@
     "npm": "<12"
   },
   "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true,
-    "schedule": ["before 5am on monday"]
+    "enabled": false
   },
   "packageRules": [
     {
