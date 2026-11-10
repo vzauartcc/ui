@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import StaffingRequests from '@/components/StaffingRequests.vue';
 import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { userService } from '@/services/user/user.service';
 import type { IUserSessionsResponse } from '@/services/user/user.types';
@@ -16,7 +17,6 @@ import DataTable from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import StaffingRequests from './StaffingRequests.vue';
 
 useTitle('Controller Dashboard');
 
