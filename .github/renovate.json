@@ -123,7 +123,6 @@
         "typescript",
         "vue-tsc",
         "@vue/tsconfig",
-        "@tsconfig/node24",
         "@tsconfig/*"
       ],
       "groupName": "typescript ecosystem major updates"
