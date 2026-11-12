@@ -163,3 +163,7 @@ th.text-right > .p-datatable-column-header-content {
 .p-progressbar-value {
   transition: width 0.2s ease-in-out;
 }
+
+.icon-with-text {
+  margin-top: unset !important;
+}

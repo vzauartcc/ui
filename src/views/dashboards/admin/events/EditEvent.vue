@@ -348,8 +348,7 @@ const minEndTime = (startTime?: string | Date) => {
                   showTime
                   class="w-full"
                   hourFormat="24"
-                  :modelValue="initialValues.eventStart as Date"
-                  :stepMinute="15" />
+                  :modelValue="initialValues.eventStart as Date" />
                 <label for="eventStart" class="required-field"
                   >Event Start Time (Zulu)</label
                 >

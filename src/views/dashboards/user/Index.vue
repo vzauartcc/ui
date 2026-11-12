@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import StaffingRequests from '@/components/StaffingRequests.vue';
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { userService } from '@/services/user/user.service';
 import type { IUserSessionsResponse } from '@/services/user/user.types';
 import { useUserStore } from '@/stores/user';
@@ -6,7 +8,6 @@ import { dateAsMMDDHHMM } from '@/utils/date';
 import { secToHHMMSS } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
@@ -16,7 +17,6 @@ import DataTable from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import StaffingRequests from './StaffingRequests.vue';
 
 useTitle('Controller Dashboard');
 
@@ -132,10 +132,10 @@ const unlinkDiscord = async () => {
         @click.prevent="unlinkDiscord()"
         :loading="isSubmitting">
         Unlink Discord
-        <Icon icon="mdi:discord" />
+        <Icon icon="mdi:discord" class="icon-with-text" />
       </Button>
       <Button v-else @click.prevent="linkDiscord()"
-        >Link Discord <Icon icon="mdi:discord" />
+        >Link Discord <Icon icon="mdi:discord" class="icon-with-text" />
       </Button>
     </template>
   </Card>

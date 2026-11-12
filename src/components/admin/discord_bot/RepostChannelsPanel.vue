@@ -81,7 +81,7 @@ const closeEditRepostChannel = () => {
   <AccordionPanel value="1">
     <AccordionHeader>
       <span class="flex justify-between gap-5 items-center">
-        <Icon icon="heroicons:newspaper" />
+        <Icon icon="heroicons:newspaper" class="icon-with-text" />
         Re-post Channels ({{
           Object.keys(localConfig.repostChannels).length
         }})</span

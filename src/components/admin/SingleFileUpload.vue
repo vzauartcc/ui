@@ -103,7 +103,7 @@ defineExpose({ getFileCount });
     </template>
     <template #empty>
       <div class="flex items-center justify-center flex-col">
-        <Icon icon="heroicons:cloud-arrow-up" class="no-pointer text-6xl" />
+        <Icon icon="heroicons:cloud-arrow-up" class="no-pointer text-6xl!" />
         <p class="mt-6 mb-0">
           {{
             fileName

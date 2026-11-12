@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { examService } from '@/services/exam/exam.service';
 import type { IExam, IExamAttempt } from '@/services/exam/exam.types';
 import { feedbackService } from '@/services/feedback/feedback.service';
@@ -8,7 +9,6 @@ import { dateAsMMDD } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import {
@@ -116,8 +116,8 @@ const loadLazyArchive = async () => {
     examAttempts.value = data.attempts;
     totalSessions.value = data.amount;
     studentFilter.value = data.students.map((s) => ({
-      name: s.user!.name,
-      value: s.user.cid,
+      name: compileUsersName(s),
+      value: s.cid,
     }));
   } catch (e) {
     console.error('error getting exam attempts', e);
@@ -349,7 +349,7 @@ const deleteExamAttempt = async () => {
                 <div class="flex justify-between">
                   <router-link to="exams/new">
                     <Button>
-                      <Icon icon="heroicons:plus" />
+                      <Icon icon="heroicons:plus" class="icon-with-text" />
                       <span>Create Exam</span>
                     </Button>
                   </router-link>

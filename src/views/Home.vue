@@ -68,8 +68,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
                 class="inline-flex items-center justify-center shadow-md shadow-primary-500/20 font-semibold px-6 py-2.5 rounded-xl transform hover:-translate-y-0.5 transition-all duration-200"
                 ><Icon
                   icon="heroicons:paper-airplane-solid"
-                  style="margin-top: unset !important"
-                  class="shrink-0 align-middle" />
+                  class="shrink-0 align-middle icon-with-text" />
                 <span>Become a visitor!</span>
               </Button>
             </div>
@@ -102,7 +101,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
               <div class="flex items-center gap-2">
                 <Icon
                   icon="heroicons:users"
-                  class="text-[#41b6e6] text-2xl! no-pointer" />
+                  class="text-[#41b6e6] text-2xl! no-pointer icon-with-text" />
                 <h3
                   class="font-bold text-surface-800 dark:text-surface-100 text-sm tracking-wide uppercase">
                   Online Controllers
@@ -127,7 +126,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
               class="p-2.5 bg-primary-50 dark:bg-primary-950/50 rounded-xl text-primary-500">
               <Icon
                 icon="heroicons:megaphone"
-                class="text-2xl! text-[#41b6e6] no-pointer" />
+                class="text-2xl! text-[#41b6e6] no-pointer icon-with-text" />
             </div>
             <h2
               class="text-2xl font-bold tracking-tight text-surface-900 dark:text-surface-50">
@@ -146,7 +145,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
               class="p-2.5 bg-red-50 dark:bg-red-950/30 rounded-xl text-red-500">
               <Icon
                 icon="heroicons:calendar"
-                class="text-2xl! text-[#e4002b] no-pointer" />
+                class="text-2xl! text-[#e4002b] no-pointer icon-with-text" />
             </div>
             <h2
               class="text-2xl font-bold tracking-tight text-surface-900 dark:text-surface-50">
@@ -165,7 +164,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
               class="p-2.5 bg-primary-50 dark:bg-primary-950/50 rounded-xl text-primary-500">
               <Icon
                 icon="heroicons:paper-airplane"
-                class="text-2xl! text-[#41b6e6] no-pointer" />
+                class="text-2xl! text-[#41b6e6] no-pointer icon-with-text" />
             </div>
             <h2
               class="text-2xl font-bold tracking-tight text-surface-900 dark:text-surface-50">
@@ -187,7 +186,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
               class="flex items-center gap-2 text-lg font-bold text-surface-900 dark:text-surface-50">
               <Icon
                 icon="heroicons:cloud"
-                class="text-2xl! text-sky-400 no-pointer" />
+                class="text-2xl! text-sky-400 no-pointer icon-with-text" />
               Airfield Conditions
             </div>
           </template>
@@ -205,7 +204,7 @@ const { user, isLoggedIn } = storeToRefs(userStore);
                 class="flex items-center gap-2 text-lg font-bold text-surface-900 dark:text-surface-50">
                 <Icon
                   icon="heroicons:chart-pie"
-                  class="text-2xl! text-[#e4002b] no-pointer" />
+                  class="text-2xl! text-[#e4002b] no-pointer icon-with-text" />
                 Iron Mic Leaderboard
               </div>
               <span

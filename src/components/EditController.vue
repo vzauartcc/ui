@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { controllerService } from '@/services/controller/controller.service';
 import type {
   ICertification,
@@ -9,7 +10,6 @@ import { useUserStore } from '@/stores/user';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import {
   Form,
@@ -230,10 +230,10 @@ const updateController = async (event: FormSubmitEvent) => {
                 :disabled="!userStore.isStaff"
                 :readonly="!userStore.isStaff" />
               <label for="oi">Operating Initials</label>
-              <span class="text-3xl" v-tooltip.top="getOITooltip($field)">
+              <span v-tooltip.top="getOITooltip($field)">
                 <Icon
                   icon="heroicons:x-circle-solid"
-                  class="text-red-500 no-pointer"
+                  class="text-red-500 no-pointer text-3xl!"
                   v-if="
                     $field.invalid ||
                     (takenOI.includes($field.value.toUpperCase()) &&
@@ -241,7 +241,7 @@ const updateController = async (event: FormSubmitEvent) => {
                   " />
                 <Icon
                   icon="heroicons:check-circle-solid"
-                  class="text-green-500 no-pointer"
+                  class="text-green-500 no-pointer text-3xl!"
                   v-else />
               </span>
             </FloatLabel>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import SidebarMenu from '@/components/layout/SidebarMenu.vue';
 import { useUserStore } from '@/stores/user';
 import type { MenuItem } from 'primevue/menuitem';
 import { computed, ref } from 'vue';
-import SidebarMenu from '@/components/layout/SidebarMenu.vue';
 
 const items = ref([
   {
@@ -30,6 +30,11 @@ const items = ref([
         label: 'Exam Center',
         url: '/dash/training/exams',
         icon: 'heroicons:clipboard-document-check',
+      },
+      {
+        label: 'Rating Exams',
+        url: '/dash/training/rating-exams',
+        icon: 'heroicons:clipboard-document-list',
       },
     ],
   },

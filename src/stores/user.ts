@@ -68,6 +68,10 @@ export const useUserStore = defineStore('user', () => {
     () => !!user.value?.isInstructor || !!user.value?.isManagement,
   );
 
+  const isInstructorAssistant = computed(
+    () => !!user.value?.isInstructorAssistant || !!user.value?.isManagement,
+  );
+
   async function getUser(force = false): Promise<IUser | null> {
     if (hasQueryCompleted.value && !force) {
       return user.value;
@@ -120,5 +124,6 @@ export const useUserStore = defineStore('user', () => {
     isEventsTeam,
     isFacilityTeam,
     isInstructor,
+    isInstructorAssistant,
   };
 });

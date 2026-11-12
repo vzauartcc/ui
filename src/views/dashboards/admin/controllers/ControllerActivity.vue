@@ -172,7 +172,7 @@ const submitDelete = async () => {
                   v-if="filters['global'].value"
                   @click="filters['global'].value = null"
                   class="pointer-events-auto absolute right-3 z-10">
-                  <Icon icon="heroicons:x-mark" />
+                  <Icon icon="heroicons:x-mark" class="icon-with-text" />
                 </InputIcon>
                 <label for="globalSearch"
                   >Search by Name, CID, or Operating Initials</label
@@ -221,19 +221,19 @@ const submitDelete = async () => {
                     : 'Exempt - Staff'
                   : 'Exempt - OBS Promoted/Joined Roster'
               ">
-              <Icon class="no-pointer" icon="heroicons:minus" />
+              <Icon class="no-pointer icon-with-text" icon="heroicons:minus" />
             </span>
             <span
               class="text-red-500"
               v-else-if="data.tooLow === true"
               v-tooltip.top="'Does not meet Activity Requirements'">
-              <Icon class="no-pointer" icon="heroicons:x-mark" />
+              <Icon class="no-pointer icon-with-text" icon="heroicons:x-mark" />
             </span>
             <span
               class="text-green-500"
               v-else
               v-tooltip.top="'Activity Requirements Met'">
-              <Icon class="no-pointer" icon="heroicons:check" />
+              <Icon class="no-pointer icon-with-text" icon="heroicons:check" />
             </span>
           </template>
         </Column>
