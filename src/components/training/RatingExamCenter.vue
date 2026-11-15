@@ -31,7 +31,7 @@ import Tabs from 'primevue/tabs';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-useTitle('Rating Exam Center');
+useTitle('Practical Exam Center');
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -169,12 +169,12 @@ const canEdit = (data: IRatingExamAttempt) => {
   <ProgressSpinner v-if="!ratingExams" />
 
   <Card v-else>
-    <template #title>Rating Exam Center</template>
+    <template #title>Practical Exam Center</template>
     <template #content>
       <Tabs value="0">
         <TabList>
-          <Tab value="0">Rating Exam Attempts</Tab>
-          <Tab value="1">Rating Exams</Tab>
+          <Tab value="0">Exam Attempts</Tab>
+          <Tab value="1">Exams</Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="0">
@@ -294,7 +294,7 @@ const canEdit = (data: IRatingExamAttempt) => {
                     v-if="!!user?.isInstructorAssistant">
                     <Button>
                       <Icon icon="heroicons:plus" class="icon-with-text" />
-                      <span>Create Rating Exam</span>
+                      <span>Create Practical Exam</span>
                     </Button>
                   </router-link>
                   <router-link
@@ -335,7 +335,7 @@ const canEdit = (data: IRatingExamAttempt) => {
                 <template #body="{ data }">
                   <router-link
                     :to="`/ins/rating-exams/${data._id}`"
-                    v-tooltip.top="'Edit Rating Exam'"
+                    v-tooltip.top="'Edit Practical Exam'"
                     v-if="
                       route.path.includes('ins/') &&
                       (userStore.isSeniorStaff || userStore.hasRoles('ia'))
@@ -343,7 +343,7 @@ const canEdit = (data: IRatingExamAttempt) => {
                     <Icon icon="heroicons:pencil" />
                   </router-link>
                   <router-link
-                    v-tooltip.top="'View Rating Exam'"
+                    v-tooltip.top="'View Practical Exam'"
                     :to="
                       route.path.includes('/ins')
                         ? `/ins/rating-exams/view/${data._id}`

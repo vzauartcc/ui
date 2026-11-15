@@ -13,13 +13,12 @@ import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
 import Fieldset from 'primevue/fieldset';
-import InputNumber from 'primevue/inputnumber';
 import ProgressSpinner from 'primevue/progressspinner';
 import RadioButton from 'primevue/radiobutton';
 import { capitalize, computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-useTitle('View Rating Exam Attempt');
+useTitle('View Practical Exam Attempt');
 const route = useRoute();
 
 const id = Array.isArray(route.params.id)
@@ -101,7 +100,7 @@ const closeNote = () => {
   <ProgressSpinner v-if="!attempt" />
   <Card v-else>
     <template #title
-      >Rating Exam Attempt - {{ compileUsersName(attempt.student) }} -
+      >Practical Exam Attempt - {{ compileUsersName(attempt.student) }} -
       {{ attempt.ratingExam!.name }}</template
     >
     <template #content>
@@ -164,7 +163,7 @@ const closeNote = () => {
           <div
             v-for="(categories, type) in groupedIndicators"
             :key="type"
-            class="grid grid-cols-[60px_200px_1fr]"
+            class="grid grid-cols-[60px_200px_1fr] dark:text-gray-700"
             :class="{
               'bg-blue-100': type === 'theory',
               'bg-rose-100': type !== 'theory',
@@ -222,15 +221,10 @@ const closeNote = () => {
                   </div>
 
                   <div class="justify-center flex items-center">
-                    <div class="relative w-20" v-if="type !== 'theory'">
-                      <InputNumber
-                        :modelValue="indicator.occurrences"
-                        disabled
-                        class="w-full"
-                        inputClass="w-full"
-                        placeholder="# of Occurrences" />
+                    <div class="relative" v-if="type !== 'theory'">
+                      <p class="w-8 text-center">{{ indicator.occurrences }}</p>
                       <p
-                        class="absolute left-full top-1 -translate-y-1/2 pl-5 whitespace-nowrap"
+                        class="absolute left-full top-0 pl-5 whitespace-nowrap"
                         :class="{ invisible: indicator.occurrences <= 0 }">
                         -{{ indicator.occurrences * indicator.deduction }} pts
                       </p>

@@ -37,7 +37,7 @@ import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
 import { onMounted, ref } from 'vue';
 
-useTitle('Exam Center');
+useTitle('Written Exam Center');
 
 interface GenericFilter {
   name: string;
@@ -225,7 +225,7 @@ const deleteExamAttempt = async () => {
 <template>
   <ProgressSpinner v-if="!examAttempts" />
   <Card v-else>
-    <template #title>Exam Center</template>
+    <template #title>Written Exam Center</template>
     <template #content>
       <Tabs value="0">
         <TabList>

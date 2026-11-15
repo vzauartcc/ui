@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { controllerService } from '@/services/controller/controller.service';
-import type { ICertification } from '@/services/controller/controller.types';
+import type {
+  ICertification,
+  IController,
+} from '@/services/controller/controller.types';
 import { eventService } from '@/services/events/events.service';
 import type {
   IPosition,
@@ -84,17 +87,6 @@ const getEventData = async () => {
   } catch (e) {
     console.error('error getting event data', e);
   }
-};
-
-const getCertification = (code: string) => {
-  const found = certifications.value.find((c) => c.code === code);
-
-  if (!found) return null;
-
-  return {
-    name: found.name.replaceAll(' Events', ''),
-    class: found.facility,
-  };
 };
 
 const deleteSignupVisible = ref(false);
@@ -232,6 +224,22 @@ const openSignups = async () => {
     eventData.value!.open = true;
   });
 };
+
+const showEndorsements = (controller: IController): ICertification[] => {
+  if (eventData.value?.requiresEventEndorsement) {
+    return controller.certifications.filter((c) => c.code.endsWith('e'));
+  }
+
+  const val = controller.certifications
+    .filter((c) => !c.code.endsWith('e'))
+    .sort((a, b) => b.order - a.order)[0];
+
+  if (!val) {
+    return [] as ICertification[];
+  }
+
+  return [val];
+};
 </script>
 
 <template>
@@ -273,21 +281,19 @@ const openSignups = async () => {
           </template>
         </Column>
         <Column field="user.ratingShort" header="Rating" />
-        <Column field="eventEndorsements" header="Event Endorsements">
+        <Column
+          field="eventEndorsements"
+          :header="`${eventData.requiresEventEndorsement ? 'Event ' : ''}Endorsements`">
           <template #body="{ data }">
             <div class="flex gap-1">
-              <div
-                v-for="end of data.user.certCodes.filter((e: string) =>
-                  e.endsWith('e'),
-                )"
-                :key="end">
-                <span v-if="getCertification(end)" class="inline-block">
-                  <Tag
-                    severity="contrast"
-                    :class="getCertification(end)!.class"
-                    :value="getCertification(end)!.name"
-                    class="h-8 min-h-2 flex items-center justify-center text-center whitespace-nowrap" />
-                </span>
+              <div v-for="end of showEndorsements(data.user)" :key="end._id">
+                <Tag
+                  severity="contrast"
+                  :class="
+                    eventData.requiresEventEndorsement ? end.facility : ''
+                  "
+                  :value="end.name"
+                  class="h-8 min-h-2 flex items-center justify-center text-center whitespace-nowrap" />
               </div>
             </div>
           </template>

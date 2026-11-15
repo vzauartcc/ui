@@ -11,7 +11,7 @@ import DataTable from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted, ref } from 'vue';
 
-useTitle('Exam Center');
+useTitle('Written Exam Center');
 
 const attempts = ref<IExamAttempt[] | null>(null);
 
@@ -64,7 +64,7 @@ const getRowColor = (data: IExamAttempt) => {
 <template>
   <ProgressSpinner v-if="!attempts" />
   <Card v-else>
-    <template #title>Exam Center</template>
+    <template #title>Written Exam Center</template>
     <template #content>
       <DataTable
         :value="attempts"
