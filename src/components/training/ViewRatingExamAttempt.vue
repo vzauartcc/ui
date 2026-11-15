@@ -164,7 +164,7 @@ const closeNote = () => {
           <div
             v-for="(categories, type) in groupedIndicators"
             :key="type"
-            class="grid grid-cols-[60px_200px_1fr]"
+            class="grid grid-cols-[60px_200px_1fr] dark:text-gray-700"
             :class="{
               'bg-blue-100': type === 'theory',
               'bg-rose-100': type !== 'theory',
@@ -227,8 +227,7 @@ const closeNote = () => {
                         :modelValue="indicator.occurrences"
                         disabled
                         class="w-full"
-                        inputClass="w-full"
-                        placeholder="# of Occurrences" />
+                        inputClass="w-full" />
                       <p
                         class="absolute left-full top-1 -translate-y-1/2 pl-5 whitespace-nowrap"
                         :class="{ invisible: indicator.occurrences <= 0 }">

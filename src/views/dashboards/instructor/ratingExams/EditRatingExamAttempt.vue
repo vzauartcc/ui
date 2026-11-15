@@ -439,7 +439,7 @@ const pointsDeducted = computed(() => {
             <div
               v-for="(categories, type) in groupedIndicators"
               :key="type"
-              class="grid grid-cols-[60px_200px_1fr]"
+              class="grid grid-cols-[60px_200px_1fr] dark:text-gray-700"
               :class="{
                 'bg-blue-100': type === 'theory',
                 'bg-rose-100': type !== 'theory',
