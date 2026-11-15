@@ -34,7 +34,7 @@ import Textarea from 'primevue/textarea';
 import { capitalize, computed, onMounted, ref, useTemplateRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-useTitle('New Rating Exam');
+useTitle('New Practical Exam');
 const route = useRoute();
 const router = useRouter();
 
@@ -88,7 +88,7 @@ onMounted(async () => {
 
     loading.value = false;
 
-    useTitle(`Edit Rating Exam - ${initialValues.value.name}`);
+    useTitle(`Edit Practical Exam - ${initialValues.value.name}`);
   } catch (e) {
     console.error('error getting exam details', e);
   }
@@ -132,13 +132,16 @@ const saveRatingExam = async (event: FormSubmitEvent) => {
       );
 
       toastSuccess(
-        'Rating Exam Saved!',
-        'Changes to the rating exam have been saved.',
+        'Practical Exam Saved!',
+        'Changes to the practical exam have been saved.',
       );
     } else {
       await ratingExamService.createRatingExam(values as IRatingExam);
 
-      toastSuccess('Rating Exam Created!', 'The rating exam has been created.');
+      toastSuccess(
+        'Practical Exam Created!',
+        'The practical exam has been created.',
+      );
     }
 
     router.push('/ins/rating-exams');
@@ -284,8 +287,8 @@ const saveIndicator = (doAnother: boolean) => {
   <ProgressSpinner v-if="loading" />
   <Card v-else>
     <template #title>
-      <span v-if="id">Edit Rating Exam - {{ initialValues.name }}</span>
-      <span v-else>New Rating Exam</span>
+      <span v-if="id">Edit Practical Exam - {{ initialValues.name }}</span>
+      <span v-else>New Practical Exam</span>
     </template>
 
     <template #content>

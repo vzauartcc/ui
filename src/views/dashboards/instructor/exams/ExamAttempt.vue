@@ -22,7 +22,7 @@ import {
 } from 'vue';
 import { useRoute } from 'vue-router';
 
-useTitle('Exam Attempt');
+useTitle('Written Exam Attempt');
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -66,7 +66,7 @@ onMounted(async () => {
     const data = await examService.getExamAttempt(id);
 
     attempt.value = data;
-    useTitle(`Exam Attempt - ${data.user.name} - ${data.exam.title}`);
+    useTitle(`Written Exam Attempt - ${data.user.name} - ${data.exam.title}`);
 
     data.questionOrder.forEach((q) => {
       questions.value.push({

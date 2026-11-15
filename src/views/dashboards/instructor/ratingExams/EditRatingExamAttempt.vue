@@ -41,7 +41,7 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-useTitle('New Rating Exam Attempt');
+useTitle('New Practical Exam Attempt');
 const route = useRoute();
 const router = useRouter();
 
@@ -198,7 +198,7 @@ const changeRatingExam = async (newVal: string) => {
   if (!ratingExam) {
     console.error('this is impossible');
 
-    toastError('Rating Exam Not Found!', 'An error has occurred.');
+    toastError('Practical Exam Not Found!', 'An error has occurred.');
     return;
   }
 
@@ -355,7 +355,7 @@ const pointsDeducted = computed(() => {
 <template>
   <ProgressSpinner v-if="!ratingExams || !students" />
   <Card v-else>
-    <template #title> New Rating Exam Attempt </template>
+    <template #title> New Practical Exam Attempt </template>
 
     <template #content>
       <Form
@@ -391,11 +391,11 @@ const pointsDeducted = computed(() => {
                 optionValue="_id"
                 :modelValue="$field.value"
                 filter
-                placeholder="Select Rating Exam"
+                placeholder="Select Practical Exam"
                 @update:modelValue="(val) => changeRatingExam(val)"
                 id="ratingExamId" />
               <label for="ratingExamId" class="required-field"
-                >Rating Exam</label
+                >Practical Exam</label
               >
             </FloatLabel>
           </FormField>

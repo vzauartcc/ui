@@ -27,12 +27,12 @@ const items = ref([
         icon: 'heroicons:queue-list',
       },
       {
-        label: 'Exam Center',
+        label: 'Written Exam Center',
         url: '/dash/training/exams',
         icon: 'heroicons:clipboard-document-check',
       },
       {
-        label: 'Rating Exams',
+        label: 'Practical Exams',
         url: '/dash/training/rating-exams',
         icon: 'heroicons:clipboard-document-list',
       },

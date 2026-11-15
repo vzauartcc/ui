@@ -11,7 +11,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { capitalize, computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-useTitle('View Rating Exam');
+useTitle('View Practical Exam');
 const route = useRoute();
 
 const id = Array.isArray(route.params.id)
@@ -71,7 +71,7 @@ const getTotalIndicators = (
 <template>
   <ProgressSpinner v-if="!ratingExam" />
   <Card v-else>
-    <template #title>Rating Exam - {{ ratingExam.name }}</template>
+    <template #title>Practical Exam - {{ ratingExam.name }}</template>
     <template #content>
       <div
         class="grid grid-cols-[60px_200px_1fr] font-bold text-center items-end">

@@ -27,7 +27,7 @@ const items = ref<MenuItem[]>([
   },
   {
     key: 'exam',
-    label: 'Exam Center',
+    label: 'Written Exam Center',
     url: '/ins/exams',
     icon: 'heroicons:academic-cap',
   },
@@ -40,7 +40,7 @@ const items = ref<MenuItem[]>([
   },
   {
     key: 'rating-exam',
-    label: 'Rating Exam Center',
+    label: 'Practical Exam Center',
     url: '/ins/rating-exams',
     icon: 'heroicons:document-text',
     requiredRoles: ['ta', 'ia'],
