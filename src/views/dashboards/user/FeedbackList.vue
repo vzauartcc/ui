@@ -110,11 +110,6 @@ const viewFeedback = (data: IFeedback) => {
                 v-tooltip.top="`${getRatingText(data.rating)}`" />
             </template>
           </Column>
-          <Column field="approved" header="Status">
-            <template #body="{ data }">
-              {{ data.approved ? 'Approved' : 'Rejected' }}
-            </template>
-          </Column>
           <Column
             field="options"
             header="Options"
