@@ -110,6 +110,11 @@ const viewFeedback = (data: IFeedback) => {
                 v-tooltip.top="`${getRatingText(data.rating)}`" />
             </template>
           </Column>
+          <Column field="approved" header="Status">
+            <template #body="{ data }">
+              {{ data.approved ? 'Approved' : 'Rejected' }}
+            </template>
+          </Column>
           <Column
             field="options"
             header="Options"
@@ -132,7 +137,7 @@ const viewFeedback = (data: IFeedback) => {
     dismissableMask
     header="Feedback Details"
     class="w-1/2">
-    <p class="whitespace-pre-line break-words">{{ feedback?.comments }}</p>
+    <p class="whitespace-pre-line wrap-break-word">{{ feedback?.comments }}</p>
     <template #footer>
       <Button outlined label="Close" @click="feedbackVisible = false" />
     </template>
