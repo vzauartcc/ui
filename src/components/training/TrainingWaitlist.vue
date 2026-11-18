@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { trainingService } from '@/services/training/training.service';
 import type { ITrainingWaitlist } from '@/services/training/training.types';
 import { useUserStore } from '@/stores/user';
@@ -6,7 +7,6 @@ import { dateAsMMDD } from '@/utils/date';
 import { ratingShort } from '@/utils/ratings';
 import { compileUsersName } from '@/utils/text';
 import { toastError, toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -269,6 +269,16 @@ const averageInstructorLoad = () => {
     <Column field="createdAt" header="Entry Date">
       <template #body="{ data }">
         {{ dateAsMMDD(data.createdAt) }}
+      </template>
+    </Column>
+    <Column
+      field="assignedDate"
+      header="Assigned Date"
+      v-if="userStore.isTrainingStaff">
+      <template #body="{ data }">
+        <span v-if="data.assignedDate">
+          {{ dateAsMMDD(data.assignedDate) }}
+        </span>
       </template>
     </Column>
     <Column
