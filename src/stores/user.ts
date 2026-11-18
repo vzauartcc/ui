@@ -21,7 +21,7 @@ export const useUserStore = defineStore('user', () => {
           ? requiredRole
           : [requiredRole];
 
-        const allowedRoles = [...requiredRolesArray, 'atm', 'datm', 'wm'];
+        const allowedRoles = [...requiredRolesArray, 'atm', 'datm'];
 
         return (
           !!user.value &&

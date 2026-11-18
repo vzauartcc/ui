@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { feedbackService } from '@/services/feedback/feedback.service';
 import type { IFeedback } from '@/services/feedback/feedback.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
 import { compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
-import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -240,6 +240,11 @@ const rejectFeedback = async () => {
               v-tooltip.top="`${getRatingText(data.rating)}`" />
           </template>
         </Column>
+        <Column field="approved" header="Status">
+          <template #body="{ data }">
+            {{ data.approved ? 'Approved' : 'Rejected' }}
+          </template>
+        </Column>
         <Column
           field="options"
           header="Options"
@@ -291,7 +296,7 @@ const rejectFeedback = async () => {
       </Fieldset>
     </div>
     <Fieldset legend="Comments">
-      <span class="whitespace-pre-line break-words">
+      <span class="whitespace-pre-line wrap-break-word">
         {{ feedback!.comments }}
       </span>
     </Fieldset>

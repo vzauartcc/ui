@@ -132,7 +132,7 @@ const viewFeedback = (data: IFeedback) => {
     dismissableMask
     header="Feedback Details"
     class="w-1/2">
-    <p class="whitespace-pre-line break-words">{{ feedback?.comments }}</p>
+    <p class="whitespace-pre-line wrap-break-word">{{ feedback?.comments }}</p>
     <template #footer>
       <Button outlined label="Close" @click="feedbackVisible = false" />
     </template>
