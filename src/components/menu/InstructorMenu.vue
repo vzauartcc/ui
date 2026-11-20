@@ -43,7 +43,6 @@ const items = ref<MenuItem[]>([
     label: 'Practical Exam Center',
     url: '/ins/rating-exams',
     icon: 'heroicons:document-text',
-    requiredRoles: ['ta', 'ia'],
   },
   {
     key: 'solo',
