@@ -24,4 +24,6 @@ export interface IFeedback {
   email: string;
   controller: IFeedbackController;
   approved: boolean;
+  reviewerCid?: number;
+  reviewer: IFeedbackController;
 }
