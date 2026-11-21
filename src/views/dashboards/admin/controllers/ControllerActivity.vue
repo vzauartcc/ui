@@ -8,7 +8,7 @@ import type {
 } from '@/services/stats/stats.types';
 import { useUserStore } from '@/stores/user';
 import { dateAsMMDD } from '@/utils/date';
-import { secToHHMM } from '@/utils/text';
+import { capitalize, secToHHMM } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
 import { Icon } from '@iconify/vue';
@@ -25,7 +25,7 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
-import { capitalize, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 useTitle('Controller Activity');
 

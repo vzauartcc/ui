@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { IDocument, IDownload } from '@/services/files/files.types';
 import { dateAsMMDD } from '@/utils/date';
+import { capitalize } from '@/utils/text';
 import { Icon } from '@iconify/vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import Button from 'primevue/button';
@@ -13,7 +14,7 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
 import Select from 'primevue/select';
-import { capitalize, ref } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps<{
   items: IDocument[] | IDownload[] | null;

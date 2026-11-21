@@ -5,7 +5,7 @@ import type {
   IRatingExamAttemptIndicator,
 } from '@/services/training/ratingExam.types';
 import { dateAsMMDD } from '@/utils/date';
-import { compileUsersName, textSort } from '@/utils/text';
+import { capitalize, compileUsersName, textSort } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
@@ -15,7 +15,7 @@ import Divider from 'primevue/divider';
 import Fieldset from 'primevue/fieldset';
 import ProgressSpinner from 'primevue/progressspinner';
 import RadioButton from 'primevue/radiobutton';
-import { capitalize, computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 useTitle('View Practical Exam Attempt');

@@ -5,6 +5,7 @@ import type { ICertification } from '@/services/controller/controller.types';
 import { trainingService } from '@/services/training/training.service';
 import type { ITrainingMilestone } from '@/services/training/training.types';
 import { ratingShort } from '@/utils/ratings';
+import { capitalize } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
@@ -23,7 +24,7 @@ import TabList from 'primevue/tablist';
 import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
-import { capitalize, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 useTitle('Manage Milestones');
 

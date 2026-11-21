@@ -7,7 +7,7 @@ import type {
   IRatingExam,
   IRatingExamIndicator,
 } from '@/services/training/ratingExam.types';
-import { textSort } from '@/utils/text';
+import { capitalize, textSort } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
 import { Icon } from '@iconify/vue';
@@ -31,7 +31,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
-import { capitalize, computed, onMounted, ref, useTemplateRef } from 'vue';
+import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 useTitle('New Practical Exam');

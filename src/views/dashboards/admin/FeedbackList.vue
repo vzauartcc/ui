@@ -3,7 +3,7 @@ import { useAsyncSubmit } from '@/composables/useAsyncSubmit';
 import { feedbackService } from '@/services/feedback/feedback.service';
 import type { IFeedback } from '@/services/feedback/feedback.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
-import { compileUsersName } from '@/utils/text';
+import { capitalize, compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
 import { Icon } from '@iconify/vue';
@@ -15,7 +15,7 @@ import Dialog from 'primevue/dialog';
 import Fieldset from 'primevue/fieldset';
 import ProgressSpinner from 'primevue/progressspinner';
 import Rating from 'primevue/rating';
-import { capitalize, computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 useTitle('Feedback');
 
@@ -286,7 +286,7 @@ const rejectFeedback = async () => {
         <span>{{ getControllerName }}</span>
       </Fieldset>
       <Fieldset legend="Position">
-        <span>{{ feedback!.position }}</span>
+        <span>{{ capitalize(feedback!.position) }}</span>
       </Fieldset>
       <Fieldset legend="Rating">
         <span>{{ getFeedbackRating }}</span>
