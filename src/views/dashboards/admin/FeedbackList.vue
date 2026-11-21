@@ -12,6 +12,7 @@ import Card from 'primevue/card';
 import Column from 'primevue/column';
 import DataTable, { type DataTablePageEvent } from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
+import Divider from 'primevue/divider';
 import Fieldset from 'primevue/fieldset';
 import ProgressSpinner from 'primevue/progressspinner';
 import Rating from 'primevue/rating';
@@ -300,6 +301,13 @@ const rejectFeedback = async () => {
         {{ feedback!.comments }}
       </span>
     </Fieldset>
+
+    <div v-if="feedback!.reviewer">
+      <Divider />
+      <Fieldset legend="Reviewer">
+        <span>{{ compileUsersName(feedback!.reviewer) }}</span>
+      </Fieldset>
+    </div>
 
     <template #footer>
       <template v-if="feedback!.pending">
