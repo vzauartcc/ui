@@ -298,7 +298,7 @@ const canEdit = (data: IRatingExamAttempt) => {
                     </Button>
                   </router-link>
                   <router-link
-                    v-if="user?.isInstructor"
+                    v-if="user?.isTrainingStaff"
                     to="/ins/rating-exams/attempt/new">
                     <Button label="Start Assessment" severity="success" />
                   </router-link>

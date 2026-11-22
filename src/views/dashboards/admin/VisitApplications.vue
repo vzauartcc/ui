@@ -206,7 +206,7 @@ const rejectApplication = async () => {
             {{ data.application.rating }}
           </template>
         </Column>
-        <Column field="data.application.home" header="Home ARTCC">
+        <Column field="data.application.home" header="Home Facility">
           <template #body="{ data }">
             {{ data.application.home }}
           </template>
@@ -260,10 +260,19 @@ const rejectApplication = async () => {
 
       <div class="col-span-2">
         <Fieldset legend="Reason to Visit">
-          <span class="whitespace-pre-line break-words">{{
+          <span class="whitespace-pre-line wrap-break-word">{{
             editData!.application.reason
           }}</span>
         </Fieldset>
+      </div>
+
+      <div class="col-span-2">
+        <a
+          :href="`https://www.vatusa.net/legacy/mgt/controller/${editData!.application.cid}`"
+          rel="noopener noreferrer"
+          target="_blank"
+          >VATUSA Profile</a
+        >
       </div>
     </div>
 
@@ -280,7 +289,7 @@ const rejectApplication = async () => {
                 class="text-surface-500 dark:text-surface-400">
                 {{ dateAsMMDD(item.date) }}
               </span>
-              <span v-else class="whitespace-pre-line break-words">
+              <span v-else class="whitespace-pre-line wrap-break-word">
                 {{ item.reason }}
               </span>
             </template>
@@ -290,7 +299,7 @@ const rejectApplication = async () => {
                 class="text-surface-500 dark:text-surface-400">
                 {{ dateAsMMDD(item.date) }}
               </span>
-              <span v-else class="whitespace-pre-line break-words">
+              <span v-else class="whitespace-pre-line wrap-break-word">
                 {{ item.reason }}
               </span>
             </template>
