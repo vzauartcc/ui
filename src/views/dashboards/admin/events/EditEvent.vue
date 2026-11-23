@@ -105,7 +105,7 @@ const resolver = ({ values }: FormResolverOptions) => {
   }
 
   if (!values.eventEnd) {
-    errors.eventStart = [{ message: 'Event End is required.' }];
+    errors.eventEnd = [{ message: 'Event End is required.' }];
   } else if (
     values.eventStart &&
     new Date(values.eventStart) > new Date(values.eventEnd)
