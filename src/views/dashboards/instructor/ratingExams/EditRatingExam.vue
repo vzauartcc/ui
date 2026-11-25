@@ -7,6 +7,7 @@ import type {
   IRatingExam,
   IRatingExamIndicator,
 } from '@/services/training/ratingExam.types';
+import { rubricFromJSON, rubricToJSON } from '@/utils/ratingExamFile';
 import { capitalize, textSort } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastSuccess } from '@/utils/toast';
@@ -47,6 +48,13 @@ const loading = ref(true);
 
 const milestones = ref<ICertification[]>();
 const formRef = useTemplateRef<FormInstance>('formRef');
+const fileInput = useTemplateRef<HTMLInputElement>('fileInput');
+const fileError = ref('');
+
+const byDisplayOrder = (a: IRatingExamIndicator, b: IRatingExamIndicator) =>
+  textSort(b.type, a.type) ||
+  textSort(a.category, b.category) ||
+  textSort(a.name, b.name);
 
 const initialValues = ref({
   _id: '',
@@ -76,12 +84,7 @@ onMounted(async () => {
     initialValues.value = {
       _id: data._id,
       name: data.name,
-      indicators: data.indicators.sort(
-        (a, b) =>
-          textSort(b.type, a.type) ||
-          textSort(a.category, b.category) ||
-          textSort(a.name, b.name),
-      ),
+      indicators: data.indicators.sort(byDisplayOrder),
       certCode: data.certCode,
       isActive: data.isActive,
     };
@@ -93,6 +96,49 @@ onMounted(async () => {
     console.error('error getting exam details', e);
   }
 });
+
+/** Download the current, unsaved values as a JSON file. */
+const downloadFile = () => {
+  const states = formRef.value?.states;
+  const json = rubricToJSON({
+    name: states?.name?.value,
+    certCode: states?.certCode?.value,
+    isActive: states?.isActive?.value,
+    indicators: states?.indicators?.value,
+  });
+  const url = URL.createObjectURL(
+    new Blob([json], { type: 'application/json' }),
+  );
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'practical-exam-rubric.json';
+  link.click();
+  // Release the file only after the browser has started the download.
+  setTimeout(() => URL.revokeObjectURL(url));
+};
+
+const uploadFile = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = ''; // Clear the input so choosing the same file again works
+  if (!file || !formRef.value) return;
+  const result = rubricFromJSON(
+    await file.text(),
+    new Set(milestones.value?.map((item) => item.code)),
+  );
+  if (!result.ok) {
+    fileError.value = result.error;
+    return;
+  }
+  fileError.value = '';
+  const indicators = result.value.indicators.map(
+    (row) => ({ ...row, _id: '' }) as IRatingExamIndicator, // fill in an ID
+  );
+  formRef.value.setValues({
+    ...result.value,
+    indicators: indicators.sort(byDisplayOrder),
+  });
+};
 
 const resolver = ({
   values,
@@ -107,8 +153,26 @@ const resolver = ({
     errors.certCode = [{ message: 'Milestone is required.' }];
   }
 
-  if (values.indicators === undefined || values.indicators.length < 1) {
+  // Since JSON upload skips the HTML form check, the rows may be incomplete in
+  // more ways
+  const rows: Partial<IRatingExamIndicator>[] = values.indicators ?? [];
+  const incomplete = rows.find(
+    (row) =>
+      !row.name?.trim() ||
+      !row.type ||
+      !row.category?.trim() ||
+      row.deduction == null ||
+      row.failureThreshold == null,
+  );
+
+  if (rows.length < 1) {
     errors.indicators = [{ message: 'At least one indicator is required.' }];
+  } else if (incomplete) {
+    errors.indicators = [
+      {
+        message: `“${incomplete.name || 'Unnamed'}” is incomplete.`,
+      },
+    ];
   }
 
   return {
@@ -159,12 +223,7 @@ const deleteIndicator = (index: number) => {
 
   formRef.value.setFieldValue(
     'indicators',
-    currentIndicators.sort(
-      (a: IRatingExamIndicator, b: IRatingExamIndicator) =>
-        textSort(b.type, a.type) ||
-        textSort(a.category, b.category) ||
-        textSort(a.name, b.name),
-    ),
+    currentIndicators.sort(byDisplayOrder),
   );
 };
 
@@ -259,12 +318,7 @@ const saveIndicator = (doAnother: boolean) => {
   }
 
   formRef.value.states.indicators!.value =
-    formRef.value.states.indicators!.value.sort(
-      (a: IRatingExamIndicator, b: IRatingExamIndicator) =>
-        textSort(b.type, a.type) ||
-        textSort(a.category, b.category) ||
-        textSort(a.name, b.name),
-    );
+    formRef.value.states.indicators!.value.sort(byDisplayOrder);
 
   if (doAnother) {
     indicatorDialog.value = {
@@ -299,6 +353,30 @@ const saveIndicator = (doAnother: boolean) => {
         :initialValues="initialValues"
         @submit="saveRatingExam">
         <div class="grid grid-cols-1 gap-5">
+          <div class="flex flex-wrap gap-3">
+            <Button
+              type="button"
+              outlined
+              label="Download JSON"
+              :disabled="isSubmitting || indicatorVisible"
+              @click="downloadFile" />
+            <Button
+              type="button"
+              outlined
+              label="Upload JSON"
+              :disabled="isSubmitting || indicatorVisible || !milestones"
+              @click="fileInput?.click()" />
+            <input
+              ref="fileInput"
+              class="hidden"
+              type="file"
+              accept=".json,application/json"
+              @change="uploadFile" />
+          </div>
+          <Message v-if="fileError" severity="error">
+            Error:
+            {{ fileError }}
+          </Message>
           <FormField name="_id" class="hidden">
             <InputText id="_id" disabled />
           </FormField>
@@ -398,12 +476,19 @@ const saveIndicator = (doAnother: boolean) => {
                 </template>
               </Column>
             </DataTable>
+            <Message
+              v-if="$field?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $field.error?.message }}</Message
+            >
           </FormField>
 
           <Button
             type="submit"
             severity="success"
-            :disabled="!$form?.valid || initialValues.indicators.length < 1"
+            :disabled="!$form?.valid || $form.indicators?.value?.length < 1"
             :loading="isSubmitting">
             <span v-if="id">Save!</span>
             <span v-else>Create!</span>
@@ -502,6 +587,7 @@ const saveIndicator = (doAnother: boolean) => {
           @click="saveIndicator(false)"
           :disabled="
             !indicatorDialog.name ||
+            !indicatorDialog.type ||
             !indicatorDialog.category ||
             indicatorDialog.failureThreshold < 1 ||
             indicatorDialog.deduction < 1
