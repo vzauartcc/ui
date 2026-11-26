@@ -595,7 +595,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach(async (to) => {
   window.scrollTo({
     top: 0,
   });
@@ -606,8 +606,7 @@ router.beforeEach(async (to, _from, next) => {
       await userStore.getUser();
     } catch (e) {
       console.error('[router] Initial user fetch failed', e);
-      next('/');
-      return;
+      return '/';
     }
   }
 
@@ -620,7 +619,7 @@ router.beforeEach(async (to, _from, next) => {
     if (userStore.isLoggedIn !== true || !userStore.user) {
       localStorage.setItem('redirect', to.fullPath);
       window.location.href = vatsimAuthRedirectUrl;
-      return next(false);
+      return false;
     }
 
     if (
@@ -628,23 +627,23 @@ router.beforeEach(async (to, _from, next) => {
       !userStore.hasRating(to.meta.requiredRating)
     ) {
       console.error('[router] You do not have permission to view this page.');
-      return next('/');
+      return '/';
     }
 
     if (to.meta.requiredRoles && !userStore.hasRoles(to.meta.requiredRoles)) {
       console.error('[router] You do not have permission to view this page.');
-      return next('/');
+      return '/';
     }
 
     if (to.meta.isAdmin) {
-      if (userStore.isStaff) return next();
+      if (userStore.isStaff) return;
     } else if (to.meta.isStaffOrTrainingStaff) {
-      if (userStore.isTrainingStaff || userStore.isStaff) return next();
+      if (userStore.isTrainingStaff || userStore.isStaff) return;
     } else if (to.meta.isTrainingStaff) {
-      if (userStore.isTrainingStaff) return next();
+      if (userStore.isTrainingStaff) return;
     } else if (to.meta.loggedIn) {
       if (userStore.user.member === true || to.meta.allowNonMembers === true) {
-        return next();
+        return;
       }
     }
 
@@ -652,10 +651,9 @@ router.beforeEach(async (to, _from, next) => {
       '[router] You do not have permission to view this page.',
       to.meta,
     );
-    next('/');
-  } else {
-    next();
+    return '/';
   }
+  // no return = continue navigation
 });
 
 export default router;

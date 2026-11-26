@@ -7,6 +7,7 @@ import { s3Service } from '@/services/s3.service';
 import { localToUTC, roundToNearest15Minutes, utcToLocal } from '@/utils/date';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { getS3Url } from '@/utils/uriHelper';
 import { Icon } from '@iconify/vue';
 import {
   Form,
@@ -104,7 +105,7 @@ const resolver = ({ values }: FormResolverOptions) => {
   }
 
   if (!values.eventEnd) {
-    errors.eventStart = [{ message: 'Event End is required.' }];
+    errors.eventEnd = [{ message: 'Event End is required.' }];
   } else if (
     values.eventStart &&
     new Date(values.eventStart) > new Date(values.eventEnd)
@@ -261,6 +262,11 @@ const onSubmit = async (event: FormSubmitEvent) => {
 
       if (data.url !== '') {
         await uploadBanner(data.url);
+
+        await eventService.updateBanner(
+          data.eventId,
+          `${getS3Url()}/events/${data.eventId}`,
+        );
       }
     } else {
       const data = await eventService.createEvent(
@@ -274,6 +280,11 @@ const onSubmit = async (event: FormSubmitEvent) => {
 
       if (data.url !== '') {
         await uploadBanner(data.url);
+
+        await eventService.updateBanner(
+          data.eventId,
+          `${getS3Url()}/events/${data.eventId}`,
+        );
       }
     }
 

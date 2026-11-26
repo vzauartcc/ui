@@ -36,7 +36,7 @@ export const eventService = {
     description: string,
     fileData: File,
     endorsementRequired: boolean,
-  ): Promise<{ url: string }> {
+  ): Promise<{ url: string; eventId: string }> {
     return zauApi
       .post('event', {
         json: {
@@ -61,7 +61,7 @@ export const eventService = {
     positions: string[],
     fileData: File | null,
     endorsementRequired: boolean,
-  ): Promise<{ url: string }> {
+  ): Promise<{ url: string; eventId: string }> {
     return zauApi
       .put(`event/${slug}`, {
         json: {
@@ -98,6 +98,13 @@ export const eventService = {
     return zauApi
       .put(`event/${url}/close`, {
         json: { open: status },
+      })
+      .json();
+  },
+  updateBanner(id: string, url: string) {
+    return zauApi
+      .post(`event/bannerUploaded`, {
+        json: { event: id, imageUrl: url },
       })
       .json();
   },

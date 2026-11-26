@@ -55,7 +55,11 @@ onUnmounted(() => {
               draggable="false"
               alt="Virtual Chicago ARTCC Logo" />
           </router-link>
-          <a href="https://vatusa.net" class="flex justify-center">
+          <a
+            href="https://vatusa.net"
+            class="flex justify-center"
+            target="_blank"
+            rel="noopener noreferrer">
             <img
               class="h-16 object-contain dark:hidden"
               :src="`${s3Url}/site-logo/vatusa.svg`"
@@ -67,7 +71,11 @@ onUnmounted(() => {
               :draggable="false"
               alt="VATUSA Subdivision Logo" />
           </a>
-          <a href="https://vatsim.net" class="flex justify-center">
+          <a
+            href="https://vatsim.net"
+            class="flex justify-center"
+            target="_blank"
+            rel="noopener noreferrer">
             <img
               class="h-16 object-contain dark:hidden"
               :src="`${s3Url}/site-logo/vatsim.png`"

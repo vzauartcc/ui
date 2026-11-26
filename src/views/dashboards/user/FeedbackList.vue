@@ -2,6 +2,7 @@
 import { feedbackService } from '@/services/feedback/feedback.service';
 import type { IFeedback } from '@/services/feedback/feedback.types';
 import { dateAsMMDDHHMM } from '@/utils/date';
+import { capitalize } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { Icon } from '@iconify/vue';
 import Button from 'primevue/button';
@@ -11,7 +12,7 @@ import DataTable, { type DataTablePageEvent } from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
 import Rating from 'primevue/rating';
-import { capitalize, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 useTitle('Your Feedback');
 

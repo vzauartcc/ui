@@ -4,11 +4,11 @@ import type {
   IRatingExam,
   IRatingExamIndicator,
 } from '@/services/training/ratingExam.types';
-import { textSort } from '@/utils/text';
+import { capitalize, textSort } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
-import { capitalize, computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 useTitle('View Practical Exam');

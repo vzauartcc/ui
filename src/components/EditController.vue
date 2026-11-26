@@ -7,7 +7,7 @@ import type {
   IRole,
 } from '@/services/controller/controller.types';
 import { useUserStore } from '@/stores/user';
-import { compileUsersName } from '@/utils/text';
+import { capitalize, compileUsersName } from '@/utils/text';
 import { useTitle } from '@/utils/title';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { Icon } from '@iconify/vue';
@@ -27,7 +27,7 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import SelectButton from 'primevue/selectbutton';
-import { capitalize, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 interface ICertOption {
   name: string;

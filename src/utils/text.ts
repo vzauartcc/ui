@@ -50,3 +50,9 @@ export const compileUsersName = (data?: {
 export const textSort = (a: string, b: string) => {
   return (a || '').localeCompare(b || '', undefined, { numeric: true });
 };
+
+export const capitalize = (a: string) => {
+  if (!a) return '';
+
+  return a.charAt(0).toLocaleUpperCase() + a.slice(1);
+};
